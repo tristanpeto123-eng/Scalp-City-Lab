@@ -1,0 +1,287 @@
+name: Scalp City Lab — Bootstrap & Checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  bootstrap:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab' && github.event_name != 'pull_request'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Import pinned baseline only if Lab is empty
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REPOSITORY" != "tristanpeto123-eng/Scalp-City-Lab" ]]; then echo "WRONG REPOSITORY: refusing to run" >&2; exit 1; fi
+          if [[ -f app.js ]]; then echo "Lab source exists; not copying or overwriting it"; exit 0; fi
+          mkdir -p /tmp/scalp-lab-source
+          curl --fail --location --retry 3 --silent --show-error "https://codeload.github.com/tristanpeto123-eng/Scalp-City-1/tar.gz/3b246ebec0458734509135a5317e2af011d45408" -o /tmp/scalp-city-source.tgz
+          tar -xzf /tmp/scalp-city-source.tgz --strip-components=1 -C /tmp/scalp-lab-source
+          for f in app.js index.html sw.js scene3d.js backtester-agent.js cfd-engine.js icon-192.png icon-512.png scalp-city-concept.png; do test -f "/tmp/scalp-lab-source/$f" || { echo "Source missing $f" >&2; exit 1; }; done
+          cp -a /tmp/scalp-lab-source/. ./
+          mkdir -p tests .github/workflows
+          cat > 'bootstrap_lab.py' <<'PYLAB'
+          #!/usr/bin/env python3
+          """Patch a fresh Scalp-City-1 source COPY for Scalp-City-Lab only.
+
+          The source repository is never written by this script. Abort unless target
+          checkout/repository identity is exactly Scalp-City-Lab.
+          """
+          from pathlib import Path
+          import json
+          import os
+
+          root = Path.cwd()
+          repo = os.environ.get('GITHUB_REPOSITORY', '')
+          if repo and repo != 'tristanpeto123-eng/Scalp-City-Lab':
+              raise SystemExit(f'ABORT: wrong GitHub repository: {repo}')
+          if root.name.casefold() != 'scalp-city-lab' and not (repo == 'tristanpeto123-eng/Scalp-City-Lab'):
+              raise SystemExit('ABORT: working directory must be Scalp-City-Lab')
+          required = ['app.js','index.html','scene3d.js','sw.js','manifest.webmanifest','backtester-agent.js','training-worker.js','cfd-engine.js']
+          for name in required:
+              if not (root/name).is_file():
+                  raise SystemExit(f'ABORT: missing required imported source file {name}')
+
+          def patch(name, old, new):
+              p = root/name
+              s = p.read_text(encoding='utf-8')
+              if old not in s:
+                  if new in s: return
+                  raise SystemExit(f'ABORT: expected source pattern not present in {name}: {old[:90]!r}')
+              p.write_text(s.replace(old,new),encoding='utf-8')
+
+          patch('app.js','const DB_NAME = "scalp-city-v1";','const DB_NAME = "scalp-city-lab-v1";')
+          patch('app.js','"scalpCityGithubMeta"','"scalpCityLabGithubMeta"')
+          patch('app.js','path:"knowledge",token:""','path:"knowledge-lab",token:""')
+          patch('app.js','||"knowledge"','||"knowledge-lab"')
+          patch('app.js','$("ghRepo").value=g.repo||"";','$("ghRepo").value=g.repo||"Scalp-City-Lab";')
+          patch('app.js',
+                'const g=state.github;if(!g.owner||!g.repo)throw new Error("Set owner and repository");',
+                'const g=state.github;if(!g.owner||!g.repo)throw new Error("Set owner and repository");if(g.owner!=="tristanpeto123-eng"||g.repo!=="Scalp-City-Lab"||g.branch!=="main"||g.path!=="knowledge-lab")throw new Error("LAB SAFETY LOCK: GitHub memory writes/reads restricted to Scalp-City-Lab main, knowledge-lab prefix");')
+          patch('app.js',
+                'const base=`https://api.github.com/repos/${encodeURIComponent(g.owner)}/${encodeURIComponent(g.repo)}/contents/${path.split("/").map(encodeURIComponent).join("/")}`;',
+                'const [filePath,...queryParts]=path.split("?");const query=queryParts.length?"?"+queryParts.join("?"):"";const base=`https://api.github.com/repos/${encodeURIComponent(g.owner)}/${encodeURIComponent(g.repo)}/contents/${filePath.split("/").map(encodeURIComponent).join("/")}${query}`;')
+          patch('app.js',
+                '$("#sessionPnl").textContent=(state.sessionPnl>=0?"+£":"-£")+Math.abs(state.sessionPnl).toFixed(0);',
+                '$("#sessionPnl").textContent="SIM "+(state.sessionPnl>=0?"+":"-")+Math.abs(state.sessionPnl).toFixed(0)+" pts";')
+          patch('app.js','log("V1 ready · enter to start training","good")','log("LAB simulation ready · training uses synthetic data unless CSV imported","good")')
+          patch('backtester-agent.js',"const HISTORY_KEY='scalp-city:BT-01:report-history:v1';","const HISTORY_KEY='scalp-city-lab:BT-01:report-history:v1';")
+          patch('index.html','<title>Research Floor — Scalp City</title>','<title>Scalp City Lab — Simulation Only</title>')
+          patch('index.html','<span>SCALP CITY / RESEARCH FLOOR</span>','<span>SCALP CITY LAB / SIMULATION ONLY</span>')
+          patch('index.html','name="apple-mobile-web-app-title" content="Scalp City"','name="apple-mobile-web-app-title" content="Scalp Lab"')
+          patch('index.html','id="ghRepo" placeholder="Scalp-City-1"','id="ghRepo" placeholder="Scalp-City-Lab"')
+          patch('index.html','id="ghPath" value="knowledge"','id="ghPath" value="knowledge-lab"')
+          patch('index.html','<span id="sessionPnl">+£0</span>','<span id="sessionPnl">SIM +0 pts</span>')
+          patch('index.html','Scalp City ships with deterministic synthetic QQQ/SPY/IWM candles. Replace any node with your own CSV.','Simulation only: deterministic synthetic QQQ/SPY/IWM candles, NOT live prices. Replace any node with your own historical CSV.')
+          patch('scene3d.js','LIVE NODE / 1m','REPLAY NODE / 1m')
+          patch('scene3d.js','SIMULATED / SESSION','CANDIDATE SUM / NOT ACCOUNT PNL')
+          patch('sw.js',"const CACHE='scalp-city-v1-", "const CACHE='scalp-city-lab-v1-")
+          patch('sw.js',"keys.filter(k=>k!==CACHE)","keys.filter(k=>k.startsWith('scalp-city-lab-')&&k!==CACHE)")
+          manifest_path = root/'manifest.webmanifest'
+          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+          manifest.update({
+              'id':'/Scalp-City-Lab/',
+              'name':'Scalp City Lab — Simulation Only',
+              'short_name':'Scalp Lab',
+              'description':'Isolated research and simulation environment; no live trading',
+          })
+          manifest_path.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          for ticker in ('SPY','QQQ','IWM'):
+              (root/f'knowledge-champions-{ticker}.json').write_text(json.dumps({'symbol':ticker,'champion':None},indent=2)+'\n',encoding='utf-8')
+          (root/'knowledge-manifest.json').write_text(json.dumps({'schemaVersion':'1.0','updatedAt':None,'totalSessions':0,'lastSessionId':None,'bestOverall':None},indent=2)+'\n',encoding='utf-8')
+          print('PASS: isolated Lab code, GitHub path restrictions, PWA identity and cache safely patched')
+          PYLAB
+          cat > 'tests/lab-config.test.mjs' <<'JSLAB'
+          import test from 'node:test';
+          import assert from 'node:assert/strict';
+          import {readFileSync,existsSync} from 'node:fs';
+          const txt = path => readFileSync(new URL(`../${path}`,import.meta.url),'utf8');
+
+          test('Lab has independent IndexedDB, localStorage and BT-01 histories',()=>{
+            assert.match(txt('app.js'),/DB_NAME = "scalp-city-lab-v1"/);
+            assert.match(txt('app.js'),/scalpCityLabGithubMeta/);
+            assert.doesNotMatch(txt('app.js'),/"scalpCityGithubMeta"/);
+            assert.match(txt('backtester-agent.js'),/scalp-city-lab:BT-01:report-history:v1/);
+          });
+          test('Hard GitHub memory lock forbids touching original repo or non-Lab paths',()=>{
+            const app=txt('app.js');
+            assert.match(app,/LAB SAFETY LOCK/);
+            assert.match(app,/g\.owner!=="tristanpeto123-eng"/);
+            assert.match(app,/g\.repo!=="Scalp-City-Lab"/);
+            assert.match(app,/g\.branch!=="main"/);
+            assert.match(app,/g\.path!=="knowledge-lab"/);
+            assert.match(app,/filePath\.split\("\/"\)/);
+          });
+          test('PWA identity and service worker cache are distinct and non-destructive',()=>{
+            assert.equal(JSON.parse(txt('manifest.webmanifest')).id,'/Scalp-City-Lab/');
+            const sw=txt('sw.js');
+            assert.match(sw,/scalp-city-lab-v1-/);
+            assert.match(sw,/k\.startsWith\('scalp-city-lab-'\)/);
+            assert.doesNotMatch(sw,/keys\.filter\(k=>k!==CACHE\)/);
+          });
+          test('Lab prominently reports simulation and does not mislabel backtest PnL as real cash',()=>{
+            assert.match(txt('index.html'),/SCALP CITY LAB \/ SIMULATION ONLY/);
+            assert.match(txt('index.html'),/NOT live prices/);
+            assert.match(txt('scene3d.js'),/CANDIDATE SUM \/ NOT ACCOUNT PNL/);
+            assert.match(txt('app.js'),/\+" pts"/);
+          });
+          test('source assets, 3D app and BT-01 backtester copied into Lab',()=>{
+            for(const f of ['app.js','scene3d.js','training-worker.js','backtester-agent.js','backtester-agent-worker.js','backtester-agent-ui.js','cfd-engine.js','styles.css','index.html','icon-192.png','icon-512.png','scalp-city-concept.png']) {
+              assert.equal(existsSync(new URL(`../${f}`,import.meta.url)),true,`Missing ${f}`);
+            }
+          });
+          test('memory starts empty, not copied from stable research sessions',()=>{
+            assert.equal(JSON.parse(txt('knowledge-manifest.json')).totalSessions,0);
+            for(const ticker of ['SPY','QQQ','IWM']){
+              assert.equal(JSON.parse(txt(`knowledge-champions-${ticker}.json`)).champion,null);
+            }
+          });
+          JSLAB
+          cat > 'WORKFLOW_V1.md' <<'WORKFLOWMD'
+          # Scalp City — Agent Workflow v1.0 (design contract, not all implemented)
+
+          ## Directed pipeline
+          Operator -> Bot Manager -> Data Curator -> Researcher -> Strategy Designer -> Optimizer -> Backtester -> Independent Validator -> Independent Scorer -> Risk Manager -> Paper Trader -> Journal -> Vault.
+
+          Feedback: Backtester -> Optimizer (training-only); Validator/Scorer rejection -> Researcher (creates new version); Journal/Vault -> Researcher (historical evidence, never approval bypass); Vault -> 3D City (visualization only).
+
+          ## Agent permissions
+          | Role | Allowed | Forbidden |
+          | --- | --- | --- |
+          | Data Curator | Ingest, normalize, version data | Overwrite immutable datasets silently |
+          | Researcher | Formulate hypotheses, read rejected test evidence | Approve or execute own hypotheses |
+          | Strategy Designer | Generate reproducible rule sets | Grant deployment approval |
+          | Optimizer | Tune using training folds only | Inspect sealed holdout during tuning |
+          | Backtester BT-01 | Simulate frozen strategies and publish reports | Trade real money; validate/approve own report |
+          | Validator | Run independent out-of-sample and leakage tests | Rewrite strategy being validated |
+          | Scorer | Rank independently validated candidates | Bypass validation and risk veto |
+          | Risk Manager | Check limits, deny orders, halt paper execution | Be overridden by Bot Manager or Optimizer |
+          | Paper Trader | Simulate approved trades under current risk allowance | Use broker API or live credentials |
+          | Journal / Vault | Append versioned provenance and outcomes | Mutate historic approvals or promote candidates |
+          | Bot Manager | Dispatch, schedule, observe | Modify approval decisions or lift veto |
+          | 3D City | Visualize agent status and evidence | Act as independent authorization mechanism |
+
+          ## Approval chain
+          1. Each candidate carries a deterministic strategy and parameter hash plus dataset version and experiment ID.
+          2. Once submitted for independent validation, candidate parameters are frozen; any change creates a new candidate requiring new approval.
+          3. Validator checks data leakage, chronological out-of-sample, walk-forward stability, costs, minimum trade count and failure modes.
+          4. Scorer only ranks candidates that pass validation; a passing score is not a deployment approval by itself.
+          5. Risk Manager checks sizing, exposure, limits and feed health at each simulated order; its veto is final.
+          6. Paper Trader operates only in an isolated simulated environment. Live brokerage connectivity is not part of Lab.
+          7. Every decision is attributable, immutable and visible to the user. Missing evidence means DENY.
+
+          ## Standard message schema
+          Every message includes `protocol`, `messageId`, `agentId`, `taskId`, `strategyId`, `strategyVersionHash`, `datasetVersion`, `timestamp`, `type` and `payload`; approval events also include `approverRole` and an evidence hash. The eventual backend must authenticate senders and enforce the permission checks on the server, not rely solely on browser events.
+
+          ## Ten target acceptance tests (future multi-agent release gate)
+          1. Designer cannot approve itself.
+          2. Backtester cannot validate its own results.
+          3. Scorer cannot rank unvalidated work as approved.
+          4. Optimizer cannot read sealed holdout dataset.
+          5. Modified strategy invalidates all old approvals.
+          6. Missing/outdated data prevents new paper orders.
+          7. Risk veto cannot be overridden by Bot Manager.
+          8. Failed candidate is versioned before a new trial.
+          9. Journal entries cannot be silently rewritten.
+          10. Lab has no real-money execution path, and no automatic promotion to stable.
+
+          **Current implementation:** existing browser training workers and BT-01 on-demand backtester are prototypes. Independent Validator, Scorer, Risk Manager and Paper Trader are future implementation work. These principles are specifications, not a claim that runtime controls already exist.
+          WORKFLOWMD
+          cat > 'LAB_ROADMAP.md' <<'ROADMAPMD'
+          # Scalp City Lab — Development Roadmap
+
+          Source snapshot: `tristanpeto123-eng/Scalp-City-1` commit `3b246ebec0458734509135a5317e2af011d45408` (11 October 2026).
+
+          ## Milestone 0 — Isolation and baseline
+          - [x] Define isolation patch, smoke tests and independent-agent workflow (prepared in bootstrap).
+          - [ ] Bootstrap the empty Lab repository; wait for the GitHub Actions job to complete.
+          - [ ] Verify **Checks** are green and baseline source assets exist.
+          - [ ] Verify user-visible simulation label, QQQ/SPY/IWM demo, CSV import, stop, save, BT-01 report export on iPhone.
+          - [ ] Enable GitHub Pages on Lab only after tests pass.
+          - [ ] Verify the original repository's head remains unchanged.
+
+          ## Milestone 1 — Accurate research
+          - [ ] Historical data licensing, source, provenance, timezone, cleaning and versions.
+          - [ ] Chronological training/validation/final holdout, walk-forward and leakage tests.
+          - [ ] Correct order fills, spreads, commissions and funding assumptions.
+          - [ ] Separate *candidate aggregate research statistics* from *paper account P&L*.
+
+          ## Milestone 2 — Independent agents
+          - [ ] Researcher, Strategy Designer, Optimizer, Backtester, independent Validator, Scorer.
+          - [ ] Immutable content-hash approvals: change candidate = reset approval chain.
+          - [ ] Vault with provenance and traceability, feedback loop for rejected candidates.
+          - [ ] Denial-by-default capabilities and ten end-to-end acceptance cases.
+
+          ## Milestone 3 — Risk and paper operations
+          - [ ] Risk Manager with unbypassable position-level limits and emergency stop.
+          - [ ] Forward paper execution with fresh data, reconciled simulated fills and journal.
+          - [ ] Strictly no live broker credentials or live order capabilities in Lab.
+
+          ## Milestone 4 — Agent City and release
+          - [ ] Interactive 3D buildings/robots, connections and live workflow status.
+          - [ ] iPhone camera, rendering and screenshot fidelity tests.
+          - [ ] Human-reviewed promotion into stable repository only after tests pass.
+          ROADMAPMD
+          python3 bootstrap_lab.py
+          node --check app.js
+          node --check training-worker.js
+          node --check backtester-agent-worker.js
+          node --check --input-type=module < scene3d.js
+          node --check --input-type=module < backtester-agent.js
+          node --check --input-type=module < backtester-agent-ui.js
+          node --check --input-type=module < cfd-engine.js
+          node --test tests/lab-config.test.mjs
+          cat > README.md <<'LABREADME'
+          # Scalp City Lab
+
+          This is an isolated, **simulation-only** development clone of [Scalp-City-1](https://github.com/tristanpeto123-eng/Scalp-City-1). The source snapshot was pinned to commit `3b246ebec0458734509135a5317e2af011d45408`.
+
+          The Lab uses different IndexedDB/localStorage namespaces, a different PWA identity and service-worker cache, and GitHub memory sync locked to this repository and the `knowledge-lab` prefix. It does not access or update the stable repository's history.
+
+          The existing 3D research room, six-strategy BT-01 backtester and browser optimizer are experimental software; the research results are **not evidence of live profitability**. The independent agent permission pipeline is a roadmap and design contract, not implemented runtime enforcement. **No live broker credentials or real-money trading allowed.**
+
+          See [Agent Workflow](WORKFLOW_V1.md) and [Roadmap](LAB_ROADMAP.md).
+
+          ## Running Lab
+          Once GitHub Actions bootstrap passes, enable Pages using Settings → Pages → Deploy from branch → main / root. Test on iPhone: 3D loading, 3 ticker selection, CSV import, start/stop, local save, BT-01 report export and read-only Lab storage. Do not configure GitHub memory tokens until testing the Lab-only repository guard.
+
+          ## Development rule
+          No automatic deployment or promotion into Scalp-City-1. Release candidates require independent validation, risk checks and human review. The Lab workflow never touches the original repository.
+          LABREADME
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Bootstrap isolated simulation-only Lab from pinned Scalp City snapshot"
+          git push origin HEAD:main
+
+  checks:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify isolated Lab after baseline is present
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! -f app.js ]]; then echo 'Initial bootstrap will populate source; checks ran in bootstrap before first commit'; exit 0; fi
+          node --check app.js
+          node --check training-worker.js
+          node --check backtester-agent-worker.js
+          node --check --input-type=module < scene3d.js
+          node --check --input-type=module < backtester-agent.js
+          node --check --input-type=module < backtester-agent-ui.js
+          node --check --input-type=module < cfd-engine.js
+          node --test tests/lab-config.test.mjs
