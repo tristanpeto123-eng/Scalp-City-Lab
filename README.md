@@ -1,23 +1,15 @@
-# Scalp City — TRUE 3D V5
+# Scalp City Lab
 
-Actual WebGL research room: physical monitor meshes, robot operator, curved workstation, room shell, city depth, lighting/shadows and parallax.
+This is an isolated, **simulation-only** development clone of [Scalp-City-1](https://github.com/tristanpeto123-eng/Scalp-City-1). The source snapshot was pinned to commit `3b246ebec0458734509135a5317e2af011d45408`.
 
-# Scalp City V1 — True 3D Research Floor
+The Lab uses different IndexedDB/localStorage namespaces, a different PWA identity and service-worker cache, and GitHub memory sync locked to this repository and the `knowledge-lab` prefix. It does not access or update the stable repository's history.
 
-This build replaces the flat/CSS dashboard composition with a real Three.js environment.
+The existing 3D research room, six-strategy BT-01 backtester and browser optimizer are experimental software; the research results are **not evidence of live profitability**. The independent agent permission pipeline is a roadmap and design contract, not implemented runtime enforcement. **No live broker credentials or real-money trading allowed.**
 
-## What changed
-- Physical 3D monitor meshes with thickness, mounting hardware and angled perspective.
-- Live QQQ/SPY/IWM and core chart canvases are mapped onto the 3D screens as textures.
-- Robot is seated with its back to the camera, facing the workstation.
-- Physical desk, console keys, STOP/SYNC controls, floor rings, skyline, fog, shadows and practical neon lighting.
-- Tap the 3D ticker screens to change the core chart.
-- Tap the 3D console hardware to run training, import data, open GitHub memory, checkpoint, stop, or save/exit.
-- Drag anywhere in the scene to shift the camera perspective.
-- Existing training workers, CSV import, IndexedDB session saves and GitHub memory logic are retained.
-- Service worker cache bumped and HTML/JS/CSS now use network-first updates to reduce stale GitHub Pages builds.
+See [Agent Workflow](WORKFLOW_V1.md) and [Roadmap](LAB_ROADMAP.md).
 
-## Deploy
-Upload the **contents** of this folder to the root of the GitHub Pages repository. Keep the files flat at the root so `index.html`, `app.js`, `scene3d.js`, `training-worker.js`, `styles.css` and the manifest are siblings.
+## Running Lab
+Once GitHub Actions bootstrap passes, enable Pages using Settings → Pages → Deploy from branch → main / root. Test on iPhone: 3D loading, 3 ticker selection, CSV import, start/stop, local save, BT-01 report export and read-only Lab storage. Do not configure GitHub memory tokens until testing the Lab-only repository guard.
 
-The 3D engine is loaded as an ES module from jsDelivr (`three@0.170.0`), so first load requires internet access.
+## Development rule
+No automatic deployment or promotion into Scalp-City-1. Release candidates require independent validation, risk checks and human review. The Lab workflow never touches the original repository.

@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#03020a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Scalp City" />
-  <title>Research Floor — Scalp City</title>
+  <meta name="apple-mobile-web-app-title" content="Scalp Lab" />
+  <title>Scalp City Lab — Simulation Only</title>
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="stylesheet" href="./styles.css" />
@@ -20,7 +20,7 @@
     <div class="scene-vignette" aria-hidden="true"></div>
 
     <header class="hud" aria-label="Scalp City status">
-      <div class="hud-mode"><span class="hud-crown">♛</span><span>SCALP CITY / RESEARCH FLOOR</span></div>
+      <div class="hud-mode"><span class="hud-crown">♛</span><span>SCALP CITY LAB / SIMULATION ONLY</span></div>
       <div class="market-beacon" id="marketPill" role="status" aria-live="polite">
         <span class="dot" aria-hidden="true"></span><span id="marketText">RESEARCH IDLE</span>
       </div>
@@ -47,7 +47,7 @@
       <span id="tradeState">WAITING</span>
       <canvas id="mainChart" width="1000" height="570" aria-label="Core price chart"></canvas>
 
-      <span id="sessionPnl">+£0</span>
+      <span id="sessionPnl">SIM +0 pts</span>
       <span id="tradeCount">0 trades</span>
       <span id="winRate">0% win</span>
       <div id="leaderRows"></div>
@@ -74,7 +74,7 @@
   <dialog id="dataDialog" class="modal">
     <form method="dialog" class="terminal" aria-labelledby="dataTitle" novalidate>
       <div class="modal-head"><div><small>UTILITY TERMINAL</small><h2 id="dataTitle">MARKET DATA</h2></div><button value="cancel" type="submit" aria-label="Close market data">✕</button></div>
-      <p>Scalp City ships with deterministic synthetic QQQ/SPY/IWM candles. Replace any node with your own CSV.</p>
+      <p>Simulation only: deterministic synthetic QQQ/SPY/IWM candles, NOT live prices. Replace any node with your own historical CSV.</p>
       <label class="field">SYMBOL
         <select id="csvSymbol"><option>QQQ</option><option>SPY</option><option>IWM</option></select>
       </label>
@@ -92,9 +92,9 @@
       <div class="modal-head"><div><small>MEMORY TERMINAL</small><h2 id="githubTitle">GITHUB MEMORY</h2></div><button value="cancel" type="submit" aria-label="Close GitHub memory">✕</button></div>
       <p>Use a fine-grained token limited to this repository with <b>Contents: Read and write</b>. It remains in this open page only.</p>
       <label class="field">OWNER<input id="ghOwner" placeholder="your-github-user" autocomplete="off"></label>
-      <label class="field">REPOSITORY<input id="ghRepo" placeholder="Scalp-City-1" autocomplete="off"></label>
+      <label class="field">REPOSITORY<input id="ghRepo" placeholder="Scalp-City-Lab" autocomplete="off"></label>
       <label class="field">BRANCH<input id="ghBranch" value="main" autocomplete="off"></label>
-      <label class="field">KNOWLEDGE PREFIX<input id="ghPath" value="knowledge" autocomplete="off"></label>
+      <label class="field">KNOWLEDGE PREFIX<input id="ghPath" value="knowledge-lab" autocomplete="off"></label>
       <label class="field">FINE-GRAINED TOKEN
         <span class="secret-field"><input id="ghToken" type="password" placeholder="github_pat_..." autocomplete="off"><button id="toggleToken" type="button" aria-label="Show token">SHOW</button></span>
       </label>

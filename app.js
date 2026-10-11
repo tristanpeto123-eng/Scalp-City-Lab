@@ -3,11 +3,11 @@ const state = {
   running:false, startedAt:null, timer:null, workers:[], workerCount:0,
   experiments:0, survivors:0, sessionPnl:0, trades:0, wins:0,
   generation:0, best:null, leaderboard:[], log:[], data:{}, knowledge:{},
-  github:{owner:"",repo:"",branch:"main",path:"knowledge",token:""},
+  github:{owner:"",repo:"",branch:"main",path:"knowledge-lab",token:""},
   sessionId:null, importedSymbols:new Set()
 };
 
-const DB_NAME = "scalp-city-v1";
+const DB_NAME = "scalp-city-lab-v1";
 const DB_VERSION = 1;
 let dbPromise = null;
 let sceneCtl = null;
@@ -102,7 +102,7 @@ function notify(message,tone="note"){
 }
 function renderStats(){
   $("#experimentCount").textContent=state.experiments.toLocaleString();$("#survivorCount").textContent=state.survivors.toLocaleString();$("#bestScore").textContent=state.best?state.best.score.toFixed(1):"—";
-  $("#workerCount").textContent=state.workerCount;$("#sessionPnl").textContent=(state.sessionPnl>=0?"+£":"-£")+Math.abs(state.sessionPnl).toFixed(0);$("#sessionPnl").style.color=state.sessionPnl>=0?"var(--green)":"var(--red)";
+  $("#workerCount").textContent=state.workerCount;$("#sessionPnl").textContent="SIM "+(state.sessionPnl>=0?"+":"-")+Math.abs(state.sessionPnl).toFixed(0)+" pts";$("#sessionPnl").style.color=state.sessionPnl>=0?"var(--green)":"var(--red)";
   $("#tradeCount").textContent=`${state.trades} trades`;$("#winRate").textContent=`${state.trades?Math.round(state.wins/state.trades*100):0}% win`;$("#generationLabel").textContent=`GEN ${state.generation}`;
   renderLeaderboard()
 }
@@ -143,8 +143,8 @@ async function parseCsv(file,symbol){
 }
 
 async function githubApi(path,method="GET",body=null){
-  const g=state.github;if(!g.owner||!g.repo)throw new Error("Set owner and repository");
-  const base=`https://api.github.com/repos/${encodeURIComponent(g.owner)}/${encodeURIComponent(g.repo)}/contents/${path.split("/").map(encodeURIComponent).join("/")}`;
+  const g=state.github;if(!g.owner||!g.repo)throw new Error("Set owner and repository");if(g.owner!=="tristanpeto123-eng"||g.repo!=="Scalp-City-Lab"||g.branch!=="main"||g.path!=="knowledge-lab")throw new Error("LAB SAFETY LOCK: GitHub memory writes/reads restricted to Scalp-City-Lab main, knowledge-lab prefix");
+  const [filePath,...queryParts]=path.split("?");const query=queryParts.length?"?"+queryParts.join("?"):"";const base=`https://api.github.com/repos/${encodeURIComponent(g.owner)}/${encodeURIComponent(g.repo)}/contents/${filePath.split("/").map(encodeURIComponent).join("/")}${query}`;
   const headers={"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"};if(g.token)headers.Authorization=`Bearer ${g.token}`;
   const r=await fetch(base,{method,headers,body:body?JSON.stringify(body):undefined});if(!r.ok){const t=await r.text();throw new Error(`${r.status} ${t.slice(0,180)}`)}return r.status===204?null:r.json()
 }
@@ -173,10 +173,10 @@ async function syncGithub(payload){
   await putGithubFile("manifest.json",manifest,`Scalp City: update knowledge manifest`);state.knowledge.manifest=manifest;
 }
 function setGhFromUi(){
-  state.github.owner=$("#ghOwner").value.trim();state.github.repo=$("#ghRepo").value.trim();state.github.branch=$("#ghBranch").value.trim()||"main";state.github.path=$("#ghPath").value.trim()||"knowledge";state.github.token=$("#ghToken").value.trim();
-  try{localStorage.setItem("scalpCityGithubMeta",JSON.stringify({owner:state.github.owner,repo:state.github.repo,branch:state.github.branch,path:state.github.path}))}catch{}
+  state.github.owner=$("#ghOwner").value.trim();state.github.repo=$("#ghRepo").value.trim();state.github.branch=$("#ghBranch").value.trim()||"main";state.github.path=$("#ghPath").value.trim()||"knowledge-lab";state.github.token=$("#ghToken").value.trim();
+  try{localStorage.setItem("scalpCityLabGithubMeta",JSON.stringify({owner:state.github.owner,repo:state.github.repo,branch:state.github.branch,path:state.github.path}))}catch{}
 }
-function loadGhMeta(){try{const g=JSON.parse(localStorage.getItem("scalpCityGithubMeta")||"{}");Object.assign(state.github,g);$("#ghOwner").value=g.owner||"";$("#ghRepo").value=g.repo||"";$("#ghBranch").value=g.branch||"main";$("#ghPath").value=g.path||"knowledge"}catch{}}
+function loadGhMeta(){try{const g=JSON.parse(localStorage.getItem("scalpCityLabGithubMeta")||"{}");Object.assign(state.github,g);$("#ghOwner").value=g.owner||"";$("#ghRepo").value=g.repo||"Scalp-City-Lab";$("#ghBranch").value=g.branch||"main";$("#ghPath").value=g.path||"knowledge-lab"}catch{}}
 
 async function saveExit(){
   if(!state.sessionId){return}$("#exitDialog").showModal();const box=$("#exitSteps");box.replaceChildren();const step=(t,cls="")=>{const e=document.createElement("div");e.className="step "+cls;e.textContent=t;box.appendChild(e);return e};
@@ -202,4 +202,4 @@ document.addEventListener("visibilitychange",()=>{if(document.visibilityState===
 window.addEventListener("pagehide",()=>{if(state.running)checkpoint()});
 
 if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});
-loadGhMeta();city();ensureData();redraw();renderStats();log("V1 ready · enter to start training","good");
+loadGhMeta();city();ensureData();redraw();renderStats();log("LAB simulation ready · training uses synthetic data unless CSV imported","good");

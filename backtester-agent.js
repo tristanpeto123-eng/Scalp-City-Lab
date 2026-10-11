@@ -1,7 +1,7 @@
 // BT-01 coordinator: isolated from app.js/training-worker.js and live trading.
 // Other agents can issue browser-local CustomEvent('scalp-city:agent-task', {detail:{target:'BT-01',action:'run',dataset,config,strategyIds,stress}}).
 export const BT01=Object.freeze({id:'BT-01',name:'Backtester',protocol:'scalp-city.agent.v1',role:'Research / backtest',permissions:['simulation','local-report','publish'],canTrade:false});
-const HISTORY_KEY='scalp-city:BT-01:report-history:v1';
+const HISTORY_KEY='scalp-city-lab:BT-01:report-history:v1';
 export class BacktesterAgent{
   constructor({workerPath='./backtester-agent-worker.js',listen=true}={}){
     this.workerPath=workerPath;this.worker=null;this.jobId=null;this.state='IDLE';this.lastReport=null;this.listeners=new Set();this.history=this.readHistory();this.jobSeq=0;
