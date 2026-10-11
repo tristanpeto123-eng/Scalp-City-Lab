@@ -15,17 +15,26 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Import pinned baseline only if Lab is empty
+      - name: Bootstrap or isolate existing Lab baseline
         shell: bash
         run: |
           set -euo pipefail
           if [[ "$GITHUB_REPOSITORY" != "tristanpeto123-eng/Scalp-City-Lab" ]]; then echo "WRONG REPOSITORY: refusing to run" >&2; exit 1; fi
-          if [[ -f app.js ]]; then echo "Lab source exists; not copying or overwriting it"; exit 0; fi
-          mkdir -p /tmp/scalp-lab-source
-          curl --fail --location --retry 3 --silent --show-error "https://codeload.github.com/tristanpeto123-eng/Scalp-City-1/tar.gz/3b246ebec0458734509135a5317e2af011d45408" -o /tmp/scalp-city-source.tgz
-          tar -xzf /tmp/scalp-city-source.tgz --strip-components=1 -C /tmp/scalp-lab-source
-          for f in app.js index.html sw.js scene3d.js backtester-agent.js cfd-engine.js icon-192.png icon-512.png scalp-city-concept.png; do test -f "/tmp/scalp-lab-source/$f" || { echo "Source missing $f" >&2; exit 1; }; done
-          cp -a /tmp/scalp-lab-source/. ./
+          # Bootstrap only once. Later runs must never reset research memory or overwrite Lab development.
+          if [[ -f tests/lab-config.test.mjs && -f bootstrap_lab.py && -f WORKFLOW_V1.md ]]; then
+            echo "Lab already bootstrapped; not rewriting application files or stored knowledge"
+            exit 0
+          fi
+          # Source might already have been copied by GitHub Importer; do not exit before setup.
+          if [[ ! -f app.js ]]; then
+            mkdir -p /tmp/scalp-lab-source
+            curl --fail --location --retry 3 --silent --show-error "https://codeload.github.com/tristanpeto123-eng/Scalp-City-1/tar.gz/3b246ebec0458734509135a5317e2af011d45408" -o /tmp/scalp-city-source.tgz
+            tar -xzf /tmp/scalp-city-source.tgz --strip-components=1 -C /tmp/scalp-lab-source
+            for f in app.js index.html sw.js scene3d.js backtester-agent.js cfd-engine.js icon-192.png icon-512.png scalp-city-concept.png; do test -f "/tmp/scalp-lab-source/$f" || { echo "Source missing $f" >&2; exit 1; }; done
+            cp -a /tmp/scalp-lab-source/. ./
+          else
+            echo "Existing Lab baseline detected; applying isolation in place"
+          fi
           mkdir -p tests .github/workflows
           cat > 'bootstrap_lab.py' <<'PYLAB'
           #!/usr/bin/env python3
@@ -61,7 +70,7 @@ jobs:
           patch('app.js','"scalpCityGithubMeta"','"scalpCityLabGithubMeta"')
           patch('app.js','path:"knowledge",token:""','path:"knowledge-lab",token:""')
           patch('app.js','||"knowledge"','||"knowledge-lab"')
-          patch('app.js','$("ghRepo").value=g.repo||"";','$("ghRepo").value=g.repo||"Scalp-City-Lab";')
+          patch('app.js','$("#ghRepo").value=g.repo||"";','$("#ghRepo").value=g.repo||"Scalp-City-Lab";')
           patch('app.js',
                 'const g=state.github;if(!g.owner||!g.repo)throw new Error("Set owner and repository");',
                 'const g=state.github;if(!g.owner||!g.repo)throw new Error("Set owner and repository");if(g.owner!=="tristanpeto123-eng"||g.repo!=="Scalp-City-Lab"||g.branch!=="main"||g.path!=="knowledge-lab")throw new Error("LAB SAFETY LOCK: GitHub memory writes/reads restricted to Scalp-City-Lab main, knowledge-lab prefix");')
@@ -264,11 +273,15 @@ jobs:
           git push origin HEAD:main
 
   checks:
+    needs: bootstrap
+    if: ${{ always() && (github.event_name == 'pull_request' || needs.bootstrap.result == 'success') }}
     permissions:
       contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.sha || 'main' }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -276,7 +289,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ ! -f app.js ]]; then echo 'Initial bootstrap will populate source; checks ran in bootstrap before first commit'; exit 0; fi
+          test -f app.js || { echo 'Missing Lab source' >&2; exit 1; }
+          test -f tests/lab-config.test.mjs || { echo 'Missing isolation tests; bootstrap incomplete' >&2; exit 1; }
           node --check app.js
           node --check training-worker.js
           node --check backtester-agent-worker.js
