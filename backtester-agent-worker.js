@@ -1,5 +1,5 @@
 // Dedicated BT-01 computational worker. No broker imports, API access, or network calls.
-import {backtest,STRATEGIES} from './cfd-engine.js';
+import {backtest,STRATEGIES,ENGINE_VERSION,datasetFingerprint} from './cfd-engine.js';
 const AGENT='BT-01',PROTOCOL='scalp-city.agent.v1';
 let running=false,activeId=null,aborted=false;
 const send=(kind,jobId,body={})=>postMessage({protocol:PROTOCOL,agentId:AGENT,kind,jobId,...body});
@@ -41,7 +41,8 @@ async function execute(req){
         marginEvents:x.metrics.marginEvents};
     });
     send('completed',jobId,{report:{protocol:PROTOCOL,agentId:AGENT,jobId,createdAt:new Date().toISOString(),
-      dataset:{source:data.source,assets:data.symbols.length,sessions:data.dates.length,first:data.dates[0],last:data.dates.at(-1)},
+      dataset:{source:data.source,assets:data.symbols.length,sessions:data.dates.length,first:data.dates[0],last:data.dates.at(-1),fingerprint:datasetFingerprint(data),warning:data.warning||null},
+      engineVersion:ENGINE_VERSION,
       config,results,stressResults,robustness,verdict:'RESEARCH_ONLY',canTrade:false,
       validation:{historicalProof:false,walkForward:false,actualBrokerCostsVerified:false,
         warnings:[data.warning||'Point-in-time universe and costs need independent verification',

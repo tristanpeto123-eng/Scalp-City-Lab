@@ -1,10 +1,10 @@
 // BT-01 coordinator: isolated from app.js/training-worker.js and live trading.
 // Other agents can issue browser-local CustomEvent('scalp-city:agent-task', {detail:{target:'BT-01',action:'run',dataset,config,strategyIds,stress}}).
 export const BT01=Object.freeze({id:'BT-01',name:'Backtester',protocol:'scalp-city.agent.v1',role:'Research / backtest',permissions:['simulation','local-report','publish'],canTrade:false});
-const HISTORY_KEY='scalp-city-lab:BT-01:report-history:v1';
+const HISTORY_KEY=(typeof location==='undefined'?'scalp-city-local':location.pathname.split('/').filter(Boolean)[0]||'scalp-city-root')+':BT-01:report-history:v2';
 export class BacktesterAgent{
   constructor({workerPath='./backtester-agent-worker.js',listen=true}={}){
-    this.workerPath=workerPath;this.worker=null;this.jobId=null;this.state='IDLE';this.lastReport=null;this.listeners=new Set();this.history=this.readHistory();this.jobSeq=0;
+    this.workerPath=workerPath;this.worker=null;this.jobId=null;this.state='IDLE';this.lastReport=null;this.currentDataset=null;this.listeners=new Set();this.history=this.readHistory();this.jobSeq=0;
     if(listen&&typeof window!=='undefined'){
       window.addEventListener('scalp-city:agent-task',e=>{
         const task=e.detail;
@@ -26,7 +26,7 @@ export class BacktesterAgent{
     if(!dataset?.dates||!dataset?.bars||!dataset?.symbols)throw Error('Missing aligned daily dataset');
     if(!Array.isArray(strategyIds))throw Error('strategyIds must be an array');
     const jobId='BT01-'+Date.now().toString(36)+'-'+(++this.jobSeq);
-    const worker=new Worker(this.workerPath,{type:'module'});this.worker=worker;this.jobId=jobId;this.state='QUEUED';this.lastReport=null;
+    const worker=new Worker(this.workerPath,{type:'module'});this.worker=worker;this.jobId=jobId;this.state='QUEUED';this.lastReport=null;this.currentDataset=dataset;
     worker.onmessage=e=>{
       const m=e.data;if(this.worker!==worker||m?.jobId!==jobId||m.protocol!==BT01.protocol||m.agentId!==BT01.id)return;
       if(m.kind==='started'){this.state='RUNNING';this.emit('started',{total:m.total,strategies:m.strategies})}
@@ -34,7 +34,7 @@ export class BacktesterAgent{
       else if(m.kind==='completed'){
         this.lastReport=m.report;this.state='COMPLETED';this.saveSummary(m.report);
         this.emit('completed',{report:m.report});
-        if(typeof window!=='undefined')window.dispatchEvent(new CustomEvent('scalp-city:agent-report',{detail:{agentId:BT01.id,type:'backtest',report:m.report}}));
+        if(typeof window!=='undefined')window.dispatchEvent(new CustomEvent('scalp-city:agent-report',{detail:{agentId:BT01.id,type:'backtest',report:m.report,dataset:this.currentDataset}}));
         this.release();
       }else if(m.kind==='failed'){this.state='FAILED';this.emit('failed',{error:m.error});this.release()}
       else if(m.kind==='cancelled'){this.state='CANCELLED';this.emit('cancelled');this.release()}

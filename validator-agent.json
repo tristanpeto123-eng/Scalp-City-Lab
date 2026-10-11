@@ -1,0 +1,16 @@
+{
+  "schema": "scalp-city.agent.v1",
+  "agentId": "VA-01",
+  "name": "Validator",
+  "runtime": "browser-web-worker",
+  "autonomy": "on-backtest-report",
+  "description": "Independent mathematical verification of BT-01 cost ledger and equity metrics, preliminary data integrity and validity gating.",
+  "input": "scalp-city:agent-report from BT-01",
+  "output": "scalp-city:validator-report",
+  "scopeLimit": "Cannot independently reproduce broker fills, data provenance, corporate actions or demonstrate trading profitability",
+  "permissions": ["report-read", "dataset-verify", "audit-local-store", "validation-publish"],
+  "forbidden": ["live-orders", "trade-approval", "broker-access", "github-write"],
+  "tradeApproved": false,
+  "files": ["validator-agent.js", "validator-agent-worker.js", "validator-agent.json"],
+  "version": "1.0.0"
+}

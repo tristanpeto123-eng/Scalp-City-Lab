@@ -1,6 +1,7 @@
 /* Scalp City CFD Lab · browser-only exploratory DAILY backtester.
    Decisions use close(t) and fills use open(t+1). Never places broker orders.
    Six research hypotheses, NOT verified trading edges. */
+export const ENGINE_VERSION='1.1.0-order-stable';
 export const STRATEGIES = [
   {id:'CFD-001',name:'Cross-sectional momentum',min:190,params:{lookback:126,skip:21,tail:.25}},
   {id:'CFD-002',name:'Sector residual stat-arb (proxy)',min:115,params:{lookback:60,zWindow:40,entryZ:1.5,exitZ:.5,stopZ:3.5}},
@@ -62,9 +63,24 @@ function pairZ(a,b,i,w){
   const beta=mean(x.map((v,k)=>(v-mx)*(y[k]-my)))/denom;if(beta<=0||beta>8)return null;
   const res=x.map((v,k)=>v-beta*y[k]),vol=sd(res);return vol>1e-9?{z:(res.at(-1)-mean(res))/vol,beta}:null;
 }
+/** FNV-1a checksum of raw imported rows, for reproducibility comparisons only.
+ * Not a cryptographic integrity signature. Includes orientation-sensitive values.
+ */
+export function datasetFingerprint(data){
+  let hash=2166136261;
+  const feed=str=>{for(let i=0;i<str.length;i++){hash^=str.charCodeAt(i);hash=Math.imul(hash,16777619)}};
+  for(let i=0;i<data.dates.length;i++){
+    feed(data.dates[i]);
+    for(const s of [...data.symbols].sort()){
+      const b=data.bars[i][s];
+      feed(s+'|'+b.sector+'|'+[b.open,b.high,b.low,b.close,b.volume,b.signalClose,b.dividend,b.spread,b.borrow].join('|'));
+    }
+  }
+  return 'fnv1a32:'+((hash>>>0).toString(16).padStart(8,'0'));
+}
 export function signals(data,id,settings={}){
   const def=STRATEGIES.find(x=>x.id===id);if(!def)throw Error('Unknown strategy '+id);
-  const p={...def.params,...settings},symbols=data.symbols,n=data.dates.length,px=Object.fromEntries(symbols.map(s=>[s,data.bars.map(b=>b[s].signalClose)]));
+  const p={...def.params,...settings},symbols=[...data.symbols].sort(),n=data.dates.length,px=Object.fromEntries(symbols.map(s=>[s,data.bars.map(b=>b[s].signalClose)]));
   const events=Array(n).fill(null),states=empty(symbols),arb=empty(symbols),active={};let selected=[],refresh=-9999,lastSig='',gross=Math.min(2,Math.max(0,Number(settings.grossExposure??1)));
   for(let i=def.min-1;i<n;i++){
     const sectors=Object.fromEntries(symbols.map(s=>[s,data.bars[i][s].sector]));let w=empty(symbols);
@@ -116,7 +132,7 @@ export function signals(data,id,settings={}){
   }return events;
 }
 export function backtest(data,id,options={}){
-  const c={...DEFAULT_COSTS,...options},signal=signals(data,id,c),symbols=data.symbols,initial=Number(c.capital);
+  const c={...DEFAULT_COSTS,...options},signal=signals(data,id,c),symbols=[...data.symbols].sort(),initial=Number(c.capital);
   if(!Number.isFinite(initial)||initial<=0)throw Error('Invalid initial capital');
   let nav=initial,orders=0,marginEvents=0,grossPricePnL=0,turnover=0,halted=false;
   const qty=empty(symbols),cost={commission:0,spread:0,slippage:0,financing:0,borrow:0,dividends:0},curve=[];
@@ -154,7 +170,7 @@ export function backtest(data,id,options={}){
   const metrics={netReturnPct:(nav/initial-1)*100,holdoutReturnPct:curve[cut-1].nav>0?(nav/curve[cut-1].nav-1)*100:null,
     sharpe:s,maxDrawdownPct:dd*100,orders,marginEvents,notionalTurnover:turnover};
   return {id,name:STRATEGIES.find(x=>x.id===id).name,metrics,costs:cost,grossPricePnL,netPnL:nav-initial,curve,
-    signalEvents:signal.filter(Boolean).length,source:data.source};
+    signalEvents:signal.filter(Boolean).length,source:data.source,engineVersion:ENGINE_VERSION};
 }
 export function runAll(data,costs={},only='ALL'){
   const defs=only==='ALL'?STRATEGIES:STRATEGIES.filter(s=>s.id===only);if(!defs.length)throw Error('Unknown strategy selection');
