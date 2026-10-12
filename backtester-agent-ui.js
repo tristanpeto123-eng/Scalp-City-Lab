@@ -11,7 +11,7 @@ launch.setAttribute('aria-label','Open separate Backtester Agent BT-01');$('.hud
 const dialog=document.createElement('dialog');dialog.id='bt01Dialog';dialog.className='modal cfd-modal';
 dialog.innerHTML=`
 <div class="terminal cfd-terminal" role="document" aria-label="BT-01 Independent Backtester Agent">
-  <div class="modal-head"><div><small>SCALP CITY · AGENTS / BT-01</small><h2>BACKTESTER AGENT</h2></div><button type="button" id="bt01Close" aria-label="Close BT-01">✕</button></div>
+  <div class="modal-head"><div><small>SCALP CITY LAB · BT-01 / VA-01 · BUILD 1.1.2</small><h2>BACKTESTER AGENT</h2></div><button type="button" id="bt01Close" aria-label="Close BT-01">✕</button></div>
   <div class="cfd-agent-info"><span class="cfd-agent-icon">BT</span><div><strong>BT-01 · QUANTITATIVE VALIDATION</strong><p>Independent worker · On-demand testing · Isolated from all execution agents</p></div><span class="cfd-agent-state" id="bt01State">IDLE</span></div>
   <div class="cfd-agent-flow" aria-label="Agent connections"><span>RESEARCHER</span><b>→</b><span>BT-01 BACKTESTER</span><b>→</b><span>VALIDATOR / RISK</span></div>
   <p class="cfd-warning">RESEARCH ONLY · BT-01 cannot place trades. Historical findings are unverified until real data, point-in-time membership, and broker tariffs are supplied.</p>
@@ -42,7 +42,7 @@ dialog.innerHTML=`
     <div id="va01Findings" class="va01-findings"></div>
     <button type="button" class="va01-export" id="va01Export" disabled>EXPORT VALIDATOR REPORT</button>
   </section>
-  <div class="cfd-actions"><button id="cfdExport type="button" disabled>EXPORT COMPLETE AGENT REPORT</button><button id="cfdEquityCsv" type="button" disabled>EXPORT EQUITY CSV</button></div>
+  <div class="cfd-actions"><button id="cfdExport" type="button" disabled>EXPORT COMPLETE AGENT REPORT</button><button id="cfdEquityCsv" type="button" disabled>EXPORT EQUITY CSV</button></div>
   <div class="cfd-history"><strong>BT-01 TASK HISTORY (LOCAL)</strong><div id="bt01History">No saved tasks</div></div>
   <p class="cfd-tip cfd-footnote">The final-30% figure is chronological but not independently selected out-of-sample validation. No live trades, point-in-time universe verification, delisting/split quantity adjustment, FX, tax, or intraday margin calls. All findings must be reviewed by Validator and Risk Manager before any deployment decision.</p>
 </div>`;
