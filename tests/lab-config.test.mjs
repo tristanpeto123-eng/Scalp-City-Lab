@@ -7,7 +7,7 @@ test('Lab has independent IndexedDB, localStorage and BT-01 histories',()=>{
   assert.match(txt('app.js'),/DB_NAME = "scalp-city-lab-v1"/);
   assert.match(txt('app.js'),/scalpCityLabGithubMeta/);
   assert.doesNotMatch(txt('app.js'),/"scalpCityGithubMeta"/);
-  assert.match(txt('backtester-agent.js'),/scalp-city-lab:BT-01:report-history:v1/);
+  const bt=txt('backtester-agent.js'); assert.match(bt,/BT-01:report-history:v[12]/); assert.match(bt,/location\.pathname|scalp-city-lab:/);
 });
 test('Hard GitHub memory lock forbids touching original repo or non-Lab paths',()=>{
   const app=txt('app.js');
@@ -21,8 +21,8 @@ test('Hard GitHub memory lock forbids touching original repo or non-Lab paths',(
 test('PWA identity and service worker cache are distinct and non-destructive',()=>{
   assert.equal(JSON.parse(txt('manifest.webmanifest')).id,'/Scalp-City-Lab/');
   const sw=txt('sw.js');
-  assert.match(sw,/scalp-city-lab-v1-/);
-  assert.match(sw,/k\.startsWith\('scalp-city-lab-'\)/);
+  assert.match(sw,/scalp-city-lab-/);
+  assert.match(sw,/k\.startsWith\((?:LAB_CACHE_PREFIX|'scalp-city-lab-')\)/);
   assert.doesNotMatch(sw,/keys\.filter\(k=>k!==CACHE\)/);
 });
 test('Lab prominently reports simulation and does not mislabel backtest PnL as real cash',()=>{

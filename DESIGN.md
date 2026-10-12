@@ -97,3 +97,13 @@ Voice is terse and operational. Charts use green/red candles, gold VWAP and cyan
 - **Don't:** reintroduce floating rounded dashboard cards or a mobile bottom-nav aesthetic.
 - **Don't:** use glow as a substitute for depth; depth should come from geometry, lighting and perspective.
 - **Do:** if WebGL/CDN loading fails, show the cinematic concept fallback plus a compact functional control strip rather than restoring the old flat dashboard.
+
+## Agent City runtime extension
+
+- This is a second true-WebGL scene (`agent-city.html`), reached through a physical-style portal in the existing research-floor HUD. It deliberately does not replace the working `scene3d.js` room.
+- Spatial composition: a central command station, a ring of specialist agent buildings, clear 3+ metre front apertures, and functional luminous data pipes. The focus remains one selected station at a time.
+- Each separate building has structural floor/walls/roof, desk hardware, a unique procedural robot, a textured decision monitor, a secondary task display, and a named physical fascia.
+- World-space interaction uses raycasting, orbit/touch camera, station quick-jump navigation and inspector evidence. The inspector is secondary to the 3D world.
+- Agent telemetry uses a display-only BroadcastChannel bridge, never a permission or risk approval channel. If no observed event exists, demo decisions must be explicitly labelled illustrative.
+- No live brokerage credentials, real-money execution or strategy approval capability is permitted in this runtime.
+- CPU/GPU budget: max 12 stations, capped pixel ratio, low-poly primitives, no heavy postprocessing, reduced-motion support and a bounded building camera.

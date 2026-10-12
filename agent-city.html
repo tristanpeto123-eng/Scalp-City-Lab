@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#040610"><title>Scalp City Lab · Agent City</title>
+<link rel="stylesheet" href="./agent-city.css">
+</head>
+<body>
+<main id="stage" aria-label="Interactive 3D agent city">
+ <canvas id="agentCityCanvas" aria-label="3D Scalp City with robotic agents in individual buildings"></canvas>
+ <header class="topbar">
+  <div class="brand"><span class="brandmark">SC<span>▣</span>LP</span><span class="subbrand">CITY <em>LAB</em><small>AGENT OPERATIONS / THREE-DIMENSIONAL WORLD</small></span></div>
+  <div class="topActions"><span class="mode" id="sourceMode">ILLUSTRATIVE DATA</span><button id="overview" aria-label="Return to city overview">CITY OVERVIEW</button><a href="./" class="back" aria-label="Back to research floor">RESEARCH FLOOR ↗</a></div>
+ </header>
+ <div class="bottomHUD"><div class="legend"><strong>SIMULATION ENVIRONMENT</strong><span>SELECT A BUILDING TO ENTER ITS OPERATIONS ROOM</span></div><div class="hudRight"><span id="activity">12 AGENT STATIONS</span><button id="play" aria-pressed="false">▶ SHOW WORKFLOW</button><button id="pause" aria-pressed="false" hidden>Ⅱ PAUSE</button></div></div>
+ <nav class="stationRail" id="stationRail" aria-label="Agent buildings"></nav>
+ <aside class="inspector" id="inspector" aria-live="polite" hidden>
+   <div class="inspectorTop"><span class="eyebrow" id="agentCode">AGENT</span><button id="closeInspector" aria-label="Close agent details">✕</button></div>
+   <h1 id="agentName"></h1><p id="agentRole"></p>
+   <div class="dataTable"><div><small>STATE</small><strong id="agentState"></strong></div><div><small>LAST DECISION</small><strong id="agentDecision"></strong></div><div><small>OPERATING METRIC</small><strong id="agentMetric"></strong></div><div><small>DATA ORIGIN</small><strong id="agentOrigin"></strong></div></div>
+   <div class="auditTitle">EVENT TIMELINE</div><ol id="agentEvents"></ol>
+   <p class="warning">The demo timeline illustrates agent behavior. Only tagged external events count as observed activity. No live trading or autonomous authorization.</p>
+ </aside>
+ <div class="help" id="help">DRAG TO ORBIT · SCROLL / PINCH TO ZOOM · TAP A ROBOT OR BUILDING</div>
+ <div class="loading" id="loading">INITIALIZING SCALP CITY WORLD…</div>
+ <div class="error" id="error" hidden>3D scene unavailable. Check your network connection and reload the page.</div>
+</main>
+<script>
+setTimeout(() => {
+  if (!window.__scalpCityReady) {
+    document.getElementById('loading').hidden = true;
+    document.getElementById('error').hidden = false;
+  }
+}, 12000);
+</script>
+<script type="module" src="./agent-city.js"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 const LAB_CACHE_PREFIX='scalp-city-lab-';
-const CACHE=LAB_CACHE_PREFIX+'bt01-va01-v1.1.2';
-const CORE=['./','./index.html','./styles.css','./backtester-agent.css','./backtester-agent-ui.js','./cfd-engine.js','./backtester-agent.js','./backtester-agent-worker.js','./backtester-agent.json','./validator-agent.js','./validator-agent-worker.js','./validator-agent.json','./app.js','./scene3d.js','./training-worker.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./scalp-city-concept.png'];
+const CACHE=LAB_CACHE_PREFIX+'bt01-va01-v1.1.2-agent-city-v1';
+const CORE=['./','./index.html','./styles.css','./backtester-agent.css','./backtester-agent-ui.js','./cfd-engine.js','./backtester-agent.js','./backtester-agent-worker.js','./backtester-agent.json','./validator-agent.js','./validator-agent-worker.js','./validator-agent.json','./app.js','./agent-city.html','./agent-city.css','./agent-city.js','./agent-city-bridge.js','./scene3d.js','./training-worker.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./scalp-city-concept.png'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
 });
