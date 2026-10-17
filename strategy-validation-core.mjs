@@ -53,7 +53,7 @@ export function simulateValidation({snapshot,symbol,startingBalanceGbp=50,mode='
    (mode==='profit'&&limit>1e8))
   throw Error('Invalid duration or cumulative-profit target');
  const params=strategyConfig(strategy,strategyParams||{});
- if(!valid(feePerSideFraction)||feePerSideFraction<FEE||feePerSideFraction>FEE*2)
+ if(!valid(feePerSideFraction)||feePerSideFraction<.0025||feePerSideFraction>FEE*2)
   throw Error('Invalid modeled fee stress');
  const fee=feePerSideFraction;
  const bars=checked.bars,calibrationEnd=Math.floor(bars.length*.4),test=bars.slice(calibrationEnd);
@@ -143,7 +143,7 @@ export function simulateValidation({snapshot,symbol,startingBalanceGbp=50,mode='
   markedEquityGbp:round(equity),openPosition:Boolean(open),openPositionInitialCostGbp:open?round(open.entryCost):0,
   closedTrades:closed,wins,losses,winRatePct:closed?round(wins/closed*100):null,
   maxDrawdownPct:round(maxDD),trades,
-  costAssumption:'Illustrative 0.5% per side; no independent spread, GBP/USD FX or slippage evidence.',
+  costAssumption:'Modelled fee '+(fee*100).toFixed(2)+'% per side; no independent spread, GBP/USD FX or slippage evidence.',
   validation:'Historical simulation ONLY. No actual fills, persistence, real deposits or withdrawals.',
   payoutGuaranteed:false,actualForwardTradeCount:0};
 }
