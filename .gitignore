@@ -1,0 +1,4 @@
+# Private runtime state and credentials
+.env
+.env.*
+paper-runtime/runtime/
