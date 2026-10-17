@@ -1,1 +1,1 @@
-Second read-only training proof: use existing 10 chart histories to propose NEW strategies, de-duplicate old windows, no orders.
+Third GET-only chart learning proof: same historic bars plus new strategy variants; retain non-independent test history without faking evidence.
