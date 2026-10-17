@@ -8,7 +8,7 @@ import {PAIRS,checkSnapshot} from '../strategy-validation-core.mjs';
 const key=process.env.ALPACA_PAPER_KEY;
 const secret=process.env.ALPACA_PAPER_SECRET;
 if(!key||!secret)throw Error('Alpaca PAPER market data secrets unavailable');
-const feed='us-1',days=Number(process.env.SCALP_SNAPSHOT_DAYS||45);
+const feed='us-1',days=Number(process.env.SCALP_SNAPSHOT_DAYS||60);
 if(!Number.isInteger(days)||days<8||days>90)throw Error('Snapshot history days must be 8–90');
 const now=Date.now();
 const BAR_MS=900_000;
@@ -45,8 +45,8 @@ async function fetchPair(symbol){
  }
  const clipped=bars.filter(b=>Number.isFinite(Date.parse(b.t))&&Date.parse(b.t)+BAR_MS<=now-30_000);
  const payload={
-  symbol,source:'ALPACA_KRAKEN_US_1_HISTORICAL_GET',
-  feed,timeframe:'15Min',generatedAt:new Date(now).toISOString(),
+  symbol,source:'ALPACA_KRAKEN_US_US-1',
+  feed,timeframe:'15Min',generatedAt:new Date(now).toISOString(),trading:false,calendarDays:days,
   bars:clipped.map(b=>({t:b.t,o:Number(b.o),h:Number(b.h),
     l:Number(b.l),c:Number(b.c),v:Number(b.v)}))
  };
@@ -67,7 +67,7 @@ for(const {symbol,payload} of prepared){
    JSON.stringify(payload)+'\n','utf8');
 }
 await fs.writeFile(path.join(folder,'index.json'),JSON.stringify({
- source:'ALPACA_KRAKEN_US_1_HISTORICAL_GET',feed,timeframe:'15Min',
+ source:'ALPACA_KRAKEN_US_US-1',feed,timeframe:'15Min',
  generatedAt:new Date(now).toISOString(),markets:prepared.map(({symbol,inspected})=>({
   symbol,candles:inspected.bars.length,from:inspected.sampleStart,
   through:inspected.sampleEnd,
