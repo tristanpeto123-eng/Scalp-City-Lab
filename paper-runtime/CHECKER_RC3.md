@@ -30,8 +30,8 @@
 **Verdict: UPDATED CODE GOAL IMPLEMENTED, RESEARCH STRATEGIES FAILED — BLOCK AUTOMATED BROKER TRADING.** Never represent historical, modelled, virtual or paper outcomes as real-money investment results.
 
 ## Checker G1 — Revised targets
-- [x] £50 virtual capital unchanged, net profit goal revised **£8,000 → £2,000** and balance goal **£8,050 → £2,050**. Old goals retained only in repository history.
+- [x] £50 virtual capital unchanged, net profit goal revised **£8,000 → £2,000** and balance goal **£8,050 → £2,050**. Earlier values are recorded here solely as revision history.
 - [x] Secondary win threshold revised **80% → 70%**, minimum 61 CLOSED trades unchanged. 43/61 passes the observed ratio; 42/61 fails. Historical and modelled samples cannot satisfy VERIFIED live evidence.
 - [x] Profit-target strategy version incremented `GBP50-PROFIT8000-v1` → `GBP50-PROFIT2000-v1` to prohibit combining old and new research cohorts.
-- [ ] Independent CI gates checked against final exact commit.
+- [x] GitHub CI validated the revised profit and win-rate targets on review branch: 26 agent + 29 crypto + 64 profit/70%-threshold checks = 119 passing tests; both workflows green on reviewed commit `0441718a4e533714bf4957274e9f1132838c7f8c`. Recheck after this Checker-only edit.
 - [ ] Persistent host, genuinely chronological forward observations and broker safeguards still outstanding. Do not promote existing historical strategy candidates: both prior screening attempts were rejected.
