@@ -8,6 +8,12 @@ on:
       - strategy-validation-tests.mjs
       - strategy-validation-check.trigger
       - validation-data/**
+  pull_request:
+    branches: [main]
+    paths:
+      - strategy-validation.html
+      - strategy-validation-core.mjs
+      - strategy-validation-tests.mjs
   workflow_dispatch:
 permissions:
   contents: read
