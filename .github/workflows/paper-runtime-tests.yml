@@ -46,6 +46,8 @@ jobs:
           node --check paper-runtime/chart-models-tests.mjs
           node --check paper-runtime/github-learning-store.mjs
           node --check paper-runtime/learning-run.mjs
+          node --check paper-runtime/deposit-goal-planner.mjs
+          node --check paper-runtime/deposit-goal-planner-tests.mjs
           node --check agent-city-live.js
       - name: Execute broker-mocked safety tests
         run: |
@@ -54,3 +56,4 @@ jobs:
           node paper-runtime/profit-goal-tests.mjs
           node paper-runtime/screen-crypto-markets-tests.mjs
           node paper-runtime/chart-models-tests.mjs
+          node paper-runtime/deposit-goal-planner-tests.mjs
