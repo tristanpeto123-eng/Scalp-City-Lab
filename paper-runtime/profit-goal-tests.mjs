@@ -35,7 +35,7 @@ assert.equal(gap.result,'STOP');n++;
 assert.equal(gap.closed.exitPrice,90*.98);n++;
 const old=initializeTrial();
 assert.throws(()=>requestExit(old,{symbol:'DOGE/USD',signalBarStart:'nonsense'}),/Invalid timestamp/);n++;
-assert.throws(()=>queueSignal(old,{symbol:'DOGE/USD',signalBarStart:t0,candidateId:'x'}),/Invalid/);n++;
+assert.throws(()=>queueSignal(old,{symbol:'DOGE/EUR',signalBarStart:t0,candidateId:'x'}),/Invalid/);n++;
 assert.throws(()=>processBar({...old,version:'50GBP-3R-v1'},candle(t1,100,100,99,100)),/Wrong virtual ledger version/);n++;
 let prev=100;
 const raw=Array.from({length:1200},(_,i)=>{
@@ -76,7 +76,7 @@ const replayAltered=replayHistorical({symbol:'BTC/USD',raw:badFuture,closedBefor
 assert.deepEqual(replay.trainOnlySelection,replayAltered.trainOnlySelection);n++;
 assert.ok(replay.closedTradeEvidence.every(x=>x.source==='HISTORICAL_REPLAY'));n++;
 assert.throws(()=>replayHistorical({symbol:'BTC/USD',raw:rawAPI.slice(0,100)}),/480/);n++;
-assert.throws(()=>replayHistorical({symbol:'DOGE/USD',raw:rawAPI}),/Invalid/);n++;
+assert.throws(()=>replayHistorical({symbol:'DOGE/EUR',raw:rawAPI}),/Invalid/);n++;
 assert.ok(TRIAL_RULES.version!== '50GBP-3R-v1');n++;
 // Unlimited closed trades; no arbitrary 61-trade stop or mandatory sample count.
 // 80% is an observed metric, never a guaranteed underlying success probability.
