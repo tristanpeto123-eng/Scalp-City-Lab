@@ -10,8 +10,8 @@ async function main(){
   throw Error('Paper-only read keys required as private environment secrets');
  const broker=new AlpacaPaper(),days=Number(process.env.SCALP_REPLAY_DAYS||180);
  const summary={mode:'HISTORICAL_AS_LIVE_NOT_FORWARD',tradingEnabled:false,
-   initialCapital:'GBP 50 VIRTUAL',netProfitTargetGbp:8000,targetBalanceGbp:8050,
-   fixedRewardRisk:null,secondaryMinimumTrades:61,secondaryTargetWinRatePct:80,
+   initialCapital:'GBP 50 VIRTUAL',netProfitTargetGbp:2000,targetBalanceGbp:2050,
+   fixedRewardRisk:null,secondaryMinimumTrades:61,secondaryTargetWinRatePct:70,
    checkedAt:new Date().toISOString(),results:[]};
  for(const symbol of symbols){
   const source=await loadHistoricalCrypto({broker,symbol,days});
