@@ -32,6 +32,12 @@
 
 Other variables: `SCALP_JOURNAL_DIR` (private persistent journal storage), `SCALP_BIND` (`127.0.0.1` default), `PORT` (`8787` default). HTTPS and credential security are host deployment requirements. Do not publicly expose `/api/status` without appropriate authentication/reverse-proxy access control: strategy telemetry may be sensitive.
 
+## Free GitHub Actions connection verification (zero orders)
+
+Once **this exact release is approved and the workflow is merged**, navigate to the Scalp-City-Lab repository's **Settings → Secrets and variables → Actions** and add two repository secrets named `ALPACA_PAPER_KEY` and `ALPACA_PAPER_SECRET`. Use **paper-account keys exclusively**. Do not paste credentials into chat, issues or source files. Then open **Actions → Alpaca paper account connection (read only) → Run workflow**. This workflow checks paper-account status and historical completed IEX candles for SPY, QQQ and IWM. It **never calls the order API**. It can be run on weekends; outside trading hours it reports the market-closed state rather than claiming a live feed was validated.
+
+**Important:** `workflow_dispatch` is only offered once the workflow exists on the default branch. Until PR #1 is approved and merged, the new manual workflow is present only on its review branch, so no account connection has been attempted. The Actions runner stops at the end of the test; it is **not continuous bot hosting**.
+
 ## Acceptance gates
 
 1. Synthetic or stale bars denied.
