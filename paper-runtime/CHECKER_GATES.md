@@ -13,7 +13,7 @@
 - [x] Node 22 syntax checks passed for rc2.
 - [x] 26 mock-only checks passed, including deny-by-default, rejected holdout, stale/duplicate data, risk veto, test account order, duplicate bar prevention, and mock fill reconciliation.
 - [x] GitHub Actions PR checks for rc2 passed (Bootstrap & Checks run 39056767617; Paper Runtime Tests run 39056767489).
-- [ ] Authentic Alpaca **paper** credentials tested from an authorised, persistent server.
+- [x] Manual read-only GitHub Actions preflight configured for post-approval merge (paper secrets never logged, no paper orders).\n- [ ] Authentic Alpaca **paper** credentials tested from an authorised, persistent server.
 - [ ] Live IEX feed provenance and 15-min boundary verified during actual US market hours.
 - [ ] External read-only Agent City telemetry tested on a separately hosted HTTPS origin.
 - [ ] Manual review of real broker costs/market behavior, circuit breakers, fill reconciliation, restart and disaster recovery.
