@@ -32,7 +32,7 @@
 - [x] Real broker **GET-only** five-market research flow passed: BTC/USD and ETH/USD processed real 15-minute candles, both strategies were correctly **VALIDATION_BLOCKED**, and equities were MARKET_CLOSED on Saturday. The one-shot runner was hardcoded no-order. Evidence: https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39063695341.
 - [x] Both final post-cleanup GitHub CI workflows passed for commit `9aaef75cfded56efeb78015b9966c70f3ae9ff84` (2026-10-17): Scalp paper runtime tests and Bootstrap & Checks.
 - [ ] Verified crypto broker partial fills, fractional quantity precision, dust and true tariff/market impact.
-- [x] Virtual £50 risk/3R mathematics, 61-trade scoring and stop-first replay tested under GitHub CI.
+- [x] Virtual £50 risk/3R mathematics, 61-trade scoring, stale-entry expiry and stop-first replay tested: 43 automated virtual-trial checks. Total checked: **98** (26 existing + 29 crypto + 43 virtual). GitHub Actions isolated-paper-tests successful on 17 October 2026, run 39065383406.
 - [ ] Full persistent journal restart and actual forward trade collection tested with persistent host.
 - [ ] Verified restart recovery, lost/retried broker API response, journal integrity under real runtime conditions.
 - [ ] Verified deployed HTTPS read-only telemetry, broker permissions and user kill switch.
