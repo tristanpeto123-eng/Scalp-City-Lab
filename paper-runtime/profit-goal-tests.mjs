@@ -119,9 +119,43 @@ assert.equal(active.tradeLimit,null);n++;
 assert.equal(active.remainingProfitGbp,2000);n++;
 assert.equal(active.targetReached,false);n++;
 assert.equal(active.mandatoryRewardRisk,null);n++;
-// Profit milestone has no dependency on a minimum number of closed trades.
-const reached=trialReport({...initializeTrial(),balanceGbp:2050});
+// £2,000 profit is CUMULATIVE NET GBP across CLOSED trades, never a
+// requirement to gain £2,000 in a single transaction.
+const attributions=(profits)=>{
+ const ledger=profits.map((netGbp,i)=>({
+   id:'cumulative-'+i,netGbp,
+   closedAt:new Date(Date.parse(t0)+i*900000).toISOString(),
+   cohort:TRIAL_RULES.version+':frozen-A',
+   evidence:'VIRTUAL_CANDLE_REPLAY',feeBasis:'MODELED_NOT_POSTED'
+ }));
+ const net=profits.reduce((sum,x)=>sum+x,0);
+ return {...initializeTrial(),closedTrades:ledger,balanceGbp:50+net};
+};
+const almost=trialReport(attributions([600,800,550]));
+assert.equal(almost.closedTrades,3);n++;
+assert.equal(almost.netProfitGbp,1950);n++;
+assert.equal(almost.targetReached,false);n++;
+assert.equal(almost.remainingProfitGbp,50);n++;
+const reached=trialReport(attributions([600,800,550,50]));
+assert.equal(reached.closedTrades,4);n++;
+assert.equal(reached.realizedClosedTradeProfitGbp,2000);n++;
+assert.equal(reached.netProfitGbp,2000);n++;
+assert.equal(reached.balanceGbp,2050);n++;
+assert.equal(reached.profitAggregation,'SUM_OF_ALL_NET_CLOSED_TRADES');n++;
 assert.equal(reached.targetReached,true);n++;
-assert.equal(reached.closedTrades,0);n++;
-assert.equal(reached.observedThresholdMet,false);n++;
+assert.equal(reached.remainingProfitGbp,0);n++;
+// Losing trades also count: gross wins aren't mistaken for NET profit.
+const offsettingLoss=trialReport(attributions([900,900,400,-300]));
+assert.equal(offsettingLoss.netProfitGbp,1900);n++;
+assert.equal(offsettingLoss.targetReached,false);n++;
+const recoup=trialReport(attributions([900,900,400,-300,100]));
+assert.equal(recoup.netProfitGbp,2000);n++;
+assert.equal(recoup.targetReached,true);n++;
+const noTrades=trialReport(initializeTrial());
+assert.equal(noTrades.targetReached,false);n++;
+assert.equal(noTrades.netProfitGbp,0);n++;
+assert.throws(()=>trialReport({...initializeTrial(),balanceGbp:2050}),
+ /does not reconcile to cumulative closed trades/);n++;
+assert.throws(()=>trialReport({...attributions([200,300]),balanceGbp:2050}),
+ /does not reconcile to cumulative closed trades/);n++;
 console.log('PASS '+n+' GBP2000 flexible-exit goal, independent training/holdout, no broker orders');
