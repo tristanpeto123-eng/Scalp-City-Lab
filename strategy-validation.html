@@ -23,7 +23,7 @@ footer{color:#acc1cd;font-size:13px;margin:20px 0}a{color:#79d7f6}
 <main>
 <header><div><div class="eyebrow">SCALP CITY / RESEARCH LAB</div><h1>Strategy Validation</h1></div><span class="badge" id="state" aria-live="polite">Loading market data…</span></header>
 <p class="warn">Virtual historical research only. Returns and win rates are not guaranteed. No deposits, broker orders or withdrawals are enabled.</p>
-<section><h2>Preloaded historical candles</h2><p id="dataset" role="status">Loading packaged real-market data for BTC/USD…</p><p class="secondary" id="coverage">Historical records were captured from the Kraken US venue through Alpaca's read-only market-data endpoint. The snapshot timestamp and period will be shown here.</p><button id="reload" type="button">Fetch latest Alpaca data</button><p class="secondary">The button tries Alpaca's read-only historical feed. If your browser cannot access it, the page uses the verified saved Alpaca snapshot and tells you its capture date. No API keys are required or stored in the browser.</p></section>
+<section><h2>Preloaded historical candles</h2><p id="dataset" role="status">Loading packaged real-market data for BTC/USD…</p><p class="secondary" id="coverage">Historical records were captured from the Kraken US venue through Alpaca's read-only market-data endpoint. The snapshot timestamp and period will be shown here.</p><button id="reload" type="button">Load newest published Alpaca data</button><p class="secondary">The data is preloaded for all ten pairs and automatically refreshed from Alpaca using server-side credentials, approximately every six hours. This button reloads the latest published data, not an instant live Alpaca query. Your browser never receives trading credentials.</p></section>
 <section><h2>Run a validation</h2><div class="grid">
 <label>Starting virtual balance (£)<input id="balance" type="number" min="50" max="1000000" step=".01" value="50"></label>
 <label>Crypto market<select id="pair"><option>BTC/USD</option><option>ETH/USD</option><option>SOL/USD</option><option>XRP/USD</option><option>ADA/USD</option><option>AVAX/USD</option><option>LINK/USD</option><option>DOGE/USD</option><option>LTC/USD</option><option>BCH/USD</option></select></label>
@@ -41,76 +41,40 @@ const $=id=>document.getElementById(id),cache=new Map();
 let selected=null,serial=0;
 const money=n=>'£'+Number(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
 const state=(s,ok=false)=>{$('state').textContent=s;$('state').style.color=ok?'#9cf0ce':'#ffd18c'};
-async function fetchAlpacaDirect(pair,request){
- // Credential-free crypto history endpoint; browser CORS may block it.
- // On errors the page falls back to already published GET-only snapshots.
- const now=Date.now(),min=new Date(now-60*86400000).toISOString(),
-   max=new Date(now-30000).toISOString();
- const q=new URLSearchParams({symbols:pair,timeframe:'15Min',start:min,end:max,
-  limit:'10000',sort:'asc'});
- const bars=[],tokens=new Set();
- for(let page=0;page<80;page++){
-  if(serial!==request)throw Error('Selection changed');
-  $('dataset').textContent='Requesting Alpaca '+pair+' historical candles · page '+(page+1)+'…';
-  const url='https://data.alpaca.markets/v1beta3/crypto/us-1/bars?'+q.toString();
-  const response=await fetch(url,{method:'GET',mode:'cors',credentials:'omit',
-    cache:'no-store',signal:AbortSignal.timeout(18000)});
-  if(!response.ok)throw Error('Alpaca historical GET HTTP '+response.status);
-  const payload=await response.json(),chunk=payload?.bars?.[pair];
-  if(!Array.isArray(chunk))throw Error('Alpaca did not return the selected pair');
-  bars.push(...chunk);
-  if(bars.length>20000)throw Error('Alpaca dataset exceeds bounded validation size');
-  if(!payload.next_page_token){
-   const completed=bars.filter(b=>Number.isFinite(Date.parse(b.t))&&
-       Date.parse(b.t)+900000<=now-30000);
-   const source={symbol:pair,timeframe:'15Min',
-     source:'ALPACA_KRAKEN_US_US-1',generatedAt:new Date(now).toISOString(),
-     feed:'us-1',trading:false,calendarDays:60,bars:completed};
-   return {source,verified:checkSnapshot(source,pair),retrieval:'DIRECT_ALPACA_PUBLIC_CRYPTO_GET'};
-  }
-  if(tokens.has(payload.next_page_token))throw Error('Repeated Alpaca pagination token');
-  tokens.add(payload.next_page_token);q.set('page_token',payload.next_page_token);
- }
- throw Error('Alpaca pagination exceeded safe limit');
-}
 async function loadPair({force=false}={}){
  const pair=$('pair').value,request=++serial;
  selected=null;$('run').disabled=true;$('reload').disabled=true;
- state(force?'Contacting Alpaca…':'Loading '+pair+'…');
- $('dataset').textContent=force?'Fetching latest available historical bars from Alpaca…':
-   'Loading bundled Alpaca candles for '+pair+'…';
- let fallbackReason='';
+ state(force?'Reloading published Alpaca snapshot…':'Loading '+pair+'…');
+ $('dataset').textContent='Loading published Alpaca candles for '+pair+'…';
  try{
   let record=force?null:cache.get(pair);
-  if(force){
-   try{record=await fetchAlpacaDirect(pair,request);}
-   catch(error){
-    if(serial!==request)return;
-    fallbackReason='Direct Alpaca unavailable ('+error.message+'); loaded saved historical data instead. ';
-   }
-  }
   if(!record){
-   const url='./validation-data/'+pair.replace('/','-')+'.json';
-   const response=await fetch(url,{cache:force?'no-store':'default'});
-   if(!response.ok)throw Error('Saved Alpaca snapshot unavailable (HTTP '+response.status+')');
+   // Bypass stale iOS/browser and CDN cache when explicitly refreshed.
+   const base='./validation-data/'+pair.replace('/','-')+'.json';
+   const url=force?base+'?refresh='+Date.now():base;
+   const response=await fetch(url,{cache:force?'no-store':'default',credentials:'omit'});
+   if(!response.ok)throw Error('Published Alpaca snapshot unavailable (HTTP '+response.status+')');
    const source=await response.json();
    const verified=checkSnapshot(source,pair);
-   record={source,verified,retrieval:'VERIFIED_SAVED_ALPACA_SNAPSHOT'};
+   record={source,verified,retrieval:'PUBLISHED_ALPACA_KRAKEN_SNAPSHOT'};
   }
   if(serial!==request)return;
   cache.set(pair,record);selected=record;
   const v=record.verified,days=(v.bars.length/96).toFixed(1);
+  const age=Date.parse(v.snapshotAt),hours=Number.isFinite(age)?Math.max(0,(Date.now()-age)/3600000):Infinity;
+  const stale=hours>8;
   $('dataset').textContent='Ready · '+pair+' · '+v.bars.length.toLocaleString()+
-    ' completed 15-minute candles · '+days+' days';
-  $('coverage').textContent=fallbackReason+
-   (record.retrieval==='DIRECT_ALPACA_PUBLIC_CRYPTO_GET'?'Direct public crypto GET · ':'Saved crypto snapshot · ')+
-   v.sampleStart+' → '+v.sampleEnd+' · Captured '+(v.snapshotAt||'unknown')+
-   '. This is historical market data, not a live execution price.';
-  $('run').disabled=false;state('Historical candles ready',true);
+    ' completed 15-minute candles · '+days+' days'+(stale?' · Archived snapshot':' · Recently published');
+  $('coverage').textContent='Read-only Alpaca Kraken US · '+v.sampleStart+' → '+v.sampleEnd+
+    ' · Snapshot generated '+(v.snapshotAt||'unknown')+
+    (stale?'. This data is more than 8 hours old; scheduled refresh may be delayed.':
+      '. Freshly published historical snapshot.')+
+    ' No broker fills, deposits or withdrawals.';
+  $('run').disabled=false;state(stale?'Archived data ready':'Alpaca historical data ready',!stale);
  }catch(e){
   if(serial!==request)return;
   $('dataset').textContent='Data unavailable: '+e.message;
-  $('coverage').textContent='No synthetic fallback. Alpaca data must be validated before the strategy can run.';
+  $('coverage').textContent='No synthetic candles. Check the Alpaca snapshot refresh Action if the published data is missing or invalid.';
   state('Data unavailable');
  }finally{
   if(serial===request)$('reload').disabled=false;
