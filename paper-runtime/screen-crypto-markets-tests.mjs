@@ -63,4 +63,17 @@ assert.throws(()=>adapter.paperOrder({
 assert.throws(()=>adapter.paperOrder({
  symbol:'DOGE/USD',side:'buy',type:'market',time_in_force:'ioc',
  client_order_id:'sc010rc3-DOGEUSD-aaaaaaaaaaaaaaaaaaaaaaaa',notional:'10.00'}),/Rejected/);n++;
+const alternateCalls=[];
+const altBroker={req:async(base,url)=>{
+ alternateCalls.push({base,url});
+ if(url.includes('/v2/assets'))return [{symbol:'SOL/USD',tradable:true,status:'active'}];
+ if(url.includes('/v1beta3/crypto/us-1/bars?'))return {bars:{'SOL/USD':bars},next_page_token:null};
+ throw Error('Unexpected historical feed URL');
+}};
+const altReport=await runScreener({broker:altBroker,markets:['SOL/USD'],location:'us-1',days:30,now});
+assert.equal(altReport.dataLocation,'us-1');n++;
+assert.equal(altReport.marketsChecked,1);n++;
+assert.equal(altReport.brokerOrdersSubmitted,0);n++;
+assert.ok(alternateCalls.some(x=>x.url.startsWith('/v1beta3/crypto/us-1/bars?')));n++;
+await assert.rejects(runScreener({broker:altBroker,markets:['SOL/USD'],location:'eu-1'}),/Unsupported historical data feed/);n++;
 console.log('PASS '+n+' historical multi-crypto research screens and unchanged broker-order permissions');
