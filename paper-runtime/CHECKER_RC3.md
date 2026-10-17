@@ -1,68 +1,30 @@
-# Checker release candidate — SCALP-PAPER-0.1.0-rc3
+# Checker — Scalp City £50 virtual / £8,000 net profit (no fixed R:R)
 
-**Owner approved implementation and GitHub push:** 17 October 2026. **Exact release/merge approval:** NOT YET GIVEN
-**Merge and production deployment:** NOT AUTHORISED
-**Real-money path:** NONE
-**Paper orders:** DEFAULT OFF
+**Owner instruction:** 17 October 2026 — remove mandatory 3:1 reward/risk. Keep £50 virtual start, target **£8,000 net GBP profit** (virtual balance target £8,050). Previous ≥80% across ≥61 closed trades remains monitored as a secondary metric unless the owner revises it.
+**G0 code-change scope:** APPROVED for development implementation and test.
+**G1 automated test gate:** PASSED at the tested development implementation; final commit must be checked.
+**Deployment / merge:** NOT AUTHORISED by this strategy-goal change. PR #2 remains draft.
+**Broker/real-money orders:** DISABLED and not enabled by repository changes.
 
-## Scope
-- Integrate BTC/USD and ETH/USD into the same 12 deterministic stages as SPY/QQQ/IWM.
-- Use 24/7 crypto data instead of the stock-market clock.
-- Crypto market data: /v1beta3/crypto/us/bars, completed 15-minute bars; fail on staleness, duplicates and malformed OHLCV.
-- Crypto paper adapter: IOC market orders, permitted pairs only, paper API hostname hardcoded, idempotent client-order IDs.
-- Crypto RM risk: max 0.5% of equity per new position, require cash and non-marginable buying power, two concurrent holdings maximum, pending orders count, do not auto-sell manual holdings.
-- Crypto backtest estimate: 50 bps round-trip transition friction, with 2x stress; not externally validated broker tariff.
-- GH scheduled runner: read-only, paperEnabled hardcoded false, public standard Actions runners, 15 minute best-effort ticks; no durable agent memory between GH runs.
-- Containerized persistent runner prepared, has durable journal volume and local-only telemetry, never activated by PR merge.
+## What Checker verified
 
-## Owner performance contract — October 17, 2026
+- [x] Current `trial-profit.mjs` initializes virtual £50, tracks profit target £8,000 separately from starting principal, reports £8,050 balance target, capped modelled risk at 1% of current GBP balance, and never requires a reward/risk multiple.
+- [x] The current strategy exits on modelled 2%-below-entry stop, or at the **next candle open** following a bearish completed-candle EMA signal. Open-to-open and gap semantics are model assumptions, not broker guarantees.
+- [x] Current `learning-profit.mjs` selects three transparent EMA candidate configurations on **train-only** net GBP profit, expectancy, profit factor and drawdown; later 25% holdout is screened and independent arithmetic is checked.
+- [x] `replay-profit.mjs` freezes a strategy before revealing later historical bars and does not count historical-replay results as actual live forward trades. Its origin, dataset fingerprint and candidate are auditable.
+- [x] GBP virtual P&L assumes USD-price relative changes, no GBP/USD movement, modelled 0.5% crypto / 0.1% equity fees per side, no proved market slippage. Stated profits are NOT broker-settled GBP.
+- [x] New `profit-goal-tests.mjs` **47 tests** passed along with 26 general-agent tests and 29 crypto integration checks: 102 CURRENT active tests; old mandatory-3:1 tests removed from current CI and obsolete code deleted from the review branch.
+- [x] Real Alpaca **GET-only** 180-day BTC + ETH historical-as-live trial on 17 October 2026 completed successfully as a process, with 17,279 BTC and 17,177 ETH completed market bars. Evidence: https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39068545879
+- [x] Both 180-day candidate selections **REJECTED**. 25% calibration holdout for selected BTC candidate: 47 closed simulated trades, 2 net winners (4.26%), modelled net -£8.38; ETH: 40 closed simulated trades, 4 winners (10%), modelled net -£6.57. Neither was qualified for the frozen replay. Each frozen replay therefore made ZERO trades and started/ended at £50 virtual; **no strategy demonstrated progress toward £8,000**. Historical calibration holdout losses are NOT actual ledger losses.
 
-- **Virtual initial capital:** £50 (GBP shadow ledger, never Alpaca USD balance)
-- **Trade entry target:** 3:1 reward-to-risk NET of modelled costs, with an initial max 1% equity risk (£0.50) and modelled profit target £1.50
-- **Score threshold:** >= 80% net winners across at least 61 **closed entry-to-exit** forward trades; 49/61 minimum when n=61; positive portfolio net P&L, profit factor >= 1.25 and a single strategy cohort
-- **Independence:** never count synthetic, historical backtest, pending, partially filled, or duplicated orders in the forward score
-- **Accuracy:** report 95% Wilson lower bound; meeting observed 80% doesn't establish true p>=80%
-- **Clock/entry:** next finalized 15-min candle open, ambiguous touch counts as stop, 30-minute signal expiration, fees estimated; FX movements omitted (GBP shadow account)
-- **Safety:** persistent service explicitly rejects broker order arming until stop/target protection is independently validated
+## Not yet complete
 
-## Checker G2 — audit findings (17 October 2026)
+- [ ] Generate more credible long-only (or separately risk-reviewed) signal families, test realistic execution and fees, maintain prospective untouched evaluation periods, and discard unsuccessful candidates rather than weakening gates.
+- [ ] Implement durable approved-strategy version locking plus genuine feedback learning from **verified closed forward trades** without contaminating independent evaluation cohorts.
+- [ ] Privately host the persistent virtual portfolio, confirm restart/journal integrity, outage recovery, broker read-only permissions, and closed-market handling. Existing GH Actions 15-min research is stateless, unmerged and not a hosting substitute.
+- [ ] Demonstrate credible, reproducible net positive historical out-of-sample results under cost and slippage stress **before** considering a continuous virtual research trial.
+- [ ] Observe true chronological out-of-sample and then forward performance over time. Historical trades never count as actual forward fills. £8,000 profit goal is aspirational and extremely unlikely with modest risk from £50.
+- [ ] Build, independently verify and obtain owner approval for any paper-order protective exit integration (partial fills, gaps, loss caps, 24/7 outages). `SCALP_PAPER_ENABLED=true` must remain hard-blocked in service.mjs.
+- [ ] An exact release/merge requires explicit owner approval after final G1 review.
 
-**Verdict: NEEDS_REVISION before release approval.** Existing green CI checks verify mocked safety/unit tests, not successful forward trading, learned strategy performance or fault-tolerant operation.
-
-### P0 — hard release blockers
-
-1. **3R optimization now implemented; evaluation still limited:** `learning-3r.mjs` selects three static EMA candidates by 3:1 NET risk-reward outcomes, win rate, expectancy, profit factor and drawdown on an initial chronological training window. The chosen candidate is tested on a 25% later holdout, independently audited for arithmetic and stressed at 2x model costs. **Missing:** frozen unchanging candidate/evaluation epochs, true external 61-trade forward performance and feed-back of observed closed trades into future strategy selection. Do not call this a self-training learning model yet.
-2. **No adaptive feedback loop:** the operational service does not feed actual verified closed-trade outcomes to Researcher / Optimizer; no independent evaluation-epoch promotion or model version locking exists. It can collect virtual results only when running, not systematically learn from them.
-3. **No persistent deployment:** GitHub scheduled Actions are stateless and cannot preserve the £50 trade journal. Provision and verify a private persistent machine with durable storage, restart recovery and live telemetry; demonstrate a nonzero forward sample without retroactive entries.
-4. **No protective broker exit system:** native crypto bracket/OCO unsupported; 3R stops and targets are virtual only. Keep `SCALP_PAPER_ENABLED=true` hard-blocked until independent partial fill, downtime, disconnection, gap, commission and kill-switch tests pass.
-5. **Strategy-cohort integrity:** prior code grouped every EMA candidate solely under `50GBP-3R-v1`, allowing results from changing strategies to be pooled. Patched in this review so trade cohort includes exact candidate ID; independent train/test phase separation and frozen candidate eligibility still needed.
-6. **Accounting assumptions:** £50 is a *GBP virtual* ledger applying USD relative price changes; FX, real crypto fees, spreads, slippage and market impact aren't broker-verified. Such outcomes cannot qualify as broker-fill evidence.
-
-### Acceptance sequence
-
-- **P1 (initial stage implemented):** independently rank 3R after-cost historical candidates on 75% training and evaluate the selected candidate on a later 25% holdout. Follow-up: multiple walk-forward folds with truly frozen evaluation epochs, independent leakage tests and rejected-candidate logs.
-- **P2:** add separate training and frozen evaluation cohorts; retain candidate fingerprints, no mixing of parameter revisions when measuring ≥61 completed trades.
-- **P3:** test durable journal recovery with network failures, duplicates, state corruption and backfill gaps; create a private always-on forward research runtime with public status disabled.
-- **P4:** accumulate ≥61 closed, chronological, non-retrospective forward £50 virtual trades and evaluate ≥80% net wins, positive net return, profit factor, drawdown and confidence interval. A 61-trade observed 80% does **not** prove true win probability ≥80%.
-- **P5:** only after evidence, build and separately approve protective broker-order execution; never treat paper or virtual outcomes as real-profit guarantees.
-
-## Checker evidence
-- [x] Existing equities and workflow mock tests (26 checks) passed locally.
-- [x] Crypto-specific mock tests (29 checks) passed locally; 55 total.
-- [x] GitHub Actions CI on rc3 implementation passed: paper runtime tests and Bootstrap & Checks, both green, 17 October 2026.
-- [x] Real broker **GET-only** five-market research flow passed: BTC/USD and ETH/USD processed real 15-minute candles, both strategies were correctly **VALIDATION_BLOCKED**, and equities were MARKET_CLOSED on Saturday. The one-shot runner was hardcoded no-order. Evidence: https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39063695341.
-- [x] Both final post-cleanup GitHub CI workflows passed for commit `9aaef75cfded56efeb78015b9966c70f3ae9ff84` (2026-10-17): Scalp paper runtime tests and Bootstrap & Checks.
-- [ ] Verified crypto broker partial fills, fractional quantity precision, dust and true tariff/market impact.
-- [x] Virtual £50 risk/3R mathematics, 61-trade scoring, stale-entry expiry and stop-first replay tested: 43 automated virtual-trial checks passed before this audit, plus two additional strategy-cohort tests now under CI. Previously 98 verified checks; post-audit total should reach 100 if final CI succeeds. GitHub Actions isolated-paper-tests successful on 17 October 2026, run 39065383406.
-- [x] **134 automated checks** including 34 new 3R-specific training, holdout isolation and independent P&L tests passed in GitHub Actions [run 39067133018](https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39067133018). Candidate ranking now uses the £50 net-3R trial rules.
-- [x] Real-data **GET-only** 3R pipeline smoke-tested with paper credentials: BTC/USD and ETH/USD completed OP-01 3R training, VL-01 holdout audit, and both correctly `VALIDATION_BLOCKED`; SPY/QQQ/IWM were `MARKET_CLOSED` (Saturday). Broker order capacity hard-disabled in runner. Evidence: https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39067255829. One-shot workflow/trigger removed after verification.
-- [ ] Full persistent journal restart and actual forward trade collection tested with persistent host.
-- [ ] Verified restart recovery, lost/retried broker API response, journal integrity under real runtime conditions.
-- [ ] Verified deployed HTTPS read-only telemetry, broker permissions and user kill switch.
-- [ ] No untrusted library, credential or real-money endpoint introduced (review full diff before merge).
-- [ ] Owner approves exact SCALP-PAPER-0.1.0-rc3 release.
-- [ ] Hosting provided with durable storage; real demo orders require a SEPARATE arming step after checks.
-
-**Do not promote research scores into deployment decisions.** The pipeline's Validator is deterministic independent arithmetic, not proof of statistical generalization or trading profitability. Crypto has materially different liquidity and execution mechanics; the numerical estimates are provisional.
-
-**Privacy:** GitHub Actions logs and repository are public; never print credentials, account balances, manual holdings or raw order history.
+**Verdict: CODE GOAL CHANGE IMPLEMENTED, RESEARCH STRATEGIES FAILED — BLOCK AUTOMATED BROKER TRADING.** Never represent historical, modelled, virtual or paper outcomes as real-money investment results.
