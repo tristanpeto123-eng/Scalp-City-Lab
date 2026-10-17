@@ -11,6 +11,8 @@ The future customer flow is:
 4. Confirm a **review date**, not a guaranteed payout or maturity date. At the review date, display any verifiable realized returns, outstanding positions and separate uninvested/settled funds.
 5. A future real-money version can offer withdrawal ONLY through an eligible authorized custodian/broker, with separate identification, payment reconciliation, regulation/legal review and explicit user authorization. An investment target is not a guaranteed withdrawal amount, and deposits can be lost.
 
+`trial-profit.mjs` now supports **arbitrary virtual starting balances of £50–£1,000,000**, while keeping the profit objective cumulative and independent of starting capital. A £200 starting virtual account with a £2,000 cumulative net profit target requires a final virtual balance of £2,200; a £50 account would require £2,050. The existing development service still initializes the research trial at the default £50 until real user-onboarding and custody are independently designed and approved.
+
 **No current deposit endpoint, real account custody, order arm, withdrawal rail, direct debit or transfer capability has been activated.**
 
 ### Implemented scenario service
