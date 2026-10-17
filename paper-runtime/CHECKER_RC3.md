@@ -60,3 +60,23 @@
 - [x] The `trialReport` reconciles accumulated closed-trade net GBP results with the journalled virtual account balance and **rejects phantom profit** caused by any unrelated balance mutation.
 - [x] Added tests prove three trades totalling £1,950 do not pass, a subsequent £50 net win reaches £2,000, and losers must be earned back before reaching the target.
 - [ ] Rerun full CI against the final committed revision. Previously rejected BTC/ETH/alternative-crypto research candidates remain rejected; performance objective still not achieved.
+
+## New product objective + individual chart models — 17 October 2026
+
+**Scope:** user-selected virtual deposit (minimum £50), one input either cumulative NET profit target or wait duration, and probabilistic estimate of the other; separate audited models for 10 crypto charts. The imagined return date is a **review date**, never a guaranteed withdrawal or fixed maturity.
+
+**Checkpoint G1 — technical tests:**
+- [x] Three interpretable signal families implemented: EMA trend, RSI mean-reversion and high/low channel breakout; next-candle simulated entry, no broker orders.
+- [x] Each of 10 charts has isolated per-pair/per-feed training evidence, market behavior summary, strategy choice and rejection trail, never pooling another chart's return observations into its own learner.
+- [x] All 12 Scalp City agent stations emit explicit **method / measured evidence / actual decision** records; explanatory text corresponds to implemented algorithms rather than invented reasoning.
+- [x] Train-only regime profiling with timestamp lock before calibration/held-out candles; future price edits cannot alter earlier training observations.
+- [x] Persistent model memory established on separate `scalp-learning-memory` branch at `scalp-learning/history.json`, initially empty (no fabricated real-data training). SHA-precondition append-only writer and duplicate/overlap controls verified with mocks.
+- [x] `deposit-goal-planner.mjs` validates £50+ virtual capital, handles either goal mode, returns percentile profit/range OR probability/conditional ETA, models deposit loss and explicitly prohibits portraying any forecast as guaranteed withdrawal.
+- [x] Planner fails closed if fewer than three nonoverlapping external holdouts, fewer than 90 daily returns, fewer than 40 completed sample trades or insufficient negative observations. No valid external forecasting dataset has yet been ingested. This means **NO REAL ETA OR PROFIT FIGURE is available**.
+- [x] GitHub automated test suite and no-order runtime assertions: https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39072117993 (all six test groups; latest exact-head CI revalidation required after documentation changes).
+- [ ] Confirm initial GET-only 10-pair learning event writes true training observations successfully to the isolated GitHub branch; evidence must be checked, not assumed.
+- [ ] Validate forecast calibration and strategy outcomes on independent post-training periods; 80% observed win rate and £2,000 cumulative net profit still NOT established.
+- [ ] Legal/regulatory assessment for UK consumer managed investments/crypto services, client money, safeguarding, KYC/AML and financial promotions **before** a real-deposit or real-withdrawal feature. No deposit, custody, live execution, settlement or withdrawal systems are deployed.
+- [ ] Separate owner approval for any exact release/merge, hosting, real broker execution, client funds or external payment actions.
+
+**Verdict: CODE PROTOTYPE IN DRAFT — DO NOT DEPLOY AS FUNDED INVESTMENT SERVICE.** No profit guarantee, no fixed payout date, no custodied funds and no real-money orders.
