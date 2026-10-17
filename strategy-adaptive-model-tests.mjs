@@ -94,6 +94,10 @@ test('manual strategies allow fixed parameters and twice-fee stress but retain s
  const e2=simulateValidation({...opts,strategy:'ema',strategyParams:{fast:5,slow:21},
   feePerSideFraction:.01});
  assert.equal(e2.feePerSideFraction,.01);
+ const tier1=simulateValidation({...opts,strategy:'ema',strategyParams:{fast:5,slow:21},
+  feePerSideFraction:.0025});
+ assert.equal(tier1.feePerSideFraction,.0025);
+ assert.match(tier1.costAssumption,/0.25%/);
  assert.ok(e2.cashBalanceGbp>=0);
  const r=simulateValidation({...opts,strategy:'rsi',
   strategyParams:{period:14,buyBelow:25,sellAbove:60}});
