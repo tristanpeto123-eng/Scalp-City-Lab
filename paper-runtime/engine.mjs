@@ -109,7 +109,7 @@ export function validate(bars,selected,cut,btResult,costBps=COST_BPS){
   if(btResult.training.entries<1)reasons.push('No training trades');
   return {verdict:reasons.length?'BLOCKED':'AUDIT_PASS',reasons,holdout:own,stress,accountingMatch,scope:'Forward-paper screening only, not proof of generalization or broker fills'};
 }
-export function score(validation){return {eligible:validation.verdict==='AUDIT_PASS',score:validation.verdict==='AUDIT_PASS'?validation.holdout.netReturnPct-validation.holdout.maxDrawdownPct:null};}
+export function score(validation){const eligible=validation?.verdict==='AUDIT_PASS';const net=Number(validation?.holdout?.netGbp),dd=Number(validation?.holdout?.maxDrawdownPct);const valid=eligible&&Number.isFinite(net)&&Number.isFinite(dd)&&net>0;return {eligible:valid,score:valid?net-.25*dd:null,metric:'NET_VIRTUAL_GBP_PROFIT_ADJUSTED_FOR_DRAWDOWN'};}
 export function currentSignal(bars,params){const f=ema(bars,params.fast),s=ema(bars,params.slow);return f.at(-1)>s.at(-1)?1:0;}
 
 export class AgentWorkflow {
