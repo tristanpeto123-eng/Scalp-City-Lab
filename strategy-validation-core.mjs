@@ -22,7 +22,7 @@ export function checkSnapshot(source,symbol,now=Date.now()){
  }
  if((bars.at(-1).t+PERIOD)>now-30000)throw Error('Snapshot includes unfinished or future candles');
  if(zero/bars.length>MAX_VOLUME_GAP)throw Error('More than 40% zero-volume bars; insufficient traded-price evidence');
- if(typeof source.source!=='string'||!source.source.startsWith('ALPACA_KRAKEN_US_'))
+ if(source.source!=='ALPACA_KRAKEN_US_1_HISTORICAL_GET')
    throw Error('Unverified candle-source provenance');
  return {symbol,bars,source:source.source,snapshotAt:source.generatedAt||null,
   sampleStart:iso(bars[0].t),sampleEnd:iso(bars.at(-1).t+PERIOD),
@@ -56,13 +56,13 @@ export function simulateValidation({snapshot,symbol,startingBalanceGbp=50,mode='
   return {entry:ready>=35&&b.c>earlierHigh,exit:b.c<earlierLow};
  }
  bars.slice(0,calibrationEnd).forEach(observe);
- let cash=startingBalanceGbp,open=null,pending=null,wins=0,losses=0,closed=0,
+ let cash=startingBalanceGbp,open=null,pending=null,wins=0,losses=0,closed=0,realized=0,
   maxDD=0,peak=startingBalanceGbp,processed=0,reason='HISTORY_EXHAUSTED',
   endTime=test.at(-1).t+PERIOD;
  const trades=[];
  const close=(price,t,kind)=>{
   const proceeds=open.units*price*(1-FEE),net=proceeds-open.entryCost;
-  cash+=proceeds;closed++;if(net>0)wins++;else losses++;
+  cash+=proceeds;realized+=net;closed++;if(net>0)wins++;else losses++;
   trades.push({openedAt:iso(open.openTime),closedAt:iso(t),entryPrice:open.entryPrice,
    exitPrice:price,netGbp:round(net),exit:kind});
   open=null;
@@ -94,14 +94,16 @@ export function simulateValidation({snapshot,symbol,startingBalanceGbp=50,mode='
   peak=Math.max(peak,marked);maxDD=Math.max(maxDD,100*(peak-marked)/peak);
   processed++;endTime=b.t+PERIOD;
   // Goal is CUMULATIVE realised NET trade profit, not one winning trade.
-  if(mode==='profit'&&!open&&cash-startingBalanceGbp>=limit){
+  if(mode==='profit'&&!open&&realized>=limit){
     reason='CUMULATIVE_NET_PROFIT_REACHED';break;
   }
  }
  const last=test[Math.max(0,processed-1)];
  const estimatedLiquidation=open?open.units*last.c*(1-FEE):0;
  const equity=cash+estimatedLiquidation;
- const netProfit=cash-startingBalanceGbp;
+ const netProfit=realized;
+ if(Math.abs(cash+(open?open.entryCost:0)-startingBalanceGbp-realized)>0.00001)
+  throw Error('Closed-trade ledger reconciliation failed');
  return {symbol,strategy,mode,limit,startingBalanceGbp,
   actualSource:checked.source,sourcePeriod:{start:checked.sampleStart,end:checked.sampleEnd},
   status:reason,goalReached:reason==='CUMULATIVE_NET_PROFIT_REACHED',
