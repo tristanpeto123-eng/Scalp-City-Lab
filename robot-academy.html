@@ -94,13 +94,16 @@ const base=[
  ['XRP/USD','Ripple','#92c7ff'],['ADA/USD','Ada','#ec95b0'],['AVAX/USD','Avax','#c4ef9d'],
  ['LINK/USD','Link','#f3ae82'],['DOGE/USD','Doge','#e3d78f'],['LTC/USD','Lite','#abc4f4'],
  ['BCH/USD','Cash','#ddafef']
-].map(([symbol,name,color],id)=>({id,symbol,name,color,trades:null,wins:null,source:'UNVERIFIED',net:null}));
+].map(([symbol,name,color],id)=>({id,symbol,name,color,trades:null,wins:null,source:'UNVERIFIED',net:null,drawdown:null,champion:null}));
 let pupils=base.map(x=>({...x})),demo=false,selected=0,lessonNo=0;
 const $=id=>document.getElementById(id);
 const grade=p=>p.trades===null||p.trades<1?null:Math.min(10,Math.floor((p.wins/p.trades*100+1e-8)/10));
 const percent=p=>p.trades===null||p.trades<1?null:100*p.wins/p.trades;
 const confirmed=p=>!demo&&p.source==='VERIFIED_PAPER_FORWARD'&&p.trades>=30;
 const gradeText=p=>grade(p)===null?'Ungraded':'Grade '+grade(p);
+const money=n=>Number.isFinite(n)?(n<0?'−':'')+'£'+Math.abs(n).toFixed(2):'—';
+const profitState=p=>!Number.isFinite(p.net)?'NOT EVALUATED':
+ p.net>0?'PROFITABLE':p.net<0?'LOSS-MAKING':'BREAKEVEN';
 function robot(p){const node=document.createElement('div');
  node.className='robot'+(p.id===selected?' current':'')+(grade(p)===10?' grad':'');
  node.style.setProperty('--bot',p.color);node.title=p.symbol+' · '+gradeText(p);
@@ -146,10 +149,18 @@ function render(){
  subtitle.textContent=demo?'SIMULATED PUPIL · NOT REAL TRADES':confirmed(p)?'VERIFIED FORWARD-PAPER RECORD':'NO VERIFIED OUTCOMES';
  report.append(subtitle);
  const metrics=document.createElement('div');metrics.className='metric-grid';
- for(const [label,val] of [['Win rate',v===null?'—':v.toFixed(1)+'%'],['Classroom',gradeText(p)],['Closed trades',p.trades===null?'—':String(p.trades)],['Status',confirmed(p)?'Confirmed':v===null?'Awaiting evidence':'Provisional']]){
+ for(const [label,val] of [['Win rate',v===null?'—':v.toFixed(1)+'%'],['Classroom',gradeText(p)],['Closed trades',p.trades===null?'—':String(p.trades)],['Net profit',money(p.net)],['Max drawdown',Number.isFinite(p.drawdown)?p.drawdown.toFixed(2)+'%':'—'],['Status',confirmed(p)?'Confirmed':v===null?'Awaiting evidence':'Provisional']]){
   const tile=document.createElement('div');tile.className='metric';const l=document.createElement('small');l.textContent=label;
   const n=document.createElement('strong');n.textContent=val;tile.append(l,n);metrics.append(tile);
  }report.append(metrics);
+ const earnings=document.createElement('p');earnings.className='note';
+ earnings.textContent='Profitability: '+profitState(p)+(demo?' · FICTIONAL DEMO':'')+
+   '. School grade measures win rate only.';
+ report.append(earnings);
+ const champion=document.createElement('p');champion.className='note';
+ champion.textContent='Current champion model: '+(p.champion?.name||'None independently validated')+
+   '. Promotion requires a separate profitable, unseen forward test.';
+ report.append(champion);
  const line=document.createElement('div');line.className='progress';const fill=document.createElement('span');
  fill.style.width=v===null?'0%':Math.min(100,v)+'%';line.append(fill);report.append(line);
  const detail=document.createElement('p');detail.className='note';
@@ -172,7 +183,11 @@ function graduate(p){const card=document.createElement('div');card.className='co
 $('demo').onclick=()=>{demo=true;lessonNo=0;
  // These figures are invented DEMO FIXTURES, not actual performance.
  const scores=[12,23,38,44,57,66,73,81,92,100];
- pupils=base.map((p,i)=>({...p,trades:100,wins:scores[i],source:'FICTIONAL_DEMO'}));render();};
+ pupils=base.map((p,i)=>({...p,trades:100,wins:scores[i],
+ net:i===7?-3.60:Math.round((scores[i]-55)*13)/100,
+ drawdown:Math.round((i+1)*91)/100,
+ champion:{name:i%2?'RSI pullback (demo)':'EMA crossover (demo)'},
+ source:'FICTIONAL_DEMO'}));render();};
 $('lesson').onclick=()=>{if(!demo)return;lessonNo++;
  // Deterministic demonstration, not a simulated forecast or market model.
  for(const p of pupils){const old=grade(p);
@@ -186,10 +201,18 @@ window.RobotAcademy={
  previewVerifiedRecord(record){
   if(!record||!base.some(p=>p.symbol===record.symbol)||record.source!=='VERIFIED_PAPER_FORWARD'||
    !Number.isInteger(record.closedTrades)||record.closedTrades<0||
-   !Number.isInteger(record.wins)||record.wins<0||record.wins>record.closedTrades)
+   !Number.isInteger(record.wins)||record.wins<0||record.wins>record.closedTrades||
+   !Number.isFinite(record.netProfitGbp)||!Number.isFinite(record.maxDrawdownPct)||
+   record.maxDrawdownPct<0||record.maxDrawdownPct>100)
    throw Error('Invalid or unverified trade record');
-  return {symbol:record.symbol,grade:record.closedTrades?Math.floor(10*record.wins/record.closedTrades):null,
-   provisional:record.closedTrades<30};
+  return {symbol:record.symbol,
+   grade:record.closedTrades?Math.min(10,Math.floor(10*record.wins/record.closedTrades)):null,
+   provisional:record.closedTrades<30,
+   profitability:record.netProfitGbp>0?'PROFITABLE':
+    record.netProfitGbp<0?'LOSS-MAKING':'BREAKEVEN',
+   // This preview deliberately NEVER mutates official grades.
+   source:'UNTRUSTED_CLIENT_PREVIEW'};
+
  }
 };
 render();
