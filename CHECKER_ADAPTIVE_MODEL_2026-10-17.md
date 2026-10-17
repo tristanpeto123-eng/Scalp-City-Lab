@@ -54,3 +54,10 @@ Source: signed-in GitHub Actions logs of offline preloaded historical data in [v
 - [ ] Owner approval of exact release required before merging PR #8. All funded execution remains blocked.
 
 **G1 verdict: SOFTWARE TESTS PASSED; STRATEGY PERFORMANCE NOT VERIFIED — NEEDS_REVISION FOR TRADING.** Model adaptation is an experimental feature only and must not be presented as an 80% winning system, guaranteed £2,000 outcome, or a financial payout.
+
+
+### Final holdout verdict hardening
+
+The adaptive evaluator now **explicitly rejects** any frozen historical replay with negative/zero cumulative realized net profit, fewer than 20 completed holdout trades, or modeled drawdown above 10%. This verdict is created only AFTER freezing the train-selected candidate; it is not fed back into retraining, so the already-inspected outer sample remains an audit record rather than an optimization dataset. An observed 80% win-rate target is reported separately from positive net-profit criteria. ETH/USD's **−£2.12 / 9 closes / 33.33% wins** therefore returns `HOLDOUT_REJECTED`, not `OUT_OF_SAMPLE_HISTORICAL_EVALUATION` mistaken for performance success.
+
+The browser page separately labels `TRAINING SCREENED` and `CHECKER OUTER HOLDOUT REJECTED`, even though it still shows the historical simulated negative result. No candidate can automatically become broker-executable.
