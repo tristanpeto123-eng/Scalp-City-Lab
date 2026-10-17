@@ -26,6 +26,7 @@ jobs:
           node --check paper-runtime/engine.mjs
           node --check paper-runtime/alpaca-paper.mjs
           node --check paper-runtime/service.mjs
+          node --check paper-runtime/preflight.mjs
           node --check agent-city-live.js
       - name: Execute broker-mocked safety tests
         run: node paper-runtime/tests.mjs
