@@ -37,9 +37,13 @@ jobs:
           node --check paper-runtime/learning-profit.mjs
           node --check paper-runtime/replay-profit.mjs
           node --check paper-runtime/profit-goal-tests.mjs
+          node --check paper-runtime/crypto-research-marketset.mjs
+          node --check paper-runtime/screen-crypto-markets.mjs
+          node --check paper-runtime/screen-crypto-markets-tests.mjs
           node --check agent-city-live.js
       - name: Execute broker-mocked safety tests
         run: |
           node paper-runtime/tests.mjs
           node paper-runtime/crypto-tests.mjs
           node paper-runtime/profit-goal-tests.mjs
+          node paper-runtime/screen-crypto-markets-tests.mjs
