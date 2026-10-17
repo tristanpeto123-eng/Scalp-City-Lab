@@ -1,0 +1,41 @@
+# One-time branch-only read-only check. Pins reviewed code and never invokes paper orders.
+name: One-time Alpaca paper connection check
+
+on:
+  push:
+    branches:
+      - feat/connected-live-paper-agents
+    paths:
+      - paper-runtime/connection-preflight.trigger
+
+permissions:
+  contents: read
+
+jobs:
+  verify-paper-credentials:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Fetch exact reviewed preflight source
+        uses: actions/checkout@v4
+        with:
+          ref: 'ecbf642d72cc5e2c3c12ace53ed48d73fec64e06'
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check secrets presence without disclosure
+        env:
+          PAPER_KEY: ${{ secrets.ALPACA_PAPER_KEY }}
+          PAPER_SECRET: ${{ secrets.ALPACA_PAPER_SECRET }}
+        run: |
+          if [ -z "$PAPER_KEY" ] || [ -z "$PAPER_SECRET" ]; then
+            echo "::error::Paper account credentials were not found in Actions secrets."
+            exit 1
+          fi
+      - name: Verify read-only paper account and IEX bars (zero orders)
+        env:
+          ALPACA_PAPER_KEY: ${{ secrets.ALPACA_PAPER_KEY }}
+          ALPACA_PAPER_SECRET: ${{ secrets.ALPACA_PAPER_SECRET }}
+        run: node paper-runtime/preflight.mjs
