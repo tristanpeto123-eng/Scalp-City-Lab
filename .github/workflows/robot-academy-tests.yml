@@ -1,16 +1,22 @@
 name: Robot Academy grading and demo checks
 on:
   push:
-    branches: [feat/robot-academy-graduation-v1, main]
+    branches: [feat/robot-academy-graduation-v1, release/robot-academy-v1, main]
     paths:
       - robot-academy.html
       - robot-academy-tests.mjs
+      - robot-academy-schema.json
+      - ROBOT_ACADEMY.md
+      - strategy-validation.html
       - .github/workflows/robot-academy-tests.yml
   pull_request:
     branches: [main]
     paths:
       - robot-academy.html
       - robot-academy-tests.mjs
+      - robot-academy-schema.json
+      - ROBOT_ACADEMY.md
+      - strategy-validation.html
   workflow_dispatch:
 permissions:
   contents: read
