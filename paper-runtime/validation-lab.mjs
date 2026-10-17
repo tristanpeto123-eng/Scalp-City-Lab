@@ -78,7 +78,7 @@ export function runHistoricalValidation({input,raw,candidates=STRATEGY_GRID,clos
    stopped='PROFIT_TARGET_REACHED';break;
   }
   const decision=policy.observe(bar);
-  if(state.balanceGbp>=50&&!state.open&&!state.pending&&decision.ready&&decision.entry){
+  if(state.balanceGbp>=3.5&&!state.open&&!state.pending&&decision.ready&&decision.entry){
    state=queueSignal(state,{symbol:config.symbol,signalBarStart:asISO,candidateId:frozenId}).state;
   }else if(state.open&&decision.ready&&decision.exit){
    state=requestExit(state,{symbol:config.symbol,signalBarStart:asISO}).state;
