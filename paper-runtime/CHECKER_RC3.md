@@ -18,7 +18,9 @@
 ## Checker evidence
 - [x] Existing equities and workflow mock tests (26 checks) passed locally.
 - [x] Crypto-specific mock tests (29 checks) passed locally; 55 total.
-- [ ] GitHub Actions check on exact branch head passed (re-check after last change).
+- [x] GitHub Actions CI on rc3 implementation passed: paper runtime tests and Bootstrap & Checks, both green, 17 October 2026.
+- [x] Real broker **GET-only** five-market research flow passed: BTC/USD and ETH/USD processed real 15-minute candles, both strategies were correctly **VALIDATION_BLOCKED**, and equities were MARKET_CLOSED on Saturday. The one-shot runner was hardcoded no-order. Evidence: https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39063695341.
+- [ ] Re-check the final cleanup commit's CI status before owner release review.
 - [ ] Verified crypto broker partial fills, fractional quantity precision, dust and true tariff/market impact.
 - [ ] Verified restart recovery, lost/retried broker API response, journal integrity under real runtime conditions.
 - [ ] Verified deployed HTTPS read-only telemetry, broker permissions and user kill switch.
