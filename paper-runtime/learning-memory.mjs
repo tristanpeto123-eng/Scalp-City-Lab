@@ -97,8 +97,7 @@ export function rememberTraining(memory,event){
      Date.parse(e.trainingStart)<Date.parse(trainingEnd));
  const candidate={id:recordId,symbol,feed,trainingStart,trainingEnd,trainFingerprint,
     acceptedForLearning:!overlapping,trainingOptions:opts,
-    // NEVER enter the held-out P&L or winner count in training memory.
-    holdoutGate:event.holdoutGate==='AUDIT_PASS'?'AUDIT_PASS':'BLOCKED',
+    // NEVER enter held-out P&L, win rate OR verdict in training memory.
     reason:overlapping?'OVERLAPPING_TRAINING_WINDOW':'INDEPENDENT_TRAINING_WINDOW'};
  const result={...memory,experiments:[...memory.experiments,candidate]};
  assertMemory(result);
