@@ -60,6 +60,10 @@ export function processBar(state,bar,{allowEntry=true}={}){
  if(last!==undefined&&t<=last)return {state,result:'DUPLICATE_OR_OUT_OF_ORDER'};
  const next={...state,lastBarBySymbol:{...state.lastBarBySymbol,[bar.symbol]:t},
   closedTrades:[...state.closedTrades]};
+ // Never fill a missed/aged entry at a future price after a data outage.
+ if(next.pending&&next.pending.symbol===bar.symbol&&t-next.pending.signalMs>2*900000){
+   next.pending=null;return {state:next,result:'SIGNAL_EXPIRED'};
+ }
  // Only previously queued signals may enter, NEVER after seeing current bar's movement.
  if(!next.open&&next.pending&&next.pending.symbol===bar.symbol&&t>next.pending.signalMs&&allowEntry){
    const plan=netRiskPlan({balanceGbp:next.balanceGbp,entryPrice:bar.o});
