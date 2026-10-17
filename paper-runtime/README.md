@@ -88,3 +88,7 @@ Full data-quality and Checker evidence: [CRYPTO_MARKET_SCREEN_2026-10-17.md](CRY
 
 
 **Supplemental Kraken US feed trial:** The 90-day `us-1` Kraken historical bars endpoint supplied better trading-volume coverage for all eight symbols, but all eight historical candidate groups **still failed eligibility**. BCH alone had a small +£0.66 modelled internal holdout but failed training eligibility and doubled-cost stress (win rate 16.67%). [Kraken-read-only result](https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39070322662), [full compared markets](CRYPTO_MARKET_SCREEN_2026-10-17.md). Feed choice for historical research does not grant broker order permissions. No 80% strategy or £2,000 profit demonstrated.
+
+
+### Clarification — cumulative £2,000 goal
+**£2,000 is cumulative NET realised profit from as many completed trades as it takes, NOT a target for any single trade.** Each closed trade adds its net result (after modeled fees, including losses) to the virtual ledger. For example, +£600, +£800, +£550 and +£50 across four completed trades equals **£2,000 net profit** and grows the £50 starting virtual balance to **£2,050**. Open positions and uncompleted signals contribute **£0** to realised milestone profit. The read-only scoreboard explicitly reports the sum of closed-trade net outcomes, reconciles that sum with the virtual ledger balance, and fails closed if they disagree. Observed 80% win rate remains a *separate* measure of completed trades; there is no maximum or minimum trade count required to reach the net-profit milestone.
