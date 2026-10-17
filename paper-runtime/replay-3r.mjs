@@ -96,9 +96,9 @@ export function replayHistorical({symbol,raw,calibrationFraction=.40,candidates=
    barsProcessed:bars.length,
    disclaimer:'Historical chronological simulation with modeled fees and no FX, slippage or real fills. Never counts as genuine live forward evidence; no future observations entered the training window.'};
 }
-export async function loadHistoricalCrypto({broker,symbol,days=180,now=Date.now(),maximumPages=12}={}){
+export async function loadHistoricalCrypto({broker,symbol,days=180,now=Date.now(),maximumPages=80}={}){
  if(!broker||!['BTC/USD','ETH/USD'].includes(symbol)||!Number.isInteger(days)||days<8||days>365||
-    !Number.isInteger(maximumPages)||maximumPages<1||maximumPages>20)throw Error('Invalid crypto replay source');
+    !Number.isInteger(maximumPages)||maximumPages<1||maximumPages>100)throw Error('Invalid crypto replay source');
  const params=new URLSearchParams({symbols:symbol,timeframe:'15Min',
    start:new Date(now-days*86400_000).toISOString(),end:new Date(now-30_000).toISOString(),
    limit:'10000',sort:'asc'});
@@ -118,5 +118,5 @@ export async function loadHistoricalCrypto({broker,symbol,days=180,now=Date.now(
   tokens.add(data.next_page_token);
   params.set('page_token',data.next_page_token);
  }
- throw Error('Incomplete historical pagination; refuse truncated training results');
+ throw Error('Incomplete historical pagination after '+maximumPages+' pages / '+raw.length+' bars; refuse truncated training results');
 }
