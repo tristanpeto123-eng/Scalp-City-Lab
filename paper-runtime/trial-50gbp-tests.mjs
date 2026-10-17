@@ -70,6 +70,13 @@ assert.ok(stockPlan.plannedRiskGbp<=0.5+1e-8);checked++;
 assert.ok(Math.abs(stockPlan.plannedRewardGbp/stockPlan.plannedRiskGbp-3)<1e-7);checked++;
 const stockExit=processBar(stockBar.state,candle(t2,500,stockPlan.targetPrice+1,499,500,'SPY'));
 assert.equal(stockExit.result,'TAKE_PROFIT');checked++;
-assert.equal(stockExit.closed.cohort,TRIAL_RULES.version);checked++;
+assert.equal(stockExit.closed.cohort,TRIAL_RULES.version+':stock-alpha');checked++;
 assert.equal(stockExit.closed.candidateId,'stock-alpha');checked++;
+const differentStrategy=queueSignal(initializeTrial(),{symbol:'SPY',signalBarStart:t0,candidateId:'stock-beta'}).state;
+const stockOpenBeta=processBar(differentStrategy,candle(t1,500,501,499,500,'SPY')).state;
+const stockEndBeta=processBar(stockOpenBeta,candle(t2,500,stockOpenBeta.open.targetPrice+1,499,500,'SPY'));
+assert.notEqual(stockExit.closed.cohort,stockEndBeta.closed.cohort);checked++;
+assert.equal(measureGoal([{...stockExit.closed,netUsd:stockExit.closed.netGbp},
+  {...stockEndBeta.closed,id:'different-beta',netUsd:stockEndBeta.closed.netGbp}],{minTrades:2}).status,
+  'MIXED_STRATEGY_COHORT');checked++;
 console.log('PASS '+checked+' GBP-50 virtual risk:3R tests, no broker orders');
