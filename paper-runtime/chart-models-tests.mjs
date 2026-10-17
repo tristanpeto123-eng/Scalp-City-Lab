@@ -78,13 +78,13 @@ const overlapping=rememberTraining(memory,{...event,
  trainFingerprint:fingerprintTraining(raw.slice(2,392)),
  behavior:profileChart(raw.slice(2,392))});
 assert.equal(overlapping.acceptedForLearning,false);n++;
-assert.equal(overlapping.memory.experiments.length,2);n++;
+assert.equal(overlapping.memory.experiments.length,1);n++;
 const onceMore=rememberTraining(overlapping.memory,{...event,
  trainingStart:raw[4].t,trainingEnd:raw[394].t,
  trainFingerprint:fingerprintTraining(raw.slice(4,394)),
  behavior:profileChart(raw.slice(4,394))});
 assert.equal(onceMore.reason,'SAME_DAY_SETTINGS_ALREADY_TESTED');n++;
-assert.equal(onceMore.memory.experiments.length,2);n++;
+assert.equal(onceMore.memory.experiments.length,1);n++;
 // A new candidate combination on identical history must persist as a
 // NON-INDEPENDENT exploratory result. It changes the next proposal while never
 // producing a second accepted validation window.
