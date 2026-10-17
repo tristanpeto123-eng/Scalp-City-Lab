@@ -17,9 +17,11 @@ const round=n=>Number(n.toFixed(8));
 const timestamp=s=>{const t=Date.parse(s);if(!Number.isFinite(t))throw Error('Invalid timestamp');return t;};
 const feeFor=sym=>isResearchCrypto(sym)?TRIAL_RULES.cryptoFeeFractionPerSide:TRIAL_RULES.equityFeeFractionPerSide;
 
-export function initializeTrial(){
- return {version:TRIAL_RULES.version,currency:'GBP_VIRTUAL',startingBalanceGbp:50,
-  balanceGbp:50,open:null,pending:null,closedTrades:[],lastBarBySymbol:{},status:'RESEARCH_ONLY'};
+export function initializeTrial(depositGbp=TRIAL_RULES.startingBalanceGbp){
+ if(!scalar(depositGbp)||depositGbp<50||depositGbp>1_000_000)
+   throw Error('Virtual initial deposit must be £50–£1,000,000');
+ return {version:TRIAL_RULES.version,currency:'GBP_VIRTUAL',startingBalanceGbp:depositGbp,
+  balanceGbp:depositGbp,open:null,pending:null,closedTrades:[],lastBarBySymbol:{},status:'RESEARCH_ONLY'};
 }
 export function netRiskPlan({balanceGbp,entryPrice,feeRate=TRIAL_RULES.cryptoFeeFractionPerSide}){
  if(!scalar(balanceGbp)||balanceGbp<=0||!scalar(entryPrice)||entryPrice<=0||
@@ -70,7 +72,7 @@ function close(next,bar,exitPrice,exitReason){
  next.balanceGbp=round(next.balanceGbp+netGbp);
  next.closedTrades.push(trade);next.open=null;
  next.status=next.balanceGbp<=0?'TRIAL_DEPLETED':
-   next.balanceGbp>=TRIAL_RULES.targetBalanceGbp?'VIRTUAL_TARGET_REACHED':'RESEARCH_ONLY';
+   next.balanceGbp>=next.startingBalanceGbp+TRIAL_RULES.targetNetProfitGbp?'VIRTUAL_TARGET_REACHED':'RESEARCH_ONLY';
  return {state:next,result:exitReason,closed:trade};
 }
 export function processBar(state,bar,{allowEntry=true,feeMultiplier=1}={}){
@@ -110,16 +112,17 @@ export function trialReport(state){
    if(!scalar(t?.netGbp))throw Error('Invalid closed-trade GBP profit');
    return sum+t.netGbp;
  },0));
- const expectedBalance=round(TRIAL_RULES.startingBalanceGbp+closedProfitGbp);
+ if(!scalar(state.startingBalanceGbp)||state.startingBalanceGbp<50)throw Error('Invalid initial deposit ledger');
+ const expectedBalance=round(state.startingBalanceGbp+closedProfitGbp);
  const allowableRoundingError=Math.max(1e-6,state.closedTrades.length*1e-7);
  if(!scalar(state.balanceGbp)||Math.abs(state.balanceGbp-expectedBalance)>allowableRoundingError)
    throw Error('Virtual account balance does not reconcile to cumulative closed trades');
  const {netUsd,expectancyUsd,maxDrawdownUsd,...metrics}=measureGoal(
    state.closedTrades.map(t=>({...t,netUsd:t.netGbp})));
  const profit=closedProfitGbp,remaining=round(Math.max(0,TRIAL_RULES.targetNetProfitGbp-profit));
- return {startGbp:50,balanceGbp:state.balanceGbp,
+ return {startGbp:state.startingBalanceGbp,balanceGbp:state.balanceGbp,
   netProfitGbp:profit,realizedClosedTradeProfitGbp:profit,
-  profitAggregation:'SUM_OF_ALL_NET_CLOSED_TRADES',profitTargetGbp:TRIAL_RULES.targetNetProfitGbp,targetBalanceGbp:2050,
+  profitAggregation:'SUM_OF_ALL_NET_CLOSED_TRADES',profitTargetGbp:TRIAL_RULES.targetNetProfitGbp,targetBalanceGbp:round(state.startingBalanceGbp+TRIAL_RULES.targetNetProfitGbp),
   remainingProfitGbp:remaining,profitProgressPct:round(Math.max(0,profit)/TRIAL_RULES.targetNetProfitGbp*100),
   targetReached:profit>=TRIAL_RULES.targetNetProfitGbp,closedTrades:metrics.closedTrades,
   ...Object.fromEntries(Object.entries(metrics).filter(([k])=>k!=='closedTrades')),
