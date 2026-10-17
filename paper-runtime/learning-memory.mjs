@@ -111,16 +111,22 @@ export function rememberTraining(memory,event){
    winRatePct:o.trainingWinRatePct??o.winRatePct,
    trainingScore:o.trainingScore??o.score??null
  }));
- const recordId=hash([memory.policy,symbol,feed,trainingStart,trainingEnd,trainFingerprint]);
+ // Same market/candles but DIFFERENT tested strategies are useful negative
+ // research memory, not new out-of-sample evidence. A run with identical
+ // candles AND identical candidate settings is a true duplicate.
+ const settingsId=hash(opts.map(o=>key(o.params)).sort());
+ const recordId=hash([memory.policy,symbol,feed,trainingStart,trainingEnd,trainFingerprint,settingsId]);
  const existing=memory.experiments.find(e=>e.id===recordId);
- if(existing)return {memory,reason:'EXACT_DATA_REPLAY_DEDUPED',acceptedForLearning:false,recordId};
- // Overlapping daily re-tests may be useful for a local exploratory session,
- // but never count as independent evidence and never grow the persistent
- // archive every 15 minutes. Keep at most one shadow study per UTC date.
- const day=trainingEnd.slice(0,10);
- const shadow=memory.experiments.find(e=>e.symbol===symbol&&e.feed===feed&&
-   !e.acceptedForLearning&&e.trainingEnd.slice(0,10)===day);
- if(shadow)return {memory,reason:'SAME_DAY_OVERLAP_NOT_PERSISTED',acceptedForLearning:false,recordId:shadow.id};
+ if(existing)return {memory,reason:'EXACT_DATA_AND_SETTINGS_DEDUPED',acceptedForLearning:false,recordId};
+ const sameDay=memory.experiments.filter(e=>e.symbol===symbol&&e.feed===feed&&
+   e.trainingEnd.slice(0,10)===trainingEnd.slice(0,10));
+ // Hard bound per pair/feed/day to avoid unlimited archive growth or using
+ // repeated tests to inflate a performance claim.
+ if(sameDay.length>=8)return {memory,reason:'DAILY_RESEARCH_EXPERIMENT_CAP',acceptedForLearning:false,
+   recordId:existing?.id||recordId};
+ const sameSettings=sameDay.find(e=>hash(e.trainingOptions.map(o=>key(o.params)).sort())===settingsId);
+ if(sameSettings)return {memory,reason:'SAME_DAY_SETTINGS_ALREADY_TESTED',acceptedForLearning:false,
+   recordId:sameSettings.id};
  const spans=memory.experiments.filter(e=>e.symbol===symbol&&e.feed===feed&&e.acceptedForLearning);
  const overlapping=spans.some(e=>Date.parse(trainingStart)<Date.parse(e.trainingEnd)&&
      Date.parse(e.trainingStart)<Date.parse(trainingEnd));
