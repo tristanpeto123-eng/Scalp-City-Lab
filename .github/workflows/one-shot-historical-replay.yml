@@ -1,4 +1,4 @@
-name: One-off verified historical candle replay
+name: One-off GBP8000 profit historical replay
 on:
   push:
     branches: [feat/crypto-paper-agents-rc3]
@@ -13,14 +13,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 'e446a7d965effdde844ead5e69a71f3c5cb2f8a7'
+          ref: '0e3cc307f6db4118016bee1d55d77926e1877163'
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Verify replay tests and API GET-only module syntax
         run: |
-          node paper-runtime/replay-3r-tests.mjs
+          node paper-runtime/profit-goal-tests.mjs
           node --check paper-runtime/replay-run.mjs
       - name: Run 180-day BTC and ETH initial training then chronological frozen evaluation
         env:
@@ -32,6 +32,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: historical-3r-replay-report
+          name: historical-profit8000-replay-report
           path: replay-output/report.json
           retention-days: 30
