@@ -60,12 +60,12 @@ assert.throws(()=>adapter.paperOrder({symbol:'XAUUSD',side:'buy',type:'market',t
 // This checks the transition wiring without claiming actual market profitability.
 const approved=new AgentWorkflow({broker:brokerFactory(raw),journal:new Journal(),paperEnabled:false,now:()=>NOW});
 const stages=[];const orig=approved.stage.bind(approved);
-approved.stage=async (id,fn,details)=>{stages.push(id);if(id==='VL-01') return {verdict:'AUDIT_PASS',holdout:{netReturnPct:2,maxDrawdownPct:1}};return orig(id,fn,details)};
+approved.stage=async (id,fn,details)=>{stages.push(id);if(id==='VL-01') return {verdict:'AUDIT_PASS',holdout:{netGbp:2,maxDrawdownPct:1}};return orig(id,fn,details)};
 const result=await approved.process('QQQ');assert.equal(result.status,'DRY_RUN');
 assert.deepEqual(stages,AGENTS.map(x=>x[0]));checked++;
 const liveMock=brokerFactory(raw);
 const wired=new AgentWorkflow({broker:liveMock,journal:new Journal(),paperEnabled:true,now:()=>NOW});
-const delegate=wired.stage.bind(wired);wired.stage=(id,fn,d)=>id==='VL-01'?Promise.resolve({verdict:'AUDIT_PASS',holdout:{netReturnPct:3,maxDrawdownPct:1}}):delegate(id,fn,d);
+const delegate=wired.stage.bind(wired);wired.stage=(id,fn,d)=>id==='VL-01'?Promise.resolve({verdict:'AUDIT_PASS',holdout:{netGbp:3,maxDrawdownPct:1}}):delegate(id,fn,d);
 const submitted=await wired.process('SPY');assert.equal(submitted.status,'PAPER_ORDER_SUBMITTED');
 assert.equal(liveMock.submitted.length,1);assert.equal(liveMock.submitted[0].symbol,'SPY');
 assert.ok(/^sc010rc3-/.test(liveMock.submitted[0].client_order_id));checked++;
