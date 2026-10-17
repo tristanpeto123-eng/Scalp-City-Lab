@@ -11,7 +11,7 @@ async function main(){
  const broker=new AlpacaPaper(),days=Number(process.env.SCALP_REPLAY_DAYS||180);
  const summary={mode:'HISTORICAL_AS_LIVE_NOT_FORWARD',tradingEnabled:false,
    initialCapital:'GBP 50 VIRTUAL',netProfitTargetGbp:2000,targetBalanceGbp:2050,
-   fixedRewardRisk:null,secondaryMinimumTrades:61,secondaryTargetWinRatePct:70,
+   fixedRewardRisk:null,secondaryMinimumTrades:0,tradeLimit:null,secondaryTargetWinRatePct:80,
    checkedAt:new Date().toISOString(),results:[]};
  for(const symbol of symbols){
   const source=await loadHistoricalCrypto({broker,symbol,days});
