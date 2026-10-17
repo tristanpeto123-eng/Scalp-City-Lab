@@ -13,6 +13,15 @@ const idBy = Object.fromEntries(AGENTS.map(([id,name])=>[id,name]));
 export const sha = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 export const COST_BPS = 10; // conservative illustrative friction; NOT broker-verified.
 export const INTERVAL_MS = 15*60_000;
+// US equity session starts at 09:30 New York time, including DST changes.
+// The first completed 15-minute session bar cannot exist at market open.
+export function inOpeningGrace(now=Date.now()){
+  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{
+    timeZone:'America/New_York',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false
+  }).formatToParts(new Date(now)).filter(p=>p.type!=='literal').map(p=>[p.type,Number(p.value)]));
+  const seconds=parts.hour*3600+parts.minute*60+parts.second;
+  return seconds>=9*3600+30*60&&seconds<9*3600+46*60+30;
+}
 const minHistory=150;
 const NUM = x => typeof x==='number' && Number.isFinite(x);
 const positive = x => NUM(x) && x>0;
@@ -120,6 +129,7 @@ export class AgentWorkflow {
     try{
       const clock=await this.broker.clock();
       if(!clock.is_open) {this.lastStatus='MARKET_CLOSED';return {status:'MARKET_CLOSED'};}
+      if(inOpeningGrace(this.now())){this.lastStatus='WAITING_FOR_OPENING_CANDLE';return {status:'WAITING_FOR_OPENING_CANDLE'};}
       await this.stage('BM-01',()=>({symbol,clock:clock.timestamp||null}),{decision:'Fresh-bar workflow dispatched'});
       const raw=await this.broker.history(symbol);
       const curated=await this.stage('DC-01',()=>curateBars(raw,this.now()),{decision:'Closed real bars checked'});
@@ -163,7 +173,17 @@ export class AgentWorkflow {
     const held=pos?Number(pos.qty):0;
     if(!NUM(held)||held<0)throw Error('RM: invalid held quantity');
     const action=signal===1&&!held?'buy':signal===0&&held?'sell':'none';
-    if(action==='buy'&&positions.length>=2)throw Error('RM: maximum two holdings');
+    const reserved=new Set([...positions.map(p=>p.symbol),...orders.filter(o=>o.side==='buy').map(o=>o.symbol)]);
+    if(action==='buy'&&reserved.size>=2)throw Error('RM: maximum two holdings including pending buys');
+    // Never liquidate a manual holding or a position whose provenance is incomplete.
+    // Refuse to sell unless broker history proves the entire quantity is attributable
+    // to this specific paper bot; a missing/trimmed order history fails closed.
+    if(action==='sell'){
+      const history=await this.broker.recentOrders();
+      const owned=history.filter(o=>/^sc010rc1-/.test(String(o.client_order_id||''))&&o.symbol===symbol)
+        .reduce((qty,o)=>qty+(o.side==='buy'?1:o.side==='sell'?-1:0)*Number(o.filled_qty||0),0);
+      if(!Number.isFinite(owned)||owned+1e-8<held)throw Error('RM: manual or unattributed holding; no auto-liquidation');
+    }
     // Hard cap per order: 1% account equity, paper only. No leverage.
     const notional=Math.max(0,Math.min(equity*.01,Number(account.buying_power)||0));
     if(action==='buy'&&notional<25)throw Error('RM: insufficient allowed notional');
