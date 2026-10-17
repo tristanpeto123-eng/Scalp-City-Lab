@@ -48,7 +48,9 @@ export function assertMemory(value){
 export function proposeCandidates(memory,{symbol,feed}){
  assertMemory(memory);
  if(!isResearchCrypto(symbol)||!isFeed(feed))throw Error('Unknown research market or feed');
- const accepted=memory.experiments.filter(e=>e.symbol===symbol&&e.feed===feed&&e.acceptedForLearning);
+ const historic=memory.experiments.filter(e=>e.symbol===symbol&&e.feed===feed);
+ const accepted=historic.filter(e=>e.acceptedForLearning);
+ const tried=new Set(historic.flatMap(e=>e.trainingOptions.map(o=>key(o.params))));
  const observations=new Map();
  for(const e of accepted)for(const o of e.trainingOptions){
    const k=key(o.params),prior=observations.get(k)||{params:o.params,trials:0,scoreSum:0,netSum:0};
@@ -65,11 +67,11 @@ export function proposeCandidates(memory,{symbol,feed}){
  for(const row of positive.slice(0,2))insert(row.params);
  // Untried fixed grid gives bounded exploration and ensures unsuccessful
  // strategies teach the designer to look somewhere else next time.
- for(const item of GRID.filter(p=>!observations.has(key(p))).slice(0,6))insert(item);
+ for(const item of GRID.filter(p=>!tried.has(key(p))).slice(0,6))insert(item);
  // Never report a run as proof of a successful learning algorithm.
  if(chosen.length<5)for(const p of GRID)insert(p);
  return {candidates:chosen.slice(0,6),market:symbol,feed,priorIndependentWindows:accepted.length,
-   triedParameters:observations.size,
+   triedParameters:tried.size,
    basis:'TRAIN_ONLY_EVIDENCE_PLUS_BOUNDED_GRID_EXPLORATION',
    learnedFromHoldout:false,modelDeployed:false};
 }
