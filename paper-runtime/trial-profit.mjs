@@ -3,6 +3,7 @@
 // open after a completed bearish EMA signal, or at a 2% protective SIMULATED stop.
 // It is NOT a real broker protective stop or guarantee of fills.
 import {measureGoal} from './performance.mjs';
+import {isResearchCrypto} from './crypto-research-marketset.mjs';
 
 export const TRIAL_RULES=Object.freeze({
  version:'GBP50-PROFIT2000-v2',startingBalanceGbp:50,targetNetProfitGbp:2000,
@@ -10,11 +11,11 @@ export const TRIAL_RULES=Object.freeze({
  cryptoFeeFractionPerSide:0.005,equityFeeFractionPerSide:0.001,
  maxAllocationFraction:0.50,minimumVirtualNotionalGbp:1
 });
-const VALID=new Set(['BTC/USD','ETH/USD','SPY','QQQ','IWM']);
+const VALID=new Set(['SPY','QQQ','IWM']);
 const scalar=n=>typeof n==='number'&&Number.isFinite(n);
 const round=n=>Number(n.toFixed(8));
 const timestamp=s=>{const t=Date.parse(s);if(!Number.isFinite(t))throw Error('Invalid timestamp');return t;};
-const feeFor=sym=>['BTC/USD','ETH/USD'].includes(sym)?TRIAL_RULES.cryptoFeeFractionPerSide:TRIAL_RULES.equityFeeFractionPerSide;
+const feeFor=sym=>isResearchCrypto(sym)?TRIAL_RULES.cryptoFeeFractionPerSide:TRIAL_RULES.equityFeeFractionPerSide;
 
 export function initializeTrial(){
  return {version:TRIAL_RULES.version,currency:'GBP_VIRTUAL',startingBalanceGbp:50,
@@ -33,7 +34,7 @@ export function netRiskPlan({balanceGbp,entryPrice,feeRate=TRIAL_RULES.cryptoFee
   targetPrice:null,requiredRewardRisk:null};
 }
 function assertBar(b){
- if(!b||!VALID.has(b.symbol)||![b.o,b.h,b.l,b.c].every(scalar)||
+ if(!b||(!VALID.has(b.symbol)&&!isResearchCrypto(b.symbol))||![b.o,b.h,b.l,b.c].every(scalar)||
  Math.min(b.o,b.h,b.l,b.c)<=0||b.h<Math.max(b.o,b.l,b.c)||
  b.l>Math.min(b.o,b.h,b.c))throw Error('Invalid completed OHLC');
  return timestamp(b.t);
@@ -41,7 +42,7 @@ function assertBar(b){
 function assertState(state){if(state?.version!==TRIAL_RULES.version)throw Error('Wrong virtual ledger version');}
 export function queueSignal(state,{symbol,signalBarStart,candidateId}){
  assertState(state);
- if(!VALID.has(symbol)||!candidateId||!signalBarStart)throw Error('Invalid signal');
+ if((!VALID.has(symbol)&&!isResearchCrypto(symbol))||!candidateId||!signalBarStart)throw Error('Invalid signal');
  const t=timestamp(signalBarStart);
  if(state.open||state.pending)return {state,result:'OCCUPIED'};
  if((state.lastBarBySymbol[symbol]??-Infinity)>t)throw Error('Signal older than processed bar');
