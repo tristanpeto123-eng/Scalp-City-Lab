@@ -66,7 +66,7 @@ async function main(){
         // Advance GBP virtual trial only with actual completed broker-data candles.
         // First run reads market history but cannot fabricate a retrospective entry:
         // position entry requires a signal recorded in an EARLIER snapshot.
-        if(['BTC/USD','ETH/USD'].includes(symbol)&&workflow.markets[symbol]){
+        if(['SPY','QQQ','IWM','BTC/USD','ETH/USD'].includes(symbol)&&workflow.markets[symbol]){
           const bars=await broker.history(symbol);
           for(const b of bars){
             const advancement=processBar(trialState,{symbol,t:b.t,o:Number(b.o),h:Number(b.h),l:Number(b.l),c:Number(b.c)});
