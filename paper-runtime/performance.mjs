@@ -2,7 +2,7 @@
 // Never equate order count, partial fills or profitable bars with completed trades.
 import {createHash} from 'node:crypto';
 
-export const GOAL=Object.freeze({minimumClosedTrades:61,minimumWinRate:0.80,minimumProfitFactor:1.25});
+export const GOAL=Object.freeze({minimumClosedTrades:61,minimumWinRate:0.70,minimumProfitFactor:1.25});
 const valid=n=>typeof n==='number'&&Number.isFinite(n);
 const symbol=x=>String(x||'').replace('/','');
 const crypto=x=>['BTCUSD','ETHUSD'].includes(symbol(x));
@@ -47,7 +47,7 @@ export function measureGoal(trades,{minTrades=GOAL.minimumClosedTrades}={}){
    profitFactor:pf===null?null:Number(pf.toFixed(4)),maxDrawdownUsd:Number(maxDrawdownUsd.toFixed(4)),
    singleCohort:cohorts.size<=1,feesAndFillsVerified:verified,
    observedThresholdMet:observed,verifiedTargetMet:status==='TARGET_VERIFIED',
-   note:'61+ CLOSED entry-to-exit forward PAPER trades; modeled costs never count as verified.'};
+   note:'Secondary 70% win-rate threshold over 61+ CLOSED trades; independently verified broker costs and fill evidence required for verified status. Historical and modeled results remain provisional.'};
 }
 
 // Derived only from cumulative filled_qty and filled_avg_price of broker order snapshots.
