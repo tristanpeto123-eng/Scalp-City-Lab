@@ -15,6 +15,16 @@
 - GH scheduled runner: read-only, paperEnabled hardcoded false, public standard Actions runners, 15 minute best-effort ticks; no durable agent memory between GH runs.
 - Containerized persistent runner prepared, has durable journal volume and local-only telemetry, never activated by PR merge.
 
+## Owner performance contract — October 17, 2026
+
+- **Virtual initial capital:** £50 (GBP shadow ledger, never Alpaca USD balance)
+- **Trade entry target:** 3:1 reward-to-risk NET of modelled costs, with an initial max 1% equity risk (£0.50) and modelled profit target £1.50
+- **Score threshold:** >= 80% net winners across at least 61 **closed entry-to-exit** forward trades; 49/61 minimum when n=61; positive portfolio net P&L, profit factor >= 1.25 and a single strategy cohort
+- **Independence:** never count synthetic, historical backtest, pending, partially filled, or duplicated orders in the forward score
+- **Accuracy:** report 95% Wilson lower bound; meeting observed 80% doesn't establish true p>=80%
+- **Clock/entry:** next finalized 15-min candle open, ambiguous touch counts as stop, 30-minute signal expiration, fees estimated; FX movements omitted (GBP shadow account)
+- **Safety:** persistent service explicitly rejects broker order arming until stop/target protection is independently validated
+
 ## Checker evidence
 - [x] Existing equities and workflow mock tests (26 checks) passed locally.
 - [x] Crypto-specific mock tests (29 checks) passed locally; 55 total.
@@ -22,6 +32,8 @@
 - [x] Real broker **GET-only** five-market research flow passed: BTC/USD and ETH/USD processed real 15-minute candles, both strategies were correctly **VALIDATION_BLOCKED**, and equities were MARKET_CLOSED on Saturday. The one-shot runner was hardcoded no-order. Evidence: https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39063695341.
 - [x] Both final post-cleanup GitHub CI workflows passed for commit `9aaef75cfded56efeb78015b9966c70f3ae9ff84` (2026-10-17): Scalp paper runtime tests and Bootstrap & Checks.
 - [ ] Verified crypto broker partial fills, fractional quantity precision, dust and true tariff/market impact.
+- [x] Virtual £50 risk/3R mathematics, 61-trade scoring and stop-first replay tested under GitHub CI.
+- [ ] Full persistent journal restart and actual forward trade collection tested with persistent host.
 - [ ] Verified restart recovery, lost/retried broker API response, journal integrity under real runtime conditions.
 - [ ] Verified deployed HTTPS read-only telemetry, broker permissions and user kill switch.
 - [ ] No untrusted library, credential or real-money endpoint introduced (review full diff before merge).
