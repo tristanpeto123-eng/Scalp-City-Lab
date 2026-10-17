@@ -105,7 +105,7 @@ const money=n=>Number.isFinite(n)?(n<0?'−':'')+'£'+Math.abs(n).toFixed(2):'�
 const profitState=p=>!Number.isFinite(p.net)?'NOT EVALUATED':
  p.net>0?'PROFITABLE':p.net<0?'LOSS-MAKING':'BREAKEVEN';
 function robot(p){const node=document.createElement('div');
- node.className='robot'+(p.id===selected?' current':'')+(grade(p)===10?' grad':'');
+ node.className='robot'+(p.id===selected?' current':'')+(grade(p)===10&&(demo||confirmed(p))?' grad':'');
  node.style.setProperty('--bot',p.color);node.title=p.symbol+' · '+gradeText(p);
  node.innerHTML='<span class="antenna"></span><span class="hat"></span><span class="face"></span><span class="eyes"></span><span class="mouth"></span><span class="body"></span><span class="feet"></span><span class="name"></span>';
  node.querySelector('.name').textContent=p.symbol.split('/')[0];return node;}
@@ -208,7 +208,7 @@ function render(){
  for(let i=0;i<=10;i++){const d=document.createElement('div');if(g!==null&&i<=g)d.className='done';
  d.innerHTML='<i></i>G'+i;track.append(d);}
 }
-function graduate(p){const card=document.createElement('div');card.className='confetti';card.textContent='🎓 '+p.symbol.split('/')[0]+' → Grade '+grade(p)+'!';
+function graduate(p){const card=document.createElement('div');card.className='confetti';card.textContent=(demo?'🎓 DEMO ': '📘 PROVISIONAL ') +p.symbol.split('/')[0]+' → Grade '+grade(p)+'!';
  document.body.append(card);setTimeout(()=>card.remove(),1750);}
 const HISTORICAL_SOURCE='HISTORICAL_TRAINING_RESEARCH';
 function checkResearchSummary(data){
@@ -282,8 +282,15 @@ async function loadResearch(refresh=false){
   if(!response.ok)throw Error('Research snapshot has not been published (HTTP '+response.status+')');
   const verified=checkResearchSummary(await response.json());
   if(serial!==researchRequest)return;
+  const hadResearch=Boolean(research);
+  const previousSelected=pupils[selected];
+  const previousGrade=hadResearch&&!demo?grade(previousSelected):null;
   research=verified;researchError=null;
-  if(!demo){pupils=historicalPupils();render();}
+  if(!demo){
+    pupils=historicalPupils();render();
+    if(previousGrade!==null&&grade(pupils[selected])>previousGrade)
+      graduate(pupils[selected]); // Provisional research grade only.
+  }
  }catch(e){
   if(serial!==researchRequest)return;
   research=null;
