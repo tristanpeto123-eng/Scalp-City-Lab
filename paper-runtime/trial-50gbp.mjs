@@ -85,7 +85,7 @@ export function processBar(state,bar,{allowEntry=true}={}){
  const modeledFeesGbp=pos.notionalGbp*pos.feeRate*(1+exit/pos.enteredAtOpenPrice);
  const netGbp=round(grossGbp-modeledFeesGbp);
  const closed={id:pos.symbol.replace('/','')+':'+pos.entryBarStart+':'+bar.t,
-  symbol:pos.symbol,cohort:TRIAL_RULES.version,candidateId:pos.candidateId,closedAt:new Date(t+900000).toISOString(),
+  symbol:pos.symbol,cohort:TRIAL_RULES.version+':'+pos.candidateId,candidateId:pos.candidateId,closedAt:new Date(t+900000).toISOString(),
   openedAt:pos.entryBarStart,exitReason:outcome,bothBarriersTouched:stop&&win,
   netGbp,feeBasis:'MODELED_NOT_POSTED',
   evidence:'VIRTUAL_FORWARD_BAR_SIMULATION',virtualRiskGbp:pos.plannedRiskGbp,
