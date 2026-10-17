@@ -103,23 +103,23 @@ export function replayHistorical({symbol,raw,calibrationFraction=.40,candidates=
    barsProcessed:bars.length,
    disclaimer:'Historical variable-exit profit research; no fixed R:R. Historical chronological simulation with modeled fees and no FX, slippage or real fills. Never counts as genuine live forward evidence; no future observations entered the training window.'};
 }
-export async function loadHistoricalCrypto({broker,symbol,days=180,now=Date.now(),maximumPages=80}={}){
+export async function loadHistoricalCrypto({broker,symbol,days=180,now=Date.now(),maximumPages=80,location='us'}={}){
  if(!broker||!isResearchCrypto(symbol)||!Number.isInteger(days)||days<8||days>365||
-    !Number.isInteger(maximumPages)||maximumPages<1||maximumPages>100)throw Error('Invalid crypto replay source');
+    !Number.isInteger(maximumPages)||maximumPages<1||maximumPages>100||!['us','us-1'].includes(location))throw Error('Invalid crypto replay source');
  const params=new URLSearchParams({symbols:symbol,timeframe:'15Min',
    start:new Date(now-days*86400_000).toISOString(),end:new Date(now-30_000).toISOString(),
    limit:'10000',sort:'asc'});
  const tokens=new Set(),raw=[];
  for(let i=0;i<maximumPages;i++){
   const data=await broker.req('https://data.alpaca.markets',
-    '/v1beta3/crypto/us/bars?'+params.toString());
+    '/v1beta3/crypto/'+location+'/bars?'+params.toString());
   const received=data?.bars?.[symbol];
   if(!Array.isArray(received))throw Error('Historical API omitted '+symbol);
   raw.push(...received);
   if(!data.next_page_token) {
    return {raw:raw.filter(b=>Date.parse(b.t)+INTERVAL<=now-30_000),
      fetchedPages:i+1,symbol,days,
-     source:'ALPACA_CRYPTO_US_BARS_GET_ONLY'};
+     source:'ALPACA_CRYPTO_'+location.toUpperCase()+'_BARS_GET_ONLY'};
   }
   if(tokens.has(data.next_page_token))throw Error('Repeated historical page token');
   tokens.add(data.next_page_token);
