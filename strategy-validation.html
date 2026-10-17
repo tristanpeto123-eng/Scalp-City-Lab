@@ -33,7 +33,7 @@ footer{color:#acc1cd;font-size:13px;margin:20px 0}a{color:#79d7f6}
 </div><p class="secondary">Adaptive mode tests eight rule sets on the first 40% of this pair's history, including independent discovery and confirmation slices, and then freezes a qualified strategy for the remaining 60%. If none pass after costs, the model will **abstain**. Manual modes remain available for comparison. The run stops on your duration or on realised net profits after completed trades, whichever mode you choose. If history runs out first, the test reports that rather than guessing.</p>
 <button id="run" type="button" disabled>Run historical validation</button></section>
 <section id="result" aria-live="polite"><h2>Validation results</h2><p class="secondary">Results will appear here once market data has loaded and you run a test.</p></section>
-<footer>Data is an archived historical snapshot, not a live trading feed. Illustrative 0.5% fees each way; GBP outcomes use USD price-change ratios without FX, spreads, liquidity or real slippage. The 80% win-rate goal is measured, never presumed.</footer>
+<footer>Data is an archived historical snapshot, not a live trading feed. Manual tests use 0.5% modelled fees per side; adaptive mode tests Alpaca's published entry-tier taker fee of 0.25% per side and stresses it at 0.5%. GBP outcomes use USD price-change ratios without FX, spreads, liquidity or real slippage. The 80% win-rate goal is measured, never presumed.</footer>
 </main>
 <script type="module">
 import {checkSnapshot,simulateValidation} from './strategy-validation-core.mjs';
@@ -88,6 +88,7 @@ function display(r){
   ['Cash balance after closed trades',money(r.cashBalanceGbp)],
   ['Virtual equity (open position marked)',money(r.markedEquityGbp)],
   ['Closed trades',String(r.closedTrades)],
+  ['Modelled fee per side',(100*r.feePerSideFraction).toFixed(2)+'%'],
   ['Observed historical win rate',r.winRatePct===null?'Not enough trades':r.winRatePct+'%'],
   ['Maximum historical drawdown',r.maxDrawdownPct+'%'],
   ['Simulated elapsed duration',r.elapsedDays+' days']
@@ -154,7 +155,7 @@ function modelExplanation(model){
    'Most promising training candidate: '+best.label+
    ' · discovery '+money(best.discovery.netGbp)+' net / '+best.discovery.closedTrades+' closes'+
    ' · confirmation '+money(best.confirmation.netGbp)+' net / '+best.confirmation.closedTrades+' closes'+
-   ' · double-fee '+money(best.doubledFee.netGbp)+' net'+
+   ' · double-fee 0.5%/side stress '+money(best.doubledFee.netGbp)+' net'+
    ' · Checker: '+(best.rejection.join('; ')||'internal gates passed')+'.':
    'No candidates were evaluated.';
  panel.append(why);
