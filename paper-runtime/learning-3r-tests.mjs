@@ -5,8 +5,8 @@ const sym='BTC/USD';
 const makeBars=(length=240)=>{
  let previous=100;
  return Array.from({length},(_,i)=>{
-  const o=previous,phase=i%18;
-  const c=o*(phase<11?1.015:0.955);
+  const o=previous;
+  const c=100+22*Math.sin(i/6);
   previous=c;
   return {t:Date.parse('2026-10-01T00:00:00Z')+i*900000,
    o,h:Math.max(o,c)*1.001,l:Math.min(o,c)*.999,c,v:1000};
