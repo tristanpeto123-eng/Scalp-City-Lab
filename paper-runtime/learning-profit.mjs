@@ -5,7 +5,7 @@ const ALLOWED=new Set(['BTC/USD','ETH/USD','SPY','QQQ','IWM']);
 const finite=Number.isFinite;
 export const PROFIT_OBJECTIVE=Object.freeze({
   startingGbp:50,netProfitTargetGbp:2000,targetBalanceGbp:2050,
-  mandatoryRR:null,minimumClosedTrades:61,secondaryWinRateGoalPct:70,
+  mandatoryRR:null,minimumClosedTrades:0,maximumClosedTrades:null,secondaryWinRateGoalPct:80,
   minTrainingClosed:3,minHoldoutClosed:3,maxDrawdownPct:20
 });
 export function validateHistory(bars,params){
