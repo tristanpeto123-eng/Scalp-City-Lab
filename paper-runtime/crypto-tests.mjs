@@ -14,7 +14,7 @@ let checked=0;
 for(const sym of ['BTC/USD','ETH/USD']){
  const b=broker(),j=new Journal(),flow=new AgentWorkflow({broker:b,journal:j,paperEnabled:false,now:()=>NOW});
  const stages=[],real=flow.stage.bind(flow);
- flow.stage=(id,fn,x)=>{stages.push(id);return id==='VL-01'?Promise.resolve({verdict:'AUDIT_PASS',holdout:{netReturnPct:5,maxDrawdownPct:1}}):real(id,fn,x)};
+ flow.stage=(id,fn,x)=>{stages.push(id);return id==='VL-01'?Promise.resolve({verdict:'AUDIT_PASS',holdout:{netGbp:5,maxDrawdownPct:1}}):real(id,fn,x)};
  const result=await flow.process(sym);
  assert.equal(result.status,'DRY_RUN');checked++;
  assert.deepEqual(stages,AGENTS.map(x=>x[0]));checked++;
@@ -25,7 +25,7 @@ for(const sym of ['BTC/USD','ETH/USD']){
 }
 const b=broker(),flow=new AgentWorkflow({broker:b,journal:new Journal(),paperEnabled:true,now:()=>NOW});
 const real=flow.stage.bind(flow);
-flow.stage=(id,fn,x)=>id==='VL-01'?Promise.resolve({verdict:'AUDIT_PASS',holdout:{netReturnPct:5,maxDrawdownPct:1}}):real(id,fn,x);
+flow.stage=(id,fn,x)=>id==='VL-01'?Promise.resolve({verdict:'AUDIT_PASS',holdout:{netGbp:5,maxDrawdownPct:1}}):real(id,fn,x);
 const submitted=await flow.process('BTC/USD');assert.equal(submitted.status,'PAPER_ORDER_SUBMITTED');checked++;
 assert.equal(b.submitted.length,1);checked++;
 assert.equal(b.submitted[0].symbol,'BTC/USD');checked++;
