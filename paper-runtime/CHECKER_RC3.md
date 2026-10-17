@@ -53,3 +53,10 @@
 
 
 **Kraken US alternative-feed cross-check completed:** all 8 instruments returned ≥8,639 bars with ≤3.54% zero-volume (vs 6 of 8 Alpaca-US zero-volume screening failures), enabling full calibrated strategy checks. All **eight still rejected**. SOL net −£2.69/20.00% winners; XRP −£3.04/10.34%; ADA −£1.43/16.67%; AVAX −£2.40/14.29%; LINK −£2.51/12.50%; DOGE −£2.27/17.86%; LTC −£2.00/9.09%; BCH **+£0.66/16.67%** in a historical internal holdout but failed the training and 2x-cost stress gates. Zero actual forward trades and zero broker orders. Evidence https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39070322662. Full comparative report: [CRYPTO_MARKET_SCREEN_2026-10-17.md](CRYPTO_MARKET_SCREEN_2026-10-17.md). Keep CHECKER verdict NEEDS_REVISION.
+
+
+### Clarification verified — accumulated profit, not one-trade win (17 October 2026)
+- [x] The £2,000 target is the **net sum of ALL completed virtual trades** since the £50 start, including loss offsets and modeled transaction fees. Never count unrealised open-position P&L or require a single £2,000 winner.
+- [x] The `trialReport` reconciles accumulated closed-trade net GBP results with the journalled virtual account balance and **rejects phantom profit** caused by any unrelated balance mutation.
+- [x] Added tests prove three trades totalling £1,950 do not pass, a subsequent £50 net win reaches £2,000, and losers must be earned back before reaching the target.
+- [ ] Rerun full CI against the final committed revision. Previously rejected BTC/ETH/alternative-crypto research candidates remain rejected; performance objective still not achieved.
