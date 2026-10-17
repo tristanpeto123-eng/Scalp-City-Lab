@@ -28,7 +28,23 @@ export function checkSnapshot(source,symbol,now=Date.now()){
   sampleStart:iso(bars[0].t),sampleEnd:iso(bars.at(-1).t+PERIOD),
   zeroVolumeFraction:zero/bars.length};
 }
-export function simulateValidation({snapshot,symbol,startingBalanceGbp=50,mode='duration',limit=14,strategy='ema',now=Date.now()}){
+function strategyConfig(strategy,p={}){
+ if(strategy==='ema'){const fast=p.fast??9,slow=p.slow??34;
+  if(!Number.isInteger(fast)||!Number.isInteger(slow)||fast<3||fast>=slow||slow>96)throw Error('Invalid EMA parameters');
+  return {fast,slow};}
+ if(strategy==='rsi'){const period=p.period??14,buyBelow=p.buyBelow??30,sellAbove=p.sellAbove??60;
+  if(!Number.isInteger(period)||period<7||period>30||
+   !Number.isInteger(buyBelow)||buyBelow<10||buyBelow>40||
+   !Number.isInteger(sellAbove)||sellAbove<=buyBelow||sellAbove>85)throw Error('Invalid RSI parameters');
+  return {period,buyBelow,sellAbove};}
+ if(strategy==='breakout'){const lookback=p.lookback??20,exitLookback=p.exitLookback??10;
+  if(!Number.isInteger(lookback)||lookback<10||lookback>96||
+   !Number.isInteger(exitLookback)||exitLookback<5||exitLookback>lookback)throw Error('Invalid channel parameters');
+  return {lookback,exitLookback};}
+ throw Error('Unknown strategy');
+}
+export function simulateValidation({snapshot,symbol,startingBalanceGbp=50,mode='duration',limit=14,
+ strategy='ema',strategyParams=null,feePerSideFraction=FEE,now=Date.now()}){
  const checked=checkSnapshot(snapshot,symbol,now);
  if(!valid(startingBalanceGbp)||startingBalanceGbp<50||startingBalanceGbp>1e6)
   throw Error('Starting virtual balance must be £50–£1m');
@@ -36,24 +52,31 @@ export function simulateValidation({snapshot,symbol,startingBalanceGbp=50,mode='
    (mode==='duration'&&(!Number.isInteger(limit)||limit>3650))||
    (mode==='profit'&&limit>1e8))
   throw Error('Invalid duration or cumulative-profit target');
- if(!['ema','rsi','breakout'].includes(strategy))throw Error('Unknown strategy');
+ const params=strategyConfig(strategy,strategyParams||{});
+ if(!valid(feePerSideFraction)||feePerSideFraction<FEE||feePerSideFraction>FEE*2)
+  throw Error('Invalid modeled fee stress');
+ const fee=feePerSideFraction;
  const bars=checked.bars,calibrationEnd=Math.floor(bars.length*.4),test=bars.slice(calibrationEnd);
  // Feature warmup uses only first 40%; no tuning/selecting on held-out bars.
  let fast=null,slow=null,prev=null,avgGain=0,avgLoss=0,ready=0;
  const high=[],low=[];let rsi=50;
+ const warmup=Math.max(35,strategy==='ema'?params.slow:0,
+  strategy==='breakout'?params.lookback:0);
  function observe(b){
-  const earlierHigh=high.length>=20?Math.max(...high.slice(-20)):Infinity;
-  const earlierLow=low.length>=10?Math.min(...low.slice(-10)):-Infinity;
-  fast=fast===null?b.c:fast+2/10*(b.c-fast);
-  slow=slow===null?b.c:slow+2/35*(b.c-slow);
+  const earlierHigh=high.length>=params.lookback?Math.max(...high.slice(-params.lookback)):Infinity;
+  const earlierLow=low.length>=params.exitLookback?Math.min(...low.slice(-params.exitLookback)):-Infinity;
+  const fastN=strategy==='ema'?params.fast:9,slowN=strategy==='ema'?params.slow:34;
+  fast=fast===null?b.c:fast+2/(fastN+1)*(b.c-fast);
+  slow=slow===null?b.c:slow+2/(slowN+1)*(b.c-slow);
   if(prev!==null){const gain=Math.max(0,b.c-prev),loss=Math.max(0,prev-b.c);
-   avgGain=(avgGain*13+gain)/14;avgLoss=(avgLoss*13+loss)/14;
+   const n=strategy==='rsi'?params.period:14;
+   avgGain=(avgGain*(n-1)+gain)/n;avgLoss=(avgLoss*(n-1)+loss)/n;
    rsi=avgLoss===0?(avgGain===0?50:100):100-100/(1+avgGain/avgLoss);}
   prev=b.c;high.push(b.h);low.push(b.l);ready++;
-  if(high.length>20){high.shift();low.shift();}
-  if(strategy==='ema')return {entry:ready>=35&&fast>slow,exit:fast<=slow};
-  if(strategy==='rsi')return {entry:ready>=35&&rsi<30,exit:rsi>=60};
-  return {entry:ready>=35&&b.c>earlierHigh,exit:b.c<earlierLow};
+  if(high.length>96){high.shift();low.shift();}
+  if(strategy==='ema')return {entry:ready>=warmup&&fast>slow,exit:fast<=slow};
+  if(strategy==='rsi')return {entry:ready>=warmup&&rsi<params.buyBelow,exit:rsi>=params.sellAbove};
+  return {entry:ready>=warmup&&b.c>earlierHigh,exit:b.c<earlierLow};
  }
  bars.slice(0,calibrationEnd).forEach(observe);
  let cash=startingBalanceGbp,open=null,pending=null,wins=0,losses=0,closed=0,realized=0,
@@ -61,7 +84,7 @@ export function simulateValidation({snapshot,symbol,startingBalanceGbp=50,mode='
   endTime=test.at(-1).t+PERIOD;
  const trades=[];
  const close=(price,t,kind)=>{
-  const proceeds=open.units*price*(1-FEE),net=proceeds-open.entryCost;
+  const proceeds=open.units*price*(1-fee),net=proceeds-open.entryCost;
   cash+=proceeds;realized+=net;closed++;if(net>0)wins++;else losses++;
   trades.push({openedAt:iso(open.openTime),closedAt:iso(t),entryPrice:open.entryPrice,
    exitPrice:price,netGbp:round(net),exit:kind});
@@ -76,10 +99,10 @@ export function simulateValidation({snapshot,symbol,startingBalanceGbp=50,mode='
   else if(pending==='BUY'&&!open){
    // Position size limits modeled 2% stop + fee risk to 1% of cash,
    // 50% maximum notional; none of this guarantees gap risk protection.
-   const stopNetFraction=.02+FEE*(2-.02);
+   const stopNetFraction=.02+fee*(2-.02);
    const notional=Math.min(cash*.5,cash*.01/stopNetFraction);
-   if(notional>=1&&cash>notional*(1+FEE)){
-    const units=notional/b.o,entryCost=notional*(1+FEE);
+   if(notional>=1&&cash>notional*(1+fee)){
+    const units=notional/b.o,entryCost=notional*(1+fee);
     cash-=entryCost;
     open={units,entryCost,entryPrice:b.o,openTime:b.t,stopPrice:b.o*.98};
    }
@@ -90,7 +113,7 @@ export function simulateValidation({snapshot,symbol,startingBalanceGbp=50,mode='
   const signal=observe(b);
   if(open&&signal.exit)pending='SELL';
   else if(!open&&signal.entry)pending='BUY';
-  const marked=cash+(open?open.units*b.c*(1-FEE):0);
+  const marked=cash+(open?open.units*b.c*(1-fee):0);
   peak=Math.max(peak,marked);maxDD=Math.max(maxDD,100*(peak-marked)/peak);
   processed++;endTime=b.t+PERIOD;
   // Goal is CUMULATIVE realised NET trade profit, not one winning trade.
@@ -99,12 +122,17 @@ export function simulateValidation({snapshot,symbol,startingBalanceGbp=50,mode='
   }
  }
  const last=test[Math.max(0,processed-1)];
- const estimatedLiquidation=open?open.units*last.c*(1-FEE):0;
+ const estimatedLiquidation=open?open.units*last.c*(1-fee):0;
  const equity=cash+estimatedLiquidation;
  const netProfit=realized;
  if(Math.abs(cash+(open?open.entryCost:0)-startingBalanceGbp-realized)>0.00001)
   throw Error('Closed-trade ledger reconciliation failed');
- return {symbol,strategy,mode,limit,startingBalanceGbp,
+ const grossWinnings=trades.filter(t=>t.netGbp>0).reduce((s,t)=>s+t.netGbp,0);
+ const grossLosses=-trades.filter(t=>t.netGbp<0).reduce((s,t)=>s+t.netGbp,0);
+ const profitFactor=closed===0?null:grossLosses>0?round(grossWinnings/grossLosses):grossWinnings>0?null:0;
+ return {symbol,strategy,strategyParams:params,
+  feePerSideFraction:fee,profitFactor,expectancyNetGbp:closed?round(netProfit/closed):null,
+  mode,limit,startingBalanceGbp,
   actualSource:checked.source,sourcePeriod:{start:checked.sampleStart,end:checked.sampleEnd},
   status:reason,goalReached:reason==='CUMULATIVE_NET_PROFIT_REACHED',
   elapsedDays:round((endTime-test[0].t)/86400000),
