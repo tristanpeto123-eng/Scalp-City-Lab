@@ -5,7 +5,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {AlpacaPaper} from './alpaca-paper.mjs';
 import {AgentWorkflow,sha,AGENTS} from './engine.mjs';
-import {initializeTrial,queueSignal,processBar,trialReport,TRIAL_RULES} from './trial-50gbp.mjs';
+import {initializeTrial,queueSignal,requestExit,processBar,trialReport,TRIAL_RULES} from './trial-profit.mjs';
 
 const folder=process.env.SCALP_JOURNAL_DIR||path.join(path.dirname(fileURLToPath(import.meta.url)),'runtime');
 const journalFile=path.join(folder,'events.jsonl');
@@ -42,7 +42,7 @@ async function main(){
   if(paperEnabled&&unresolvedIntents.size)throw Error('Unresolved paper-order intents must be manually reconciled before re-arming: '+unresolvedIntents.size);
   const workflow=new AgentWorkflow({broker,journal,paperEnabled:false});
   let trialState=journal.trialState||initializeTrial();
-  if(trialState.version!==TRIAL_RULES.version)throw Error('Incompatible virtual trial journal version; do not overwrite existing £50 portfolio');
+  if(trialState.version!==TRIAL_RULES.version)throw Error('Existing trial uses retired policy; must explicitly archive/migrate old trial, never mix GBP8000 goal with 3R results');
   await journal.append({agentId:'BM-01',state:'STARTUP',decision:paperEnabled?'PAPER ORDERS ARMED':'READ-ONLY / DRY-RUN',engine:'scalp-city-paper',ts:new Date().toISOString()});
   const host=process.env.SCALP_BIND||'127.0.0.1',port=Number(process.env.PORT||8787);
   const allowedOrigin=process.env.SCALP_ALLOWED_ORIGIN||'';
@@ -74,6 +74,14 @@ async function main(){
               await journal.append({agentId:'VA-01',state:'TRIAL_GBP_SNAPSHOT',
                 snapshot:advancement.state,decision:advancement.result,ts:new Date().toISOString()});
               trialState=advancement.state;
+            }
+          }
+          if(result.status==='DRY_RUN'&&result.signal===0&&trialState.open&&trialState.open.symbol===symbol){
+            const signalled=requestExit(trialState,{symbol,signalBarStart:workflow.markets[symbol].barStart});
+            if(signalled.state!==trialState){
+              await journal.append({agentId:'VA-01',state:'TRIAL_GBP_SNAPSHOT',
+                snapshot:signalled.state,decision:signalled.result,ts:new Date().toISOString()});
+              trialState=signalled.state;
             }
           }
           if(result.status==='DRY_RUN'&&result.signal===1&&result.candidateId&&!trialState.open&&!trialState.pending){
