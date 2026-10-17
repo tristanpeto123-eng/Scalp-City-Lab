@@ -92,7 +92,8 @@ export function buildAcademySnapshot(memory){
   const seen=new Set(),generations=[];
   for(const [i,e] of history.entries()){
    for(const c of e.candidates)seen.add(idOf(c));
-   leader=registerCandidate(leader,e.candidates);
+   leader=registerCandidate(leader,e.candidates.map(candidate=>({...candidate,
+    sourceExperimentId:e.id,trainedThrough:e.trainingEnd})));
    generations.push({run:i+1,trainingEnd:e.trainingEnd,
     experimentId:e.id,independentWindow:e.independent,
     testedConfigurations:e.candidates.length,
@@ -112,7 +113,7 @@ export function buildAcademySnapshot(memory){
    championModel:null,
    researchLeader:leader?{...leader,status:leader.trainingNetGbp>0?
       'TRAINING_POSITIVE_UNVALIDATED':'TRAINING_LOSS_MAKING',
-     outOfSampleVerified:false,sourceExperimentId:last?.id??null}:null,
+     outOfSampleVerified:false}:null,
    generations};
  });
  const end=records.reduce((latest,e)=>!latest||Date.parse(e.trainingEnd)>Date.parse(latest)?e.trainingEnd:latest,null);
