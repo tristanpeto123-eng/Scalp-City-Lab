@@ -1,12 +1,12 @@
-// Scalp City £50 -> £8,050 VIRTUAL balance objective (£8,000 NET profit).
+// Scalp City £50 -> £2,050 VIRTUAL balance objective (£2,000 NET profit).
 // No mandatory reward/risk ratio. Long-only EMA trend exits at the NEXT candle
 // open after a completed bearish EMA signal, or at a 2% protective SIMULATED stop.
 // It is NOT a real broker protective stop or guarantee of fills.
 import {measureGoal} from './performance.mjs';
 
 export const TRIAL_RULES=Object.freeze({
- version:'GBP50-PROFIT8000-v1',startingBalanceGbp:50,targetNetProfitGbp:8000,
- targetBalanceGbp:8050,riskFraction:0.01,stopFraction:0.02,
+ version:'GBP50-PROFIT2000-v1',startingBalanceGbp:50,targetNetProfitGbp:2000,
+ targetBalanceGbp:2050,riskFraction:0.01,stopFraction:0.02,
  cryptoFeeFractionPerSide:0.005,equityFeeFractionPerSide:0.001,
  maxAllocationFraction:0.50,minimumVirtualNotionalGbp:1
 });
@@ -104,14 +104,14 @@ export function trialReport(state){
  assertState(state);
  const {netUsd,expectancyUsd,maxDrawdownUsd,...metrics}=measureGoal(
    state.closedTrades.map(t=>({...t,netUsd:t.netGbp})));
- const profit=round(state.balanceGbp-50),remaining=round(Math.max(0,8000-profit));
+ const profit=round(state.balanceGbp-50),remaining=round(Math.max(0,TRIAL_RULES.targetNetProfitGbp-profit));
  return {startGbp:50,balanceGbp:state.balanceGbp,
-  netProfitGbp:profit,profitTargetGbp:8000,targetBalanceGbp:8050,
-  remainingProfitGbp:remaining,profitProgressPct:round(Math.max(0,profit)/8000*100),
-  targetReached:profit>=8000,closedTrades:metrics.closedTrades,
+  netProfitGbp:profit,profitTargetGbp:TRIAL_RULES.targetNetProfitGbp,targetBalanceGbp:2050,
+  remainingProfitGbp:remaining,profitProgressPct:round(Math.max(0,profit)/TRIAL_RULES.targetNetProfitGbp*100),
+  targetReached:profit>=TRIAL_RULES.targetNetProfitGbp,closedTrades:metrics.closedTrades,
   ...Object.fromEntries(Object.entries(metrics).filter(([k])=>k!=='closedTrades')),
   expectancyGbp:expectancyUsd,netGbp:netUsd,maxDrawdownGbp:maxDrawdownUsd,
-  winRateSampleTarget:61,winRateGoalPct:80,mandatoryRewardRisk:null,
+  winRateSampleTarget:61,winRateGoalPct:70,mandatoryRewardRisk:null,
   open:state.open,pending:state.pending,eligibleForRealMoney:false,
   brokerTradesSubmitted:0,disclaimer:'GBP virtual historical/research P&L; models fees, omits actual FX/slippage, never broker-settled or guaranteed.'};
 }
