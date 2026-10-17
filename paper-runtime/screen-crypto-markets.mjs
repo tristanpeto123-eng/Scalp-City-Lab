@@ -4,6 +4,7 @@ import {AlpacaPaper} from './alpaca-paper.mjs';
 import {CRYPTO_RESEARCH_ONLY,CRYPTO_RESEARCH_MARKETS,isResearchCrypto} from './crypto-research-marketset.mjs';
 import {loadHistoricalCrypto,replayHistorical} from './replay-profit.mjs';
 import {emptyMemory,assertMemory,proposeCandidates,rememberTraining,fingerprintTraining} from './learning-memory.mjs';
+import {profileChart,explainChartModel,pairModels} from './chart-models.mjs';
 import {writeFile,mkdir} from 'node:fs/promises';
 import path from 'node:path';
 const target=Object.freeze({startVirtualGbp:50,profitGoalGbp:2000,
@@ -43,23 +44,24 @@ export async function runScreener({broker,markets=CRYPTO_RESEARCH_MARKETS,days=9
      results.push({symbol,status:'DATA_QUALITY_REJECTED',eligible:false,data:dq,
        pages:source.fetchedPages});
    }else{
-     const proposal=proposeCandidates(nextMemory,{symbol,feed:location});
-     const replay=replayHistorical({symbol,raw:source.raw,closedBefore:now-30000,
-       candidates:proposal.candidates});
-     // Only first 75% of first 40% (30% of total) was used for
-     // selection. No 25% calibration holdout nor later 60% evaluation
-     // candles may influence the persistent learner's training evidence.
+     // Lock the TRAIN-only slice BEFORE creating chart features, strategies
+     // or explanations. Nothing after this boundary may inform selection.
      const calibrationEnd=Math.floor(source.raw.length*.40);
      const trainCount=Math.floor(calibrationEnd*.75);
      const training=source.raw.slice(0,trainCount);
+     const behavior=profileChart(training);
+     const proposal=proposeCandidates(nextMemory,{symbol,feed:location,behavior});
+     const replay=replayHistorical({symbol,raw:source.raw,closedBefore:now-30000,
+       candidates:proposal.candidates});
      const learning=rememberTraining(nextMemory,{
        symbol,feed:location,
        trainingStart:training[0].t,
        trainingEnd:new Date(Date.parse(training.at(-1).t)+900000).toISOString(),
        trainFingerprint:fingerprintTraining(training),
-       trainingOptions:replay.trainOnlySelection.trainOptions
+       behavior,trainingOptions:replay.trainOnlySelection.trainOptions
      });
      nextMemory=learning.memory;
+     const model=explainChartModel({symbol,feed:location,proposal,replay,behavior,learning});
      const {independentHoldout,holdoutReasons,holdoutVerdict,params,eligible,calibrationBars}=replay.trainOnlySelection;
      // Re-running overlapping training bars creates NO new independent proof.
      const independentlyEligible=eligible&&learning.acceptedForLearning;
@@ -69,6 +71,7 @@ export async function runScreener({broker,markets=CRYPTO_RESEARCH_MARKETS,days=9
          priorParameters:proposal.triedParameters,proposedParameters:proposal.candidates,
          trainingEvidenceId:learning.recordId},
        eligible:independentlyEligible,params,holdoutVerdict,holdoutReasons,calibrationBars,
+       chartModel:model,
        completedBars:source.raw.length,pages:source.fetchedPages,data:dq,
        calibrationHoldout:{
          closedTrades:independentHoldout?.closedTrades??0,
@@ -92,6 +95,7 @@ export async function runScreener({broker,markets=CRYPTO_RESEARCH_MARKETS,days=9
    marketsChecked:results.length,results,
    eligibleMarkets:results.filter(x=>x.eligible).map(x=>x.symbol),
    modelMemory:nextMemory,
+   individualChartModels:pairModels(nextMemory),
    learningEvents:results.flatMap(x=>x.learning?[{symbol:x.symbol,...x.learning}]:[]),
    brokerOrdersSubmitted:0,
    disclaimer:'Historical candle simulation, not actual trades, profit or verified live forward win rate. Eight new markets remain research-only; no broker order permissions changed. Overlapping historical studies are never fresh independent validation.'};
