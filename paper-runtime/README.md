@@ -80,3 +80,8 @@ Initial verified result (17 October 2026): BTC/USD and ETH/USD both eligible for
 10. Journal chain verified on startup; no approval inferred from research score.
 
 This is an initial verifiable connected-agent **implementation**, not a claim that all existing Agent City illustration stations or the original BT-01 historical-worker UI have been converted to production-grade autonomous agents. Deployment and switching on external demo orders remain owner-controlled.
+
+
+## Additional crypto markets tested — 17 October 2026
+Historical-only market screening added **SOL, XRP, ADA, AVAX, LINK, DOGE, LTC and BCH** against the £50 → £2,050 virtual goal (80% observed win-rate target; unlimited trades). A 90-day Alpaca US 15-minute historical experiment using a frozen strategy calibration **qualified zero of eight markets**. SOL/USD modelled calibration holdout: 5 wins/24 closes, net −£2.89; XRP/USD: 4/27, net −£2.12. Other six symbols had >40% zero-trade-volume candles and were conservatively excluded from executable strategy evaluation because Alpaca can construct bars from quote midpoints without executions.
+Full data-quality and Checker evidence: [CRYPTO_MARKET_SCREEN_2026-10-17.md](CRYPTO_MARKET_SCREEN_2026-10-17.md); real account read-only [test run](https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39070019426). New symbols exist **only in the historical research registry**: broker trading permissions, service runtime assets and real-order execution are unchanged. Candidate failure does not prove any listed market is inherently unprofitable; no additional execution authority granted.
