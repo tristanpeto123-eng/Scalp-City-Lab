@@ -50,7 +50,7 @@
       if(s.halted)window.ScalpCityAgentCity.ingest({agentId:'BM-01',state:'HALTED',decision:'Emergency stop / data failure',metric:'No new orders',message:'Runtime halted; operator action needed'});
       if(s.markets&&Object.keys(s.markets).length){const prices=Object.entries(s.markets).map(([symbol,m])=>`${symbol} ${Number(m.close).toFixed(2)}`).join(' · ');
         const newest=Object.values(s.markets).map(m=>Date.parse(m.finalizedAt)).filter(Number.isFinite);
-        if(newest.length)window.ScalpCityAgentCity.ingest({agentId:'DC-01',state:'IEX DATA · VERIFIED',decision:prices,metric:`${Object.keys(s.markets).length} live-feed instruments`,message:'Latest closed 15-minute IEX bars; one exchange only'});}
+        if(newest.length)window.ScalpCityAgentCity.ingest({agentId:'DC-01',state:'MARKET DATA · VERIFIED',decision:prices,metric:`${Object.keys(s.markets).length} live-feed instruments`,message:'Latest completed 15-minute bars; IEX-only equities and separate Alpaca crypto feed'});}
       const recent=s.events.slice(-40);
       for(const e of recent){
         const k=[e.agentId,e.ts,e.state,e.decision].join('|');if(seen.has(k))continue;
