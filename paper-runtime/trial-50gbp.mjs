@@ -7,13 +7,13 @@ import {measureGoal} from './performance.mjs';
 
 export const TRIAL_RULES=Object.freeze({
   version:'50GBP-3R-v1',startingBalanceGbp:50,riskFraction:0.01,rewardToRisk:3,
-  stopFraction:0.02,cryptoFeeFractionPerSide:0.005,maxAllocationFraction:0.50,
+  stopFraction:0.02,cryptoFeeFractionPerSide:0.005,equityFeeFractionPerSide:0.001,maxAllocationFraction:0.50,
   minimumVirtualNotionalGbp:1
 });
 const num=n=>typeof n==='number'&&Number.isFinite(n);
 const round=n=>Number(n.toFixed(8));
 const stamp=s=>{const n=Date.parse(s);if(!Number.isFinite(n))throw Error('Invalid timestamp');return n;};
-const pairs=new Set(['BTC/USD','ETH/USD']);
+const assets=new Set(['SPY','QQQ','IWM','BTC/USD','ETH/USD']);
 export function initializeTrial(){
  return {version:TRIAL_RULES.version,currency:'GBP_VIRTUAL',startingBalanceGbp:50,
   balanceGbp:50,open:null,pending:null,closedTrades:[],lastBarBySymbol:{},status:'RESEARCH_ONLY'};
@@ -40,14 +40,14 @@ export function netRiskPlan({balanceGbp,entryPrice,feeRate=TRIAL_RULES.cryptoFee
   assumptions:'GBP virtual, USD price ratios, FX movements omitted; 0.5% modeled fees per side; no broker execution'};
 }
 function validateBar(bar){
- if(!bar||!pairs.has(bar.symbol)||!num(bar.o)||!num(bar.h)||!num(bar.l)||!num(bar.c)||
+ if(!bar||!assets.has(bar.symbol)||!num(bar.o)||!num(bar.h)||!num(bar.l)||!num(bar.c)||
  ![bar.o,bar.h,bar.l,bar.c].every(n=>n>0)||bar.h<Math.max(bar.o,bar.c,bar.l)||
  bar.l>Math.min(bar.o,bar.c,bar.h))throw Error('Invalid completed crypto OHLC bar');
  return stamp(bar.t);
 }
 export function queueSignal(state,{symbol,signalBarStart,candidateId}){
  if(state.version!==TRIAL_RULES.version)throw Error('Wrong trial version');
- if(!pairs.has(symbol)||!candidateId||!signalBarStart)throw Error('Invalid candidate evidence');
+ if(!assets.has(symbol)||!candidateId||!signalBarStart)throw Error('Invalid candidate evidence');
  const ts=stamp(signalBarStart);
  if(state.open||state.pending) return {state,result:'OCCUPIED'};
  if((state.lastBarBySymbol[symbol]??-Infinity)>ts)throw Error('Signal predates last processed bar');
@@ -66,7 +66,8 @@ export function processBar(state,bar,{allowEntry=true}={}){
  }
  // Only previously queued signals may enter, NEVER after seeing current bar's movement.
  if(!next.open&&next.pending&&next.pending.symbol===bar.symbol&&t>next.pending.signalMs&&allowEntry){
-   const plan=netRiskPlan({balanceGbp:next.balanceGbp,entryPrice:bar.o});
+   const plan=netRiskPlan({balanceGbp:next.balanceGbp,entryPrice:bar.o,
+     feeRate:['BTC/USD','ETH/USD'].includes(bar.symbol)?TRIAL_RULES.cryptoFeeFractionPerSide:TRIAL_RULES.equityFeeFractionPerSide});
    next.open={symbol:bar.symbol,candidateId:next.pending.candidateId,
     entryBarStart:bar.t,enteredAtOpenPrice:bar.o,
     ...plan};
@@ -84,7 +85,7 @@ export function processBar(state,bar,{allowEntry=true}={}){
  const modeledFeesGbp=pos.notionalGbp*pos.feeRate*(1+exit/pos.enteredAtOpenPrice);
  const netGbp=round(grossGbp-modeledFeesGbp);
  const closed={id:pos.symbol.replace('/','')+':'+pos.entryBarStart+':'+bar.t,
-  symbol:pos.symbol,cohort:pos.candidateId,closedAt:new Date(t+900000).toISOString(),
+  symbol:pos.symbol,cohort:TRIAL_RULES.version,candidateId:pos.candidateId,closedAt:new Date(t+900000).toISOString(),
   openedAt:pos.entryBarStart,exitReason:outcome,bothBarriersTouched:stop&&win,
   netGbp,feeBasis:'MODELED_NOT_POSTED',
   evidence:'VIRTUAL_FORWARD_BAR_SIMULATION',virtualRiskGbp:pos.plannedRiskGbp,
