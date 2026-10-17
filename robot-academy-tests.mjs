@@ -57,3 +57,31 @@ test('the graduation prototype is an independent page, not deployed trading code
  assert.match(html,/Never|No confirmed forward-paper win-rate records|No verified forward-paper results are connected/);
  assert.match(html,/status:'UNVERIFIED'|source:'UNVERIFIED'/);
 });
+
+test('report card differentiates profitability, drawdown, win rate and champion model',()=>{
+ assert.match(html,/Net profit/);
+ assert.match(html,/Max drawdown/);
+ assert.match(html,/Current champion model/);
+ assert.match(html,/const profitState=/);
+ assert.match(html,/p\.net>0\?'PROFITABLE'/);
+ assert.match(html,/p\.net<0\?'LOSS-MAKING'/);
+ // A fictional 81%-win-rate robot is deliberately LOSS-MAKING.
+ assert.match(html,/i===7\?-3\.60/);
+ assert.match(html,/FICTIONAL_DEMO/);
+});
+test('published Academy does not load self-asserted browser records as confirmed evidence',async()=>{
+ assert.match(html,/UNTRUSTED_CLIENT_PREVIEW/);
+ assert.doesNotMatch(html,/fetch\(.+VERIFIED_PAPER_FORWARD/);
+ assert.match(html,/No verified forward-paper results are connected/);
+ const spec=JSON.parse(await readFile(new URL('./robot-academy-schema.json',import.meta.url),'utf8'));
+ assert.equal(spec.properties.schemaVersion.const,'ROBOT_ACADEMY_EVIDENCE_V1');
+ assert.equal(spec.properties.source.const,'VERIFIED_PAPER_FORWARD');
+ assert.equal(spec.properties.pupils.items.properties.netProfitGbp.type,'number');
+ assert.equal(spec.properties.pupils.items.properties.maxDrawdownPct.maximum,100);
+ assert.ok(spec.properties.pupils.items.required.includes('distinctTradeIds'));
+});
+test('published test page links directly to the school',async()=>{
+ const page=await readFile(new URL('./strategy-validation.html',import.meta.url),'utf8');
+ assert.match(page,/href="\.\/robot-academy\.html"/);
+ assert.match(page,/Robot Academy/);
+});
