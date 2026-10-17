@@ -95,9 +95,9 @@ export function screenChart({
  const discovery=limitedSnapshot(snapshot,snapshot.bars.slice(0,firstEnd));
  const confirmation=limitedSnapshot(snapshot,snapshot.bars.slice(firstEnd,confirmationEnd));
  const results=AUTO_CANDIDATES.map(candidate=>{
-  const first=windowRun(discovery,symbol,startingBalanceGbp,candidate,.005,now);
-  const second=windowRun(confirmation,symbol,startingBalanceGbp,candidate,.005,now);
-  const stress=windowRun(confirmation,symbol,startingBalanceGbp,candidate,.01,now);
+  const first=windowRun(discovery,symbol,startingBalanceGbp,candidate,.0025,now);
+  const second=windowRun(confirmation,symbol,startingBalanceGbp,candidate,.0025,now);
+  const stress=windowRun(confirmation,symbol,startingBalanceGbp,candidate,.005,now);
   return describeCandidate(candidate,first,second,stress);
  });
  const viable=results.filter(x=>x.eligible).sort((a,b)=>b.score-a.score||a.label.localeCompare(b.label));
@@ -120,7 +120,7 @@ export function screenChart({
     evidence:stats?stats.closedTrades+' confirmation closes; net £'+stats.netGbp:'No confirmation data',
     decision:status},
   {agent:'Risk Manager',method:'1% planned stop exposure; 50% allocation cap; reject weak candidates',
-    evidence:'Historical fills only; 0.5% fees each side, doubled-fee stress at 1% each side',
+    evidence:'Modelled 0.25% Alpaca tier-1 taker fees each side, doubled-fee stress at 0.5% each side; spread and slippage excluded',
     decision:selected?'Allow unseen historical replay only':'ABSTAIN; no live or paper broker orders'}
  ];
  return {
@@ -147,7 +147,7 @@ export function validateAdaptive({snapshot,symbol,startingBalanceGbp=50,mode='du
  if(!model.selected)return {status:model.status,model,replay:null,brokerOrders:0};
  const replay=simulateValidation({snapshot,symbol,startingBalanceGbp,
   mode,limit,strategy:model.selected.strategy,
-  strategyParams:model.selected.params,now});
+  strategyParams:model.selected.params,feePerSideFraction:.0025,now});
  return {status:'OUT_OF_SAMPLE_HISTORICAL_EVALUATION',model,replay,
   brokerOrders:0,predictedGuaranteedProfit:false};
 }
