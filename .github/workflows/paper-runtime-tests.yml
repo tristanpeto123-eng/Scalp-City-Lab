@@ -36,6 +36,9 @@ jobs:
           node --check paper-runtime/trial-50gbp-tests.mjs
           node --check paper-runtime/learning-3r.mjs
           node --check paper-runtime/learning-3r-tests.mjs
+          node --check paper-runtime/replay-3r.mjs
+          node --check paper-runtime/replay-3r-tests.mjs
+          node --check paper-runtime/replay-run.mjs
           node --check agent-city-live.js
       - name: Execute broker-mocked safety tests
         run: |
@@ -43,3 +46,4 @@ jobs:
           node paper-runtime/crypto-tests.mjs
           node paper-runtime/trial-50gbp-tests.mjs
           node paper-runtime/learning-3r-tests.mjs
+          node paper-runtime/replay-3r-tests.mjs
