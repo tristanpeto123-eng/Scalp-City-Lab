@@ -12,7 +12,7 @@
 ## G1 local evidence
 - [x] Node 22 syntax checks passed.
 - [x] 20 mock-only checks passed, including deny-by-default, rejected holdout, stale/duplicate data, risk veto, test account order, duplicate bar prevention, and mock fill reconciliation.
-- [ ] GitHub Actions PR checks verified.
+- [x] GitHub Actions PR checks verified — both checks passed, run IDs 39055003802 and 39055003957 (17 October 2026).
 - [ ] Authentic Alpaca **paper** credentials tested from an authorised, persistent server.
 - [ ] Live IEX feed provenance and 15-min boundary verified during actual US market hours.
 - [ ] External read-only Agent City telemetry tested on a separately hosted HTTPS origin.
