@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scalp City · Strategy Validation</title>
+<style>
+:root{color-scheme:dark;font:15px system-ui,-apple-system,Segoe UI,sans-serif;background:#07131e;color:#eef9ff}
+*{box-sizing:border-box}body{margin:0;padding:20px}main{max-width:920px;margin:0 auto}
+header{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.eyebrow{font-size:12px;letter-spacing:.18em;color:#78b7cb;font-weight:800}
+h1{font-size:clamp(24px,5vw,35px);margin:7px 0}h2{font-size:19px;margin:0 0 14px}
+p{line-height:1.55}.secondary{color:#a9bece}.warn{color:#ffd18c}.good{color:#93ecd2}
+section{background:linear-gradient(145deg,#11293a,#0a1c2b);border:1px solid #36536a;border-radius:13px;margin:18px 0;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:16px}
+label{display:flex;flex-direction:column;gap:9px;color:#c4d8e6;font-weight:650}
+input,select,button{border-radius:7px;border:1px solid #547c96;font:inherit;padding:11px;background:#071a29;color:#fff;max-width:100%}
+input,select{width:100%}button{background:#185d76;border-color:#3db9d9;font-weight:750;cursor:pointer}button:disabled{opacity:.5;cursor:wait}
+.badge{font:700 12px monospace;padding:8px 11px;border:1px solid #4e7290;border-radius:20px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.metric{padding:13px;border:1px solid #37546a;border-radius:9px;background:#0a1b2b}
+.metric span{display:block;font-size:12px;color:#b0c6d6}.metric strong{display:block;font-size:21px;margin-top:5px}
+table{width:100%;border-collapse:collapse}td,th{padding:9px;border-bottom:1px solid #2e4c61;text-align:left}
+footer{color:#acc1cd;font-size:13px;margin:20px 0}a{color:#79d7f6}
+</style></head><body>
+<main>
+<header><div><div class="eyebrow">SCALP CITY / RESEARCH LAB</div><h1>Strategy Validation</h1></div><span class="badge" id="state" aria-live="polite">Loading market data…</span></header>
+<p class="warn">Virtual historical research only. Returns and win rates are not guaranteed. No deposits, broker orders or withdrawals are enabled.</p>
+<section><h2>Preloaded historical candles</h2><p id="dataset" role="status">Loading packaged real-market data for BTC/USD…</p><p class="secondary" id="coverage">Historical records were captured from the Kraken US venue through Alpaca's read-only market-data endpoint. The snapshot timestamp and period will be shown here.</p><button id="reload" type="button">Reload selected pair</button></section>
+<section><h2>Run a validation</h2><div class="grid">
+<label>Starting virtual balance (£)<input id="balance" type="number" min="50" max="1000000" step=".01" value="50"></label>
+<label>Crypto market<select id="pair"><option>BTC/USD</option><option>ETH/USD</option><option>SOL/USD</option><option>XRP/USD</option><option>ADA/USD</option><option>AVAX/USD</option><option>LINK/USD</option><option>DOGE/USD</option><option>LTC/USD</option><option>BCH/USD</option></select></label>
+<label>Stop condition<select id="mode"><option value="duration">Elapsed duration</option><option value="profit">Cumulative net profit target</option></select></label>
+<label id="limitLabel">Duration (days)<input id="limit" type="number" min="1" step="1" value="14"></label>
+<label>Strategy rules<select id="strategy"><option value="ema">EMA trend (9/34)</option><option value="rsi">RSI mean-reversion (14, 30/60)</option><option value="breakout">20-bar breakout / 10-bar exit</option></select></label>
+</div><p class="secondary">The first 40% of candles warm up the selected fixed strategy; only the remaining 60% is replayed. The run stops on your duration or on realised net profits after completed trades, whichever mode you choose. If history runs out first, the test reports that rather than guessing.</p>
+<button id="run" type="button" disabled>Run historical validation</button></section>
+<section id="result" aria-live="polite"><h2>Validation results</h2><p class="secondary">Results will appear here once market data has loaded and you run a test.</p></section>
+<footer>Data is an archived historical snapshot, not a live trading feed. Illustrative 0.5% fees each way; GBP outcomes use USD price-change ratios without FX, spreads, liquidity or real slippage. The 80% win-rate goal is measured, never presumed.</footer>
+</main>
+<script type="module">
+import {checkSnapshot,simulateValidation} from './strategy-validation-core.mjs';
+const $=id=>document.getElementById(id),cache=new Map();
+let selected=null,serial=0;
+const money=n=>'£'+Number(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+const state=(s,ok=false)=>{$('state').textContent=s;$('state').style.color=ok?'#9cf0ce':'#ffd18c'};
+async function loadPair({force=false}={}){
+ const pair=$('pair').value,request=++serial;
+ selected=null;$('run').disabled=true;state('Loading '+pair+'…');
+ $('dataset').textContent='Loading prepackaged candles for '+pair+'…';
+ try{
+  if(force)cache.delete(pair);
+  let record=cache.get(pair);
+  if(!record){
+   const url='./validation-data/'+pair.replace('/','-')+'.json';
+   const r=await fetch(url,{cache:force?'reload':'default'});
+   if(!r.ok)throw Error('Historical snapshot unavailable (HTTP '+r.status+')');
+   const source=await r.json();
+   const verified=checkSnapshot(source,pair);
+   record={source,verified};cache.set(pair,record);
+  }
+  if(serial!==request)return;
+  selected=record;
+  const v=record.verified,days=(v.bars.length/96).toFixed(1);
+  $('dataset').textContent='Ready · '+pair+' · '+v.bars.length.toLocaleString()+' completed 15-minute candles · '+days+' days';
+  $('coverage').textContent='Kraken US historical snapshot via Alpaca · '+v.sampleStart+' → '+v.sampleEnd+
+     ' · Captured '+(v.snapshotAt||'not specified')+'. Future market prices are not included.';
+  $('run').disabled=false;state('Data ready',true);
+ }catch(e){
+  if(serial!==request)return;
+  $('dataset').textContent='Data unavailable: '+e.message;
+  $('coverage').textContent='No synthetic fallback is supplied. Refresh the page later if the snapshot is missing or invalid.';
+  state('Data unavailable');
+ }
+}
+function display(r){
+ const metrics=[
+  ['Starting balance',money(r.startingBalanceGbp)],
+  ['Realised cumulative net P&L',money(r.realizedNetProfitGbp)],
+  ['Cash balance after closed trades',money(r.cashBalanceGbp)],
+  ['Virtual equity (open position marked)',money(r.markedEquityGbp)],
+  ['Closed trades',String(r.closedTrades)],
+  ['Observed historical win rate',r.winRatePct===null?'Not enough trades':r.winRatePct+'%'],
+  ['Maximum historical drawdown',r.maxDrawdownPct+'%'],
+  ['Simulated elapsed duration',r.elapsedDays+' days']
+ ];
+ const result=$('result');result.replaceChildren();
+ const head=document.createElement('h2');head.textContent='Historical replay · '+r.symbol;result.append(head);
+ const p=document.createElement('p');p.className=r.goalReached?'good':'warn';
+ p.textContent='Stop reason: '+r.status.replaceAll('_',' ')+
+   (r.status==='HISTORY_EXHAUSTED'?' — data ended before the requested target/duration.':'');
+ result.append(p);
+ const grid=document.createElement('div');grid.className='metrics';result.append(grid);
+ for(const [label,value] of metrics){
+  const box=document.createElement('div');box.className='metric';
+  const a=document.createElement('span'),b=document.createElement('strong');
+  a.textContent=label;b.textContent=value;box.append(a,b);grid.append(box);
+ }
+ const detail=document.createElement('p');detail.className='secondary';
+ detail.textContent='Source: '+r.actualSource+' · '+r.heldOutCandles+' held-out candles · '+r.validationPeriod.start+
+ ' to '+r.validationPeriod.end+' · Open position at end: '+(r.openPosition?'Yes':'No')+
+ '. 80% observed win-rate goal: '+(r.winRatePct===null?'unmeasured':r.winRatePct>=80?'observed on this sample':'not met')+'.';
+ result.append(detail);
+}
+$('pair').addEventListener('change',()=>loadPair());
+$('reload').addEventListener('click',()=>loadPair({force:true}));
+$('mode').addEventListener('change',()=>{
+ const duration=$('mode').value==='duration';
+ $('limitLabel').firstChild.textContent=duration?'Duration (days)':'Cumulative net profit target (£)';
+ $('limit').value=duration?'14':'2000';$('limit').step=duration?'1':'.01';
+});
+$('run').addEventListener('click',()=>{
+ try{
+  if(!selected)throw Error('Preloaded market candles are not ready');
+  const r=simulateValidation({snapshot:selected.source,symbol:$('pair').value,
+   startingBalanceGbp:Number($('balance').value),mode:$('mode').value,
+   limit:Number($('limit').value),strategy:$('strategy').value});
+  display(r);
+ }catch(e){$('result').replaceChildren();
+  const p=document.createElement('p');p.className='warn';p.textContent='Validation blocked: '+e.message;$('result').append(p);}
+});
+loadPair();
+</script></body></html>
