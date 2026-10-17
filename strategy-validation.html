@@ -1,0 +1,56 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Scalp City · Strategy Validation</title>
+<style>body{background:#07121d;color:#e8f6ff;font:15px system-ui;margin:0;padding:25px}main{max-width:860px;margin:auto}h1{color:#75d5ee}section{background:#102235;border:1px solid #31516b;border-radius:12px;padding:18px;margin:15px 0}label{display:block;margin:12px 0}input,select,button{font:inherit;padding:9px;background:#061420;color:#fff;border:1px solid #5686a1;border-radius:6px}input[type=number]{width:160px}button{background:#16617c;cursor:pointer;padding:12px 22px}small,.muted{color:#a9bdcb}.warn{color:#ffcc83}table{width:100%;border-collapse:collapse}td{padding:8px;border-bottom:1px solid #274156}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style>
+<main><h1>SCALP CITY / Strategy Validation</h1><p class="warn">Historical virtual simulation only. No deposits, broker orders, verified 80% win rate or withdrawals. A historical run does not validate future profitability.</p>
+<section><label>Starting balance (£, minimum 50) <input id="balance" type="number" min="50" step=".01" value="50"></label>
+<label>Crypto pair <select id="pair"><option>BTC/USD</option><option>ETH/USD</option><option>SOL/USD</option><option>XRP/USD</option><option>ADA/USD</option><option>AVAX/USD</option><option>LINK/USD</option><option>DOGE/USD</option><option>LTC/USD</option><option>BCH/USD</option></select></label>
+<label>Validation mode <select id="mode"><option value="duration">Duration (days)</option><option value="profit">Cumulative net profit limit (£)</option></select></label>
+<label id="limitLabel">Duration (days) <input id="limit" type="number" min="1" step="1" value="30"></label>
+<label>Strategy <select id="strategy"><option value="ema">EMA 9/34 crossover</option><option value="rsi">RSI 14 reversion (buy below 30, exit above 60)</option><option value="breakout">20-bar high breakout / 10-bar low exit</option></select></label>
+<label>Upload real historical 15-minute OHLCV JSON <input id="file" type="file" accept=".json,application/json"></label>
+<small>File: array of at least 480 completed chronological candles, each with t, o, h, l, c, v. The strategy and inputs are fixed before replay. File is processed locally; no credentials.</small><p><button id="run">Run historical validation</button></p></section>
+<section id="results" aria-live="polite"><h2>Result</h2><p>Upload candles and run the strategy. No outcome is available without market data.</p></section>
+</main><script>
+const $=id=>document.getElementById(id);
+$('mode').onchange=()=>{$('limitLabel').firstChild.textContent=$('mode').value==='duration'?'Duration (days) ':'Cumulative net profit limit (£) ';$('limit').value=$('mode').value==='duration'?'30':'2000'};
+const fmt=x=>'£'+x.toFixed(2);
+$('run').onclick=async()=>{const result=$('results');try{
+ const deposit=Number($('balance').value),limit=Number($('limit').value),mode=$('mode').value;
+ if(!Number.isFinite(deposit)||deposit<50||deposit>1000000)throw Error('Starting balance must be between £50 and £1m');
+ if(!Number.isFinite(limit)||limit<=0||(mode==='duration'&&(!Number.isInteger(limit)||limit>3650)))throw Error('Invalid duration or profit limit');
+ if(!$('file').files[0])throw Error('Upload actual chronological OHLCV JSON first');
+ const raw=JSON.parse(await $('file').files[0].text());
+ if(!Array.isArray(raw)||raw.length<480||raw.length>100000)throw Error('Need 480–100,000 completed candles');
+ const bars=raw.map(b=>({t:Date.parse(b.t),o:+b.o,h:+b.h,l:+b.l,c:+b.c,v:+b.v}));
+ for(let i=0;i<bars.length;i++){const b=bars[i];if(!Number.isFinite(b.t)||[b.o,b.h,b.l,b.c,b.v].some(x=>!Number.isFinite(x))||Math.min(b.o,b.h,b.l,b.c)<=0||b.v<0||b.h<Math.max(b.o,b.c)||b.l>Math.min(b.o,b.c,b.h)||(i&&b.t-bars[i-1].t!==900000))throw Error('Invalid, missing or non-15-minute OHLCV at index '+i)}
+ if(bars.at(-1).t+900000>Date.now()-30000)throw Error('File contains incomplete/future candles');
+ const split=Math.floor(bars.length*.4),train=bars.slice(0,split),test=bars.slice(split);
+ let emaFast=null,emaSlow=null,avgGain=0,avgLoss=0,prev=null,closes=[],highs=[],lows=[],rsi=50;
+ const strategy=$('strategy').value;function signal(b){const previousFast=emaFast,previousSlow=emaSlow;
+ emaFast=emaFast===null?b.c:emaFast+2/10*(b.c-emaFast);emaSlow=emaSlow===null?b.c:emaSlow+2/35*(b.c-emaSlow);
+ if(prev!==null){const gain=Math.max(0,b.c-prev),loss=Math.max(0,prev-b.c);avgGain=(avgGain*13+gain)/14;avgLoss=(avgLoss*13+loss)/14;rsi=avgLoss===0?100:100-100/(1+avgGain/avgLoss)}
+ const top=highs.length>=20?Math.max(...highs.slice(-20)):Infinity,low=lows.length>=10?Math.min(...lows.slice(-10)):-Infinity;
+ highs.push(b.h);lows.push(b.l);prev=b.c;closes.push(b.c);
+ const ready=closes.length>=35;
+ if(strategy==='ema')return {ready,enter:previousFast!==null&&previousSlow!==null&&previousFast<=previousSlow&&emaFast>emaSlow,exit:emaFast<emaSlow};
+ if(strategy==='rsi')return {ready,enter:rsi<30,exit:rsi>=60};
+ return {ready,enter:b.c>top,exit:b.c<low};
+ }
+ train.forEach(signal);let balance=deposit,units=0,entryCost=0,wins=0,trades=0,peak=deposit,maxDD=0,pending=null,ended='HISTORY_EXHAUSTED',endTime=null,opened=0;
+ const fee=.005;let barsUsed=0;const start=test[0].t;
+ for(let i=0;i<test.length;i++){const b=test[i];if(mode==='duration'&&b.t-start>=limit*86400000){ended='DURATION_REACHED';endTime=b.t;break}
+ if(pending==='BUY'&&units===0){const spend=Math.min(balance*.5,balance/(1+fee));if(spend>=1){units=spend/(b.o*(1+fee));entryCost=spend;balance-=spend;opened++}}
+ else if(pending==='SELL'&&units>0){const proceeds=units*b.o*(1-fee),net=proceeds-entryCost;balance+=proceeds;trades++;if(net>0)wins++;units=0;entryCost=0}
+ pending=null;
+ // Approximate a 2% virtual emergency stop; gap losses can exceed 2%.
+ if(units>0&&b.l<=entryCost/(units*(1+fee))*.98){const stop=Math.min(b.o,entryCost/(units*(1+fee))*.98),net=units*stop*(1-fee)-entryCost;balance+=units*stop*(1-fee);trades++;if(net>0)wins++;units=0;entryCost=0}
+ const s=signal(b);if(s.ready)pending=units>0?(s.exit?'SELL':null):(s.enter?'BUY':null);
+ const equity=balance+units*b.c*(1-fee);peak=Math.max(peak,equity);maxDD=Math.max(maxDD,100*(peak-equity)/peak);barsUsed++;
+ if(mode==='profit'&&balance-deposit>=limit&&units===0){ended='PROFIT_LIMIT_REACHED';endTime=b.t;break}
+ }
+ const last=test[Math.max(0,barsUsed-1)];const mark=units?units*last.c*(1-fee):0,equity=balance+mark;
+ const elapsed=barsUsed*.25/24,profit=balance-deposit;
+ result.innerHTML='<h2>Historical validation result</h2><table>'+[
+ ['Pair / strategy',$('pair').value+' / '+strategy.toUpperCase()],['End condition',ended],['Initial virtual balance',fmt(deposit)],['Closed-trade cash balance',fmt(balance)],['Realised cumulative net profit',fmt(profit)],['Marked virtual equity (includes open position)',fmt(equity)],['Closed trades',trades],['Observed historical win rate',trades?(100*wins/trades).toFixed(1)+'%':'N/A'],['Historical max drawdown',maxDD.toFixed(2)+'%'],['Simulated elapsed duration',elapsed.toFixed(2)+' days'],['Held-out replay candles',barsUsed],['End date',new Date(endTime??last.t).toISOString()],['80% win rate observed?',trades&&wins/trades>=.8?'YES (historical only)':'NO'],['Profit goal achieved?',ended==='PROFIT_LIMIT_REACHED'?'YES (historical only)':'NO']
+ ].map(([a,b])=>'<tr><td>'+a+'</td><td>'+b+'</td></tr>').join('')+'</table><p class="warn">Training warmup: first 40%; evaluation: later 60%. This is one historical scenario, not independent forward validation. Simulated 0.5% fees each side, no FX, liquidity, spreads or real slippage. No payout is implied.</p>';
+ }catch(e){result.textContent='Validation blocked: '+e.message}};
+</script></html>
