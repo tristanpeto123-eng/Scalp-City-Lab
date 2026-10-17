@@ -13,7 +13,7 @@ const raw=Array.from({length:3000},(_,i)=>{
 const lastClosed=start+(raw.length+3)*900000;
 const fiveDays={symbol:'BTC/USD',feed:'us-1',mode:'DURATION',durationDays:5,
  startingBalanceGbp:200,historyDays:90};
-assert.deepEqual(checkValidationInput(fiveDays),fiveDays);n++;
+assert.deepEqual(checkValidationInput(fiveDays),{...fiveDays,targetNetProfitGbp:null});n++;
 assert.throws(()=>checkValidationInput({...fiveDays,startingBalanceGbp:49}),/GBP50/);n++;
 assert.throws(()=>checkValidationInput({...fiveDays,startingBalanceGbp:NaN}),/GBP50/);n++;
 assert.throws(()=>checkValidationInput({...fiveDays,durationDays:0}),/Duration/);n++;
