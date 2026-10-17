@@ -1,0 +1,35 @@
+name: One-time independent chart learning proof (NO ORDERS)
+on:
+  push:
+    branches: [feat/crypto-paper-agents-rc3]
+    paths: [paper-runtime/one-time-chart-learning.trigger]
+permissions:
+  contents: write
+concurrency:
+  group: scalp-pair-learning-memory
+  cancel-in-progress: false
+jobs:
+  prove-learning-memory:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: '80b7ca16d5cf4aaa64c8a85311a3358bf58d6011'
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run independent per-chart and planner safety tests
+        run: |
+          node paper-runtime/chart-models-tests.mjs
+          node paper-runtime/deposit-goal-planner-tests.mjs
+      - name: Learn from real historical data (GET only); append model observations
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ALPACA_PAPER_KEY: ${{ secrets.ALPACA_PAPER_KEY }}
+          ALPACA_PAPER_SECRET: ${{ secrets.ALPACA_PAPER_SECRET }}
+          SCALP_RESEARCH_FEED: us-1
+          SCALP_RESEARCH_DAYS: '90'
+        run: node paper-runtime/learning-run.mjs

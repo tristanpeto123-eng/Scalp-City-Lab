@@ -1,0 +1,28 @@
+# Persistent, private optional hosting on a user-managed machine.
+# Never exposes a port to the internet. Requires paper-specific secrets
+# entered in the host environment (never committed to a public repository).
+services:
+  scalp-paper:
+    build:
+      context: .
+      dockerfile: paper-runtime/Dockerfile
+    restart: unless-stopped
+    environment:
+      ALPACA_PAPER_KEY: ${ALPACA_PAPER_KEY:?paper_only_key_required}
+      ALPACA_PAPER_SECRET: ${ALPACA_PAPER_SECRET:?paper_only_secret_required}
+      SCALP_PAPER_ENABLED: "false"
+      SCALP_JOURNAL_DIR: /data
+      SCALP_BIND: 0.0.0.0
+      PORT: 8787
+    ports:
+      - "127.0.0.1:8787:8787"
+    volumes:
+      - scalp-journal:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+volumes:
+  scalp-journal:

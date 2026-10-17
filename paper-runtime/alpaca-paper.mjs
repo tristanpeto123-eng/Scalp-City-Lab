@@ -18,13 +18,18 @@ export class AlpacaPaper {
   openOrders(){return this.req(TRADE,'/v2/orders?status=open&limit=100');}
   recentOrders(){return this.req(TRADE,'/v2/orders?status=all&limit=100&direction=desc');}
   async history(symbol){
-    if(!['SPY','QQQ','IWM'].includes(symbol))throw Error('Unauthorized ticker');
-    const start=new Date(this.now()-21*86400_000).toISOString();
+    const crypto=['BTC/USD','ETH/USD'].includes(symbol);
+    if(!crypto&&!['SPY','QQQ','IWM'].includes(symbol))throw Error('Unauthorized ticker');
+    const start=new Date(this.now()-(crypto?3:21)*86400_000).toISOString();
     const end=new Date(this.now()).toISOString();
-    const q=new URLSearchParams({timeframe:'15Min',feed:'iex',start,end,limit:'1000',sort:'asc'});
-    const data=await this.req(DATA,`/v2/stocks/${symbol}/bars?${q}`);
+    const q=new URLSearchParams({timeframe:'15Min',start,end,limit:'1000',sort:'asc'});
+    if(!crypto)q.set('feed','iex');
+    else q.set('symbols',symbol);
+    const data=await this.req(DATA,crypto?`/v1beta3/crypto/us/bars?${q}`:`/v2/stocks/${symbol}/bars?${q}`);
     if(data.next_page_token)throw Error('Unconsumed market-data pagination; increase data window logic');
-    return (data.bars||[]).filter(b=>Date.parse(b.t)+15*60_000<=this.now()-30_000);
+    const bars=crypto?data.bars?.[symbol]:data.bars;
+    if(!Array.isArray(bars))throw Error('Missing symbol in market-data response');
+    return bars.filter(b=>Date.parse(b.t)+15*60_000<=this.now()-30_000);
   }
   async orderByClientId(id){
     // 404 = no such order; other statuses must NOT be interpreted as no order.
@@ -35,7 +40,13 @@ export class AlpacaPaper {
     return res.json();
   }
   paperOrder(order){
-    if(!['SPY','QQQ','IWM'].includes(order.symbol)||!['buy','sell'].includes(order.side)||order.type!=='market'||order.time_in_force!=='day'||!order.client_order_id)throw Error('Rejected non-paper/invalid order');
+    const crypto=['BTC/USD','ETH/USD'].includes(order.symbol);
+    const equity=['SPY','QQQ','IWM'].includes(order.symbol);
+    if((!crypto&&!equity)||!['buy','sell'].includes(order.side)||order.type!=='market'||
+      order.time_in_force!==(crypto?'ioc':'day')||!/^sc[0-9a-z]+-[A-Z]+-[a-f0-9]{24}$/.test(order.client_order_id)||
+      ((order.notional!==undefined)===(order.qty!==undefined)))throw Error('Rejected non-paper/invalid order');
+    if(order.notional!==undefined&&(!(Number(order.notional)>0)||!Number.isFinite(Number(order.notional))))throw Error('Invalid notional');
+    if(order.qty!==undefined&&(!(Number(order.qty)>0)||!Number.isFinite(Number(order.qty))))throw Error('Invalid qty');
     return this.req(TRADE,'/v2/orders',{method:'POST',body:order});
   }
 }

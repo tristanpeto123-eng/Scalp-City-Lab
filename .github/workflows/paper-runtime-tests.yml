@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'paper-runtime/**'
+      - 'compose.paper.yaml'
       - 'agent-city-live.js'
       - 'agent-city.html'
       - '.github/workflows/paper-runtime-tests.yml'
@@ -28,6 +29,35 @@ jobs:
           node --check paper-runtime/service.mjs
           node --check paper-runtime/preflight.mjs
           node --check paper-runtime/crypto-preflight.mjs
+          node --check paper-runtime/once.mjs
+          node --check paper-runtime/crypto-tests.mjs
+          node --check paper-runtime/performance.mjs
+          node --check paper-runtime/replay-run.mjs
+          node --check paper-runtime/trial-profit.mjs
+          node --check paper-runtime/learning-profit.mjs
+          node --check paper-runtime/replay-profit.mjs
+          node --check paper-runtime/profit-goal-tests.mjs
+          node --check paper-runtime/crypto-research-marketset.mjs
+          node --check paper-runtime/screen-crypto-markets.mjs
+          node --check paper-runtime/screen-crypto-markets-tests.mjs
+          node --check paper-runtime/signal-policies.mjs
+          node --check paper-runtime/learning-memory.mjs
+          node --check paper-runtime/chart-models.mjs
+          node --check paper-runtime/chart-models-tests.mjs
+          node --check paper-runtime/github-learning-store.mjs
+          node --check paper-runtime/learning-run.mjs
+          node --check paper-runtime/deposit-goal-planner.mjs
+          node --check paper-runtime/deposit-goal-planner-tests.mjs
+          node --check paper-runtime/validation-lab.mjs
+          node --check paper-runtime/validation-lab-tests.mjs
+          node --check paper-runtime/validation-run.mjs
           node --check agent-city-live.js
       - name: Execute broker-mocked safety tests
-        run: node paper-runtime/tests.mjs
+        run: |
+          node paper-runtime/tests.mjs
+          node paper-runtime/crypto-tests.mjs
+          node paper-runtime/profit-goal-tests.mjs
+          node paper-runtime/screen-crypto-markets-tests.mjs
+          node paper-runtime/chart-models-tests.mjs
+          node paper-runtime/deposit-goal-planner-tests.mjs
+          node paper-runtime/validation-lab-tests.mjs
