@@ -18,7 +18,7 @@
 - **PT-01:** Disabled by default; submits ONLY through `https://paper-api.alpaca.markets/v2/orders`, idempotent client IDs and recorded pre-submission intents; submitted does not mean filled.
 - **JR-01 / VA-01:** Append-only sha256-chain event records and evidence metadata; not a profitability learning model yet. Automatic optimizer learning from new fills is intentionally withheld until independently checked.
 
-**Emergency stop limitation:** Stops new paper-order submissions but does not automatically cancel previously accepted paper orders or liquidate existing paper positions; use the broker dashboard for those operations.
+**Opening-session protection:** The engine waits for the first completed New York session candle (09:30–09:46:30 ET, DST-aware) rather than incorrectly halting when the last valid bar is from the previous session. This is a timing grace, never permission to trade stale bars. The bot refuses to auto-sell manual or unattributed holdings, and pending buys count toward the two-position cap.\n\n**Emergency stop limitation:** Stops new paper-order submissions but does not automatically cancel previously accepted paper orders or liquidate existing paper positions; use the broker dashboard for those operations.
 
 **Limitations:** IEX-only quote coverage, partial market visibility; simple EMA research candidates; approximate fees, no point-in-time constituent/delisting validation, no full transaction-price or corporate-action simulator. Held-out backtest screens are not profitability proof. The 15-minute candles may have gaps on single-exchange data; the safety gate stops on stale feeds. Chart display is observation only. Market closed outside US equities hours. No XAUUSD/CFD adapter in this release.
 
@@ -26,9 +26,9 @@
 
 1. Open an **Alpaca paper trading** account. Create **paper-specific** keys only (never paste keys in ChatGPT, GitHub, or the browser UI).
 2. On a private always-on Node.js host, set `ALPACA_PAPER_KEY` and `ALPACA_PAPER_SECRET` as environment secrets.
-3. Run `node paper-runtime/tests.mjs`, then `node paper-runtime/service.mjs`. Default is data ingestion and **dry-run proposed orders only**.
-4. After owner approval of this exact release and broker configuration, explicitly set `SCALP_PAPER_ENABLED=true` and `SCALP_RELEASE_APPROVED=SCALP-PAPER-0.1.0-rc1` to arm paper demo orders, then restart. No live-trading switch exists.
-5. Optional read-only City connection: set `SCALP_ALLOWED_ORIGIN=https://tristanpeto123-eng.github.io` and serve this status API over HTTPS behind a reverse proxy. Install `agent-city-live.js` next to `agent-city.html`, add `<script src="./agent-city-live.js" defer></script>` before `</body>`, then enter the HTTPS server origin using CONNECT PAPER STATUS. **Never expose secrets or POST controls to the browser.**
+3. Run `node paper-runtime/tests.mjs`, then `node paper-runtime/preflight.mjs` to verify the real paper account and recent IEX bars **without placing an order**. Preflight reports `MARKET_CLOSED_OR_OPENING_GRACE` on weekends or before the first completed 15-minute candle.\n4. Run `node paper-runtime/service.mjs` on a persistent private host. Default is data ingestion and **dry-run proposed orders only**.
+5. After owner approval of this exact release and broker configuration, explicitly set `SCALP_PAPER_ENABLED=true` and `SCALP_RELEASE_APPROVED=SCALP-PAPER-0.1.0-rc1` to arm paper demo orders, then restart. No live-trading switch exists.
+6. Optional read-only City connection: set `SCALP_ALLOWED_ORIGIN=https://tristanpeto123-eng.github.io` and serve this status API over HTTPS behind a reverse proxy. Install `agent-city-live.js` next to `agent-city.html`, add `<script src="./agent-city-live.js" defer></script>` before `</body>`, then enter the HTTPS server origin using CONNECT PAPER STATUS. **Never expose secrets or POST controls to the browser.**
 
 Other variables: `SCALP_JOURNAL_DIR` (private persistent journal storage), `SCALP_BIND` (`127.0.0.1` default), `PORT` (`8787` default). HTTPS and credential security are host deployment requirements. Do not publicly expose `/api/status` without appropriate authentication/reverse-proxy access control: strategy telemetry may be sensitive.
 
