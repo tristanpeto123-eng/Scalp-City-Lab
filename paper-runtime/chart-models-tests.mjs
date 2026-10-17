@@ -71,7 +71,7 @@ assert.equal(memory.experiments.length,1);n++;
 assert.equal(memory.experiments[0].behavior.descriptiveRegime,profile.descriptiveRegime);n++;
 assertMemory(memory);n++;
 const repeated=rememberTraining(memory,event);
-assert.equal(repeated.reason,'EXACT_DATA_REPLAY_DEDUPED');n++;
+assert.equal(repeated.reason,'EXACT_DATA_AND_SETTINGS_DEDUPED');n++;
 assert.equal(repeated.memory.experiments.length,1);n++;
 const overlapping=rememberTraining(memory,{...event,
  trainingStart:raw[2].t,trainingEnd:raw[392].t,
@@ -83,8 +83,25 @@ const onceMore=rememberTraining(overlapping.memory,{...event,
  trainingStart:raw[4].t,trainingEnd:raw[394].t,
  trainFingerprint:fingerprintTraining(raw.slice(4,394)),
  behavior:profileChart(raw.slice(4,394))});
-assert.equal(onceMore.reason,'SAME_DAY_OVERLAP_NOT_PERSISTED');n++;
+assert.equal(onceMore.reason,'SAME_DAY_SETTINGS_ALREADY_TESTED');n++;
 assert.equal(onceMore.memory.experiments.length,2);n++;
+// A new candidate combination on identical history must persist as a
+// NON-INDEPENDENT exploratory result. It changes the next proposal while never
+// producing a second accepted validation window.
+const newSettings=rememberTraining(memory,{...event,
+ trainingOptions:STRATEGY_GRID.slice(8,14).map((params,i)=>({
+   params,closedTrades:3,netProfitGbp:-i-1,winRatePct:0,score:-10-i
+ }))});
+assert.equal(newSettings.acceptedForLearning,false);n++;
+assert.equal(newSettings.memory.experiments.length,2);n++;
+assert.equal(newSettings.memory.experiments[1].reason,'OVERLAPPING_TRAINING_WINDOW');n++;
+assert.equal(proposeCandidates(newSettings.memory,{symbol:'BTC/USD',feed:'us-1',behavior:profile}).priorIndependentWindows,1);n++;
+assert.ok(proposeCandidates(newSettings.memory,{symbol:'BTC/USD',feed:'us-1',behavior:profile}).triedParameters>
+  proposeCandidates(memory,{symbol:'BTC/USD',feed:'us-1',behavior:profile}).triedParameters);n++;
+assert.equal(rememberTraining(newSettings.memory,{...event,
+ trainingOptions:STRATEGY_GRID.slice(8,14).map((params,i)=>({
+   params,closedTrades:3,netProfitGbp:-i-1,winRatePct:0,score:-10-i
+ }))}).memory.experiments.length,2);n++;
 const other={...event,symbol:'ETH/USD',
  trainFingerprint:fingerprintTraining(raw.slice(0,390).map((b,i)=>({...b,v:b.v+i})))};
 const ethSave=rememberTraining(memory,other);
