@@ -10,7 +10,7 @@ assert.equal(state.balanceGbp,50);n++;
 assert.equal(TRIAL_RULES.targetNetProfitGbp,2000);n++;
 assert.equal(TRIAL_RULES.targetBalanceGbp,2050);n++;
 assert.equal(TRIAL_RULES.riskFraction,.01);n++;
-assert.equal(TRIAL_RULES.version,'GBP50-PROFIT2000-v1');n++;
+assert.equal(TRIAL_RULES.version,'GBP50-PROFIT2000-v2');n++;
 const plan=netRiskPlan({balanceGbp:50,entryPrice:100});
 assert.equal(plan.requiredRewardRisk,null);n++;
 assert.equal(plan.targetPrice,null);n++;
@@ -78,31 +78,50 @@ assert.ok(replay.closedTradeEvidence.every(x=>x.source==='HISTORICAL_REPLAY'));n
 assert.throws(()=>replayHistorical({symbol:'BTC/USD',raw:rawAPI.slice(0,100)}),/480/);n++;
 assert.throws(()=>replayHistorical({symbol:'DOGE/USD',raw:rawAPI}),/Invalid/);n++;
 assert.ok(TRIAL_RULES.version!== '50GBP-3R-v1');n++;
-// Secondary observed >=70% win-rate requires 43 wins of 61 closed trades.
+// Unlimited closed trades; no arbitrary 61-trade stop or mandatory sample count.
+// 80% is an observed metric, never a guaranteed underlying success probability.
 import {measureGoal,GOAL} from './performance.mjs';
-assert.equal(GOAL.minimumWinRate,.70);n++;
-assert.equal(GOAL.minimumClosedTrades,61);n++;
-const sample=Array.from({length:61},(_,i)=>({
- id:'secondary-'+i,closedAt:new Date(Date.parse(t0)+i*900000).toISOString(),
- netUsd:i<43?1:-.5,cohort:TRIAL_RULES.version+':frozen-A',
+assert.equal(GOAL.minimumWinRate,.80);n++;
+assert.equal(GOAL.minimumClosedTrades,0);n++;
+const trades=(total,wins)=>Array.from({length:total},(_,i)=>({
+ id:'unlimited-'+i,closedAt:new Date(Date.parse(t0)+i*900000).toISOString(),
+ netUsd:i<wins?1:-.5,cohort:TRIAL_RULES.version+':frozen-A',
  evidence:'HISTORICAL_REPLAY',feeBasis:'MODELED_NOT_POSTED'
 }));
-const at43=measureGoal(sample);
-assert.equal(at43.wins,43);n++;
-assert.equal(at43.observedThresholdMet,true);n++;
-assert.equal(at43.verifiedTargetMet,false);n++;
-assert.equal(at43.status,'PROVISIONAL_COSTS_OR_EVIDENCE');n++;
-const at42=measureGoal(sample.map((x,i)=>i===42?{...x,netUsd:-.5}:x));
-assert.equal(at42.wins,42);n++;
-assert.equal(at42.observedThresholdMet,false);n++;
-assert.equal(at42.status,'PERFORMANCE_NOT_MET');n++;
-assert.equal(measureGoal(sample.slice(0,60)).observedThresholdMet,false);n++;
+const none=measureGoal([]);
+assert.equal(none.closedTrades,0);n++;
+assert.equal(none.observedThresholdMet,false);n++;
+assert.equal(none.status,'NO_CLOSED_TRADES');n++;
+assert.equal(none.verifiedTargetMet,false);n++;
+const five=measureGoal(trades(5,4));
+assert.equal(five.winRatePct,80);n++;
+assert.equal(five.observedThresholdMet,true);n++;
+assert.equal(five.verifiedTargetMet,false);n++;
+assert.equal(five.status,'PROVISIONAL_COSTS_OR_EVIDENCE');n++;
+assert.ok(five.wilson95LowerPct<80);n++;
+const threeOfFive=measureGoal(trades(5,3));
+assert.equal(threeOfFive.observedThresholdMet,false);n++;
+assert.equal(threeOfFive.status,'PERFORMANCE_NOT_MET');n++;
+const at61=measureGoal(trades(61,49));
+assert.equal(at61.closedTrades,61);n++;
+assert.equal(at61.observedThresholdMet,true);n++;
+assert.equal(measureGoal(trades(61,48)).observedThresholdMet,false);n++;
+const at500=measureGoal(trades(500,400));
+assert.equal(at500.closedTrades,500);n++;
+assert.equal(at500.observedThresholdMet,true);n++;
+assert.ok(at500.wilson95LowerPct>70);n++;
 const active=trialReport(initializeTrial());
 assert.equal(active.profitTargetGbp,2000);n++;
 assert.equal(active.targetBalanceGbp,2050);n++;
-assert.equal(active.winRateGoalPct,70);n++;
-assert.equal(active.winRateSampleTarget,61);n++;
+assert.equal(active.winRateGoalPct,80);n++;
+assert.equal(active.winRateSampleTarget,null);n++;
+assert.equal(active.tradeLimit,null);n++;
 assert.equal(active.remainingProfitGbp,2000);n++;
 assert.equal(active.targetReached,false);n++;
 assert.equal(active.mandatoryRewardRisk,null);n++;
+// Profit milestone has no dependency on a minimum number of closed trades.
+const reached=trialReport({...initializeTrial(),balanceGbp:2050});
+assert.equal(reached.targetReached,true);n++;
+assert.equal(reached.closedTrades,0);n++;
+assert.equal(reached.observedThresholdMet,false);n++;
 console.log('PASS '+n+' GBP2000 flexible-exit goal, independent training/holdout, no broker orders');
