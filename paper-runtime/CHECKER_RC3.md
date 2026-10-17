@@ -55,6 +55,7 @@
 - [ ] Verified crypto broker partial fills, fractional quantity precision, dust and true tariff/market impact.
 - [x] Virtual £50 risk/3R mathematics, 61-trade scoring, stale-entry expiry and stop-first replay tested: 43 automated virtual-trial checks passed before this audit, plus two additional strategy-cohort tests now under CI. Previously 98 verified checks; post-audit total should reach 100 if final CI succeeds. GitHub Actions isolated-paper-tests successful on 17 October 2026, run 39065383406.
 - [x] **134 automated checks** including 34 new 3R-specific training, holdout isolation and independent P&L tests passed in GitHub Actions [run 39067133018](https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39067133018). Candidate ranking now uses the £50 net-3R trial rules.
+- [x] Real-data **GET-only** 3R pipeline smoke-tested with paper credentials: BTC/USD and ETH/USD completed OP-01 3R training, VL-01 holdout audit, and both correctly `VALIDATION_BLOCKED`; SPY/QQQ/IWM were `MARKET_CLOSED` (Saturday). Broker order capacity hard-disabled in runner. Evidence: https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39067255829. One-shot workflow/trigger removed after verification.
 - [ ] Full persistent journal restart and actual forward trade collection tested with persistent host.
 - [ ] Verified restart recovery, lost/retried broker API response, journal integrity under real runtime conditions.
 - [ ] Verified deployed HTTPS read-only telemetry, broker permissions and user kill switch.
