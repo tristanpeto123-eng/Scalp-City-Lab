@@ -2,6 +2,7 @@
 // NO fixed reward:risk; stop loss + next-open bearish trend exit. Never places orders.
 import {initializeTrial,queueSignal,requestExit,processBar,trialReport,TRIAL_RULES} from './trial-profit.mjs';
 import {isResearchCrypto} from './crypto-research-marketset.mjs';
+import {normaliseStrategy,strategyKey,signalPolicy} from './signal-policies.mjs';
 const ALLOWED=new Set(['BTC/USD','ETH/USD','SPY','QQQ','IWM']);
 const finite=Number.isFinite;
 export const PROFIT_OBJECTIVE=Object.freeze({
@@ -10,10 +11,8 @@ export const PROFIT_OBJECTIVE=Object.freeze({
   minTrainingClosed:3,minHoldoutClosed:3,maxDrawdownPct:20
 });
 export function validateHistory(bars,params){
- if(!Array.isArray(bars)||bars.length<80||!params||
-  !Number.isInteger(params.fast)||!Number.isInteger(params.slow)||
-  params.fast<2||params.fast>=params.slow||params.slow>=bars.length)
-  throw Error('Invalid profit research input');
+ if(!Array.isArray(bars)||bars.length<80)throw Error('Invalid profit research input');
+ normaliseStrategy(params);
  let prev=-Infinity;
  for(const b of bars){
   if(!finite(b.t)||b.t<=prev||![b.o,b.h,b.l,b.c].every(finite)||
@@ -27,20 +26,20 @@ export function simulateProfit(bars,params,{symbol,start=1,end=bars.length,feeMu
  validateHistory(bars,params);
  if(!Number.isInteger(start)||!Number.isInteger(end)||start<1||end>bars.length||start>=end)
   throw Error('Invalid research time segment');
- let f=bars[0].c,s=f,state=initializeTrial();
- const kf=2/(params.fast+1),ks=2/(params.slow+1);
+ const policy=signalPolicy(params);
+ let state=initializeTrial();
  for(let i=0;i<end;i++){
   const b=bars[i];
   if(i>=start){
    const result=processBar(state,{...b,t:new Date(b.t).toISOString(),symbol},{feeMultiplier});
    state=result.state;
   }
-  f+=kf*(b.c-f);s+=ks*(b.c-s);
+  const signal=policy.observe(b); // decision made at completed candle close
   if(i>=start){
    const barStart=new Date(b.t).toISOString();
-   if(f>s&&!state.open&&!state.pending)
+   if(signal.ready&&signal.entry&&!state.open&&!state.pending)
     state=queueSignal(state,{symbol,signalBarStart:barStart,candidateId:'candidate-evaluation'}).state;
-   else if(f<=s&&state.open)
+   else if(signal.ready&&signal.exit&&state.open)
     state=requestExit(state,{symbol,signalBarStart:barStart}).state;
   }
  }
@@ -77,7 +76,7 @@ export function optimizeProfit(bars,candidates,symbol){
  if(cut<=100||bars.length-cut<30)throw Error('Insufficient historical holdout');
  const tested=candidates.map(params=>{const result=simulateProfit(bars,params,{symbol,start:1,end:cut});
    return {params,result,score:selectScore({result})};});
- tested.sort((a,b)=>b.score-a.score||a.params.fast-b.params.fast);
+ tested.sort((a,b)=>b.score-a.score||strategyKey(a.params).localeCompare(strategyKey(b.params)));
  const first=tested.find(x=>Number.isFinite(x.score));
  return {candidate:first||tested[0],trainingEligible:Boolean(first),cut,
   selectionBasis:'TRAIN_NET_GBP_PROFIT_NOT_FIXED_RR',
@@ -117,7 +116,7 @@ export function auditProfit(trades,bars,{start,end}){
 export function validateProfit(bars,selection,symbol){
  if(!selection?.candidate)return {verdict:'BLOCKED',reasons:['No candidate'],accountingMatch:false};
  const {params}=selection.candidate,cut=selection.cut;
- if(!Number.isInteger(cut)||cut<params.slow||bars.length-cut<30)throw Error('No sealed profit holdout');
+ if(!Number.isInteger(cut)||cut<80||bars.length-cut<30)throw Error('No sealed profit holdout');
  const hold=simulateProfit(bars,params,{symbol,start:cut,end:bars.length});
  const audited=auditProfit(hold.trades,bars,{start:cut,end:bars.length});
  const stress=simulateProfit(bars,params,{symbol,start:cut,end:bars.length,feeMultiplier:2});
