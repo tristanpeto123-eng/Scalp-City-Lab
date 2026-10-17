@@ -35,7 +35,7 @@ test('all ten crypto pairs support independently frozen training-only strategy r
    assert.deepEqual(result.replay.strategyParams,result.model.selected.params);
    assert.equal(result.replay.actualForwardTradeCount,0);
    assert.equal(result.replay.payoutGuaranteed,false);
-   assert.equal(result.replay.validationPeriod.start,model.trainingWindows.evaluation.start);
+   assert.equal(Date.parse(result.replay.validationPeriod.start),Date.parse(model.trainingWindows.evaluation.start));
   }else{
    assert.equal(result.status,'ABSTAIN_NO_POSITIVE_EDGE_AFTER_FEES');
    assert.equal(result.model.selected,null);
