@@ -1,0 +1,41 @@
+name: One-time £50 30-day historical Validation Lab proof
+on:
+  push:
+    branches: [feat/crypto-paper-agents-rc3]
+    paths: [paper-runtime/validation-smoke.trigger]
+permissions:
+  contents: read
+jobs:
+  smoke:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 'a741bda5ec14c9da481e7b1edc70cae4a62f0298'
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Checker validation lab calculations
+        run: node paper-runtime/validation-lab-tests.mjs
+      - name: Historical-as-live BTC/USD 30-day £50 virtual test
+        env:
+          SCALP_TEST_SYMBOL: 'BTC/USD'
+          SCALP_START_GBP: '50'
+          SCALP_TEST_MODE: 'DURATION'
+          SCALP_DURATION_DAYS: '30'
+          SCALP_HISTORY_DAYS: '90'
+          SCALP_TEST_FEED: 'us-1'
+          SCALP_VALIDATION_OUTPUT: 'validation-output/sample.json'
+          ALPACA_PAPER_KEY: ${{ secrets.ALPACA_PAPER_KEY }}
+          ALPACA_PAPER_SECRET: ${{ secrets.ALPACA_PAPER_SECRET }}
+        run: node paper-runtime/validation-run.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: validation-lab-btc-50-gbp-30-days
+          path: validation-output/sample.json
+          if-no-files-found: ignore
+          retention-days: 30
