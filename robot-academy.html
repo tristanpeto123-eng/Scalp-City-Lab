@@ -210,6 +210,88 @@ function render(){
 }
 function graduate(p){const card=document.createElement('div');card.className='confetti';card.textContent='🎓 '+p.symbol.split('/')[0]+' → Grade '+grade(p)+'!';
  document.body.append(card);setTimeout(()=>card.remove(),1750);}
+const HISTORICAL_SOURCE='HISTORICAL_TRAINING_RESEARCH';
+function checkResearchSummary(data){
+ if(!data||data.schema!=='ROBOT_ACADEMY_RESEARCH_V1'||
+   data.source!=='GITHUB_PERSISTED_HISTORICAL_TRAINING'||
+   data.sourcePolicy!=='GBP50-PROFIT2000-v2'||
+   data.verifiedForwardGrades!==0||data.actualBrokerOrders!==0||
+   !/^[a-f0-9]{64}$/.test(data.sourceDigest||'')||
+   !Array.isArray(data.pupils)||data.pupils.length!==10)throw Error('Research provenance invalid');
+ const allowed=new Set(base.map(p=>p.symbol)),seen=new Set();
+ for(const row of data.pupils){
+  if(!row||!allowed.has(row.symbol)||seen.has(row.symbol)||
+    row.source!==HISTORICAL_SOURCE||row.confirmedForward!==false||
+    row.championModel!==null||row.verifiedForwardTrades!==0||
+    !Number.isInteger(row.experiments)||row.experiments<0||
+    !Number.isInteger(row.independentTrainingWindows)||row.independentTrainingWindows<0||
+    row.independentTrainingWindows>row.experiments||
+    !Number.isInteger(row.distinctStrategiesTried)||row.distinctStrategiesTried<0||
+    !Array.isArray(row.generations)||row.generations.length!==row.experiments||
+    row.generations.length>150)
+    throw Error('Invalid or falsely verified research pupil');
+  seen.add(row.symbol);
+  if(row.researchLeader){
+   const leader=row.researchLeader;
+   if(!Number.isInteger(leader.trainingClosedTrades)||leader.trainingClosedTrades<20||
+     !Number.isFinite(leader.trainingWinRatePct)||leader.trainingWinRatePct<0||
+     leader.trainingWinRatePct>100||!Number.isFinite(leader.trainingNetGbp)||
+     typeof leader.name!=='string'||leader.name.length>90||
+     leader.outOfSampleVerified!==false||
+     !['TRAINING_POSITIVE_UNVALIDATED','TRAINING_LOSS_MAKING'].includes(leader.status))
+     throw Error('Invalid research-only strategy candidate');
+  }
+  for(const lesson of row.generations){
+   if(!Number.isInteger(lesson.run)||lesson.run<1||
+      typeof lesson.independentWindow!=='boolean'||
+      !Number.isInteger(lesson.testedConfigurations)||lesson.testedConfigurations<1||
+      lesson.testedConfigurations>16||
+      (lesson.grade!==null&&(!Number.isInteger(lesson.grade)||lesson.grade<0||lesson.grade>10)))
+     throw Error('Malformed historical training lesson');
+  }
+ }
+ return data;
+}
+function historicalPupils(){
+ return base.map(p=>{
+  const item=research?.pupils.find(x=>x.symbol===p.symbol);
+  if(!item)return {...p};
+  const leader=item.researchLeader;
+  return {...p,
+   trades:leader?.trainingClosedTrades??null,
+   wins:null,trainingWinRatePct:leader?.trainingWinRatePct??null,
+   net:leader?.trainingNetGbp??null,
+   champion:null,researchLeader:leader,
+   source:HISTORICAL_SOURCE,
+   experiments:item.experiments,
+   independentTrainingWindows:item.independentTrainingWindows,
+   distinctStrategiesTried:item.distinctStrategiesTried,
+   latestTrainingEnd:item.latestTrainingEnd,
+   trainingBehavior:item.trainingBehavior,
+   generations:item.generations
+  };
+ });
+}
+let researchRequest=0;
+async function loadResearch(refresh=false){
+ const serial=++researchRequest;
+ if(refresh)researchError=null;
+ try{
+  const endpoint='./research-data/robot-academy.json'+(refresh?'?revision='+Date.now():'');
+  const response=await fetch(endpoint,{cache:refresh?'no-store':'default',credentials:'omit'});
+  if(!response.ok)throw Error('Research snapshot has not been published (HTTP '+response.status+')');
+  const verified=checkResearchSummary(await response.json());
+  if(serial!==researchRequest)return;
+  research=verified;researchError=null;
+  if(!demo){pupils=historicalPupils();render();}
+ }catch(e){
+  if(serial!==researchRequest)return;
+  research=null;
+  researchError='Historical research unavailable: '+String(e.message||e)+'. No invented grades are substituted.';
+  if(!demo){pupils=base.map(p=>({...p}));render();}
+ }
+}
+
 $('demo').onclick=()=>{demo=true;lessonNo=0;
  // These figures are invented DEMO FIXTURES, not actual performance.
  const scores=[12,23,38,44,57,66,73,81,92,100];
@@ -224,7 +306,8 @@ $('lesson').onclick=()=>{if(!demo)return;lessonNo++;
   const gain=((lessonNo+p.id*3)%4===0)?10:((lessonNo+p.id)%3===0)?5:0;
   p.wins=Math.min(p.trades,p.wins+gain);if(grade(p)>old&&p.id===selected)graduate(p);}
  render();};
-$('reset').onclick=()=>{demo=false;lessonNo=0;pupils=base.map(x=>({...x}));render();};
+$('reset').onclick=()=>{demo=false;lessonNo=0;pupils=historicalPupils();render();loadResearch(true);};
+$('refreshHistory').onclick=()=>loadResearch(true);
 window.RobotAcademy={
  // Future handoff contract: never use historical calibration results to claim
  // authenticated forward-paper performance. Must validate provenance upstream.
@@ -246,5 +329,6 @@ window.RobotAcademy={
  }
 };
 render();
+loadResearch();
 })();
 </script></body></html>
