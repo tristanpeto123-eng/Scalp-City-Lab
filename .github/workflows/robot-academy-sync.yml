@@ -1,0 +1,55 @@
+name: Publish actual historical Robot Academy research records
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '37 */6 * * *'
+  push:
+    branches: [main]
+    paths:
+      - robot-academy-sync.trigger
+permissions:
+  contents: write
+concurrency:
+  group: scalp-academy-research-publisher
+  cancel-in-progress: false
+jobs:
+  historical-research-publisher:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Checkout independent GitHub training-memory branch
+        uses: actions/checkout@v4
+        with:
+          ref: scalp-learning-memory
+          path: research-memory
+          persist-credentials: false
+      - name: Checker - validated exporter tests
+        run: |
+          node --check scripts/export-robot-academy.mjs
+          node --test scripts/export-robot-academy-tests.mjs
+          node --test robot-academy-tests.mjs
+      - name: Create deterministic historical-only school summary
+        run: |
+          node scripts/export-robot-academy.mjs \
+            research-memory/scalp-learning/history.json \
+            research-data/robot-academy.json
+          node -e 'const r=require("./research-data/robot-academy.json");if(r.pupils.length!==10||r.verifiedForwardGrades!==0||r.actualBrokerOrders!==0||r.pupils.some(x=>x.confirmedForward||x.championModel!==null))process.exit(1);console.log("CHECKER: ten research-only chart pupils, zero verified grades or broker orders");'
+      - name: Publish updated historical research snapshot only on change
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- research-data/robot-academy.json
+          if git diff --cached --quiet; then
+            echo 'No new independent research or experiments; no Academy update needed'
+          else
+            git commit -m 'research: publish historical-only Robot Academy lessons and model leaders'
+            git push origin HEAD:main
+          fi
