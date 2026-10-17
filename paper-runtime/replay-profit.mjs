@@ -4,6 +4,7 @@
 import {createHash} from 'node:crypto';
 import {optimizeProfit,validateProfit} from './learning-profit.mjs';
 import {initializeTrial,queueSignal,requestExit,processBar,trialReport,TRIAL_RULES} from './trial-profit.mjs';
+import {isResearchCrypto} from './crypto-research-marketset.mjs';
 const INTERVAL=15*60_000;
 const ALLOWED=new Set(['BTC/USD','ETH/USD','SPY','QQQ','IWM']);
 const CANDIDATES=[{fast:6,slow:26},{fast:9,slow:34},{fast:12,slow:48}];
@@ -32,7 +33,7 @@ function emaState(params,history){
  return {fast,slow};
 }
 export function replayHistorical({symbol,raw,calibrationFraction=.40,candidates=CANDIDATES,closedBefore=Infinity}){
- if(!ALLOWED.has(symbol)||!Number.isFinite(calibrationFraction)||
+ if((!ALLOWED.has(symbol)&&!isResearchCrypto(symbol))||!Number.isFinite(calibrationFraction)||
     calibrationFraction<.25||calibrationFraction>.65)throw Error('Invalid replay configuration');
  const bars=formatBars(raw,closedBefore);
  if(bars.length<480)throw Error('Need at least 480 completed historical candles');
@@ -103,7 +104,7 @@ export function replayHistorical({symbol,raw,calibrationFraction=.40,candidates=
    disclaimer:'Historical variable-exit profit research; no fixed R:R. Historical chronological simulation with modeled fees and no FX, slippage or real fills. Never counts as genuine live forward evidence; no future observations entered the training window.'};
 }
 export async function loadHistoricalCrypto({broker,symbol,days=180,now=Date.now(),maximumPages=80}={}){
- if(!broker||!['BTC/USD','ETH/USD'].includes(symbol)||!Number.isInteger(days)||days<8||days>365||
+ if(!broker||!isResearchCrypto(symbol)||!Number.isInteger(days)||days<8||days>365||
     !Number.isInteger(maximumPages)||maximumPages<1||maximumPages>100)throw Error('Invalid crypto replay source');
  const params=new URLSearchParams({symbols:symbol,timeframe:'15Min',
    start:new Date(now-days*86400_000).toISOString(),end:new Date(now-30_000).toISOString(),
