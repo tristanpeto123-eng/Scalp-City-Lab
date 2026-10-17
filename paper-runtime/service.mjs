@@ -32,7 +32,7 @@ class FileJournal {
 const sleep=t=>new Promise(resolve=>setTimeout(resolve,t));
 async function main(){
   const paperEnabled=process.env.SCALP_PAPER_ENABLED==='true';
-  if(paperEnabled&&process.env.SCALP_RELEASE_APPROVED!=='SCALP-PAPER-0.1.0-rc2')throw Error('Paper orders require approval for exact release SCALP-PAPER-0.1.0-rc2');
+  if(paperEnabled&&process.env.SCALP_RELEASE_APPROVED!=='SCALP-PAPER-0.1.0-rc3')throw Error('Paper orders require approval for exact release SCALP-PAPER-0.1.0-rc3');
   const broker=new AlpacaPaper();const journal=new FileJournal();await journal.init();
   if(paperEnabled&&unresolvedIntents.size)throw Error('Unresolved paper-order intents must be manually reconciled before re-arming: '+unresolvedIntents.size);
   const workflow=new AgentWorkflow({broker,journal,paperEnabled});
@@ -52,7 +52,7 @@ async function main(){
   process.on('SIGINT',stop);process.on('SIGTERM',stop);
   while(!workflow.halted){
     try{await workflow.reconcile()}catch(e){workflow.emergencyStop();console.error('HALTED: reconciliation failed:',e.message);break;}
-    for(const symbol of ['SPY','QQQ','IWM']){
+    for(const symbol of ['SPY','QQQ','IWM','BTC/USD','ETH/USD']){
       if(workflow.halted)break;
       try{const result=await workflow.process(symbol);console.log(new Date().toISOString(),symbol,result.status)}
       catch(e){console.error('HALTED:',symbol,e.message);break;}
