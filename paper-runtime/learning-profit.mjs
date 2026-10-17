@@ -1,6 +1,7 @@
 // Flexible-exit GBP-50 virtual strategy research, targeting £2,000 NET profit.
 // NO fixed reward:risk; stop loss + next-open bearish trend exit. Never places orders.
 import {initializeTrial,queueSignal,requestExit,processBar,trialReport,TRIAL_RULES} from './trial-profit.mjs';
+import {isResearchCrypto} from './crypto-research-marketset.mjs';
 const ALLOWED=new Set(['BTC/USD','ETH/USD','SPY','QQQ','IWM']);
 const finite=Number.isFinite;
 export const PROFIT_OBJECTIVE=Object.freeze({
@@ -22,7 +23,7 @@ export function validateHistory(bars,params){
  }
 }
 export function simulateProfit(bars,params,{symbol,start=1,end=bars.length,feeMultiplier=1}={}){
- if(!ALLOWED.has(symbol))throw Error('Symbol not allowlisted');
+ if(!ALLOWED.has(symbol)&&!isResearchCrypto(symbol))throw Error('Symbol not allowlisted');
  validateHistory(bars,params);
  if(!Number.isInteger(start)||!Number.isInteger(end)||start<1||end>bars.length||start>=end)
   throw Error('Invalid research time segment');
@@ -70,7 +71,7 @@ function selectScore(x){
  return m.netGbp*8+m.expectancyGbp*4+pf*2-m.maxDrawdownPct*.25+m.winRatePct*.01;
 }
 export function optimizeProfit(bars,candidates,symbol){
- if(!ALLOWED.has(symbol)||!Array.isArray(candidates)||candidates.length===0)
+ if((!ALLOWED.has(symbol)&&!isResearchCrypto(symbol))||!Array.isArray(candidates)||candidates.length===0)
   throw Error('Missing profit strategy candidates');
  const cut=Math.floor(bars.length*.75);
  if(cut<=100||bars.length-cut<30)throw Error('Insufficient historical holdout');
