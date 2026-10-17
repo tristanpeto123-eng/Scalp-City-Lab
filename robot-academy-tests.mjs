@@ -85,3 +85,37 @@ test('published test page links directly to the school',async()=>{
  assert.match(page,/href="\.\/robot-academy\.html"/);
  assert.match(page,/Robot Academy/);
 });
+
+test('Academy loads actual stored historical research without asserting verified paper trading',()=>{
+ assert.match(html,/research-data\/robot-academy\.json/);
+ assert.match(html,/async function loadResearch\(/);
+ assert.match(html,/checkResearchSummary/);
+ assert.match(html,/HISTORICAL_TRAINING_RESEARCH/);
+ assert.match(html,/HISTORICAL TRAINING REPLAY · PROVISIONAL/);
+ assert.match(html,/Reload research history/);
+ assert.match(html,/Best research starting point/);
+ assert.match(html,/researchLeader/);
+ assert.match(html,/Reused\/overlapping history: NOT independent evidence/);
+ assert.match(html,/TRAINING SAMPLE ONLY/);
+ assert.match(html,/No verified forward-paper results are connected/);
+ assert.doesNotMatch(html,/fetch\(['"]https:\/\/data\.alpaca\.markets/);
+ assert.doesNotMatch(html,/paperOrder\s*\(/);
+});
+test('real historical win-rate grades stay provisional and never become verified without forward evidence',()=>{
+ const r={trades:40,wins:null,source:'HISTORICAL_TRAINING_RESEARCH',
+  trainingWinRatePct:83.33};
+ // Actual grade expression evaluates from the reported training win-rate,
+ // not an invented exact number of winners inferred from a rounded ratio.
+ assert.equal(grade(r),8);
+ assert.equal(pct(r),83.33);
+ assert.equal(confirmed(r,false),false);
+ assert.equal(confirmed({...r,trades:100,trainingWinRatePct:100},false),false);
+ assert.equal(grade({...r,trades:100,trainingWinRatePct:100}),10);
+ assert.equal(grade({...r,trades:null,trainingWinRatePct:null}),null);
+});
+test('inline page script is syntactically valid after historical loader integration',async()=>{
+ const {Script}=await import('node:vm');
+ const js=html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+ assert.ok(js?.includes('loadResearch()'));
+ assert.doesNotThrow(()=>new Script(js));
+});

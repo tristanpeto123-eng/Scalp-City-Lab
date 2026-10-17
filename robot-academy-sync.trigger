@@ -1,0 +1,1 @@
+Owner-approved historical training-summary publication on first merge. Publish only trained data already present on scalp-learning-memory branch, using GitHub Actions read-only research source. Never claim actual forward trading or enable broker orders.

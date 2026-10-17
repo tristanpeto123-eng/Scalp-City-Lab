@@ -77,14 +77,14 @@ input[type=number]{background:#0d2135;border:1px solid #436785;border-radius:8px
 <header class="head"><div><div class="brand">SCALP CITY / THE FOUNDRY</div><h1>ROBOT <span>ACADEMY</span></h1></div><a class="back" href="./strategy-validation.html">← Strategy Validation</a></header>
 <p class="subtitle">Every crypto chart has its own little robot pupil. Every 10 percentage points of <em>observed</em> winning trades unlocks the next classroom. Learning must be measured, not imagined.</p>
 <section class="hero"><div><strong>THE SCHOOL OF MARKET INTELLIGENCE</strong><h2>Train. Test. Graduate.</h2><p>Grades describe win rates only—not real profit, intelligence, or trading readiness. A robot can get a high grade and still lose money.</p>
-<div class="controls"><button class="btn primary" id="demo">Explore simulated classroom</button><button class="btn" id="lesson" disabled>Simulate a training lesson</button><button class="btn" id="reset">Show actual status</button><span class="status" id="status">LIVE EVIDENCE · NO VERIFIED GRADES</span></div>
-<p class="note" id="modeNote">No confirmed forward-paper win-rate records are connected, so all pupils start ungraded. Demo mode is fictional and never changes training evidence.</p></div></section>
-<div class="school-layout"><main class="panel"><div class="school-sign"><strong>🏫 THE ACADEMY</strong><span id="headcount">10 pupils · 0 verified graduates</span></div><h2 class="section-title">Classrooms</h2><p class="section-note">Each classroom advances by a 10% measured win-rate increment. The graduation room is reserved for 100%.</p><div class="rooms" id="rooms"></div>
+<div class="controls"><button class="btn primary" id="demo">Explore simulated classroom</button><button class="btn" id="lesson" disabled>Simulate a training lesson</button><button class="btn" id="reset">Show actual status</button><button class="btn" id="refreshHistory">Reload research history</button><span class="status" id="status">TRAINING RESEARCH · UNVERIFIED</span></div>
+<p class="note" id="modeNote">No verified forward-paper results are connected. Historical training records will load separately and are always provisional. Demo mode is fictional.</p></div></section>
+<div class="school-layout"><main class="panel"><div class="school-sign"><strong>🏫 THE ACADEMY</strong><span id="headcount">10 pupils · 0 verified graduates</span></div><h2 class="section-title">Classrooms</h2><p class="section-note">Classrooms show the research grade of each pair’s strongest available historical training strategy. Every research grade is <strong>provisional</strong>; no verified forward-paper grades exist. A 100% training win rate is not financial graduation.</p><div class="rooms" id="rooms"></div>
 <div class="track" id="track"></div><p class="explain">GRADE 0 = 0–9.9%; GRADE 1 = 10–19.9%; … GRADE 8 = 80–89.9%; GRADE 9 = 90–99.9%; GRADE 10 = 100%. A minimum sample of 30 independently verified closed trades is required before a grade is recorded as confirmed. Otherwise the grade is provisional.</p>
 </main>
 <aside class="panel"><h2 class="section-title">Meet the pupils <span style="font-size:.75rem;color:#91afc5">⌁ 10 pairs</span></h2><div class="pupils" id="pupils"></div>
 <div class="report" id="report" aria-live="polite"></div></aside></div>
-<p class="note" style="margin-top:22px">Academy v0.1 · Visual learning prototype. Fictional demo lessons, no broker orders, withdrawals, funded trading or claims of 80% performance. Production grades require authenticated, uniquely timestamped forward-paper trades and checked accounting.</p>
+<p class="note" style="margin-top:22px">Academy v0.2 · Actual GitHub-saved historical TRAINING records are shown as provisional research classrooms. Historical results do not establish predictive learning, forward performance, or a profitable champion. Fictional demo lessons remain separate; no broker orders, withdrawals, funded trading or claims of 80% performance. Production grades require authenticated, uniquely timestamped forward-paper trades and checked accounting.</p>
 </div>
 <script>
 (()=>{
@@ -95,25 +95,33 @@ const base=[
  ['LINK/USD','Link','#f3ae82'],['DOGE/USD','Doge','#e3d78f'],['LTC/USD','Lite','#abc4f4'],
  ['BCH/USD','Cash','#ddafef']
 ].map(([symbol,name,color],id)=>({id,symbol,name,color,trades:null,wins:null,source:'UNVERIFIED',net:null,drawdown:null,champion:null}));
-let pupils=base.map(x=>({...x})),demo=false,selected=0,lessonNo=0;
+let pupils=base.map(x=>({...x})),demo=false,selected=0,lessonNo=0,research=null,researchError=null;
 const $=id=>document.getElementById(id);
-const grade=p=>p.trades===null||p.trades<1?null:Math.min(10,Math.floor((p.wins/p.trades*100+1e-8)/10));
-const percent=p=>p.trades===null||p.trades<1?null:100*p.wins/p.trades;
+const grade=p=>p.trades===null||p.trades<1?null:Math.min(10,Math.floor(((p.source==='HISTORICAL_TRAINING_RESEARCH'?p.trainingWinRatePct:p.wins/p.trades*100)+1e-8)/10));
+const percent=p=>p.trades===null||p.trades<1?null:p.source==='HISTORICAL_TRAINING_RESEARCH'?p.trainingWinRatePct:100*p.wins/p.trades;
 const confirmed=p=>!demo&&p.source==='VERIFIED_PAPER_FORWARD'&&p.trades>=30;
 const gradeText=p=>grade(p)===null?'Ungraded':'Grade '+grade(p);
 const money=n=>Number.isFinite(n)?(n<0?'−':'')+'£'+Math.abs(n).toFixed(2):'—';
 const profitState=p=>!Number.isFinite(p.net)?'NOT EVALUATED':
  p.net>0?'PROFITABLE':p.net<0?'LOSS-MAKING':'BREAKEVEN';
 function robot(p){const node=document.createElement('div');
- node.className='robot'+(p.id===selected?' current':'')+(grade(p)===10?' grad':'');
+ node.className='robot'+(p.id===selected?' current':'')+(grade(p)===10&&(demo||confirmed(p))?' grad':'');
  node.style.setProperty('--bot',p.color);node.title=p.symbol+' · '+gradeText(p);
  node.innerHTML='<span class="antenna"></span><span class="hat"></span><span class="face"></span><span class="eyes"></span><span class="mouth"></span><span class="body"></span><span class="feet"></span><span class="name"></span>';
  node.querySelector('.name').textContent=p.symbol.split('/')[0];return node;}
 function render(){
  const overall=pupils.filter(p=>confirmed(p)).length;
- $('headcount').textContent='10 pupils · '+overall+' verified grades';
- $('status').textContent=demo?'DEMO MODE · FICTIONAL STATS':'LIVE EVIDENCE · NO VERIFIED GRADES';
- $('modeNote').textContent=demo?'Fictional results shown solely to demonstrate grade progression. No training models or actual trade records are changed.':'No verified forward-paper results are connected. All ten robots remain ungraded until trustworthy trade data arrives.';
+ const provisional=pupils.filter(p=>p.source==='HISTORICAL_TRAINING_RESEARCH'&&grade(p)!==null).length;
+ $('headcount').textContent='10 pupils · '+provisional+' provisional research grades · '+overall+' verified';
+ $('status').textContent=demo?'DEMO MODE · FICTIONAL STATS':research?
+  'HISTORICAL TRAINING · 0 VERIFIED FORWARD GRADES':'AWAITING RESEARCH · NO VERIFIED GRADES';
+ $('modeNote').textContent=demo?
+  'Fictional results shown solely to demonstrate grade progression. No training models or actual trade records are changed.':
+  research?'Loaded '+research.pupils.reduce((s,p)=>s+p.experiments,0)+
+  ' stored historical research experiments across 10 charts. Last training candle: '+
+  (research.latestTrainingEnd||'unknown')+
+  '. These are training-only replays, not independently verified profitable or forward-paper trades. No verified forward-paper results are connected.':
+  'No verified forward-paper results are connected. '+(researchError||'Loading genuine historical training records…');
  $('lesson').disabled=!demo; $('demo').classList.toggle('active',demo);
  const rooms=$('rooms');rooms.replaceChildren();
  for(let g=0;g<=10;g++){
@@ -140,31 +148,53 @@ function render(){
   item.className='pupil'+(p.id===selected?' active':'');item.style.setProperty('--bot',p.color);
   const avatar=document.createElement('span');avatar.className='dot';avatar.textContent='•';
   const span=document.createElement('span');const name=document.createElement('strong');name.textContent=p.symbol.split('/')[0];
-  const info=document.createElement('small');info.textContent=gradeText(p)+(demo?' · DEMO':'');span.append(name,info);
+  const info=document.createElement('small');info.textContent=gradeText(p)+(demo?' · DEMO':p.source==='HISTORICAL_TRAINING_RESEARCH'?' · HISTORICAL':'');span.append(name,info);
   item.append(avatar,span);item.onclick=()=>{selected=p.id;render();};roster.append(item);}
  const p=pupils[selected],v=percent(p),g=grade(p);
  const report=$('report');report.replaceChildren();
  const h=document.createElement('h3');h.textContent=p.name+' — '+p.symbol;report.append(h);
  const subtitle=document.createElement('p');subtitle.className='note';
- subtitle.textContent=demo?'SIMULATED PUPIL · NOT REAL TRADES':confirmed(p)?'VERIFIED FORWARD-PAPER RECORD':'NO VERIFIED OUTCOMES';
+ subtitle.textContent=demo?'SIMULATED PUPIL · NOT REAL TRADES':p.source==='HISTORICAL_TRAINING_RESEARCH'?'HISTORICAL TRAINING REPLAY · PROVISIONAL':confirmed(p)?'VERIFIED FORWARD-PAPER RECORD':'NO VERIFIED OUTCOMES';
  report.append(subtitle);
  const metrics=document.createElement('div');metrics.className='metric-grid';
- for(const [label,val] of [['Win rate',v===null?'—':v.toFixed(1)+'%'],['Classroom',gradeText(p)],['Closed trades',p.trades===null?'—':String(p.trades)],['Net profit',money(p.net)],['Max drawdown',Number.isFinite(p.drawdown)?p.drawdown.toFixed(2)+'%':'—'],['Status',confirmed(p)?'Confirmed':v===null?'Awaiting evidence':'Provisional']]){
+ for(const [label,val] of [['Win rate',v===null?'—':v.toFixed(1)+'%'],['Classroom',gradeText(p)],['Simulated training closes',p.trades===null?'—':String(p.trades)],['Net profit'+(demo?' (FICTIONAL)':p.source==='HISTORICAL_TRAINING_RESEARCH'?' (training candidate)':''),money(p.net)],['Max drawdown',Number.isFinite(p.drawdown)?p.drawdown.toFixed(2)+'%':'—'],['Status',confirmed(p)?'Confirmed':v===null?'Awaiting evidence':'Provisional']]){
   const tile=document.createElement('div');tile.className='metric';const l=document.createElement('small');l.textContent=label;
   const n=document.createElement('strong');n.textContent=val;tile.append(l,n);metrics.append(tile);
  }report.append(metrics);
  const earnings=document.createElement('p');earnings.className='note';
- earnings.textContent='Profitability: '+profitState(p)+(demo?' · FICTIONAL DEMO':'')+
-   '. School grade measures win rate only.';
+ earnings.textContent='Profitability: '+profitState(p)+
+   (demo?' · FICTIONAL DEMO':p.source==='HISTORICAL_TRAINING_RESEARCH'?' · TRAINING SAMPLE ONLY':'')+
+   '. Classroom grade measures win rate, NOT trading readiness.';
  report.append(earnings);
  const champion=document.createElement('p');champion.className='note';
  champion.textContent='Current champion model: '+(p.champion?.name||'None independently validated')+
-   '. Promotion requires a separate profitable, unseen forward test.';
+   (p.researchLeader?' · Best research starting point: '+p.researchLeader.name+
+     ', historical net '+money(p.researchLeader.trainingNetGbp)+
+     ' ('+p.researchLeader.status+').':'')+
+   ' No experimental candidate is automatically deployed. Promotion requires a separate profitable, unseen forward test.';
  report.append(champion);
+ if(p.source==='HISTORICAL_TRAINING_RESEARCH'){
+  const method=document.createElement('p');method.className='note';
+  method.textContent='Researcher: '+p.experiments+' stored experiments / '+
+    p.independentTrainingWindows+' independent historical training window(s); '+
+    p.distinctStrategiesTried+' configurations tested. Last training: '+(p.latestTrainingEnd||'unknown')+
+    '. Regime observed: '+(p.trainingBehavior||'unknown')+'.';
+  report.append(method);
+  const h4=document.createElement('h3');h4.textContent='Training lessons';report.append(h4);
+  for(const g of p.generations||[]){
+   const lesson=document.createElement('p');lesson.className='note';
+   lesson.textContent='Lesson '+g.run+' · '+(g.grade===null?'Ungraded':'Grade '+g.grade)+
+    ' · best training net '+money(g.leaderTrainingNetGbp)+
+    ' · '+g.testedConfigurations+' configurations · '+
+    (g.independentWindow?'Initial independent training slice':'Reused/overlapping history: NOT independent evidence');
+   report.append(lesson);
+  }
+ }
  const line=document.createElement('div');line.className='progress';const fill=document.createElement('span');
  fill.style.width=v===null?'0%':Math.min(100,v)+'%';line.append(fill);report.append(line);
  const detail=document.createElement('p');detail.className='note';
- detail.textContent=grade(p)===null?'Waiting for trustworthy completed trades.':g===10?'Graduation class reached (historical win rate only).':
+ detail.textContent=grade(p)===null?'Waiting for qualifying training or authenticated forward-paper results.':g===10?
+  (p.source==='HISTORICAL_TRAINING_RESEARCH'?'100% research classroom — provisional only, NOT actual graduation.':'Graduation class reached (historical win rate only).'):
  'Next grade at '+((g+1)*10)+'% observed wins. Sample quality and net profit must be checked independently.';
  report.append(detail);
  if(demo){
@@ -178,8 +208,97 @@ function render(){
  for(let i=0;i<=10;i++){const d=document.createElement('div');if(g!==null&&i<=g)d.className='done';
  d.innerHTML='<i></i>G'+i;track.append(d);}
 }
-function graduate(p){const card=document.createElement('div');card.className='confetti';card.textContent='🎓 '+p.symbol.split('/')[0]+' → Grade '+grade(p)+'!';
+function graduate(p){const card=document.createElement('div');card.className='confetti';card.textContent=(demo?'🎓 DEMO ': '📘 PROVISIONAL ') +p.symbol.split('/')[0]+' → Grade '+grade(p)+'!';
  document.body.append(card);setTimeout(()=>card.remove(),1750);}
+const HISTORICAL_SOURCE='HISTORICAL_TRAINING_RESEARCH';
+function checkResearchSummary(data){
+ if(!data||data.schema!=='ROBOT_ACADEMY_RESEARCH_V1'||
+   data.source!=='GITHUB_PERSISTED_HISTORICAL_TRAINING'||
+   data.sourcePolicy!=='GBP50-PROFIT2000-v2'||
+   data.verifiedForwardGrades!==0||data.actualBrokerOrders!==0||
+   !/^[a-f0-9]{64}$/.test(data.sourceDigest||'')||
+   !Array.isArray(data.pupils)||data.pupils.length!==10)throw Error('Research provenance invalid');
+ const allowed=new Set(base.map(p=>p.symbol)),seen=new Set();
+ for(const row of data.pupils){
+  if(!row||!allowed.has(row.symbol)||seen.has(row.symbol)||
+    row.source!==HISTORICAL_SOURCE||row.confirmedForward!==false||
+    row.championModel!==null||row.verifiedForwardTrades!==0||
+    !Number.isInteger(row.experiments)||row.experiments<0||
+    !Number.isInteger(row.independentTrainingWindows)||row.independentTrainingWindows<0||
+    row.independentTrainingWindows>row.experiments||
+    !Number.isInteger(row.distinctStrategiesTried)||row.distinctStrategiesTried<0||
+    !Array.isArray(row.generations)||row.generations.length!==row.experiments||
+    row.generations.length>150)
+    throw Error('Invalid or falsely verified research pupil');
+  seen.add(row.symbol);
+  if(row.researchLeader){
+   const leader=row.researchLeader;
+   if(!Number.isInteger(leader.trainingClosedTrades)||leader.trainingClosedTrades<20||
+     !Number.isFinite(leader.trainingWinRatePct)||leader.trainingWinRatePct<0||
+     leader.trainingWinRatePct>100||!Number.isFinite(leader.trainingNetGbp)||
+     typeof leader.name!=='string'||leader.name.length>90||
+     leader.outOfSampleVerified!==false||
+     !['TRAINING_POSITIVE_UNVALIDATED','TRAINING_LOSS_MAKING'].includes(leader.status))
+     throw Error('Invalid research-only strategy candidate');
+  }
+  for(const lesson of row.generations){
+   if(!Number.isInteger(lesson.run)||lesson.run<1||
+      typeof lesson.independentWindow!=='boolean'||
+      !Number.isInteger(lesson.testedConfigurations)||lesson.testedConfigurations<1||
+      lesson.testedConfigurations>16||
+      (lesson.grade!==null&&(!Number.isInteger(lesson.grade)||lesson.grade<0||lesson.grade>10)))
+     throw Error('Malformed historical training lesson');
+  }
+ }
+ return data;
+}
+function historicalPupils(){
+ return base.map(p=>{
+  const item=research?.pupils.find(x=>x.symbol===p.symbol);
+  if(!item)return {...p};
+  const leader=item.researchLeader;
+  return {...p,
+   trades:leader?.trainingClosedTrades??null,
+   wins:null,trainingWinRatePct:leader?.trainingWinRatePct??null,
+   net:leader?.trainingNetGbp??null,
+   champion:null,researchLeader:leader,
+   source:HISTORICAL_SOURCE,
+   experiments:item.experiments,
+   independentTrainingWindows:item.independentTrainingWindows,
+   distinctStrategiesTried:item.distinctStrategiesTried,
+   latestTrainingEnd:item.latestTrainingEnd,
+   trainingBehavior:item.trainingBehavior,
+   generations:item.generations
+  };
+ });
+}
+let researchRequest=0;
+async function loadResearch(refresh=false){
+ const serial=++researchRequest;
+ if(refresh)researchError=null;
+ try{
+  const endpoint='./research-data/robot-academy.json'+(refresh?'?revision='+Date.now():'');
+  const response=await fetch(endpoint,{cache:refresh?'no-store':'default',credentials:'omit'});
+  if(!response.ok)throw Error('Research snapshot has not been published (HTTP '+response.status+')');
+  const verified=checkResearchSummary(await response.json());
+  if(serial!==researchRequest)return;
+  const hadResearch=Boolean(research);
+  const previousSelected=pupils[selected];
+  const previousGrade=hadResearch&&!demo?grade(previousSelected):null;
+  research=verified;researchError=null;
+  if(!demo){
+    pupils=historicalPupils();render();
+    if(previousGrade!==null&&grade(pupils[selected])>previousGrade)
+      graduate(pupils[selected]); // Provisional research grade only.
+  }
+ }catch(e){
+  if(serial!==researchRequest)return;
+  research=null;
+  researchError='Historical research unavailable: '+String(e.message||e)+'. No invented grades are substituted.';
+  if(!demo){pupils=base.map(p=>({...p}));render();}
+ }
+}
+
 $('demo').onclick=()=>{demo=true;lessonNo=0;
  // These figures are invented DEMO FIXTURES, not actual performance.
  const scores=[12,23,38,44,57,66,73,81,92,100];
@@ -194,7 +313,8 @@ $('lesson').onclick=()=>{if(!demo)return;lessonNo++;
   const gain=((lessonNo+p.id*3)%4===0)?10:((lessonNo+p.id)%3===0)?5:0;
   p.wins=Math.min(p.trades,p.wins+gain);if(grade(p)>old&&p.id===selected)graduate(p);}
  render();};
-$('reset').onclick=()=>{demo=false;lessonNo=0;pupils=base.map(x=>({...x}));render();};
+$('reset').onclick=()=>{demo=false;lessonNo=0;pupils=historicalPupils();render();loadResearch(true);};
+$('refreshHistory').onclick=()=>loadResearch(true);
 window.RobotAcademy={
  // Future handoff contract: never use historical calibration results to claim
  // authenticated forward-paper performance. Must validate provenance upstream.
@@ -216,5 +336,6 @@ window.RobotAcademy={
  }
 };
 render();
+loadResearch();
 })();
 </script></body></html>
