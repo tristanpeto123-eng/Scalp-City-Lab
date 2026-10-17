@@ -103,11 +103,23 @@ export function processBar(state,bar,{allowEntry=true,feeMultiplier=1}={}){
 }
 export function trialReport(state){
  assertState(state);
+ // Count only realized NET outcomes of CLOSED virtual entry-to-exit trades.
+ // Never score a hypothetical balance change, open mark-to-market gain, signal
+ // or single-trade target as accumulated profit.
+ const closedProfitGbp=round(state.closedTrades.reduce((sum,t)=>{
+   if(!scalar(t?.netGbp))throw Error('Invalid closed-trade GBP profit');
+   return sum+t.netGbp;
+ },0));
+ const expectedBalance=round(TRIAL_RULES.startingBalanceGbp+closedProfitGbp);
+ const allowableRoundingError=Math.max(1e-6,state.closedTrades.length*1e-7);
+ if(!scalar(state.balanceGbp)||Math.abs(state.balanceGbp-expectedBalance)>allowableRoundingError)
+   throw Error('Virtual account balance does not reconcile to cumulative closed trades');
  const {netUsd,expectancyUsd,maxDrawdownUsd,...metrics}=measureGoal(
    state.closedTrades.map(t=>({...t,netUsd:t.netGbp})));
- const profit=round(state.balanceGbp-50),remaining=round(Math.max(0,TRIAL_RULES.targetNetProfitGbp-profit));
+ const profit=closedProfitGbp,remaining=round(Math.max(0,TRIAL_RULES.targetNetProfitGbp-profit));
  return {startGbp:50,balanceGbp:state.balanceGbp,
-  netProfitGbp:profit,profitTargetGbp:TRIAL_RULES.targetNetProfitGbp,targetBalanceGbp:2050,
+  netProfitGbp:profit,realizedClosedTradeProfitGbp:profit,
+  profitAggregation:'SUM_OF_ALL_NET_CLOSED_TRADES',profitTargetGbp:TRIAL_RULES.targetNetProfitGbp,targetBalanceGbp:2050,
   remainingProfitGbp:remaining,profitProgressPct:round(Math.max(0,profit)/TRIAL_RULES.targetNetProfitGbp*100),
   targetReached:profit>=TRIAL_RULES.targetNetProfitGbp,closedTrades:metrics.closedTrades,
   ...Object.fromEntries(Object.entries(metrics).filter(([k])=>k!=='closedTrades')),
