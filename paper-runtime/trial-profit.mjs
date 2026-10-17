@@ -93,9 +93,11 @@ export function processBar(state,bar,{allowEntry=true,feeMultiplier=1}={}){
  const pos=next.open;
  // Stop priority on an ambiguous bar; gaps cannot be filled optimistically.
  if(bar.o<=pos.stopPrice)return close(next,bar,bar.o,'STOP_GAP');
- if(bar.l<=pos.stopPrice)return close(next,bar,pos.stopPrice,'STOP');
+ // Previously finalized bearish signal authorizes an OPEN exit before
+ // examining this new candle's intra-bar high/low.
  if(pos.exitAfterSignalMs!==undefined&&t>pos.exitAfterSignalMs)
    return close(next,bar,bar.o,'BEARISH_SIGNAL_NEXT_OPEN');
+ if(bar.l<=pos.stopPrice)return close(next,bar,pos.stopPrice,'STOP');
  return {state:next,result:'OPEN'};
 }
 export function trialReport(state){
