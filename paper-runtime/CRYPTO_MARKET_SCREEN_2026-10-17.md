@@ -35,3 +35,27 @@ Only the first 40% of each market's candles were available to strategy selection
 - [ ] No audited live forward fills, broker-protective exits, persistent hosting, or evidence for £2,000 goal. Do NOT authorize broker execution or production release.
 
 **Verdict:** DATA AND STRATEGY RESEARCH COMPLETED; ALL EIGHT REJECTED. Remain **NEEDS_REVISION** for strategy promotion and release. No live or paper orders placed. Do not increase leverage or relax safety gates to manufacture target outcomes.
+
+
+## Additional Kraken US historical-data cross-check (`us-1`)
+
+Because six symbols failed the Alpaca US venue's quote-midpoint / zero-volume rule, Checker repeated the experiment using Alpaca's separate **Kraken US trade-based feed** via `GET /v1beta3/crypto/us-1/bars` using the **same 90-day lookback, same three EMA candidates, same simulation costs and identical frozen evaluation gate**. It is an alternative source of historical OHLCV, **NOT proof of executable fills, spreads, pricing or permissions on Kraken**.
+
+**Actual read-only proof:** https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39070322662. All eight markets returned sufficient cleaner data (8,639 15-minute candles each). The original 40% zero-volume screen no longer blocked any market.
+
+| Market | Kraken US 15-minute candles | Zero-volume candles | Internal calibration holdout | Verdict |
+|---|---:|---:|---|---|
+| SOL/USD | 8,639 | 0% | 25 simulated closes, 5 wins (**20.00%**), **−£2.69** | Rejected: training, holdout and stress |
+| XRP/USD | 8,639 | 0% | 29 closes, 3 wins (**10.34%**), **−£3.04** | Rejected: training, holdout and stress |
+| ADA/USD | 8,639 | 0% | 24 closes, 4 wins (**16.67%**), **−£1.43** | Rejected: training, holdout and stress |
+| AVAX/USD | 8,639 | 0.05% | 21 closes, 3 wins (**14.29%**), **−£2.40** | Rejected: training, holdout and stress |
+| LINK/USD | 8,639 | 0% | 24 closes, 3 wins (**12.50%**), **−£2.51** | Rejected: training, holdout and stress |
+| DOGE/USD | 8,639 | 0% | 28 closes, 5 wins (**17.86%**), **−£2.27** | Rejected: training, holdout and stress |
+| LTC/USD | 8,639 | 0.01% | 22 closes, 2 wins (**9.09%**), **−£2.00** | Rejected: training, holdout and stress |
+| BCH/USD | 8,639 | 3.54% | 18 closes, 3 wins (**16.67%**), **+£0.66** | **Still rejected:** training candidate ineligible and 2x-cost stress failed |
+
+**Key finding:** Kraken data improved trade-volume representation; **it did not rescue the current EMA strategy**. BCH has a small positive *historical internal holdout* under base modelled costs, but it is not an independently eligible strategy or achieved portfolio profit. The **frozen last 60% of history was not traded in any of these simulations** because candidates were rejected. The virtual £50 portfolio is unchanged; no actual broker orders submitted.
+
+The two venues' reported bars and modeled outcomes must remain separated by `dataLocation`. Do not average or pool them as if they were independent live strategy wins, and never use the withheld 60% for candidate tuning after inspecting the results.
+
+**Checker conclusion: ALL EIGHT STRATEGY CANDIDATES REJECTED EVEN ON CLEANER KRAKEN FEED.** Next research should test different, justified signal/exit families and execution-realistic costs, not loosen the validation threshold to manufacture the owner's 80% win-rate target.
