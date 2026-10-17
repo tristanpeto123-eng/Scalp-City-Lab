@@ -13,7 +13,10 @@
 - [x] Node 22 syntax checks passed for rc2.
 - [x] 26 mock-only checks passed, including deny-by-default, rejected holdout, stale/duplicate data, risk veto, test account order, duplicate bar prevention, and mock fill reconciliation.
 - [x] GitHub Actions PR checks for rc2 passed (Bootstrap & Checks run 39056767617; Paper Runtime Tests run 39056767489).
-- [x] Manual read-only GitHub Actions preflight configured for post-approval merge (paper secrets never logged, no paper orders).\n- [ ] Authentic Alpaca **paper** credentials tested from an authorised, persistent server.
+- [x] Manual read-only GitHub Actions preflight configured for post-approval merge (paper secrets never logged, no paper orders).
+- [x] **Verified paper-account connection (17 Oct 2026):** one-time GitHub Actions pinned read-only preflight passed. Alpaca account status `ACTIVE`, market `CLOSED` (Saturday), IEX completed historical candles SPY 450 / QQQ 502 / IWM 448. No order API call; paperEnabled remained false. Evidence: https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39060871699
+- [ ] Market-open feed freshness and 15-minute candle clock verified in an actual NYSE trading session.
+\n- [ ] Authentic Alpaca **paper** credentials tested from an authorised, persistent server.
 - [ ] Live IEX feed provenance and 15-min boundary verified during actual US market hours.
 - [ ] External read-only Agent City telemetry tested on a separately hosted HTTPS origin.
 - [ ] Manual review of real broker costs/market behavior, circuit breakers, fill reconciliation, restart and disaster recovery.
