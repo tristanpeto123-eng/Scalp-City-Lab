@@ -78,7 +78,7 @@ export function planSession(input,evidence,{simulations=400,seed=912734,maxDays=
    projectedBalanceGbp:null};
  const horizon=mode==='WAIT_DURATION'?input.durationDays:maxDays;
  const threshold=mode==='TARGET_PROFIT'?depositGbp+input.targetNetProfitGbp:null;
- const final=[],profit=[],timeToTarget=[],lossCount=0,hits=0;
+ const final=[],profit=[],timeToTarget=[];let lossCount=0,hits=0;
  const initialReturns=evidenceCheck.returns;
  for(let s=0;s<simulations;s++){
   let balance=depositGbp,hitAt=null;
