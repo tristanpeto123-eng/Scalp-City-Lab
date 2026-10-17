@@ -103,7 +103,7 @@ export function optimize3R(bars,candidates,symbol){
   });
   options.sort((x,y)=>y.trainingScore-x.trainingScore||x.params.fast-y.params.fast);
   const winner=options.find(x=>Number.isFinite(x.trainingScore));
-  return {candidate:winner||null,cut,
+  return {candidate:winner||options[0],trainingEligible:Boolean(winner),cut,
     trainingOptions:options.map(x=>({params:x.params,trainingClosedTrades:x.result.closedTrades,
       trainingWinRatePct:x.result.winRatePct,trainingNetGbp:x.result.netGbp,
       trainingProfitFactor:x.result.profitFactor,trainingScore:Number.isFinite(x.trainingScore)?x.trainingScore:null})),
@@ -138,7 +138,7 @@ export function audit3RTrades(report,bars){
     maxDrawdownPct:drawdown,profitFactor:lossGross>0?winGross/lossGross:(winGross>0?null:0)};
 }
 export function validate3R(bars,selection,symbol){
-  if(!selection||!selection.candidate) return {verdict:'BLOCKED',reasons:['No eligible 3R training candidate'],holdout:null,accountingMatch:false};
+  if(!selection||!selection.candidate) return {verdict:'BLOCKED',reasons:['No 3R training candidate'],holdout:null,accountingMatch:false};
   const {params}=selection.candidate,cut=selection.cut;
   if(!Number.isInteger(cut)||cut<params.slow||bars.length-cut<25)throw Error('3R sealed holdout not available');
   const holdout=simulate3R(bars,params,{symbol,start:cut,end:bars.length});
@@ -146,6 +146,7 @@ export function validate3R(bars,selection,symbol){
   const stress=simulate3R(bars,params,{symbol,start:cut,end:bars.length,feeMultiplier:2});
   audit3RTrades(stress,bars);
   const reasons=[];
+  if(!selection.trainingEligible)reasons.push('No eligible 3R training candidate');
   if(holdout.closedTrades<R3.minimumHoldoutTrades)reasons.push('Insufficient independent closed 3R holdout trades');
   if(holdout.netGbp<=R3.minimumHoldoutNetGbp)reasons.push('Nonpositive independent 3R net return');
   if(holdout.profitFactor!==null&&holdout.profitFactor<R3.minimumHoldoutProfitFactor)reasons.push('Nonpositive 3R holdout profit factor');
