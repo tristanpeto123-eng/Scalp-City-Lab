@@ -42,7 +42,7 @@ async function main(){
   if(paperEnabled&&unresolvedIntents.size)throw Error('Unresolved paper-order intents must be manually reconciled before re-arming: '+unresolvedIntents.size);
   const workflow=new AgentWorkflow({broker,journal,paperEnabled:false});
   let trialState=journal.trialState||initializeTrial();
-  if(trialState.version!==TRIAL_RULES.version)throw Error('Existing trial uses retired policy; must explicitly archive/migrate old trial, never mix GBP8000 goal with 3R results');
+  if(trialState.version!==TRIAL_RULES.version)throw Error('Existing trial uses retired policy; must explicitly archive/migrate old trial, never mix old GBP8000/3R goal results with the GBP2000 cohort');
   await journal.append({agentId:'BM-01',state:'STARTUP',decision:paperEnabled?'PAPER ORDERS ARMED':'READ-ONLY / DRY-RUN',engine:'scalp-city-paper',ts:new Date().toISOString()});
   const host=process.env.SCALP_BIND||'127.0.0.1',port=Number(process.env.PORT||8787);
   const allowedOrigin=process.env.SCALP_ALLOWED_ORIGIN||'';
