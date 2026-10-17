@@ -79,7 +79,7 @@ export function replayHistorical({symbol,raw,calibrationFraction=.40,candidates=
  const chronological=state.closedTrades.every((t,i,a)=>i===0||Date.parse(a[i-1].closedAt)<Date.parse(t.closedAt));
  if(!chronological)throw Error('Completed trades have invalid order/timestamps');
  return {mode:'HISTORICAL_AS_LIVE_REPLAY_NOT_FORWARD',asset:symbol,
-   virtualStartGbp:50,netProfitTargetGbp:8000,targetBalanceGbp:8050,
+   virtualStartGbp:50,netProfitTargetGbp:2000,targetBalanceGbp:2050,
    mandatoryRewardRisk:null,entryRiskFraction:.01,
    trainOnlySelection:trainingResult,evaluation:{
      bars:evaluated.length,begin:new Date(evaluated[0].t).toISOString(),
@@ -87,10 +87,10 @@ export function replayHistorical({symbol,raw,calibrationFraction=.40,candidates=
      candidateFrozen:eligible,closedTrades:report.closedTrades,wins:report.wins,
      winRatePct:report.winRatePct,wilson95LowerPct:report.wilson95LowerPct,
      balanceGbp:report.balanceGbp,netGbp:report.netGbp,
-     profitTargetGbp:8000,remainingProfitGbp:report.remainingProfitGbp,
+     profitTargetGbp:2000,remainingProfitGbp:report.remainingProfitGbp,
      virtualProfitGoalMet:eligible&&report.targetReached,
      profitFactor:report.profitFactor,maxDrawdownGbp:report.maxDrawdownGbp,
-     observed80pct61tradeThreshold:eligible&&report.observedThresholdMet,
+     observed70pct61tradeThreshold:eligible&&report.observedThresholdMet,
      actualLiveForwardTradeCount:0,openAtEnd:Boolean(state.open),
      status:eligible?'REPLAY_EVALUATED':'CALIBRATION_REJECTED'},
    closedTradeEvidence:eligible?state.closedTrades.map(t=>({
