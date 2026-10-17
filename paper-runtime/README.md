@@ -38,6 +38,14 @@ Once **this exact release is approved and the workflow is merged**, navigate to 
 
 **Important:** `workflow_dispatch` is only offered once the workflow exists on the default branch. Until PR #1 is approved and merged, the new manual workflow is present only on its review branch, so no account connection has been attempted. The Actions runner stops at the end of the test; it is **not continuous bot hosting**.
 
+## Crypto coverage (data verified; execution not authorised)
+
+BTC/USD and ETH/USD use Alpaca's dedicated `GET https://data.alpaca.markets/v1beta3/crypto/us/bars` feed rather than the US-equity IEX endpoint. Crypto market data operates around the clock, including weekends. Run `node paper-runtime/crypto-preflight.mjs` for a **read-only** GET-only check of active paper-account crypto asset status, 15-minute candles and feed freshness. A separate, manual GitHub Actions workflow `Alpaca crypto paper and live-data check (read only)` can run after the owner-approved release reaches the default branch.
+
+Initial verified result (17 October 2026): BTC/USD and ETH/USD both eligible for paper trading, each with 287 completed 15-minute candles and ~10 minutes of data age. Evidence: https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39061254677
+
+**Scope distinction:** The current 12-agent runtime still trades/learns on US equities and its asset allowlist excludes crypto. A successful data preflight is **not** permission or implementation for automated crypto paper orders. Crypto paper execution requires its own risk, fee, 24/7 schedule, quantity precision and `gtc`/`ioc` order-type validation, further independent Checker tests and an exact owner-approved release. No crypto orders were submitted.
+
 ## Acceptance gates
 
 1. Synthetic or stale bars denied.
