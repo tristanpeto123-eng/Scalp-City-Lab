@@ -1,1 +1,1 @@
-One-shot 180-day BTC/ETH paper-key GET-only training and historical-as-live replay; no orders, no merge.
+Second one-shot dataset pagination-safe crypto replay. GET-only, no orders; owner-authorised.
