@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10192d"><title>Scalp City — Robot Academy</title>
+<style>
+:root{font-family:ui-rounded,Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#eff5ff;background:#0b1427}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 68% -8%,#233f64 0,transparent 53%),linear-gradient(150deg,#0b1427,#101e33 50%,#0b1427)}
+button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid #fcd57f;outline-offset:3px}
+.shell{max-width:1320px;margin:auto;padding:24px clamp(14px,3vw,40px) 50px}
+.head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{font-size:.82rem;letter-spacing:.2em;color:#8fa9c8;font-weight:900}
+h1{font-size:clamp(2.1rem,4vw,3.9rem);letter-spacing:-.05em;margin:9px 0 8px;line-height:1}
+h1 span{color:#80dbcf}p{line-height:1.5}
+a{color:#b4dcff}.back{font-size:.88rem;color:#b8cce0;text-decoration:none;border:1px solid #3b5575;padding:10px 14px;border-radius:12px}
+.subtitle{color:#b0bed5;max-width:790px;margin:12px 0 22px}
+.hero{border:1px solid #3e5774;border-radius:24px;padding:24px;position:relative;overflow:hidden;background:linear-gradient(120deg,#1b314d,#183650 70%,#22495a)}
+.hero:before{content:"";position:absolute;inset:0;opacity:.15;background:repeating-linear-gradient(90deg,transparent 0 70px,#a5d7ff 71px,#a5d7ff 72px)}
+.hero>div{position:relative}.hero strong{color:#ffdb8b;letter-spacing:.12em}
+.hero h2{font-size:clamp(1.7rem,3.2vw,2.6rem);margin:7px 0;letter-spacing:-.04em}
+.hero p{margin:7px 0;color:#d0e4f0;max-width:700px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 0}
+.btn{border-radius:12px;padding:10px 16px;border:1px solid #56738e;background:#284565;color:#f2f8ff;font-weight:750}
+.btn.primary{background:#eacb78;color:#16243a;border-color:#eacb78}
+.btn.active{background:#7cd5ca;color:#102638;border-color:#7cd5ca}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.note{font-size:.8rem;color:#b8c6da}.status{padding:7px 12px;border-radius:20px;background:#152944;border:1px solid #56738e;font-size:.74rem;letter-spacing:.06em;color:#dbeafa;font-weight:800}
+.school-layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;margin-top:20px}
+.panel{background:#141f34;border:1px solid #324b69;border-radius:22px;padding:19px}
+.section-title{font-size:1.2rem;margin:0 0 12px;letter-spacing:-.025em}
+.section-note{margin:0 0 13px;color:#b1c6db;font-size:.82rem}
+.school-sign{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,#694b80,#367884);border-radius:16px 16px 8px 8px;padding:10px 16px;margin-bottom:13px;color:#fff}
+.school-sign strong{letter-spacing:.15em;font-size:.82rem}
+.school-sign span{font-size:.75rem}
+.rooms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.room{background:linear-gradient(145deg,#26344f,#1b2b43);border:1px solid #42607a;border-radius:14px;min-height:127px;overflow:hidden;padding:0;position:relative}
+.room-head{background:#1e4057;border-bottom:2px solid #4b7189;display:flex;justify-content:space-between;align-items:center;gap:4px;padding:7px 10px;color:#f4e9b0;font-weight:800;font-size:.8rem}
+.room-head small{font-size:.7rem;color:#acc9d7}
+.room-body{padding:13px 8px 12px;display:flex;gap:9px;align-items:flex-start;justify-content:center;flex-wrap:wrap;min-height:91px}
+.empty{color:#7894ad;font-size:.74rem;align-self:center;text-align:center}
+.room.graduate{background:linear-gradient(145deg,#3b4b59,#344b55);border-color:#cda65e}.room.graduate .room-head{background:#735e45}
+.room.prep .room-head{background:#334362}
+.robot{--bot:#66d7dc;position:relative;width:60px;height:74px;flex:0 0 auto;text-align:center;user-select:none}
+.robot .antenna{position:absolute;top:1px;left:29px;width:3px;height:10px;background:#d3edf5}
+.robot .antenna:before{content:"";position:absolute;top:-4px;left:-3px;width:9px;height:9px;background:#f4cd83;border-radius:50%;box-shadow:0 0 8px #f4cc85}
+.robot .face{position:absolute;top:12px;left:7px;width:45px;height:34px;background:var(--bot);border:3px solid #93edec;border-radius:11px;box-shadow:inset 0 -4px #0002,0 3px 0 #0002}
+.robot .eyes{position:absolute;top:23px;left:17px;width:7px;height:8px;background:#16243a;border-radius:50%;box-shadow:17px 0 #16243a}
+.robot .mouth{position:absolute;top:35px;left:24px;width:13px;height:5px;border-bottom:2px solid #16243a;border-radius:50%}
+.robot .body{position:absolute;top:48px;left:15px;width:31px;height:18px;border-radius:7px 7px 5px 5px;background:#b5d2ed;border:2px solid #eff8ff}
+.robot .body:after{content:"";position:absolute;top:4px;left:11px;height:6px;width:5px;background:var(--bot);border-radius:4px}
+.robot .feet{position:absolute;top:64px;left:18px;width:10px;height:8px;background:#8aaabf;border-radius:0 0 4px 4px;box-shadow:16px 0 #8aaabf}
+.robot .hat{display:none;position:absolute;top:6px;left:8px;width:45px;height:10px;background:#f0d084;transform:rotate(-11deg);clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);z-index:1}
+.robot.grad .hat{display:block}.robot .name{position:absolute;top:73px;left:-4px;right:-4px;font-weight:850;font-size:.64rem;white-space:nowrap;color:#e9f6fb}
+.room-body:has(.robot){padding-bottom:24px}
+.robot.current{filter:drop-shadow(0 0 6px #ffc45f)}.robot.current .face{border-color:#fff1ad}
+.pupil{width:100%;border:1px solid #344f6f;padding:8px 9px;background:#172941;border-radius:12px;color:#ebf6fc;display:flex;align-items:center;gap:9px;text-align:left}
+.pupil.active{background:#274c60;border-color:#86c8d2}
+.pupil strong{display:block;font-size:.86rem}.pupil small{display:block;color:#adc2d7;font-size:.7rem}
+.dot{width:25px;height:25px;border:2px solid #a8ebeb;border-radius:9px;background:var(--bot);flex:0 0 auto;display:flex;align-items:center;justify-content:center;color:#13213b;font-weight:900}
+.pupils{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.report{margin-top:14px;border-top:1px solid #35516b;padding-top:14px}
+.report h3{margin:0 0 5px;font-size:1.08rem}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.metric{border:1px solid #38516d;background:#172940;border-radius:11px;padding:9px}
+.metric small{display:block;font-size:.68rem;color:#aac5d5}.metric strong{font-size:1.2rem}
+label{display:block;color:#c8dbe7;font-size:.82rem;margin:10px 0 4px}
+input[type=range]{width:100%;accent-color:#f6d58a}
+input[type=number]{background:#0d2135;border:1px solid #436785;border-radius:8px;color:white;width:100%;padding:8px}
+.progress{height:10px;border-radius:10px;background:#0e2237;overflow:hidden;margin-top:10px}.progress span{display:block;height:100%;background:linear-gradient(90deg,#60b9cb,#f2d383);width:0;transition:width .45s}
+.track{display:flex;justify-content:space-between;margin-top:18px;gap:5px;overflow:auto}
+.track div{text-align:center;color:#c7d7e8;font-size:.65rem;flex:1;min-width:40px}
+.track i{display:block;width:100%;height:6px;background:#35617b;margin-bottom:5px;border-radius:7px}
+.track .done i{background:#f1d485}.explain{margin-top:16px;font-size:.8rem;color:#a4c2d2}
+.confetti{position:fixed;left:50%;top:29%;z-index:999;padding:18px 26px;border-radius:18px;background:#fde3a4;color:#20314b;font-weight:900;font-size:1.4rem;box-shadow:0 25px 90px #000b;transform:translate(-50%,-50%);pointer-events:none;animation:pop 1.75s ease forwards}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,-40%) scale(.5)}15%,75%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}100%{opacity:0;transform:translate(-50%,-100%) scale(1)}}
+@media(max-width:920px){.school-layout{grid-template-columns:1fr}.rooms{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:540px){.rooms{grid-template-columns:repeat(2,minmax(0,1fr))}.room{min-height:114px}.shell{padding:14px}.panel{padding:12px}.pupils{grid-template-columns:1fr 1fr}.school-sign{flex-wrap:wrap}}
+</style></head><body><div class="shell">
+<header class="head"><div><div class="brand">SCALP CITY / THE FOUNDRY</div><h1>ROBOT <span>ACADEMY</span></h1></div><a class="back" href="./strategy-validation.html">← Strategy Validation</a></header>
+<p class="subtitle">Every crypto chart has its own little robot pupil. Every 10 percentage points of <em>observed</em> winning trades unlocks the next classroom. Learning must be measured, not imagined.</p>
+<section class="hero"><div><strong>THE SCHOOL OF MARKET INTELLIGENCE</strong><h2>Train. Test. Graduate.</h2><p>Grades describe win rates only—not real profit, intelligence, or trading readiness. A robot can get a high grade and still lose money.</p>
+<div class="controls"><button class="btn primary" id="demo">Explore simulated classroom</button><button class="btn" id="lesson" disabled>Simulate a training lesson</button><button class="btn" id="reset">Show actual status</button><span class="status" id="status">LIVE EVIDENCE · NO VERIFIED GRADES</span></div>
+<p class="note" id="modeNote">No confirmed forward-paper win-rate records are connected, so all pupils start ungraded. Demo mode is fictional and never changes training evidence.</p></div></section>
+<div class="school-layout"><main class="panel"><div class="school-sign"><strong>🏫 THE ACADEMY</strong><span id="headcount">10 pupils · 0 verified graduates</span></div><h2 class="section-title">Classrooms</h2><p class="section-note">Each classroom advances by a 10% measured win-rate increment. The graduation room is reserved for 100%.</p><div class="rooms" id="rooms"></div>
+<div class="track" id="track"></div><p class="explain">GRADE 0 = 0–9.9%; GRADE 1 = 10–19.9%; … GRADE 8 = 80–89.9%; GRADE 9 = 90–99.9%; GRADE 10 = 100%. A minimum sample of 30 independently verified closed trades is required before a grade is recorded as confirmed. Otherwise the grade is provisional.</p>
+</main>
+<aside class="panel"><h2 class="section-title">Meet the pupils <span style="font-size:.75rem;color:#91afc5">⌁ 10 pairs</span></h2><div class="pupils" id="pupils"></div>
+<div class="report" id="report" aria-live="polite"></div></aside></div>
+<p class="note" style="margin-top:22px">Academy v0.1 · Visual learning prototype. Fictional demo lessons, no broker orders, withdrawals, funded trading or claims of 80% performance. Production grades require authenticated, uniquely timestamped forward-paper trades and checked accounting.</p>
+</div>
+<script>
+(()=>{
+'use strict';
+const base=[
+ ['BTC/USD','Bitcoin','#5dded6'],['ETH/USD','Ether','#c4a9ff'],['SOL/USD','Sol','#f6c777'],
+ ['XRP/USD','Ripple','#92c7ff'],['ADA/USD','Ada','#ec95b0'],['AVAX/USD','Avax','#c4ef9d'],
+ ['LINK/USD','Link','#f3ae82'],['DOGE/USD','Doge','#e3d78f'],['LTC/USD','Lite','#abc4f4'],
+ ['BCH/USD','Cash','#ddafef']
+].map(([symbol,name,color],id)=>({id,symbol,name,color,trades:null,wins:null,source:'UNVERIFIED',net:null}));
+let pupils=base.map(x=>({...x})),demo=false,selected=0,lessonNo=0;
+const $=id=>document.getElementById(id);
+const grade=p=>p.trades===null||p.trades<1?null:Math.min(10,Math.floor((p.wins/p.trades*100+1e-8)/10));
+const percent=p=>p.trades===null||p.trades<1?null:100*p.wins/p.trades;
+const confirmed=p=>!demo&&p.source==='VERIFIED_PAPER_FORWARD'&&p.trades>=30;
+const gradeText=p=>grade(p)===null?'Ungraded':'Grade '+grade(p);
+function robot(p){const node=document.createElement('div');
+ node.className='robot'+(p.id===selected?' current':'')+(grade(p)===10?' grad':'');
+ node.style.setProperty('--bot',p.color);node.title=p.symbol+' · '+gradeText(p);
+ node.innerHTML='<span class="antenna"></span><span class="hat"></span><span class="face"></span><span class="eyes"></span><span class="mouth"></span><span class="body"></span><span class="feet"></span><span class="name"></span>';
+ node.querySelector('.name').textContent=p.symbol.split('/')[0];return node;}
+function render(){
+ const overall=pupils.filter(p=>confirmed(p)).length;
+ $('headcount').textContent='10 pupils · '+overall+' verified grades';
+ $('status').textContent=demo?'DEMO MODE · FICTIONAL STATS':'LIVE EVIDENCE · NO VERIFIED GRADES';
+ $('modeNote').textContent=demo?'Fictional results shown solely to demonstrate grade progression. No training models or actual trade records are changed.':'No verified forward-paper results are connected. All ten robots remain ungraded until trustworthy trade data arrives.';
+ $('lesson').disabled=!demo; $('demo').classList.toggle('active',demo);
+ const rooms=$('rooms');rooms.replaceChildren();
+ for(let g=0;g<=10;g++){
+  const room=document.createElement('div');room.className='room'+(g===0?' prep':'')+(g===10?' graduate':'');
+  const header=document.createElement('div');header.className='room-head';
+  const label=document.createElement('span');label.textContent=g===10?'🎓 Graduation':'Grade '+g;
+  const range=document.createElement('small');range.textContent=g===10?'100%':(g*10)+'–'+(g*10+9)+'%';
+  header.append(label,range);room.append(header);
+  const body=document.createElement('div');body.className='room-body';
+  const members=pupils.filter(p=>grade(p)===g);
+  if(members.length)for(const member of members){const r=robot(member);r.setAttribute('role','button');r.setAttribute('tabindex','0');
+    const choose=()=>{selected=member.id;render();};
+    r.onclick=choose;r.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choose();}};body.append(r);}
+  else{const empty=document.createElement('div');empty.className='empty';empty.textContent='Empty classroom';body.append(empty);}
+  room.append(body);rooms.append(room);
+ }
+ const ungraded=pupils.filter(p=>grade(p)===null);
+ if(ungraded.length){const room=document.createElement('div');room.className='room prep';room.innerHTML='<div class="room-head"><span>🔧 Orientation</span><small>Not graded</small></div>';
+  const body=document.createElement('div');body.className='room-body';
+  for(const member of ungraded){const r=robot(member);r.setAttribute('role','button');r.setAttribute('tabindex','0');r.onclick=()=>{selected=member.id;render();};r.onkeydown=e=>{if(e.key==='Enter'){selected=member.id;render();}};body.append(r);}
+  room.append(body);rooms.prepend(room);}
+ const roster=$('pupils');roster.replaceChildren();
+ for(const p of pupils){const item=document.createElement('button');item.type='button';
+  item.className='pupil'+(p.id===selected?' active':'');item.style.setProperty('--bot',p.color);
+  const avatar=document.createElement('span');avatar.className='dot';avatar.textContent='•';
+  const span=document.createElement('span');const name=document.createElement('strong');name.textContent=p.symbol.split('/')[0];
+  const info=document.createElement('small');info.textContent=gradeText(p)+(demo?' · DEMO':'');span.append(name,info);
+  item.append(avatar,span);item.onclick=()=>{selected=p.id;render();};roster.append(item);}
+ const p=pupils[selected],v=percent(p),g=grade(p);
+ const report=$('report');report.replaceChildren();
+ const h=document.createElement('h3');h.textContent=p.name+' — '+p.symbol;report.append(h);
+ const subtitle=document.createElement('p');subtitle.className='note';
+ subtitle.textContent=demo?'SIMULATED PUPIL · NOT REAL TRADES':confirmed(p)?'VERIFIED FORWARD-PAPER RECORD':'NO VERIFIED OUTCOMES';
+ report.append(subtitle);
+ const metrics=document.createElement('div');metrics.className='metric-grid';
+ for(const [label,val] of [['Win rate',v===null?'—':v.toFixed(1)+'%'],['Classroom',gradeText(p)],['Closed trades',p.trades===null?'—':String(p.trades)],['Status',confirmed(p)?'Confirmed':v===null?'Awaiting evidence':'Provisional']]){
+  const tile=document.createElement('div');tile.className='metric';const l=document.createElement('small');l.textContent=label;
+  const n=document.createElement('strong');n.textContent=val;tile.append(l,n);metrics.append(tile);
+ }report.append(metrics);
+ const line=document.createElement('div');line.className='progress';const fill=document.createElement('span');
+ fill.style.width=v===null?'0%':Math.min(100,v)+'%';line.append(fill);report.append(line);
+ const detail=document.createElement('p');detail.className='note';
+ detail.textContent=grade(p)===null?'Waiting for trustworthy completed trades.':g===10?'Graduation class reached (historical win rate only).':
+ 'Next grade at '+((g+1)*10)+'% observed wins. Sample quality and net profit must be checked independently.';
+ report.append(detail);
+ if(demo){
+  const label=document.createElement('label');label.textContent='Simulated winning trades (out of 100)';
+  const slider=document.createElement('input');slider.type='range';slider.min='0';slider.max='100';slider.step='1';
+  slider.value=Math.round(v??0);slider.setAttribute('aria-label','Demo observed win rate');
+  slider.oninput=()=>{const old=grade(p);p.trades=100;p.wins=Number(slider.value);render();if(grade(p)>old)graduate(p);};
+  report.append(label,slider);
+ }
+ const track=$('track');track.replaceChildren();
+ for(let i=0;i<=10;i++){const d=document.createElement('div');if(g!==null&&i<=g)d.className='done';
+ d.innerHTML='<i></i>G'+i;track.append(d);}
+}
+function graduate(p){const card=document.createElement('div');card.className='confetti';card.textContent='🎓 '+p.symbol.split('/')[0]+' → Grade '+grade(p)+'!';
+ document.body.append(card);setTimeout(()=>card.remove(),1750);}
+$('demo').onclick=()=>{demo=true;lessonNo=0;
+ // These figures are invented DEMO FIXTURES, not actual performance.
+ const scores=[12,23,38,44,57,66,73,81,92,100];
+ pupils=base.map((p,i)=>({...p,trades:100,wins:scores[i],source:'FICTIONAL_DEMO'}));render();};
+$('lesson').onclick=()=>{if(!demo)return;lessonNo++;
+ // Deterministic demonstration, not a simulated forecast or market model.
+ for(const p of pupils){const old=grade(p);
+  const gain=((lessonNo+p.id*3)%4===0)?10:((lessonNo+p.id)%3===0)?5:0;
+  p.wins=Math.min(p.trades,p.wins+gain);if(grade(p)>old&&p.id===selected)graduate(p);}
+ render();};
+$('reset').onclick=()=>{demo=false;lessonNo=0;pupils=base.map(x=>({...x}));render();};
+window.RobotAcademy={
+ // Future handoff contract: never use historical calibration results to claim
+ // authenticated forward-paper performance. Must validate provenance upstream.
+ previewVerifiedRecord(record){
+  if(!record||!base.some(p=>p.symbol===record.symbol)||record.source!=='VERIFIED_PAPER_FORWARD'||
+   !Number.isInteger(record.closedTrades)||record.closedTrades<0||
+   !Number.isInteger(record.wins)||record.wins<0||record.wins>record.closedTrades)
+   throw Error('Invalid or unverified trade record');
+  return {symbol:record.symbol,grade:record.closedTrades?Math.floor(10*record.wins/record.closedTrades):null,
+   provisional:record.closedTrades<30};
+ }
+};
+render();
+})();
+</script></body></html>
