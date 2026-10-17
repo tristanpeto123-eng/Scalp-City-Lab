@@ -112,7 +112,7 @@ export function simulateValidation({snapshot,symbol,startingBalanceGbp=50,mode='
   candlesTotal:bars.length,calibrationCandles:calibrationEnd,heldOutCandles:processed,
   availableTestDays:round(test.length/96),
   realizedNetProfitGbp:round(netProfit),cashBalanceGbp:round(cash),
-  markedEquityGbp:round(equity),openPosition:Boolean(open),
+  markedEquityGbp:round(equity),openPosition:Boolean(open),openPositionInitialCostGbp:open?round(open.entryCost):0,
   closedTrades:closed,wins,losses,winRatePct:closed?round(wins/closed*100):null,
   maxDrawdownPct:round(maxDD),trades,
   costAssumption:'Illustrative 0.5% per side; no independent spread, GBP/USD FX or slippage evidence.',
