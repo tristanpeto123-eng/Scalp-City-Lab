@@ -22,7 +22,7 @@ export function checkSnapshot(source,symbol,now=Date.now()){
  }
  if((bars.at(-1).t+PERIOD)>now-30000)throw Error('Snapshot includes unfinished or future candles');
  if(zero/bars.length>MAX_VOLUME_GAP)throw Error('More than 40% zero-volume bars; insufficient traded-price evidence');
- if(source.source!=='ALPACA_KRAKEN_US_1_HISTORICAL_GET')
+ if(source.source!=='ALPACA_KRAKEN_US_US-1')
    throw Error('Unverified candle-source provenance');
  return {symbol,bars,source:source.source,snapshotAt:source.generatedAt||null,
   sampleStart:iso(bars[0].t),sampleEnd:iso(bars.at(-1).t+PERIOD),
