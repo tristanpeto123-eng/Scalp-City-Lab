@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto';
 import {optimizeProfit,validateProfit} from './learning-profit.mjs';
 import {initializeTrial,queueSignal,requestExit,processBar,trialReport,TRIAL_RULES} from './trial-profit.mjs';
 import {isResearchCrypto} from './crypto-research-marketset.mjs';
+import {signalPolicy,explainSignalPolicy} from './signal-policies.mjs';
 const INTERVAL=15*60_000;
 const ALLOWED=new Set(['BTC/USD','ETH/USD','SPY','QQQ','IWM']);
 const CANDIDATES=[{fast:6,slow:26},{fast:9,slow:34},{fast:12,slow:48}];
@@ -23,15 +24,6 @@ function formatBars(raw,closedBefore=Infinity){
  }
  return bars;
 }
-function emaState(params,history){
- let fast=null,slow=null;
- const a=2/(params.fast+1),b=2/(params.slow+1);
- for(const bar of history){
-  fast=fast===null?bar.c:fast+a*(bar.c-fast);
-  slow=slow===null?bar.c:slow+b*(bar.c-slow);
- }
- return {fast,slow};
-}
 export function replayHistorical({symbol,raw,calibrationFraction=.40,candidates=CANDIDATES,closedBefore=Infinity}){
  if((!ALLOWED.has(symbol)&&!isResearchCrypto(symbol))||!Number.isFinite(calibrationFraction)||
     calibrationFraction<.25||calibrationFraction>.65)throw Error('Invalid replay configuration');
@@ -49,7 +41,8 @@ export function replayHistorical({symbol,raw,calibrationFraction=.40,candidates=
    calibrationEndBar:new Date(calibration.at(-1).t).toISOString(),
    objective:TRIAL_RULES.version}).slice(0,32);
  const eligible=selected.trainingEligible&&validation.verdict==='AUDIT_PASS';
- const trainingResult={eligible,params,candidateId,trainingEligible:selected.trainingEligible,
+ const trainingResult={eligible,params,candidateId,strategyMethod:explainSignalPolicy(params),
+    trainingEligible:selected.trainingEligible,
    calibrationBars:calibration.length,trainOptions:selected.trainingOptions,
    independentHoldout:validation.holdout,holdoutVerdict:validation.verdict,
    holdoutReasons:validation.reasons,
@@ -58,8 +51,8 @@ export function replayHistorical({symbol,raw,calibrationFraction=.40,candidates=
  let state=initializeTrial();
  const evaluated=bars.slice(calibrationEnd);
  if(eligible){
-  const alpha=2/(params.fast+1),beta=2/(params.slow+1);
-  let {fast,slow}=emaState(params,calibration);
+  const policy=signalPolicy(params);
+  for(const b of calibration)policy.observe(b);
   // At each step the bar is the ONLY newly visible observation.
   // Run the entry/exit engine first, then observe this candle's close,
   // then queue the next-open signal. Can't enter after observing current high.
@@ -67,11 +60,10 @@ export function replayHistorical({symbol,raw,calibrationFraction=.40,candidates=
     const observed=processBar(state,{symbol,t:new Date(bar.t).toISOString(),
       o:bar.o,h:bar.h,l:bar.l,c:bar.c});
     state=observed.state;
-    fast=fast+alpha*(bar.c-fast);
-    slow=slow+beta*(bar.c-slow);
-    if(!state.open&&!state.pending&&fast>slow){
+    const decision=policy.observe(bar);
+    if(!state.open&&!state.pending&&decision.ready&&decision.entry){
       state=queueSignal(state,{symbol,signalBarStart:new Date(bar.t).toISOString(),candidateId}).state;
-    }else if(state.open&&fast<=slow){
+    }else if(state.open&&decision.ready&&decision.exit){
       state=requestExit(state,{symbol,signalBarStart:new Date(bar.t).toISOString()}).state;
     }
   }
