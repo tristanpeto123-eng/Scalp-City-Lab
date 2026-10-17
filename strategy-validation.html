@@ -195,6 +195,14 @@ $('run').addEventListener('click',()=>{
     info.textContent='Historical replay was withheld because no training strategy passed the risk/cost gates. Choose a manual rule to investigate, not to imply actual profitability.';
     $('result').append(title,info);
    }
+   if(result.checker){
+    const audit=document.createElement('p');audit.className=result.checker.reasons.length?'warn':'secondary';
+    audit.textContent=result.checker.reasons.length?
+     'CHECKER — OUTER HOLDOUT FAILED: '+result.checker.reasons.join('; ')+
+     '. Selected during training, NOT validated for real trading.':
+     'Checker: historical results are research-only, NOT verified live-forward evidence.';
+    $('result').prepend(audit);
+   }
    $('result').prepend(modelExplanation(result.model));
   }else display(simulateValidation({...input,strategy:choice}));
  }catch(e){
