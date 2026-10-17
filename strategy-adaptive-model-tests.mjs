@@ -30,6 +30,11 @@ test('all ten crypto pairs support independently frozen training-only strategy r
   assert.equal(result.brokerOrders,0);
   assert.equal(result.model.modelId,model.modelId);
   if(result.replay){
+   assert.ok(['HOLDOUT_REJECTED','HOLDOUT_POSITIVE_RESEARCH_ONLY_NOT_FORWARD_VALIDATED'].includes(result.status));
+   assert.equal(result.checker.eligibleForBrokerExecution,false);
+   assert.equal(result.checker.independentForwardValidated,false);
+   if(result.replay.realizedNetProfitGbp<=0||result.replay.closedTrades<20)
+    assert.equal(result.status,'HOLDOUT_REJECTED');
    assert.equal(result.replay.symbol,symbol);
    assert.equal(result.replay.strategy,result.model.selected.strategy);
    assert.deepEqual(result.replay.strategyParams,result.model.selected.params);
@@ -50,6 +55,7 @@ test('all ten crypto pairs support independently frozen training-only strategy r
    holdoutWinRatePct:result.replay?.winRatePct??null,
    holdoutNetGbp:result.replay?.realizedNetProfitGbp??null,
    holdoutDrawdownPct:result.replay?.maxDrawdownPct??null,
+   checkerReasons:result.checker?.reasons??[],
    actualForwardTrades:0
   }));
  }
