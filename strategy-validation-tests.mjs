@@ -67,18 +67,18 @@ test('input and snapshot provenance failures fail closed',()=>{
  const noVolume={...s,bars:s.bars.map((b,i)=>i<3000?{...b,v:0}:b)};
  assert.throws(()=>checkSnapshot(noVolume,'BTC/USD'),/zero-volume/);
 });
-test('page is preloaded from bundled snapshots; upload control and broker orders absent',async()=>{
+test('page preloads ten snapshots and refreshes latest published Alpaca data safely',async()=>{
  const h=await readFile(new URL('./strategy-validation.html',import.meta.url),'utf8');
  assert.match(h,/loadPair\(\)/);
  assert.match(h,/validation-data\//);
  assert.match(h,/fetch\(url,/);
- assert.match(h,/Historical candles ready/);
- assert.match(h,/strategy-validation-core\.mjs/);
- assert.match(h,/fetchAlpacaDirect/);
- assert.match(h,/https:\/\/data\.alpaca\.markets\/v1beta3\/crypto\/us-1\/bars/);
+ assert.match(h,/Load newest published Alpaca data/);
+ assert.match(h,/\?refresh=/);
+ assert.match(h,/stale/);
  assert.match(h,/credentials:'omit'/);
- assert.match(h,/Direct Alpaca unavailable/);
- assert.match(h,/Fetch latest Alpaca data/);
+ assert.match(h,/strategy-validation-core\.mjs/);
+ assert.doesNotMatch(h,/fetchAlpacaDirect/);
+ assert.doesNotMatch(h,/https:\/\/data\.alpaca\.markets\/v1beta3\/crypto\/us-1\/bars/);
  assert.doesNotMatch(h,/APCA-API-SECRET-KEY/);
  assert.doesNotMatch(h,/APCA-API-KEY-ID/);
  assert.doesNotMatch(h,/type="file"/);

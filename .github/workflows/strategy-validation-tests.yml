@@ -1,11 +1,14 @@
 name: Static strategy validation acceptance tests
 on:
   push:
-    branches: [release/strategy-validation-static-v1, main]
+    branches: [release/strategy-validation-static-v1, release/alpaca-snapshots-v2, main]
     paths:
       - strategy-validation.html
       - strategy-validation-core.mjs
       - strategy-validation-tests.mjs
+      - scripts/refresh-alpaca-snapshots.mjs
+      - scripts/refresh-alpaca-snapshots-tests.mjs
+      - .github/workflows/refresh-alpaca-validation.yml
       - strategy-validation-check.trigger
       - validation-data/**
   pull_request:
@@ -14,6 +17,9 @@ on:
       - strategy-validation.html
       - strategy-validation-core.mjs
       - strategy-validation-tests.mjs
+      - scripts/refresh-alpaca-snapshots.mjs
+      - scripts/refresh-alpaca-snapshots-tests.mjs
+      - .github/workflows/refresh-alpaca-validation.yml
   workflow_dispatch:
 permissions:
   contents: read
@@ -31,3 +37,5 @@ jobs:
           node --check strategy-validation-core.mjs
           node --check strategy-validation-tests.mjs
           node --test strategy-validation-tests.mjs
+          node --check scripts/refresh-alpaca-snapshots.mjs
+          node --test scripts/refresh-alpaca-snapshots-tests.mjs
