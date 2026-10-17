@@ -42,7 +42,7 @@
       const s=await r.json();if(!Array.isArray(s.events)||!['ALPACA_IEX','ALPACA_IEX_AND_CRYPTO_US'].includes(s.source)||!s.version)throw Error('Incompatible telemetry contract');
       if(s.trial&&s.trial.startGbp===50){
         const wins=Number(s.trial.wins||0),closed=Number(s.trial.closedTrades||0);
-        trialBadge.textContent=`£${Number(s.trial.balanceGbp).toFixed(2)} VIRTUAL · £${Number(s.trial.netProfitGbp||0).toFixed(2)} / £2,000 PROFIT · ${closed} CLOSED`;
+        trialBadge.textContent=`£${Number(s.trial.balanceGbp).toFixed(2)} VIRTUAL · £${Number(s.trial.netProfitGbp||0).toFixed(2)} / £2,000 PROFIT · ${closed}/61 CLOSED · ${Number(s.trial.winRatePct||0).toFixed(1)}% WIN`;
         trialBadge.title='Virtual GBP research portfolio, not Alpaca equity. No fixed RR; target £2000 net profit, 70% / 61 closed trades tracked separately. Fees modelled, not real fills.';
       }
       setLabel(`PAPER RUNTIME · ${s.paperEnabled?'ORDERS ARMED':'DRY RUN'} · ${s.status}`);
