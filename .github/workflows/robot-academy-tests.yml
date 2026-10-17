@@ -1,10 +1,13 @@
 name: Robot Academy grading and demo checks
 on:
   push:
-    branches: [feat/robot-academy-graduation-v1, release/robot-academy-v1, main]
+    branches: [feat/robot-academy-graduation-v1, release/robot-academy-v1, feat/robot-academy-real-history-v1, main]
     paths:
       - robot-academy.html
       - robot-academy-tests.mjs
+      - scripts/export-robot-academy.mjs
+      - scripts/export-robot-academy-tests.mjs
+      - .github/workflows/robot-academy-sync.yml
       - robot-academy-schema.json
       - ROBOT_ACADEMY.md
       - strategy-validation.html
@@ -14,6 +17,9 @@ on:
     paths:
       - robot-academy.html
       - robot-academy-tests.mjs
+      - scripts/export-robot-academy.mjs
+      - scripts/export-robot-academy-tests.mjs
+      - .github/workflows/robot-academy-sync.yml
       - robot-academy-schema.json
       - ROBOT_ACADEMY.md
       - strategy-validation.html
@@ -31,4 +37,7 @@ jobs:
         with:
           node-version: '22'
       - name: Check grade thresholds, sample controls and no-fake-trading requirements
-        run: node --test robot-academy-tests.mjs
+        run: |
+          node --test robot-academy-tests.mjs
+          node --check scripts/export-robot-academy.mjs
+          node --test scripts/export-robot-academy-tests.mjs
