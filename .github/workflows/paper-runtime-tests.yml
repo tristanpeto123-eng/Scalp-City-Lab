@@ -40,6 +40,12 @@ jobs:
           node --check paper-runtime/crypto-research-marketset.mjs
           node --check paper-runtime/screen-crypto-markets.mjs
           node --check paper-runtime/screen-crypto-markets-tests.mjs
+          node --check paper-runtime/signal-policies.mjs
+          node --check paper-runtime/learning-memory.mjs
+          node --check paper-runtime/chart-models.mjs
+          node --check paper-runtime/chart-models-tests.mjs
+          node --check paper-runtime/github-learning-store.mjs
+          node --check paper-runtime/learning-run.mjs
           node --check agent-city-live.js
       - name: Execute broker-mocked safety tests
         run: |
@@ -47,3 +53,4 @@ jobs:
           node paper-runtime/crypto-tests.mjs
           node paper-runtime/profit-goal-tests.mjs
           node paper-runtime/screen-crypto-markets-tests.mjs
+          node paper-runtime/chart-models-tests.mjs
