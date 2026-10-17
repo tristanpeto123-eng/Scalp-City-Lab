@@ -3,6 +3,7 @@
 import {AlpacaPaper} from './alpaca-paper.mjs';
 import {CRYPTO_RESEARCH_ONLY,isResearchCrypto} from './crypto-research-marketset.mjs';
 import {loadHistoricalCrypto,replayHistorical} from './replay-profit.mjs';
+import {emptyMemory,assertMemory,proposeCandidates,rememberTraining,fingerprintTraining} from './learning-memory.mjs';
 import {writeFile,mkdir} from 'node:fs/promises';
 import path from 'node:path';
 const target=Object.freeze({startVirtualGbp:50,profitGoalGbp:2000,
@@ -16,7 +17,9 @@ export function quality(raw){
    count,zeroVolumeBars:zeroVolume,zeroVolumePct:Number((100*zeroVolumeRatio).toFixed(2))};
 }
 export async function runScreener({broker,markets=CRYPTO_RESEARCH_ONLY,days=90,now=Date.now(),location='us',
-   maximumPages=80}={}){
+   maximumPages=80,memory=emptyMemory()}={}){
+ assertMemory(memory);
+ let nextMemory=memory;
  if(!['us','us-1'].includes(location))throw Error('Unsupported historical data feed');
  if(!broker||!Array.isArray(markets)||markets.length<1||markets.length>8||
    new Set(markets).size!==markets.length||markets.some(s=>!isResearchCrypto(s)||!CRYPTO_RESEARCH_ONLY.includes(s)))
@@ -40,9 +43,30 @@ export async function runScreener({broker,markets=CRYPTO_RESEARCH_ONLY,days=90,n
      results.push({symbol,status:'DATA_QUALITY_REJECTED',eligible:false,data:dq,
        pages:source.fetchedPages});
    }else{
-     const replay=replayHistorical({symbol,raw:source.raw,closedBefore:now-30000});
+     const proposal=proposeCandidates(nextMemory,{symbol,feed:location});
+     const replay=replayHistorical({symbol,raw:source.raw,closedBefore:now-30000,
+       candidates:proposal.candidates});
+     // Only first 75% of first 40% (30% of total) was used for
+     // selection. No 25% calibration holdout nor later 60% evaluation
+     // candles may influence the persistent learner's training evidence.
+     const calibrationEnd=Math.floor(source.raw.length*.40);
+     const trainCount=Math.floor(calibrationEnd*.75);
+     const training=source.raw.slice(0,trainCount);
+     const learning=rememberTraining(nextMemory,{
+       symbol,feed:location,
+       trainingStart:training[0].t,
+       trainingEnd:new Date(Date.parse(training.at(-1).t)+900000).toISOString(),
+       trainFingerprint:fingerprintTraining(training),
+       trainingOptions:replay.trainOnlySelection.trainOptions,
+       holdoutGate:replay.trainOnlySelection.holdoutVerdict
+     });
+     nextMemory=learning.memory;
      const {independentHoldout,holdoutReasons,holdoutVerdict,params,eligible,calibrationBars}=replay.trainOnlySelection;
      results.push({symbol,status:eligible?'FROZEN_REPLAY_EVALUATED':'STRATEGY_REJECTED',
+       learning:{reason:learning.reason,acceptedIndependentWindow:learning.acceptedForLearning,
+         priorIndependentWindows:proposal.priorIndependentWindows,
+         priorParameters:proposal.triedParameters,proposedParameters:proposal.candidates,
+         trainingEvidenceId:learning.recordId},
        eligible,params,holdoutVerdict,holdoutReasons,calibrationBars,
        completedBars:source.raw.length,pages:source.fetchedPages,data:dq,
        calibrationHoldout:{
@@ -66,6 +90,8 @@ export async function runScreener({broker,markets=CRYPTO_RESEARCH_ONLY,days=90,n
    targets:target,days,checkedAt:new Date(now).toISOString(),
    marketsChecked:results.length,results,
    eligibleMarkets:results.filter(x=>x.eligible).map(x=>x.symbol),
+   modelMemory:nextMemory,
+   learningEvents:results.flatMap(x=>x.learning?[{symbol:x.symbol,...x.learning}]:[]),
    brokerOrdersSubmitted:0,
    disclaimer:'Historical candle simulation, not actual trades, profit or verified live forward win rate. All 8 new markets are research only; hard-coded Alpaca broker order allowlist remains unchanged.'};
 }
@@ -73,11 +99,14 @@ async function main(){
  const days=Number(process.env.SCALP_RESEARCH_DAYS||90),broker=new AlpacaPaper();
  const location=process.env.SCALP_RESEARCH_FEED||'us';
  const report=await runScreener({broker,days,location});
- console.log('MARKET_RESEARCH_REPORT '+JSON.stringify(report));
+ // Memory is persisted by a distinct, audited GitHub writer. The normal
+ // screener does not write remotely and does not print entire model state.
+ const {modelMemory,...publicReport}=report;
+ console.log('MARKET_RESEARCH_REPORT '+JSON.stringify(publicReport));
  if(process.env.SCALP_RESEARCH_OUTPUT){
   const filepath=path.resolve(process.env.SCALP_RESEARCH_OUTPUT);
   await mkdir(path.dirname(filepath),{recursive:true});
-  await writeFile(filepath,JSON.stringify(report,null,2)+'\n',{mode:0o600});
+  await writeFile(filepath,JSON.stringify(publicReport,null,2)+'\n',{mode:0o600});
  }
  if(report.results.every(x=>x.status==='RESEARCH_ERROR'||x.status==='NO_ACTIVE_TRADABLE_PAPER_ASSET'))
    process.exitCode=1;
