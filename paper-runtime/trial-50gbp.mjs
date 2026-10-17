@@ -82,7 +82,7 @@ export function processBar(state,bar,{allowEntry=true}={}){
  const closed={id:pos.symbol.replace('/','')+':'+pos.entryBarStart+':'+bar.t,
   symbol:pos.symbol,cohort:pos.candidateId,closedAt:new Date(t+900000).toISOString(),
   openedAt:pos.entryBarStart,exitReason:outcome,bothBarriersTouched:stop&&win,
-  netUsd:netGbp,netGbp,feeBasis:'MODELED_NOT_POSTED',
+  netGbp,feeBasis:'MODELED_NOT_POSTED',
   evidence:'VIRTUAL_FORWARD_BAR_SIMULATION',virtualRiskGbp:pos.plannedRiskGbp,
   virtualRewardGbp:pos.plannedRewardGbp,actualRR:round(netGbp/pos.plannedRiskGbp)};
  next.balanceGbp=round(next.balanceGbp+netGbp);
@@ -92,10 +92,10 @@ export function processBar(state,bar,{allowEntry=true}={}){
 }
 export function trialReport(state){
  if(state.version!==TRIAL_RULES.version)throw Error('Wrong trial version');
- const measurement=measureGoal(state.closedTrades);
+ const {netUsd,expectancyUsd,...measurement}=measureGoal(state.closedTrades.map(t=>({...t,netUsd:t.netGbp})));
  return {startGbp:50,balanceGbp:state.balanceGbp,
   gainLossGbp:round(state.balanceGbp-50),open:state.open,pending:state.pending,
-  ...measurement,
+  netGbp:netUsd,expectancyGbp:expectancyUsd,...measurement,
   eligibleForRealMoney:false,brokerTradesSubmitted:0,
   note:'3R targets are NET of estimated costs; FX, spread variation, market slippage and gaps can change realized R/R. Results are virtual forward-bar observations, NOT actual Alpaca fills.'};
 }
