@@ -15,8 +15,9 @@ export function quality(raw){
  return {ok:zeroVolumeRatio<=.4,reason:zeroVolumeRatio>.4?'ZERO_VOLUME_BARS_GT_40_PERCENT':null,
    count,zeroVolumeBars:zeroVolume,zeroVolumePct:Number((100*zeroVolumeRatio).toFixed(2))};
 }
-export async function runScreener({broker,markets=CRYPTO_RESEARCH_ONLY,days=90,now=Date.now(),
+export async function runScreener({broker,markets=CRYPTO_RESEARCH_ONLY,days=90,now=Date.now(),location='us',
    maximumPages=80}={}){
+ if(!['us','us-1'].includes(location))throw Error('Unsupported historical data feed');
  if(!broker||!Array.isArray(markets)||markets.length<1||markets.length>8||
    new Set(markets).size!==markets.length||markets.some(s=>!isResearchCrypto(s)||!CRYPTO_RESEARCH_ONLY.includes(s)))
    throw Error('Only the eight research-only crypto USD pairs are permitted');
@@ -33,7 +34,7 @@ export async function runScreener({broker,markets=CRYPTO_RESEARCH_ONLY,days=90,n
    continue;
   }
   try{
-   const source=await loadHistoricalCrypto({broker,symbol,days,now,maximumPages});
+   const source=await loadHistoricalCrypto({broker,symbol,days,now,maximumPages,location});
    const dq=quality(source.raw);
    if(!dq.ok){
      results.push({symbol,status:'DATA_QUALITY_REJECTED',eligible:false,data:dq,
@@ -61,6 +62,7 @@ export async function runScreener({broker,markets=CRYPTO_RESEARCH_ONLY,days=90,n
   console.log('RESEARCH_RESULT '+JSON.stringify(results.at(-1)));
  }
  return {mode:'HISTORICAL_MARKET_COMPARISON_READ_ONLY',
+   dataLocation:location,
    targets:target,days,checkedAt:new Date(now).toISOString(),
    marketsChecked:results.length,results,
    eligibleMarkets:results.filter(x=>x.eligible).map(x=>x.symbol),
@@ -69,7 +71,8 @@ export async function runScreener({broker,markets=CRYPTO_RESEARCH_ONLY,days=90,n
 }
 async function main(){
  const days=Number(process.env.SCALP_RESEARCH_DAYS||90),broker=new AlpacaPaper();
- const report=await runScreener({broker,days});
+ const location=process.env.SCALP_RESEARCH_FEED||'us';
+ const report=await runScreener({broker,days,location});
  console.log('MARKET_RESEARCH_REPORT '+JSON.stringify(report));
  if(process.env.SCALP_RESEARCH_OUTPUT){
   const filepath=path.resolve(process.env.SCALP_RESEARCH_OUTPUT);
