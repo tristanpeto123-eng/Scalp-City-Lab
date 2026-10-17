@@ -41,3 +41,12 @@
 - [ ] Historical candidate strategies are still previously rejected, regardless of changed scoreboard rules; independent strategy viability, private persistent hosting, protective paper-order execution and genuine forward results remain outstanding.
 
 **Checker release conclusion remains NEEDS_REVISION for deployment.** Changing a win-rate threshold does not validate the strategy or authorize trading.
+
+
+## Checker G1 — Eight additional cryptocurrency markets, 17 Oct 2026
+**Verdict: ALL REJECTED; DO NOT DEPLOY OR ARM PAPER ORDERS.** Eight-market research-only evaluation used real Alpaca historical US crypto data and `GBP50-PROFIT2000-v2` no-fixed-RR strategy. Results are documented in [CRYPTO_MARKET_SCREEN_2026-10-17.md](CRYPTO_MARKET_SCREEN_2026-10-17.md). Source run: https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39070019426.
+- SOL/USD: 8,614 candles, holdout 5/24 net wins (20.83%), **−£2.89** modelled.
+- XRP/USD: 8,616 candles, holdout 4/27 net wins (14.81%), **−£2.12** modelled.
+- ADA/AVAX/LINK/DOGE/LTC/BCH/USD: rejected due zero-volume ratio **55.47%, 56.02%, 56.80%, 73.64%, 73.85%, 73.27%** respectively, above the conservative 40% research threshold. No inference of executable fills from quote-derived bars.
+- All 8 historical **frozen forward-like replays correctly withheld** because eligibility/quality gates failed. The virtual £50 trial was not debited; zero paper broker orders.
+- The `crypto-research-marketset.mjs` only enlarges offline historical simulation coverage, NOT `alpaca-paper.mjs` broker ticker permissions. Reverify repo CI after cleanup.
