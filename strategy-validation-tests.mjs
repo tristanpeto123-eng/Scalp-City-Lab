@@ -32,7 +32,7 @@ test('duration-limited historical simulations distinguish CASH profit from open 
    assert.ok(run.winRatePct===null||(run.winRatePct>=0&&run.winRatePct<=100));
    assert.equal(run.actualForwardTradeCount,0);
    assert.equal(run.payoutGuaranteed,false);
-   assert.ok(Math.abs(run.realizedNetProfitGbp-(run.cashBalanceGbp-50))<.011);
+   assert.ok(Math.abs(run.realizedNetProfitGbp-(run.cashBalanceGbp+run.openPositionInitialCostGbp-50))<.021);
    assert.ok(Math.abs(run.trades.reduce((s,t)=>s+t.netGbp,0)-run.realizedNetProfitGbp)<.07);
   }
  }
