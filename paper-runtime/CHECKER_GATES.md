@@ -10,9 +10,9 @@
 - [x] No broker keys in repository files or the browser.
 
 ## G1 local evidence
-- [x] Node 22 syntax checks pending CI for rc2.
+- [x] Node 22 syntax checks passed for rc2.
 - [x] 26 mock-only checks passed, including deny-by-default, rejected holdout, stale/duplicate data, risk veto, test account order, duplicate bar prevention, and mock fill reconciliation.
-- [x] GitHub Actions PR checks for rc2 pending. (Two checks passed on prior rc1.)
+- [x] GitHub Actions PR checks for rc2 passed (Bootstrap & Checks run 39056767617; Paper Runtime Tests run 39056767489).
 - [ ] Authentic Alpaca **paper** credentials tested from an authorised, persistent server.
 - [ ] Live IEX feed provenance and 15-min boundary verified during actual US market hours.
 - [ ] External read-only Agent City telemetry tested on a separately hosted HTTPS origin.
