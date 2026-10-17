@@ -1,0 +1,34 @@
+name: Robot Academy grading and demo checks
+on:
+  push:
+    branches: [feat/robot-academy-graduation-v1, release/robot-academy-v1, main]
+    paths:
+      - robot-academy.html
+      - robot-academy-tests.mjs
+      - robot-academy-schema.json
+      - ROBOT_ACADEMY.md
+      - strategy-validation.html
+      - .github/workflows/robot-academy-tests.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - robot-academy.html
+      - robot-academy-tests.mjs
+      - robot-academy-schema.json
+      - ROBOT_ACADEMY.md
+      - strategy-validation.html
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  checker:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check grade thresholds, sample controls and no-fake-trading requirements
+        run: node --test robot-academy-tests.mjs

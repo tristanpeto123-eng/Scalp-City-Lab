@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Scalp City Academy forward-paper evidence contract",
+  "description": "Forward-paper evidence schema for a future authenticated service. Never trust the source label alone. Browser UI must not accept self-asserted VERIFED records as real evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "generatedAt",
+    "source",
+    "pupils"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "ROBOT_ACADEMY_EVIDENCE_V1"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source": {
+      "const": "VERIFIED_PAPER_FORWARD"
+    },
+    "pupils": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "symbol",
+          "closedTrades",
+          "wins",
+          "netProfitGbp",
+          "maxDrawdownPct",
+          "distinctTradeIds",
+          "championModel"
+        ],
+        "properties": {
+          "symbol": {
+            "enum": [
+              "BTC/USD",
+              "ETH/USD",
+              "SOL/USD",
+              "XRP/USD",
+              "ADA/USD",
+              "AVAX/USD",
+              "LINK/USD",
+              "DOGE/USD",
+              "LTC/USD",
+              "BCH/USD"
+            ]
+          },
+          "closedTrades": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "wins": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "netProfitGbp": {
+            "type": "number"
+          },
+          "maxDrawdownPct": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "distinctTradeIds": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "championModel": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "strategyFamily",
+                  "parameters",
+                  "trainedThrough",
+                  "outOfSampleVerified"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "strategyFamily": {
+                    "enum": [
+                      "ema_trend",
+                      "rsi_reversion",
+                      "channel_breakout",
+                      "other"
+                    ]
+                  },
+                  "parameters": {
+                    "type": "object"
+                  },
+                  "trainedThrough": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "outOfSampleVerified": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
