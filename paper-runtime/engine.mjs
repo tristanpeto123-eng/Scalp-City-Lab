@@ -2,7 +2,7 @@
 // Intentionally pure strategy functions for deterministic test/replay.
 import { createHash } from 'node:crypto';
 
-export const VERSION = '0.1.0-rc2';
+export const VERSION = '0.1.0-rc3';
 export const AGENTS = Object.freeze([
   ['BM-01','Bot Manager'],['DC-01','Data Curator'],['RS-01','Researcher'],
   ['SD-01','Strategy Designer'],['OP-01','Optimizer'],['BT-01','Backtester'],
@@ -11,7 +11,14 @@ export const AGENTS = Object.freeze([
 ]);
 const idBy = Object.fromEntries(AGENTS.map(([id,name])=>[id,name]));
 export const sha = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
-export const COST_BPS = 10; // conservative illustrative friction; NOT broker-verified.
+export const COST_BPS = 10; // Equities illustrative friction.
+export const CRYPTO_COST_BPS = 50; // Crypto fees/spread assumptions, NOT broker-verified.
+export const EQUITIES = Object.freeze(['SPY','QQQ','IWM']);
+export const CRYPTO = Object.freeze(['BTC/USD','ETH/USD']);
+export const ASSETS = Object.freeze([...EQUITIES,...CRYPTO]);
+export const isCrypto = symbol => CRYPTO.includes(symbol);
+const brokerSymbol = symbol => String(symbol).replace('/','');
+const belongs = (position,symbol) => brokerSymbol(position.symbol || '') === brokerSymbol(symbol);
 export const INTERVAL_MS = 15*60_000;
 // US equity session starts at 09:30 New York time, including DST changes.
 // The first completed 15-minute session bar cannot exist at market open.
@@ -62,7 +69,7 @@ export function validateHoldoutIndependently(bars,params,cut,{costBps=COST_BPS}=
   return {auditPassed:true,netReturnPct:(equity-1)*100,maxDrawdownPct:dd*100,orders,entries};
 }
 
-export function curateBars(raw,now=Date.now()) {
+export function curateBars(raw,now=Date.now(),source='ALPACA_IEX') {
   if(!Array.isArray(raw)||raw.length<minHistory)throw Error(`DC: require ${minHistory} real market bars`);
   const bars=raw.map(b=>({t:Date.parse(b.t),o:Number(b.o),h:Number(b.h),l:Number(b.l),c:Number(b.c),v:Number(b.v)}));
   for(let i=0;i<bars.length;i++){
@@ -74,22 +81,22 @@ export function curateBars(raw,now=Date.now()) {
   const last=bars.at(-1);
   if(now-(last.t+INTERVAL_MS)>25*60_000)throw Error('DC: stale market data');
   // Never report IEX-only data as full US consolidated tape.
-  return {bars,latest:last,source:'ALPACA_IEX',fingerprint:sha(raw),finalizedAt:new Date(last.t+INTERVAL_MS).toISOString()};
+  return {bars,latest:last,source,fingerprint:sha(raw),finalizedAt:new Date(last.t+INTERVAL_MS).toISOString()};
 }
 function paramsHash(symbol,params,source) {return sha({symbol,params,source,engine:VERSION});}
 export function investigate(curated) {return {hypothesis:'Long/flat trend on closed 15-min EMA bars',observations:{lastClose:curated.latest.c,history:curated.bars.length},source:curated.source};}
 export function design() {return [{fast:6,slow:26},{fast:9,slow:34},{fast:12,slow:48}];}
-export function optimize(bars, candidates) {
+export function optimize(bars, candidates,costBps=COST_BPS) {
   const cut=Math.floor(bars.length*0.75),trainEnd=cut;
-  const options=candidates.map(p=>({params:p,result:simulate(bars.slice(0,trainEnd),p)}));
+  const options=candidates.map(p=>({params:p,result:simulate(bars.slice(0,trainEnd),p,{costBps})}));
   // Select on TRAINING ONLY. No holdout result fed to optimizer.
   options.sort((a,b)=>b.result.netReturnPct-a.result.netReturnPct || a.params.fast-b.params.fast);
   return {candidate:options[0],cut,trainingOptions:options.map(x=>({params:x.params,trainingReturnPct:x.result.netReturnPct}))};
 }
-export function validate(bars,selected,cut,btResult){
+export function validate(bars,selected,cut,btResult,costBps=COST_BPS){
   const p=selected.params;
-  const own=validateHoldoutIndependently(bars,p,cut),stress=validateHoldoutIndependently(bars,p,cut,{costBps:2*COST_BPS});
-  const second=simulate(bars,p,{start:cut});
+  const own=validateHoldoutIndependently(bars,p,cut,{costBps}),stress=validateHoldoutIndependently(bars,p,cut,{costBps:2*costBps});
+  const second=simulate(bars,p,{start:cut,costBps});
   const accountingMatch=own.auditPassed&&Math.abs(own.netReturnPct-second.netReturnPct)<1e-8&&Math.abs(own.maxDrawdownPct-second.maxDrawdownPct)<1e-8;
   const reasons=[];
   if(!own.auditPassed) reasons.push(own.reason);
@@ -124,24 +131,26 @@ export class AgentWorkflow {
   }
   async process(symbol){
     if(this.halted)throw Error('Emergency stop engaged');
-    if(!['SPY','QQQ','IWM'].includes(symbol)) throw Error('Symbol not allowlisted');
+    if(!ASSETS.includes(symbol)) throw Error('Symbol not allowlisted');
     this.lastStatus='RUNNING';
     try{
-      const clock=await this.broker.clock();
+      const crypto=isCrypto(symbol);
+      const clock=crypto?{is_open:true,timestamp:new Date(this.now()).toISOString(),crypto247:true}:await this.broker.clock();
       if(!clock.is_open) {this.lastStatus='MARKET_CLOSED';return {status:'MARKET_CLOSED'};}
-      if(inOpeningGrace(this.now())){this.lastStatus='WAITING_FOR_OPENING_CANDLE';return {status:'WAITING_FOR_OPENING_CANDLE'};}
+      if(!crypto&&inOpeningGrace(this.now())){this.lastStatus='WAITING_FOR_OPENING_CANDLE';return {status:'WAITING_FOR_OPENING_CANDLE'};}
       await this.stage('BM-01',()=>({symbol,clock:clock.timestamp||null}),{decision:'Fresh-bar workflow dispatched'});
       const raw=await this.broker.history(symbol);
-      const curated=await this.stage('DC-01',()=>curateBars(raw,this.now()),{decision:'Closed real bars checked'});
-      this.markets[symbol]={close:curated.latest.c,barStart:new Date(curated.latest.t).toISOString(),finalizedAt:curated.finalizedAt,feed:curated.source,source:'REAL_IEX'};
+      const curated=await this.stage('DC-01',()=>curateBars(raw,this.now(),crypto?'ALPACA_CRYPTO_US':'ALPACA_IEX'),{decision:'Closed real bars checked'});
+      this.markets[symbol]={close:curated.latest.c,barStart:new Date(curated.latest.t).toISOString(),finalizedAt:curated.finalizedAt,feed:curated.source,source:crypto?'REAL_CRYPTO_US':'REAL_IEX'};
       const key=`${symbol}:${curated.latest.t}`;
       if(this.lastProcessed.has(key)){this.lastStatus='NO_NEW_BAR';return {status:'NO_NEW_BAR'};}
+      const costBps=crypto?CRYPTO_COST_BPS:COST_BPS;
       const hypothesis=await this.stage('RS-01',()=>investigate(curated));
       const choices=await this.stage('SD-01',()=>design(hypothesis));
-      const optimized=await this.stage('OP-01',()=>optimize(curated.bars,choices));
+      const optimized=await this.stage('OP-01',()=>optimize(curated.bars,choices,costBps));
       const frozen={id:paramsHash(symbol,optimized.candidate.params,curated.source),symbol,params:Object.freeze({...optimized.candidate.params}),datasetFingerprint:curated.fingerprint};
-      const bt=await this.stage('BT-01',()=>({training:simulate(curated.bars.slice(0,optimized.cut),frozen.params),costBps:COST_BPS,reportOnly:true}));
-      const validation=await this.stage('VL-01',()=>validate(curated.bars,optimized.candidate,optimized.cut,bt),{decision:'Independent sealed holdout'});
+      const bt=await this.stage('BT-01',()=>({training:simulate(curated.bars.slice(0,optimized.cut),frozen.params,{costBps}),costBps,reportOnly:true}));
+      const validation=await this.stage('VL-01',()=>validate(curated.bars,optimized.candidate,optimized.cut,bt,costBps),{decision:'Independent sealed holdout'});
       const ranking=await this.stage('SC-01',()=>score(validation));
       if(!ranking.eligible){
         await this.stage('JR-01',()=>({outcome:'REJECTED',reasons:validation.reasons}),{decision:'Rejected candidate recorded'});
@@ -167,25 +176,30 @@ export class AgentWorkflow {
     const equity=Number(account.equity),previous=Number(account.last_equity);
     if(!positive(equity)||!positive(previous))throw Error('RM: invalid equity baseline');
     if(equity/previous-1 < -.01)throw Error('RM: 1% daily drawdown stop');
-    if(orders.some(o=>o.symbol===symbol))throw Error('RM: existing pending order');
+    if(orders.some(o=>belongs(o,symbol)))throw Error('RM: existing pending order');
     if(positions.some(p=>Number(p.qty)<0))throw Error('RM: short position detected');
-    const pos=positions.find(p=>p.symbol===symbol);
+    const pos=positions.find(p=>belongs(p,symbol));
     const held=pos?Number(pos.qty):0;
     if(!NUM(held)||held<0)throw Error('RM: invalid held quantity');
     const action=signal===1&&!held?'buy':signal===0&&held?'sell':'none';
-    const reserved=new Set([...positions.map(p=>p.symbol),...orders.filter(o=>o.side==='buy').map(o=>o.symbol)]);
+    const reserved=new Set([...positions.map(p=>brokerSymbol(p.symbol)),...orders.filter(o=>o.side==='buy').map(o=>brokerSymbol(o.symbol))]);
     if(action==='buy'&&reserved.size>=2)throw Error('RM: maximum two holdings including pending buys');
     // Never liquidate a manual holding or a position whose provenance is incomplete.
     // Refuse to sell unless broker history proves the entire quantity is attributable
     // to this specific paper bot; a missing/trimmed order history fails closed.
     if(action==='sell'){
       const history=await this.broker.recentOrders();
-      const owned=history.filter(o=>String(o.client_order_id||'').startsWith('sc'+VERSION.replace(/\W/g,'').slice(0,8)+'-')&&o.symbol===symbol)
+      const owned=history.filter(o=>String(o.client_order_id||'').startsWith('sc'+VERSION.replace(/\W/g,'').slice(0,8)+'-')&&belongs(o,symbol))
         .reduce((qty,o)=>qty+(o.side==='buy'?1:o.side==='sell'?-1:0)*Number(o.filled_qty||0),0);
       if(!Number.isFinite(owned)||owned+1e-8<held)throw Error('RM: manual or unattributed holding; no auto-liquidation');
     }
-    // Hard cap per order: 1% account equity, paper only. No leverage.
-    const notional=Math.max(0,Math.min(equity*.01,Number(account.buying_power)||0));
+    // Crypto must use non-marginable CASH buying power, never leverage.
+    const cashOnly=Number(account.non_marginable_buying_power);
+    if(isCrypto(symbol)&&(!NUM(cashOnly)||cashOnly<0))throw Error('RM: missing cash-only crypto buying power');
+    const eligibleBuyingPower=isCrypto(symbol)?Math.min(cashOnly,Number(account.cash)):Number(account.buying_power);
+    if(!Number.isFinite(eligibleBuyingPower)||eligibleBuyingPower<0)throw Error('RM: invalid available buying power');
+    // Crypto 0.5%, equities 1% of equity per new paper position.
+    const notional=Math.max(0,Math.min(equity*(isCrypto(symbol)?.005:.01),eligibleBuyingPower));
     if(action==='buy'&&notional<25)throw Error('RM: insufficient allowed notional');
     return {action,notional,held,signal,equity,validated:true,marketClockChecked:true};
   }
@@ -193,13 +207,13 @@ export class AgentWorkflow {
     if(!risk.validated||!risk.marketClockChecked)throw Error('PT: missing independent risk permission');
     if(risk.action==='none')return {status:'NO_ORDER'};
     if(!this.paperEnabled)return {status:'DRY_RUN',proposed:{symbol,side:risk.action,notional:risk.notional,qty:risk.held}};
-    const clientOrderId=`sc${VERSION.replace(/\W/g,'').slice(0,8)}-${symbol}-${sha([candidate.id,bar.t,risk.action]).slice(0,24)}`;
+    const clientOrderId=`sc${VERSION.replace(/\W/g,'').slice(0,8)}-${brokerSymbol(symbol)}-${sha([candidate.id,bar.t,risk.action]).slice(0,24)}`;
     // Broker adapter is hard-pinned to Alpaca paper URL, cannot accept live-money URL.
     const existing=await this.broker.orderByClientId(clientOrderId);
     if(existing){await this.journal.append({agentId:'PT-01',state:'RESOLVED',clientOrderId,brokerOrderId:existing.id,status:existing.status,ts:new Date(this.now()).toISOString()});return {status:'ALREADY_SUBMITTED',order:{id:existing.id,status:existing.status}};}
     // Intent must be durable BEFORE submitting. Any logging failure stops order submission.
     await this.journal.append({agentId:'PT-01',state:'INTENT',symbol,side:risk.action,clientOrderId,candidateId:candidate.id,ts:new Date(this.now()).toISOString()});
-    const order=await this.broker.paperOrder({symbol,side:risk.action,type:'market',time_in_force:'day',client_order_id:clientOrderId,
+    const order=await this.broker.paperOrder({symbol,side:risk.action,type:'market',time_in_force:isCrypto(symbol)?'ioc':'day',client_order_id:clientOrderId,
       ...(risk.action==='buy'?{notional:risk.notional.toFixed(2)}:{qty:String(risk.held)})});
     await this.journal.append({agentId:'PT-01',state:'RESOLVED',clientOrderId,brokerOrderId:order.id,status:order.status,ts:new Date(this.now()).toISOString()});
     return {status:'PAPER_ORDER_SUBMITTED',order:{id:order.id,status:order.status,client_order_id:clientOrderId}};
@@ -226,5 +240,5 @@ export class AgentWorkflow {
     this.latestEvents=this.latestEvents.slice(-60);
   }
   emergencyStop(){this.halted=true;this.lastStatus='HALTED';}
-  getStatus(){return {version:VERSION,status:this.lastStatus,paperEnabled:this.paperEnabled,halted:this.halted,source:'ALPACA_IEX',events:this.latestEvents.slice(-40),forwardFills:this.forwardFills.slice(-20),markets:this.markets,note:'Paper trading only; orders are not fills; illustrative fees; not financial advice'};}
+  getStatus(){return {version:VERSION,status:this.lastStatus,paperEnabled:this.paperEnabled,halted:this.halted,source:'ALPACA_IEX_AND_CRYPTO_US',events:this.latestEvents.slice(-40),forwardFills:this.forwardFills.slice(-20),markets:this.markets,note:'Paper trading only; orders are not fills; illustrative fees; not financial advice'};}
 }
