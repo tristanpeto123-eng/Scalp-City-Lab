@@ -7,10 +7,10 @@ const t0='2026-10-17T18:00:00Z',t1='2026-10-17T18:15:00Z',t2='2026-10-17T18:30:0
 const candle=(t,o,h,l,c,symbol='BTC/USD')=>({t,o,h,l,c,symbol});
 let state=initializeTrial();
 assert.equal(state.balanceGbp,50);n++;
-assert.equal(TRIAL_RULES.targetNetProfitGbp,8000);n++;
-assert.equal(TRIAL_RULES.targetBalanceGbp,8050);n++;
+assert.equal(TRIAL_RULES.targetNetProfitGbp,2000);n++;
+assert.equal(TRIAL_RULES.targetBalanceGbp,2050);n++;
 assert.equal(TRIAL_RULES.riskFraction,.01);n++;
-assert.equal(TRIAL_RULES.version,'GBP50-PROFIT8000-v1');n++;
+assert.equal(TRIAL_RULES.version,'GBP50-PROFIT2000-v1');n++;
 const plan=netRiskPlan({balanceGbp:50,entryPrice:100});
 assert.equal(plan.requiredRewardRisk,null);n++;
 assert.equal(plan.targetPrice,null);n++;
@@ -25,7 +25,7 @@ assert.equal(signalExit.result,'BEARISH_SIGNAL_NEXT_OPEN');n++;
 assert.equal(signalExit.closed.exitPrice,103);n++;
 assert.ok(signalExit.closed.netGbp>0);n++;
 assert.equal(signalExit.state.balanceGbp,50+signalExit.closed.netGbp);n++;
-assert.equal(trialReport(signalExit.state).remainingProfitGbp,8000-signalExit.closed.netGbp);n++;
+assert.equal(trialReport(signalExit.state).remainingProfitGbp,2000-signalExit.closed.netGbp);n++;
 assert.equal(trialReport(signalExit.state).targetReached,false);n++;
 assert.equal(trialReport(signalExit.state).mandatoryRewardRisk,null);n++;
 assert.equal(processBar(signalExit.state,candle(t2,103,106,95,100)).result,'DUPLICATE_OR_OUT_OF_ORDER');n++;
@@ -61,12 +61,12 @@ const invalid=structuredClone(train.trades);invalid[0].netGbp+=.1;
 assert.throws(()=>auditProfit(invalid,raw,{start:100,end:850}),/GBP profit mismatch/);n++;
 const screened=validateProfit(raw,selection,'BTC/USD');
 assert.ok(['BLOCKED','AUDIT_PASS'].includes(screened.verdict));n++;
-assert.equal(screened.objective.targetBalanceGbp,8050);n++;
+assert.equal(screened.objective.targetBalanceGbp,2050);n++;
 const rawAPI=raw.map(x=>({...x,t:new Date(x.t).toISOString()}));
 const replay=replayHistorical({symbol:'BTC/USD',raw:rawAPI,closedBefore:raw.at(-1).t+2*900000});
 assert.equal(replay.virtualStartGbp,50);n++;
-assert.equal(replay.netProfitTargetGbp,8000);n++;
-assert.equal(replay.targetBalanceGbp,8050);n++;
+assert.equal(replay.netProfitTargetGbp,2000);n++;
+assert.equal(replay.targetBalanceGbp,2050);n++;
 assert.equal(replay.mandatoryRewardRisk,null);n++;
 assert.equal(replay.evaluation.actualLiveForwardTradeCount,0);n++;
 assert.equal(replay.evaluation.bars,720);n++;
@@ -78,4 +78,31 @@ assert.ok(replay.closedTradeEvidence.every(x=>x.source==='HISTORICAL_REPLAY'));n
 assert.throws(()=>replayHistorical({symbol:'BTC/USD',raw:rawAPI.slice(0,100)}),/480/);n++;
 assert.throws(()=>replayHistorical({symbol:'DOGE/USD',raw:rawAPI}),/Invalid/);n++;
 assert.ok(TRIAL_RULES.version!== '50GBP-3R-v1');n++;
-console.log('PASS '+n+' GBP8000 flexible-exit goal, independent training/holdout, no broker orders');
+// Secondary observed >=70% win-rate requires 43 wins of 61 closed trades.
+import {measureGoal,GOAL} from './performance.mjs';
+assert.equal(GOAL.minimumWinRate,.70);n++;
+assert.equal(GOAL.minimumClosedTrades,61);n++;
+const sample=Array.from({length:61},(_,i)=>({
+ id:'secondary-'+i,closedAt:new Date(Date.parse(t0)+i*900000).toISOString(),
+ netUsd:i<43?1:-.5,cohort:TRIAL_RULES.version+':frozen-A',
+ evidence:'HISTORICAL_REPLAY',feeBasis:'MODELED_NOT_POSTED'
+}));
+const at43=measureGoal(sample);
+assert.equal(at43.wins,43);n++;
+assert.equal(at43.observedThresholdMet,true);n++;
+assert.equal(at43.verifiedTargetMet,false);n++;
+assert.equal(at43.status,'PROVISIONAL_COSTS_OR_EVIDENCE');n++;
+const at42=measureGoal(sample.map((x,i)=>i===42?{...x,netUsd:-.5}:x));
+assert.equal(at42.wins,42);n++;
+assert.equal(at42.observedThresholdMet,false);n++;
+assert.equal(at42.status,'PERFORMANCE_NOT_MET');n++;
+assert.equal(measureGoal(sample.slice(0,60)).observedThresholdMet,false);n++;
+const active=trialReport(initializeTrial());
+assert.equal(active.profitTargetGbp,2000);n++;
+assert.equal(active.targetBalanceGbp,2050);n++;
+assert.equal(active.winRateGoalPct,70);n++;
+assert.equal(active.winRateSampleTarget,61);n++;
+assert.equal(active.remainingProfitGbp,2000);n++;
+assert.equal(active.targetReached,false);n++;
+assert.equal(active.mandatoryRewardRisk,null);n++;
+console.log('PASS '+n+' GBP2000 flexible-exit goal, independent training/holdout, no broker orders');
