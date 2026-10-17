@@ -148,6 +148,19 @@ export function validateAdaptive({snapshot,symbol,startingBalanceGbp=50,mode='du
  const replay=simulateValidation({snapshot,symbol,startingBalanceGbp,
   mode,limit,strategy:model.selected.strategy,
   strategyParams:model.selected.params,feePerSideFraction:.0025,now});
- return {status:'OUT_OF_SAMPLE_HISTORICAL_EVALUATION',model,replay,
-  brokerOrders:0,predictedGuaranteedProfit:false};
+ // Checker inspects ONLY AFTER strategy is frozen, cannot feed results back
+ // to the current candidate selector. A negative or tiny out-of-sample
+ // result MUST NEVER be described as a validated winning model.
+ const reasons=[];
+ if(replay.closedTrades<20)reasons.push('INSUFFICIENT_OUTER_HOLDOUT_TRADES');
+ if(replay.realizedNetProfitGbp<=0)reasons.push('OUTER_HOLDOUT_NET_NOT_POSITIVE');
+ if(replay.maxDrawdownPct>10)reasons.push('OUTER_HOLDOUT_DRAWDOWN_GT_10');
+ const winTargetObserved=replay.winRatePct!==null&&replay.winRatePct>=80;
+ const verdict=reasons.length?'HOLDOUT_REJECTED':
+   'HOLDOUT_POSITIVE_RESEARCH_ONLY_NOT_FORWARD_VALIDATED';
+ return {status:verdict,model,replay,brokerOrders:0,
+  checker:{reasons,observed80PctWinTargetMet:winTargetObserved,
+   requiredFutureEvidence:'Independent genuinely new data and verified forward trading results',
+   eligibleForBrokerExecution:false,independentForwardValidated:false},
+  predictedGuaranteedProfit:false};
 }
