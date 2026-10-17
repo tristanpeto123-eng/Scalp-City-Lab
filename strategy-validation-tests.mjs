@@ -72,7 +72,7 @@ test('page is preloaded from bundled snapshots; upload control and broker orders
  assert.match(h,/loadPair\(\)/);
  assert.match(h,/validation-data\//);
  assert.match(h,/fetch\(url,/);
- assert.match(h,/Data ready/);
+ assert.match(h,/Historical candles ready/);
  assert.match(h,/strategy-validation-core\.mjs/);
  assert.match(h,/fetchAlpacaDirect/);
  assert.match(h,/https:\/\/data\.alpaca\.markets\/v1beta3\/crypto\/us-1\/bars/);
