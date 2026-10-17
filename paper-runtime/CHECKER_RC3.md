@@ -1,6 +1,6 @@
 # Checker — Scalp City £50 virtual / £2,000 net profit (no fixed R:R)
 
-**Owner instruction:** 17 October 2026 — remove mandatory 3:1 reward/risk; subsequently revise primary profit and secondary win-rate goals. Keep £50 virtual start, target **£2,000 net GBP profit** (virtual balance target £2,050). Owner revised secondary win-rate goal to **≥70% over ≥61 completed closed trades** (at least **43 wins** at 61) on 17 October 2026.
+**Owner instruction:** 17 October 2026 — remove mandatory 3:1 reward/risk; subsequently revise primary profit and secondary win-rate goals. Keep £50 virtual start, target **£2,000 net GBP profit** (virtual balance target £2,050). Owner's latest direction is an **80% observed winning-trade-rate target, with no minimum or maximum trade-count requirement**. There is no 61-trade stopping point; trade count and Wilson confidence are always reported, and £2,000 profit success does not depend on a trade-count prerequisite.
 **G0 code-change scope:** APPROVED for development implementation and test.
 **G1 automated test gate:** PASSED at the tested development implementation; final commit must be checked.
 **Deployment / merge:** NOT AUTHORISED by this strategy-goal change. PR #2 remains draft.
@@ -13,7 +13,7 @@
 - [x] Current `learning-profit.mjs` selects three transparent EMA candidate configurations on **train-only** net GBP profit, expectancy, profit factor and drawdown; later 25% holdout is screened and independent arithmetic is checked.
 - [x] `replay-profit.mjs` freezes a strategy before revealing later historical bars and does not count historical-replay results as actual live forward trades. Its origin, dataset fingerprint and candidate are auditable.
 - [x] GBP virtual P&L assumes USD-price relative changes, no GBP/USD movement, modelled 0.5% crypto / 0.1% equity fees per side, no proved market slippage. Stated profits are NOT broker-settled GBP.
-- [x] New `profit-goal-tests.mjs` **47 tests** passed along with 26 general-agent tests and 29 crypto integration checks: 102 CURRENT active tests; old mandatory-3:1 tests removed from current CI and obsolete code deleted from the review branch.
+- [x] New `profit-goal-tests.mjs` **47 prior tests** passed along with 26 general-agent tests and 29 crypto integration checks: 102 tests in the initial objective update; old mandatory-3:1 tests removed from current CI and obsolete code deleted from the review branch.
 - [x] Real Alpaca **GET-only** 180-day BTC + ETH historical-as-live trial on 17 October 2026 completed successfully as a process, with 17,279 BTC and 17,177 ETH completed market bars. Evidence: https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39068545879
 - [x] Both 180-day candidate selections **REJECTED**. 25% calibration holdout for selected BTC candidate: 47 closed simulated trades, 2 net winners (4.26%), modelled net -£8.38; ETH: 40 closed simulated trades, 4 winners (10%), modelled net -£6.57. Neither was qualified for the frozen replay. Each frozen replay therefore made ZERO trades and started/ended at £50 virtual; **no strategy demonstrated progress toward £2,000**. Historical calibration holdout losses are NOT actual ledger losses.
 
@@ -29,9 +29,15 @@
 
 **Verdict: UPDATED CODE GOAL IMPLEMENTED, RESEARCH STRATEGIES FAILED — BLOCK AUTOMATED BROKER TRADING.** Never represent historical, modelled, virtual or paper outcomes as real-money investment results.
 
-## Checker G1 — Revised targets
-- [x] £50 virtual capital unchanged, net profit goal revised **£8,000 → £2,000** and balance goal **£8,050 → £2,050**. Earlier values are recorded here solely as revision history.
-- [x] Secondary win threshold revised **80% → 70%**, minimum 61 CLOSED trades unchanged. 43/61 passes the observed ratio; 42/61 fails. Historical and modelled samples cannot satisfy VERIFIED live evidence.
-- [x] Profit-target strategy version incremented `GBP50-PROFIT8000-v1` → `GBP50-PROFIT2000-v1` to prohibit combining old and new research cohorts.
-- [x] GitHub CI validated the revised profit and win-rate targets on review branch: 26 agent + 29 crypto + 64 profit/70%-threshold checks = 119 passing tests; both workflows green on reviewed commit `0441718a4e533714bf4957274e9f1132838c7f8c`. Recheck after this Checker-only edit.
-- [ ] Persistent host, genuinely chronological forward observations and broker safeguards still outstanding. Do not promote existing historical strategy candidates: both prior screening attempts were rejected.
+## Checker G1 — Latest win-rate/trade-count changes (17 October 2026)
+
+- [x] Starting balance remains **£50 GBP virtual**, target remains **£2,000 net GBP profit**, final balance target **£2,050**; no fixed R:R multiple.
+- [x] Owner revised win-rate objective back to **80%** of completed positive-net trades. This is observed, not a claim of an 80% underlying statistical probability.
+- [x] **No fixed minimum or maximum number of trades**. The previous 61-trade condition is retired as a hard requirement. Each completed trade is recorded until portfolio-goal/risk stopping decisions are made.
+- [x] Win-rate scoreboard accounts for zero completed trades without dividing by zero; shows exact closed-trade sample count and Wilson 95% lower confidence bound.
+- [x] Tests cover 0 completed trades (cannot count as success), 4/5 wins (80%, observed), 3/5 (60%, fail), 49/61 (80.3%, pass), 48/61 (78.7%, fail), and 400/500 (80%, pass), plus that the £2,000 virtual profit goal is independent of completed trade count.
+- [x] Strategy/accounting policy identifier incremented to `GBP50-PROFIT2000-v2`; old v1/3R data cannot silently become v2 forward proof.
+- [ ] Verify final GitHub CI result for the exact committed revision.
+- [ ] Historical candidate strategies are still previously rejected, regardless of changed scoreboard rules; independent strategy viability, private persistent hosting, protective paper-order execution and genuine forward results remain outstanding.
+
+**Checker release conclusion remains NEEDS_REVISION for deployment.** Changing a win-rate threshold does not validate the strategy or authorize trading.
