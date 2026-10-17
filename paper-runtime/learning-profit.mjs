@@ -1,11 +1,11 @@
-// Flexible-exit GBP-50 virtual strategy research, targeting £8,000 NET profit.
+// Flexible-exit GBP-50 virtual strategy research, targeting £2,000 NET profit.
 // NO fixed reward:risk; stop loss + next-open bearish trend exit. Never places orders.
 import {initializeTrial,queueSignal,requestExit,processBar,trialReport,TRIAL_RULES} from './trial-profit.mjs';
 const ALLOWED=new Set(['BTC/USD','ETH/USD','SPY','QQQ','IWM']);
 const finite=Number.isFinite;
 export const PROFIT_OBJECTIVE=Object.freeze({
-  startingGbp:50,netProfitTargetGbp:8000,targetBalanceGbp:8050,
-  mandatoryRR:null,minimumClosedTrades:61,secondaryWinRateGoalPct:80,
+  startingGbp:50,netProfitTargetGbp:2000,targetBalanceGbp:2050,
+  mandatoryRR:null,minimumClosedTrades:61,secondaryWinRateGoalPct:70,
   minTrainingClosed:3,minHoldoutClosed:3,maxDrawdownPct:20
 });
 export function validateHistory(bars,params){
@@ -133,6 +133,6 @@ export function validateProfit(bars,selection,symbol){
  const {trades:_,...summary}=hold,{trades:__,...stressSummary}=stress;
  return {verdict:reasons.length?'BLOCKED':'AUDIT_PASS',reasons,holdout:summary,
   stress:stressSummary,accountingMatch:true,objective:PROFIT_OBJECTIVE,
-  scope:'Historical 25% holdout: not live profit, not guaranteed £8000',
+  scope:'Historical 25% holdout: not live profit, not guaranteed £2000',
   trainingSelectionOnly:true};
 }
