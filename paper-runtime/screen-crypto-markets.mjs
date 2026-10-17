@@ -1,7 +1,7 @@
 // Eight crypto markets: one-shot, READ-ONLY real market data comparisons.
 // It NEVER calls paperOrder; it NEVER broadens production trading allowlists.
 import {AlpacaPaper} from './alpaca-paper.mjs';
-import {CRYPTO_RESEARCH_ONLY,isResearchCrypto} from './crypto-research-marketset.mjs';
+import {CRYPTO_RESEARCH_ONLY,CRYPTO_RESEARCH_MARKETS,isResearchCrypto} from './crypto-research-marketset.mjs';
 import {loadHistoricalCrypto,replayHistorical} from './replay-profit.mjs';
 import {emptyMemory,assertMemory,proposeCandidates,rememberTraining,fingerprintTraining} from './learning-memory.mjs';
 import {writeFile,mkdir} from 'node:fs/promises';
@@ -16,14 +16,14 @@ export function quality(raw){
  return {ok:zeroVolumeRatio<=.4,reason:zeroVolumeRatio>.4?'ZERO_VOLUME_BARS_GT_40_PERCENT':null,
    count,zeroVolumeBars:zeroVolume,zeroVolumePct:Number((100*zeroVolumeRatio).toFixed(2))};
 }
-export async function runScreener({broker,markets=CRYPTO_RESEARCH_ONLY,days=90,now=Date.now(),location='us',
+export async function runScreener({broker,markets=CRYPTO_RESEARCH_MARKETS,days=90,now=Date.now(),location='us',
    maximumPages=80,memory=emptyMemory()}={}){
  assertMemory(memory);
  let nextMemory=memory;
  if(!['us','us-1'].includes(location))throw Error('Unsupported historical data feed');
- if(!broker||!Array.isArray(markets)||markets.length<1||markets.length>8||
-   new Set(markets).size!==markets.length||markets.some(s=>!isResearchCrypto(s)||!CRYPTO_RESEARCH_ONLY.includes(s)))
-   throw Error('Only the eight research-only crypto USD pairs are permitted');
+ if(!broker||!Array.isArray(markets)||markets.length<1||markets.length>10||
+   new Set(markets).size!==markets.length||markets.some(s=>!isResearchCrypto(s)))
+   throw Error('Only ten supported research crypto USD pairs are permitted');
  const results=[];
  // Read-only account assets check. Do not promote research to brokerage order approval.
  const listed=await broker.req('https://paper-api.alpaca.markets',
@@ -57,17 +57,18 @@ export async function runScreener({broker,markets=CRYPTO_RESEARCH_ONLY,days=90,n
        trainingStart:training[0].t,
        trainingEnd:new Date(Date.parse(training.at(-1).t)+900000).toISOString(),
        trainFingerprint:fingerprintTraining(training),
-       trainingOptions:replay.trainOnlySelection.trainOptions,
-       holdoutGate:replay.trainOnlySelection.holdoutVerdict
+       trainingOptions:replay.trainOnlySelection.trainOptions
      });
      nextMemory=learning.memory;
      const {independentHoldout,holdoutReasons,holdoutVerdict,params,eligible,calibrationBars}=replay.trainOnlySelection;
-     results.push({symbol,status:eligible?'FROZEN_REPLAY_EVALUATED':'STRATEGY_REJECTED',
+     // Re-running overlapping training bars creates NO new independent proof.
+     const independentlyEligible=eligible&&learning.acceptedForLearning;
+     results.push({symbol,status:independentlyEligible?'FROZEN_REPLAY_EVALUATED':eligible?'REPEATED_EVALUATION_NOT_INDEPENDENT':'STRATEGY_REJECTED',
        learning:{reason:learning.reason,acceptedIndependentWindow:learning.acceptedForLearning,
          priorIndependentWindows:proposal.priorIndependentWindows,
          priorParameters:proposal.triedParameters,proposedParameters:proposal.candidates,
          trainingEvidenceId:learning.recordId},
-       eligible,params,holdoutVerdict,holdoutReasons,calibrationBars,
+       eligible:independentlyEligible,params,holdoutVerdict,holdoutReasons,calibrationBars,
        completedBars:source.raw.length,pages:source.fetchedPages,data:dq,
        calibrationHoldout:{
          closedTrades:independentHoldout?.closedTrades??0,
@@ -93,7 +94,7 @@ export async function runScreener({broker,markets=CRYPTO_RESEARCH_ONLY,days=90,n
    modelMemory:nextMemory,
    learningEvents:results.flatMap(x=>x.learning?[{symbol:x.symbol,...x.learning}]:[]),
    brokerOrdersSubmitted:0,
-   disclaimer:'Historical candle simulation, not actual trades, profit or verified live forward win rate. All 8 new markets are research only; hard-coded Alpaca broker order allowlist remains unchanged.'};
+   disclaimer:'Historical candle simulation, not actual trades, profit or verified live forward win rate. Eight new markets remain research-only; no broker order permissions changed. Overlapping historical studies are never fresh independent validation.'};
 }
 async function main(){
  const days=Number(process.env.SCALP_RESEARCH_DAYS||90),broker=new AlpacaPaper();
