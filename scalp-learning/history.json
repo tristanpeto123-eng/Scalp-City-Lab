@@ -1,5 +1,956 @@
 {
   "schema": "SCALP_RESEARCH_MEMORY_V1",
   "policy": "GBP50-PROFIT2000-v2",
-  "experiments": []
+  "experiments": [
+    {
+      "id": "bbc39fbaee5b6cacea1732626b43f26416fc0ac2e1c8ab2dea4230d47c06c433",
+      "symbol": "BTC/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-07-19T22:00:00Z",
+      "trainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainFingerprint": "c1904783c3559e79dc7d2ca5db540a5ab0af625ea1549aeeef0791ed46a04d6a",
+      "acceptedForLearning": true,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 15,
+            "exitLookback": 8
+          },
+          "closedTrades": 57,
+          "netProfitGbp": -9.47788309,
+          "winRatePct": 1.75,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 20,
+            "exitLookback": 10
+          },
+          "closedTrades": 50,
+          "netProfitGbp": -8.66253204,
+          "winRatePct": 2,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 67,
+          "netProfitGbp": -10.76771374,
+          "winRatePct": 2.99,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 45,
+          "netProfitGbp": -7.66275897,
+          "winRatePct": 4.44,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 28,
+            "sellAbove": 56
+          },
+          "closedTrades": 14,
+          "netProfitGbp": -2.67974519,
+          "winRatePct": 0,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 32,
+            "sellAbove": 60
+          },
+          "closedTrades": 20,
+          "netProfitGbp": -2.73118817,
+          "winRatePct": 15,
+          "trainingScore": null
+        }
+      ],
+      "behavior": {
+        "candles": 2591,
+        "timeframe": "15Min",
+        "sampleStart": "2026-07-19T22:00:00.000Z",
+        "sampleEnd": "2026-08-15T21:45:00.000Z",
+        "sampledClose": 63089.95,
+        "observedPriceChangePct": -2.35,
+        "dailyRealizedVolatilityPct": 1.37,
+        "averageCandleRangePct": 0.168,
+        "upCandleFractionPct": 48.88,
+        "lagOneReturnCorrelation": 0.001,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Historical training-candle observations only: not next-price forecasts or executable quotes"
+      },
+      "reason": "INDEPENDENT_TRAINING_WINDOW"
+    },
+    {
+      "id": "29b9460384495a02795e9efefddaee43e33ade7a051f1795c5558a35eb030348",
+      "symbol": "ETH/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-07-19T22:00:00Z",
+      "trainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainFingerprint": "a4d84497571bf296eeb4b193243388b2ec5989178570bc1307b61c6e6647f802",
+      "acceptedForLearning": true,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 15,
+            "exitLookback": 8
+          },
+          "closedTrades": 52,
+          "netProfitGbp": -8.61705274,
+          "winRatePct": 7.69,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 20,
+            "exitLookback": 10
+          },
+          "closedTrades": 46,
+          "netProfitGbp": -8.10981714,
+          "winRatePct": 8.7,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 68,
+          "netProfitGbp": -10.89451413,
+          "winRatePct": 7.35,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 50,
+          "netProfitGbp": -8.52286589,
+          "winRatePct": 4,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 28,
+            "sellAbove": 56
+          },
+          "closedTrades": 12,
+          "netProfitGbp": -2.08976538,
+          "winRatePct": 8.33,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 32,
+            "sellAbove": 60
+          },
+          "closedTrades": 17,
+          "netProfitGbp": -2.99521154,
+          "winRatePct": 23.53,
+          "trainingScore": null
+        }
+      ],
+      "behavior": {
+        "candles": 2591,
+        "timeframe": "15Min",
+        "sampleStart": "2026-07-19T22:00:00.000Z",
+        "sampleEnd": "2026-08-15T21:45:00.000Z",
+        "sampledClose": 1883.245,
+        "observedPriceChangePct": 0.85,
+        "dailyRealizedVolatilityPct": 1.86,
+        "averageCandleRangePct": 0.248,
+        "upCandleFractionPct": 50.89,
+        "lagOneReturnCorrelation": -0.013,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Historical training-candle observations only: not next-price forecasts or executable quotes"
+      },
+      "reason": "INDEPENDENT_TRAINING_WINDOW"
+    },
+    {
+      "id": "d51d038a71292487cf07035a6ab9886883ccf9a02202265d713349665144d74f",
+      "symbol": "SOL/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-07-19T22:00:00Z",
+      "trainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainFingerprint": "515c97951d98f81b505d782e5a21842bf776ad6e4fc9615c26191ab4cbaa6ca6",
+      "acceptedForLearning": true,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 15,
+            "exitLookback": 8
+          },
+          "closedTrades": 54,
+          "netProfitGbp": -9.49499893,
+          "winRatePct": 5.56,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 20,
+            "exitLookback": 10
+          },
+          "closedTrades": 43,
+          "netProfitGbp": -7.64504282,
+          "winRatePct": 4.65,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 67,
+          "netProfitGbp": -11.00856385,
+          "winRatePct": 8.96,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 53,
+          "netProfitGbp": -9.67934024,
+          "winRatePct": 7.55,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 28,
+            "sellAbove": 56
+          },
+          "closedTrades": 11,
+          "netProfitGbp": -1.71879258,
+          "winRatePct": 18.18,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 32,
+            "sellAbove": 60
+          },
+          "closedTrades": 19,
+          "netProfitGbp": -2.84593218,
+          "winRatePct": 15.79,
+          "trainingScore": null
+        }
+      ],
+      "behavior": {
+        "candles": 2591,
+        "timeframe": "15Min",
+        "sampleStart": "2026-07-19T22:00:00.000Z",
+        "sampleEnd": "2026-08-15T21:45:00.000Z",
+        "sampledClose": 75.645,
+        "observedPriceChangePct": -0.55,
+        "dailyRealizedVolatilityPct": 1.86,
+        "averageCandleRangePct": 0.265,
+        "upCandleFractionPct": 48.34,
+        "lagOneReturnCorrelation": -0.004,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Historical training-candle observations only: not next-price forecasts or executable quotes"
+      },
+      "reason": "INDEPENDENT_TRAINING_WINDOW"
+    },
+    {
+      "id": "7829405c2ed3ec973f6905e4ed68b28912cb43ddeaba995d5c4a90f092880537",
+      "symbol": "XRP/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-07-19T22:00:00Z",
+      "trainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainFingerprint": "f2c03e24a6b73f730dbcfc3a194895cddeb7185464f686c391269b0870814337",
+      "acceptedForLearning": true,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 15,
+            "exitLookback": 8
+          },
+          "closedTrades": 50,
+          "netProfitGbp": -8.67230078,
+          "winRatePct": 6,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 20,
+            "exitLookback": 10
+          },
+          "closedTrades": 38,
+          "netProfitGbp": -6.52628775,
+          "winRatePct": 10.53,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 65,
+          "netProfitGbp": -10.27236926,
+          "winRatePct": 7.69,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 43,
+          "netProfitGbp": -6.85676204,
+          "winRatePct": 9.3,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 28,
+            "sellAbove": 56
+          },
+          "closedTrades": 16,
+          "netProfitGbp": -2.27301895,
+          "winRatePct": 12.5,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 32,
+            "sellAbove": 60
+          },
+          "closedTrades": 24,
+          "netProfitGbp": -3.36354223,
+          "winRatePct": 16.67,
+          "trainingScore": null
+        }
+      ],
+      "behavior": {
+        "candles": 2591,
+        "timeframe": "15Min",
+        "sampleStart": "2026-07-19T22:00:00.000Z",
+        "sampleEnd": "2026-08-15T21:45:00.000Z",
+        "sampledClose": 1.00365,
+        "observedPriceChangePct": -8.47,
+        "dailyRealizedVolatilityPct": 1.74,
+        "averageCandleRangePct": 0.243,
+        "upCandleFractionPct": 48.73,
+        "lagOneReturnCorrelation": 0,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "DIRECTIONAL",
+        "interpretation": "Historical training-candle observations only: not next-price forecasts or executable quotes"
+      },
+      "reason": "INDEPENDENT_TRAINING_WINDOW"
+    },
+    {
+      "id": "6ce607d5579cd2fe3230d9ac86bff70182a1ee1d8ad5292916aaef0ffe99607e",
+      "symbol": "ADA/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-07-19T22:00:00Z",
+      "trainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainFingerprint": "c3641f61fd98c40549cba2600f6449b7802ca52127494c600c10d2b3454f647c",
+      "acceptedForLearning": true,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 15,
+            "exitLookback": 8
+          },
+          "closedTrades": 48,
+          "netProfitGbp": -7.38890087,
+          "winRatePct": 18.75,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 20,
+            "exitLookback": 10
+          },
+          "closedTrades": 36,
+          "netProfitGbp": -4.49565026,
+          "winRatePct": 25,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 67,
+          "netProfitGbp": -9.41360522,
+          "winRatePct": 10.45,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 53,
+          "netProfitGbp": -8.30388327,
+          "winRatePct": 13.21,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 28,
+            "sellAbove": 56
+          },
+          "closedTrades": 12,
+          "netProfitGbp": -1.82736202,
+          "winRatePct": 41.67,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 32,
+            "sellAbove": 60
+          },
+          "closedTrades": 23,
+          "netProfitGbp": -4.13850289,
+          "winRatePct": 30.43,
+          "trainingScore": null
+        }
+      ],
+      "behavior": {
+        "candles": 2591,
+        "timeframe": "15Min",
+        "sampleStart": "2026-07-19T22:00:00.000Z",
+        "sampleEnd": "2026-08-15T21:45:00.000Z",
+        "sampledClose": 0.1777915,
+        "observedPriceChangePct": 6.91,
+        "dailyRealizedVolatilityPct": 3.37,
+        "averageCandleRangePct": 0.476,
+        "upCandleFractionPct": 48.07,
+        "lagOneReturnCorrelation": -0.011,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Historical training-candle observations only: not next-price forecasts or executable quotes"
+      },
+      "reason": "INDEPENDENT_TRAINING_WINDOW"
+    },
+    {
+      "id": "16450d2b2b9ba92ff2fd6900ec8a16e0466fe6d9f5e02163e8bfa0f02b12fd69",
+      "symbol": "AVAX/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-07-19T22:00:00Z",
+      "trainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainFingerprint": "8453da91360d18682cb8f5e262e269e3113b6383ec3101890f67e27dd1e7e119",
+      "acceptedForLearning": true,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 15,
+            "exitLookback": 8
+          },
+          "closedTrades": 44,
+          "netProfitGbp": -6.43040604,
+          "winRatePct": 11.36,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 20,
+            "exitLookback": 10
+          },
+          "closedTrades": 37,
+          "netProfitGbp": -5.33918789,
+          "winRatePct": 13.51,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 74,
+          "netProfitGbp": -10.86584511,
+          "winRatePct": 6.76,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 52,
+          "netProfitGbp": -7.66987384,
+          "winRatePct": 11.54,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 28,
+            "sellAbove": 56
+          },
+          "closedTrades": 20,
+          "netProfitGbp": -3.67825444,
+          "winRatePct": 25,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 32,
+            "sellAbove": 60
+          },
+          "closedTrades": 26,
+          "netProfitGbp": -4.10414654,
+          "winRatePct": 30.77,
+          "trainingScore": null
+        }
+      ],
+      "behavior": {
+        "candles": 2591,
+        "timeframe": "15Min",
+        "sampleStart": "2026-07-19T22:00:00.000Z",
+        "sampleEnd": "2026-08-15T21:45:00.000Z",
+        "sampledClose": 6.4945,
+        "observedPriceChangePct": 0.65,
+        "dailyRealizedVolatilityPct": 2.79,
+        "averageCandleRangePct": 0.364,
+        "upCandleFractionPct": 49.42,
+        "lagOneReturnCorrelation": 0.022,
+        "zeroVolumeFractionPct": 0.15,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Historical training-candle observations only: not next-price forecasts or executable quotes"
+      },
+      "reason": "INDEPENDENT_TRAINING_WINDOW"
+    },
+    {
+      "id": "6764c6a702dfd4ebb8b0d3700f16b647d6ef77e30b49696efc2080ed0d304d7c",
+      "symbol": "LINK/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-07-19T22:00:00Z",
+      "trainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainFingerprint": "0f822b29c0394ff5cff1f3e9fefa000e3435ba8cce3cbef7640ddc8b64291c17",
+      "acceptedForLearning": true,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 15,
+            "exitLookback": 8
+          },
+          "closedTrades": 52,
+          "netProfitGbp": -8.17873822,
+          "winRatePct": 13.46,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 20,
+            "exitLookback": 10
+          },
+          "closedTrades": 48,
+          "netProfitGbp": -8.27935009,
+          "winRatePct": 12.5,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 59,
+          "netProfitGbp": -8.09014116,
+          "winRatePct": 11.86,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 48,
+          "netProfitGbp": -7.17976539,
+          "winRatePct": 12.5,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 28,
+            "sellAbove": 56
+          },
+          "closedTrades": 14,
+          "netProfitGbp": -2.14779841,
+          "winRatePct": 28.57,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 32,
+            "sellAbove": 60
+          },
+          "closedTrades": 21,
+          "netProfitGbp": -2.29065207,
+          "winRatePct": 38.1,
+          "trainingScore": null
+        }
+      ],
+      "behavior": {
+        "candles": 2591,
+        "timeframe": "15Min",
+        "sampleStart": "2026-07-19T22:00:00.000Z",
+        "sampleEnd": "2026-08-15T21:45:00.000Z",
+        "sampledClose": 9.563515,
+        "observedPriceChangePct": 14.41,
+        "dailyRealizedVolatilityPct": 2.35,
+        "averageCandleRangePct": 0.336,
+        "upCandleFractionPct": 50.42,
+        "lagOneReturnCorrelation": 0.052,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "DIRECTIONAL",
+        "interpretation": "Historical training-candle observations only: not next-price forecasts or executable quotes"
+      },
+      "reason": "INDEPENDENT_TRAINING_WINDOW"
+    },
+    {
+      "id": "1a8aa74e44508fb0935ead2bd52e0a5b4f47518db1343e25ca7a0521ad8c9b47",
+      "symbol": "DOGE/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-07-19T22:00:00Z",
+      "trainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainFingerprint": "290a50d8e9b35c54b6353cf7201d9692fb4767ec1496ecc352caeaefcf4cf9a2",
+      "acceptedForLearning": true,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 15,
+            "exitLookback": 8
+          },
+          "closedTrades": 51,
+          "netProfitGbp": -8.72122827,
+          "winRatePct": 3.92,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 20,
+            "exitLookback": 10
+          },
+          "closedTrades": 40,
+          "netProfitGbp": -6.89039789,
+          "winRatePct": 5,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 79,
+          "netProfitGbp": -13.15801708,
+          "winRatePct": 6.33,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 58,
+          "netProfitGbp": -10.3245932,
+          "winRatePct": 6.9,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 28,
+            "sellAbove": 56
+          },
+          "closedTrades": 14,
+          "netProfitGbp": -2.70850255,
+          "winRatePct": 21.43,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 32,
+            "sellAbove": 60
+          },
+          "closedTrades": 20,
+          "netProfitGbp": -2.95985158,
+          "winRatePct": 30,
+          "trainingScore": null
+        }
+      ],
+      "behavior": {
+        "candles": 2591,
+        "timeframe": "15Min",
+        "sampleStart": "2026-07-19T22:00:00.000Z",
+        "sampleEnd": "2026-08-15T21:45:00.000Z",
+        "sampledClose": 0.0699595,
+        "observedPriceChangePct": -3.18,
+        "dailyRealizedVolatilityPct": 1.97,
+        "averageCandleRangePct": 0.281,
+        "upCandleFractionPct": 49.96,
+        "lagOneReturnCorrelation": 0.005,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Historical training-candle observations only: not next-price forecasts or executable quotes"
+      },
+      "reason": "INDEPENDENT_TRAINING_WINDOW"
+    },
+    {
+      "id": "5e099d89a66e7a96eace3c8e0d3e1e623cfcb8caa97acd339abc81093aa56d0d",
+      "symbol": "LTC/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-07-19T22:00:00Z",
+      "trainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainFingerprint": "d3346688eea59038ba8d5a059dff868dd5137ce9673d6f8f53a0f88a7dd5f983",
+      "acceptedForLearning": true,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 15,
+            "exitLookback": 8
+          },
+          "closedTrades": 44,
+          "netProfitGbp": -8.08363699,
+          "winRatePct": 9.09,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 20,
+            "exitLookback": 10
+          },
+          "closedTrades": 34,
+          "netProfitGbp": -6.83073799,
+          "winRatePct": 2.94,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 69,
+          "netProfitGbp": -11.40461988,
+          "winRatePct": 2.9,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 51,
+          "netProfitGbp": -9.00892679,
+          "winRatePct": 1.96,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 28,
+            "sellAbove": 56
+          },
+          "closedTrades": 13,
+          "netProfitGbp": -1.78976294,
+          "winRatePct": 30.77,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 32,
+            "sellAbove": 60
+          },
+          "closedTrades": 20,
+          "netProfitGbp": -3.05331074,
+          "winRatePct": 15,
+          "trainingScore": null
+        }
+      ],
+      "behavior": {
+        "candles": 2591,
+        "timeframe": "15Min",
+        "sampleStart": "2026-07-19T22:00:00.000Z",
+        "sampleEnd": "2026-08-15T21:45:00.000Z",
+        "sampledClose": 44.055,
+        "observedPriceChangePct": -7.9,
+        "dailyRealizedVolatilityPct": 1.71,
+        "averageCandleRangePct": 0.256,
+        "upCandleFractionPct": 48.76,
+        "lagOneReturnCorrelation": -0.012,
+        "zeroVolumeFractionPct": 0.04,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Historical training-candle observations only: not next-price forecasts or executable quotes"
+      },
+      "reason": "INDEPENDENT_TRAINING_WINDOW"
+    },
+    {
+      "id": "bdeabc24990c8c1c56ec6357cc4d1ddf65fd7a5d995572397127793640f3a24f",
+      "symbol": "BCH/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-07-19T22:00:00Z",
+      "trainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainFingerprint": "31406f4b6173f099f9e07334b6bb006cb251e3c0869f93574d85993412e1c2ec",
+      "acceptedForLearning": true,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 15,
+            "exitLookback": 8
+          },
+          "closedTrades": 48,
+          "netProfitGbp": -7.98004757,
+          "winRatePct": 10.42,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 20,
+            "exitLookback": 10
+          },
+          "closedTrades": 40,
+          "netProfitGbp": -6.54256043,
+          "winRatePct": 10,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 66,
+          "netProfitGbp": -10.31294234,
+          "winRatePct": 6.06,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 41,
+          "netProfitGbp": -6.65833823,
+          "winRatePct": 9.76,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 28,
+            "sellAbove": 56
+          },
+          "closedTrades": 16,
+          "netProfitGbp": -2.23930619,
+          "winRatePct": 31.25,
+          "trainingScore": null
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 32,
+            "sellAbove": 60
+          },
+          "closedTrades": 25,
+          "netProfitGbp": -4.42850595,
+          "winRatePct": 24,
+          "trainingScore": null
+        }
+      ],
+      "behavior": {
+        "candles": 2591,
+        "timeframe": "15Min",
+        "sampleStart": "2026-07-19T22:00:00.000Z",
+        "sampleEnd": "2026-08-15T21:45:00.000Z",
+        "sampledClose": 203.9,
+        "observedPriceChangePct": -5.98,
+        "dailyRealizedVolatilityPct": 2.23,
+        "averageCandleRangePct": 0.306,
+        "upCandleFractionPct": 48.96,
+        "lagOneReturnCorrelation": -0.002,
+        "zeroVolumeFractionPct": 7.83,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Historical training-candle observations only: not next-price forecasts or executable quotes"
+      },
+      "reason": "INDEPENDENT_TRAINING_WINDOW"
+    }
+  ]
 }
