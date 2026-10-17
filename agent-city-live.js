@@ -3,6 +3,11 @@
 (() => {
   const storageKey='scalp-city-lab-paper-status-origin-v1';
   const source=document.getElementById('sourceMode');
+  const trialBadge=document.createElement('span');
+  trialBadge.id='fiftyPoundTrial';
+  trialBadge.style.cssText='padding:7px;border:1px solid #446d86;border-radius:4px;color:#dafaff;background:#071b2a;font:700 10px monospace;white-space:nowrap;';
+  trialBadge.textContent='£50 · 3R · 0/61 TRADES · NOT CONNECTED';
+  document.querySelector('.topActions')?.prepend(trialBadge);
   const button=document.createElement('button');
   button.id='connectPaperStatus';button.type='button';button.textContent='CONNECT PAPER STATUS';
   button.title='Connect a read-only, external Scalp City paper runtime';
@@ -22,7 +27,7 @@
     if(v===null)return;
     if(!v.trim()){
       endpoint='';seen=new Set();connected=false;localStorage.removeItem(storageKey);
-      button.textContent='CONNECT PAPER STATUS';setLabel('ILLUSTRATIVE DATA');return;
+      button.textContent='CONNECT PAPER STATUS';setLabel('ILLUSTRATIVE DATA');trialBadge.textContent='£50 · 3R · 0/61 TRADES · NOT CONNECTED';return;
     }
     try{
       endpoint=normalize(v.trim());localStorage.setItem(storageKey,endpoint);
@@ -34,7 +39,12 @@
     try{
       const r=await fetch(`${endpoint}/api/status`,{cache:'no-store',mode:'cors',credentials:'omit',signal:AbortSignal.timeout(9000)});
       if(!r.ok)throw Error('HTTP '+r.status);
-      const s=await r.json();if(!Array.isArray(s.events)||s.source!=='ALPACA_IEX'||!s.version)throw Error('Incompatible telemetry contract');
+      const s=await r.json();if(!Array.isArray(s.events)||!['ALPACA_IEX','ALPACA_IEX_AND_CRYPTO_US'].includes(s.source)||!s.version)throw Error('Incompatible telemetry contract');
+      if(s.trial&&s.trial.startGbp===50){
+        const wins=Number(s.trial.wins||0),closed=Number(s.trial.closedTrades||0);
+        trialBadge.textContent=`£${Number(s.trial.balanceGbp).toFixed(2)} VIRTUAL · 3:1 · ${closed}/61 CLOSED · ${Number(s.trial.winRatePct||0).toFixed(1)}% WINS`;
+        trialBadge.title='Virtual GBP research portfolio, not Alpaca equity; modeled fees, not confirmed fills. Target 80% over >=61 closed trades.';
+      }
       setLabel(`PAPER RUNTIME · ${s.paperEnabled?'ORDERS ARMED':'DRY RUN'} · ${s.status}`);
       connected=true;button.textContent='PAPER STATUS ✓';
       if(s.halted)window.ScalpCityAgentCity.ingest({agentId:'BM-01',state:'HALTED',decision:'Emergency stop / data failure',metric:'No new orders',message:'Runtime halted; operator action needed'});
