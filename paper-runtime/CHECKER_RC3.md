@@ -50,3 +50,6 @@
 - ADA/AVAX/LINK/DOGE/LTC/BCH/USD: rejected due zero-volume ratio **55.47%, 56.02%, 56.80%, 73.64%, 73.85%, 73.27%** respectively, above the conservative 40% research threshold. No inference of executable fills from quote-derived bars.
 - All 8 historical **frozen forward-like replays correctly withheld** because eligibility/quality gates failed. The virtual £50 trial was not debited; zero paper broker orders.
 - The `crypto-research-marketset.mjs` only enlarges offline historical simulation coverage, NOT `alpaca-paper.mjs` broker ticker permissions. Reverify repo CI after cleanup.
+
+
+**Kraken US alternative-feed cross-check completed:** all 8 instruments returned ≥8,639 bars with ≤3.54% zero-volume (vs 6 of 8 Alpaca-US zero-volume screening failures), enabling full calibrated strategy checks. All **eight still rejected**. SOL net −£2.69/20.00% winners; XRP −£3.04/10.34%; ADA −£1.43/16.67%; AVAX −£2.40/14.29%; LINK −£2.51/12.50%; DOGE −£2.27/17.86%; LTC −£2.00/9.09%; BCH **+£0.66/16.67%** in a historical internal holdout but failed the training and 2x-cost stress gates. Zero actual forward trades and zero broker orders. Evidence https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39070322662. Full comparative report: [CRYPTO_MARKET_SCREEN_2026-10-17.md](CRYPTO_MARKET_SCREEN_2026-10-17.md). Keep CHECKER verdict NEEDS_REVISION.
