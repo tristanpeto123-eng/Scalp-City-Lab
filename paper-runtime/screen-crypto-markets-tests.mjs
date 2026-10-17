@@ -55,7 +55,7 @@ assert.equal(report.results[2].data.zeroVolumePct,100);n++;
 assert.ok(calls.every(x=>x.base==='https://paper-api.alpaca.markets'||x.base==='https://data.alpaca.markets'));n++;
 assert.ok(calls.every(x=>x.url.startsWith('/v2/assets?')||x.url.startsWith('/v1beta3/crypto/us/bars?')));n++;
 await assert.rejects(runScreener({broker,markets:['SOL/EUR']}),/Only ten supported research crypto USD pairs/);n++;
-await assert.rejects(runScreener({broker,markets:['SOL/USD','SOL/USD']}),/research-only/);n++;
+await assert.rejects(runScreener({broker,markets:['SOL/USD','SOL/USD']}),/Only ten supported research crypto USD pairs/);n++;
 const adapter=new AlpacaPaper({key:'dummy',secret:'dummy',fetchImpl:async()=>{throw Error('HTTP called despite blocked asset')}});
 assert.throws(()=>adapter.paperOrder({
  symbol:'SOL/USD',side:'buy',type:'market',time_in_force:'ioc',
