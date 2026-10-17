@@ -29,14 +29,15 @@ footer{color:#acc1cd;font-size:13px;margin:20px 0}a{color:#79d7f6}
 <label>Crypto market<select id="pair"><option>BTC/USD</option><option>ETH/USD</option><option>SOL/USD</option><option>XRP/USD</option><option>ADA/USD</option><option>AVAX/USD</option><option>LINK/USD</option><option>DOGE/USD</option><option>LTC/USD</option><option>BCH/USD</option></select></label>
 <label>Stop condition<select id="mode"><option value="duration">Elapsed duration</option><option value="profit">Cumulative net profit target</option></select></label>
 <label id="limitLabel">Duration (days)<input id="limit" type="number" min="1" step="1" value="14"></label>
-<label>Strategy rules<select id="strategy"><option value="ema">EMA trend (9/34)</option><option value="rsi">RSI mean-reversion (14, 30/60)</option><option value="breakout">20-bar breakout / 10-bar exit</option></select></label>
-</div><p class="secondary">The first 40% of candles warm up the selected fixed strategy; only the remaining 60% is replayed. The run stops on your duration or on realised net profits after completed trades, whichever mode you choose. If history runs out first, the test reports that rather than guessing.</p>
+<label>Strategy rules<select id="strategy"><option value="auto">Adaptive chart model (experimental)</option><option value="ema">Manual · EMA trend (9/34)</option><option value="rsi">Manual · RSI mean-reversion (14, 30/60)</option><option value="breakout">Manual · 20-bar breakout / 10-bar exit</option></select></label>
+</div><p class="secondary">Adaptive mode tests eight rule sets on the first 40% of this pair's history, including independent discovery and confirmation slices, and then freezes a qualified strategy for the remaining 60%. If none pass after costs, the model will **abstain**. Manual modes remain available for comparison. The run stops on your duration or on realised net profits after completed trades, whichever mode you choose. If history runs out first, the test reports that rather than guessing.</p>
 <button id="run" type="button" disabled>Run historical validation</button></section>
 <section id="result" aria-live="polite"><h2>Validation results</h2><p class="secondary">Results will appear here once market data has loaded and you run a test.</p></section>
-<footer>Data is an archived historical snapshot, not a live trading feed. Illustrative 0.5% fees each way; GBP outcomes use USD price-change ratios without FX, spreads, liquidity or real slippage. The 80% win-rate goal is measured, never presumed.</footer>
+<footer>Data is an archived historical snapshot, not a live trading feed. Manual tests use 0.5% modelled fees per side; adaptive mode tests Alpaca's published entry-tier taker fee of 0.25% per side and stresses it at 0.5%. GBP outcomes use USD price-change ratios without FX, spreads, liquidity or real slippage. The 80% win-rate goal is measured, never presumed.</footer>
 </main>
 <script type="module">
 import {checkSnapshot,simulateValidation} from './strategy-validation-core.mjs';
+import {validateAdaptive} from './strategy-adaptive-model.mjs';
 const $=id=>document.getElementById(id),cache=new Map();
 let selected=null,serial=0;
 const money=n=>'£'+Number(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -87,6 +88,7 @@ function display(r){
   ['Cash balance after closed trades',money(r.cashBalanceGbp)],
   ['Virtual equity (open position marked)',money(r.markedEquityGbp)],
   ['Closed trades',String(r.closedTrades)],
+  ['Modelled fee per side',(100*r.feePerSideFraction).toFixed(2)+'%'],
   ['Observed historical win rate',r.winRatePct===null?'Not enough trades':r.winRatePct+'%'],
   ['Maximum historical drawdown',r.maxDrawdownPct+'%'],
   ['Simulated elapsed duration',r.elapsedDays+' days']
@@ -109,6 +111,66 @@ function display(r){
  '. 80% observed win-rate goal: '+(r.winRatePct===null?'unmeasured':r.winRatePct>=80?'observed on this sample':'not met')+'.';
  result.append(detail);
 }
+// Local browser record is a non-independent research log, NOT model training,
+// returns evidence, validated profits, or permission to trade.
+const MEMORY_KEY='scalp.chart.training.research.v1';
+function recordResearch(model){
+ try{
+  const previous=JSON.parse(localStorage.getItem(MEMORY_KEY)||'[]');
+  const records=Array.isArray(previous)?previous.filter(x=>x&&typeof x==='object'):[];
+  const w=model.trainingWindows;
+  if(!w)return 'Not recorded: insufficient training history';
+  const identity=[model.version,model.symbol,w.discovery.start,w.confirmation.end].join('|');
+  const exists=records.some(x=>x.identity===identity);
+  if(!exists)records.push({identity,symbol:model.symbol,version:model.version,
+    discoveryStart:w.discovery.start,confirmationEnd:w.confirmation.end,
+    checkedAt:new Date().toISOString(),selectedLabel:model.selected?.label||null,
+    verdict:model.status,trainOnly:true});
+  const recent=records.slice(-100);
+  localStorage.setItem(MEMORY_KEY,JSON.stringify(recent));
+  const count=recent.filter(x=>x.symbol===model.symbol).length;
+  return count+' locally recorded research window'+(count===1?'':'s')+
+   (exists?' (same historical window not double-counted)':'');
+ }catch{return 'Local record unavailable: browser storage disabled';}
+}
+function modelExplanation(model){
+ const panel=document.createElement('section');
+ panel.style.margin='12px 0';panel.style.border='1px solid #5a7892';
+ const h=document.createElement('h2');h.textContent='Chart model · '+model.modelId;
+ panel.append(h);
+ const status=document.createElement('p');
+ status.className=model.selected?'good':'warn';
+ status.textContent=model.selected?'Training-screened strategy: '+model.selected.label:
+  'NO QUALIFYING STRATEGY — ABSTAIN. This is a valid risk-control decision, not a passing 80% strategy.';
+ panel.append(status);
+ const profile=document.createElement('p');profile.className='secondary';
+ profile.textContent=model.behavior?
+   'Training-only market behaviour: '+model.behavior.regime+
+   ' · '+model.behavior.dailyVolatilityPct+'% annualisation-free daily volatility'+
+   ' · '+model.behavior.observedPeriodMovePct+'% observed period move.':'Insufficient valid training candles';
+ panel.append(profile);
+ const why=document.createElement('p');why.className='secondary';
+ const best=model.candidates?.[0];
+ why.textContent=best?
+   'Most promising training candidate: '+best.label+
+   ' · discovery '+money(best.discovery.netGbp)+' net / '+best.discovery.closedTrades+' closes'+
+   ' · confirmation '+money(best.confirmation.netGbp)+' net / '+best.confirmation.closedTrades+' closes'+
+   ' · double-fee 0.5%/side stress '+money(best.doubledFee.netGbp)+' net'+
+   ' · Checker: '+(best.rejection.join('; ')||'internal gates passed')+'.':
+   'No candidates were evaluated.';
+ panel.append(why);
+ const audit=document.createElement('details');const summary=document.createElement('summary');
+ summary.textContent='Show method, evidence and decisions';audit.append(summary);
+ for(const step of model.explanations||[]){
+  const p=document.createElement('p');p.className='secondary';
+  p.textContent=step.agent+' — '+step.method+'. Evidence: '+step.evidence+'. Decision: '+step.decision;
+  audit.append(p);
+ }panel.append(audit);
+ const note=document.createElement('p');note.className='secondary';
+ note.textContent=recordResearch(model)+'. Browser records never retrain on historical holdout performance. No brokerage orders were made.';
+ panel.append(note);return panel;
+}
+
 $('pair').addEventListener('change',()=>loadPair());
 $('reload').addEventListener('click',()=>loadPair({force:true}));
 $('mode').addEventListener('change',()=>{
@@ -118,13 +180,36 @@ $('mode').addEventListener('change',()=>{
 });
 $('run').addEventListener('click',()=>{
  try{
-  if(!selected)throw Error('Preloaded market candles are not ready');
-  const r=simulateValidation({snapshot:selected.source,symbol:$('pair').value,
+  if(!selected)throw Error('Published Alpaca candles are not ready');
+  const input={snapshot:selected.source,symbol:$('pair').value,
    startingBalanceGbp:Number($('balance').value),mode:$('mode').value,
-   limit:Number($('limit').value),strategy:$('strategy').value});
-  display(r);
- }catch(e){$('result').replaceChildren();
-  const p=document.createElement('p');p.className='warn';p.textContent='Validation blocked: '+e.message;$('result').append(p);}
+   limit:Number($('limit').value)};
+  const choice=$('strategy').value;
+  if(choice==='auto'){
+   const result=validateAdaptive(input);
+   if(result.replay)display(result.replay);
+   else {
+    $('result').replaceChildren();
+    const title=document.createElement('h2');title.textContent='Adaptive strategy validation';
+    const info=document.createElement('p');info.className='warn';
+    info.textContent='Historical replay was withheld because no training strategy passed the risk/cost gates. Choose a manual rule to investigate, not to imply actual profitability.';
+    $('result').append(title,info);
+   }
+   if(result.checker){
+    const audit=document.createElement('p');audit.className=result.checker.reasons.length?'warn':'secondary';
+    audit.textContent=result.checker.reasons.length?
+     'CHECKER — OUTER HOLDOUT FAILED: '+result.checker.reasons.join('; ')+
+     '. Selected during training, NOT validated for real trading.':
+     'Checker: historical results are research-only, NOT verified live-forward evidence.';
+    $('result').prepend(audit);
+   }
+   $('result').prepend(modelExplanation(result.model));
+  }else display(simulateValidation({...input,strategy:choice}));
+ }catch(e){
+  $('result').replaceChildren();
+  const p=document.createElement('p');p.className='warn';
+  p.textContent='Validation blocked: '+e.message;$('result').append(p);
+ }
 });
 loadPair();
 </script></body></html>
