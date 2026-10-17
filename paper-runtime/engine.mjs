@@ -2,7 +2,7 @@
 // Intentionally pure strategy functions for deterministic test/replay.
 import { createHash } from 'node:crypto';
 
-export const VERSION = '0.1.0-rc1';
+export const VERSION = '0.1.0-rc2';
 export const AGENTS = Object.freeze([
   ['BM-01','Bot Manager'],['DC-01','Data Curator'],['RS-01','Researcher'],
   ['SD-01','Strategy Designer'],['OP-01','Optimizer'],['BT-01','Backtester'],
@@ -180,7 +180,7 @@ export class AgentWorkflow {
     // to this specific paper bot; a missing/trimmed order history fails closed.
     if(action==='sell'){
       const history=await this.broker.recentOrders();
-      const owned=history.filter(o=>/^sc010rc1-/.test(String(o.client_order_id||''))&&o.symbol===symbol)
+      const owned=history.filter(o=>String(o.client_order_id||'').startsWith('sc'+VERSION.replace(/\W/g,'').slice(0,8)+'-')&&o.symbol===symbol)
         .reduce((qty,o)=>qty+(o.side==='buy'?1:o.side==='sell'?-1:0)*Number(o.filled_qty||0),0);
       if(!Number.isFinite(owned)||owned+1e-8<held)throw Error('RM: manual or unattributed holding; no auto-liquidation');
     }
@@ -208,7 +208,7 @@ export class AgentWorkflow {
     if(this.halted)return;
     const orders=await this.broker.recentOrders();
     for(const order of orders){
-      if(!/^sc010rc1-/.test(String(order.client_order_id||'')))continue;
+      if(!String(order.client_order_id||'').startsWith('sc'+VERSION.replace(/\W/g,'').slice(0,8)+'-'))continue;
       const fingerprint=sha([order.id,order.status,order.filled_qty,order.filled_avg_price]);
       if(this.seenOrderUpdates.has(fingerprint))continue;
       this.seenOrderUpdates.add(fingerprint);
