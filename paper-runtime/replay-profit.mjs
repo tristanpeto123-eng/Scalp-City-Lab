@@ -80,6 +80,7 @@ export function replayHistorical({symbol,raw,calibrationFraction=.40,candidates=
  if(!chronological)throw Error('Completed trades have invalid order/timestamps');
  return {mode:'HISTORICAL_AS_LIVE_REPLAY_NOT_FORWARD',asset:symbol,
    virtualStartGbp:50,netProfitTargetGbp:2000,targetBalanceGbp:2050,
+   maxTrades:null,minTradesForProfitGoal:0,
    mandatoryRewardRisk:null,entryRiskFraction:.01,
    trainOnlySelection:trainingResult,evaluation:{
      bars:evaluated.length,begin:new Date(evaluated[0].t).toISOString(),
@@ -90,7 +91,7 @@ export function replayHistorical({symbol,raw,calibrationFraction=.40,candidates=
      profitTargetGbp:2000,remainingProfitGbp:report.remainingProfitGbp,
      virtualProfitGoalMet:eligible&&report.targetReached,
      profitFactor:report.profitFactor,maxDrawdownGbp:report.maxDrawdownGbp,
-     observed70pct61tradeThreshold:eligible&&report.observedThresholdMet,
+     observed80pctWinRate:eligible&&report.closedTrades>0&&report.winRatePct>=80,
      actualLiveForwardTradeCount:0,openAtEnd:Boolean(state.open),
      status:eligible?'REPLAY_EVALUATED':'CALIBRATION_REJECTED'},
    closedTradeEvidence:eligible?state.closedTrades.map(t=>({
