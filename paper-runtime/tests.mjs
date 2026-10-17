@@ -68,7 +68,7 @@ const wired=new AgentWorkflow({broker:liveMock,journal:new Journal(),paperEnable
 const delegate=wired.stage.bind(wired);wired.stage=(id,fn,d)=>id==='VL-01'?Promise.resolve({verdict:'AUDIT_PASS',holdout:{netReturnPct:3,maxDrawdownPct:1}}):delegate(id,fn,d);
 const submitted=await wired.process('SPY');assert.equal(submitted.status,'PAPER_ORDER_SUBMITTED');
 assert.equal(liveMock.submitted.length,1);assert.equal(liveMock.submitted[0].symbol,'SPY');
-assert.ok(/^sc010rc1-/.test(liveMock.submitted[0].client_order_id));checked++;
+assert.ok(/^sc010rc2-/.test(liveMock.submitted[0].client_order_id));checked++;
 const duplicate=await wired.process('SPY');assert.equal(duplicate.status,'NO_NEW_BAR');assert.equal(liveMock.submitted.length,1);checked++;
 liveMock.recentOrders=async()=>[{id:'paper-order',client_order_id:liveMock.submitted[0].client_order_id,symbol:'SPY',side:'buy',status:'filled',filled_qty:'1',filled_avg_price:'150.00',filled_at:new Date(NOW).toISOString()}];
 await wired.reconcile();assert.equal(wired.getStatus().forwardFills.length,1);checked++;
