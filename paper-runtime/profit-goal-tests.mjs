@@ -158,4 +158,20 @@ assert.throws(()=>trialReport({...initializeTrial(),balanceGbp:2050}),
  /does not reconcile to cumulative closed trades/);n++;
 assert.throws(()=>trialReport({...attributions([200,300]),balanceGbp:2050}),
  /does not reconcile to cumulative closed trades/);n++;
+// Customer virtual deposits can exceed the £50 minimum; goal is still
+// £2,000 cumulative NET profit, not a fixed final £2,050 for every depositor.
+assert.throws(()=>initializeTrial(49.99),/deposit/);n++;
+assert.throws(()=>initializeTrial(NaN),/deposit/);n++;
+const larger=initializeTrial(200);
+assert.equal(larger.balanceGbp,200);n++;
+const largerReport=trialReport(larger);
+assert.equal(largerReport.startGbp,200);n++;
+assert.equal(largerReport.targetBalanceGbp,2200);n++;
+assert.equal(largerReport.remainingProfitGbp,2000);n++;
+assert.equal(largerReport.targetReached,false);n++;
+const biggerEarnings=trialReport({...larger,closedTrades:attributions([850,850,300]).closedTrades,balanceGbp:2200});
+assert.equal(biggerEarnings.netProfitGbp,2000);n++;
+assert.equal(biggerEarnings.targetReached,true);n++;
+assert.equal(biggerEarnings.targetBalanceGbp,2200);n++;
+assert.throws(()=>trialReport({...larger,balanceGbp:2200}),/does not reconcile/);n++;
 console.log('PASS '+n+' GBP2000 flexible-exit goal, independent training/holdout, no broker orders');
