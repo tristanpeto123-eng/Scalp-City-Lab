@@ -32,7 +32,7 @@ class FileJournal {
 const sleep=t=>new Promise(resolve=>setTimeout(resolve,t));
 async function main(){
   const paperEnabled=process.env.SCALP_PAPER_ENABLED==='true';
-  if(paperEnabled&&process.env.SCALP_RELEASE_APPROVED!=='SCALP-PAPER-0.1.0-rc1')throw Error('Paper orders require approval for exact release SCALP-PAPER-0.1.0-rc1');
+  if(paperEnabled&&process.env.SCALP_RELEASE_APPROVED!=='SCALP-PAPER-0.1.0-rc2')throw Error('Paper orders require approval for exact release SCALP-PAPER-0.1.0-rc2');
   const broker=new AlpacaPaper();const journal=new FileJournal();await journal.init();
   if(paperEnabled&&unresolvedIntents.size)throw Error('Unresolved paper-order intents must be manually reconciled before re-arming: '+unresolvedIntents.size);
   const workflow=new AgentWorkflow({broker,journal,paperEnabled});
