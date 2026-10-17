@@ -1,7 +1,7 @@
 // Scalp City Lab · connected forward-paper agent pipeline. NO live-money execution path.
 // Intentionally pure strategy functions for deterministic test/replay.
 import { createHash } from 'node:crypto';
-import {optimize3R,validate3R} from './learning-3r.mjs';
+import {optimizeProfit,validateProfit} from './learning-profit.mjs';
 
 export const VERSION = '0.1.0-rc3';
 export const AGENTS = Object.freeze([
@@ -146,12 +146,12 @@ export class AgentWorkflow {
       const key=`${symbol}:${curated.latest.t}`;
       if(this.lastProcessed.has(key)){this.lastStatus='NO_NEW_BAR';return {status:'NO_NEW_BAR'};}
       const costBps=crypto?CRYPTO_COST_BPS:COST_BPS;
-      const hypothesis=await this.stage('RS-01',()=>({...investigate(curated),performanceGoal:'50 GBP virtual, 3R net, >=80% over >=61 closed forward trades'}));
+      const hypothesis=await this.stage('RS-01',()=>({...investigate(curated),performanceGoal:'GBP50 virtual start; GBP8000 net profit; no fixed RR; 80%/61 closed trades tracked separately'}));
       const choices=await this.stage('SD-01',()=>design(hypothesis));
-      const optimized=await this.stage('OP-01',()=>optimize3R(curated.bars,choices,symbol),{decision:'Train-only 3R parameter ranking; unseen holdout sealed'});
-      const frozen={id:paramsHash(symbol,optimized.candidate.params,curated.source+'|50GBP-3R-v1'),symbol,params:Object.freeze({...optimized.candidate.params}),datasetFingerprint:curated.fingerprint};
-      const bt=await this.stage('BT-01',()=>({training:optimized.candidate.result,trainingEligible:optimized.trainingEligible,trainingOptions:optimized.trainingOptions,costBps,objective:'50GBP_3R_NET',reportOnly:true}));
-      const validation=await this.stage('VL-01',()=>validate3R(curated.bars,optimized,symbol),{decision:'Independent 3R chronology and fee audit on sealed historical holdout'});
+      const optimized=await this.stage('OP-01',()=>optimizeProfit(curated.bars,choices,symbol),{decision:'Train-only GBP net profit ranking; unseen holdout sealed'});
+      const frozen={id:paramsHash(symbol,optimized.candidate.params,curated.source+'|GBP50-PROFIT8000-v1'),symbol,params:Object.freeze({...optimized.candidate.params}),datasetFingerprint:curated.fingerprint};
+      const bt=await this.stage('BT-01',()=>({training:optimized.candidate.result,trainingEligible:optimized.trainingEligible,trainingOptions:optimized.trainingOptions,costBps,objective:'GBP8000_NET_PROFIT_FLEXIBLE_EXIT',reportOnly:true}));
+      const validation=await this.stage('VL-01',()=>validateProfit(curated.bars,optimized,symbol),{decision:'Independent GBP profit/fill arithmetic on chronological historical holdout'});
       const ranking=await this.stage('SC-01',()=>score(validation));
       if(!ranking.eligible){
         await this.stage('JR-01',()=>({outcome:'REJECTED',reasons:validation.reasons}),{decision:'Rejected candidate recorded'});
