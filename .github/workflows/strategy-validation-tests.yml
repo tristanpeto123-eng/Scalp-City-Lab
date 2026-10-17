@@ -1,0 +1,27 @@
+name: Static strategy validation acceptance tests
+on:
+  push:
+    branches: [release/strategy-validation-static-v1, main]
+    paths:
+      - strategy-validation.html
+      - strategy-validation-core.mjs
+      - strategy-validation-tests.mjs
+      - strategy-validation-check.trigger
+      - validation-data/**
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate-static-page:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate modules and historical snapshot packaging
+        run: |
+          node --check strategy-validation-core.mjs
+          node --check strategy-validation-tests.mjs
+          node --test strategy-validation-tests.mjs
