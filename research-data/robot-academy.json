@@ -1,0 +1,541 @@
+{
+  "schema": "ROBOT_ACADEMY_RESEARCH_V1",
+  "source": "GITHUB_PERSISTED_HISTORICAL_TRAINING",
+  "sourcePolicy": "GBP50-PROFIT2000-v2",
+  "sourceDigest": "1f8bbf1ca694931909cd7500086e30abb64da09c75ec7edfede6b4d70d152952",
+  "latestTrainingEnd": "2026-08-15T21:45:00.000Z",
+  "caveat": "Training-only historical crypto research. Not a paper-forward win rate, net account P&L, validated predictive model, independent repeated evidence or live trading result.",
+  "verifiedForwardGrades": 0,
+  "actualBrokerOrders": 0,
+  "pupils": [
+    {
+      "symbol": "BTC/USD",
+      "source": "HISTORICAL_TRAINING_RESEARCH",
+      "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
+      "confirmedForward": false,
+      "verifiedForwardTrades": 0,
+      "experiments": 2,
+      "independentTrainingWindows": 1,
+      "distinctStrategiesTried": 12,
+      "latestTrainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainingBehavior": "MIXED_OR_RANGE",
+      "championModel": null,
+      "researchLeader": {
+        "family": "rsi_reversion",
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 32,
+          "sellAbove": 60
+        },
+        "name": "RSI 14 / 32/60",
+        "trainingClosedTrades": 20,
+        "trainingWinRatePct": 15,
+        "trainingNetGbp": -2.7312,
+        "meetsMinimumSample": true,
+        "sourceExperimentId": "bbc39fbaee5b6cacea1732626b43f26416fc0ac2e1c8ab2dea4230d47c06c433",
+        "trainedThrough": "2026-08-15T21:45:00.000Z",
+        "status": "TRAINING_LOSS_MAKING",
+        "outOfSampleVerified": false
+      },
+      "generations": [
+        {
+          "run": 1,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "bbc39fbaee5b6cacea1732626b43f26416fc0ac2e1c8ab2dea4230d47c06c433",
+          "independentWindow": true,
+          "testedConfigurations": 6,
+          "grade": 1,
+          "leaderTrainingNetGbp": -2.7312,
+          "leaderStrategy": "RSI 14 / 32/60"
+        },
+        {
+          "run": 2,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "31f56c252b0952a05d2bfe1cdc2e3aadec9b6e83ed726a06b966ab7250a01e7a",
+          "independentWindow": false,
+          "testedConfigurations": 6,
+          "grade": 1,
+          "leaderTrainingNetGbp": -2.7312,
+          "leaderStrategy": "RSI 14 / 32/60"
+        }
+      ]
+    },
+    {
+      "symbol": "ETH/USD",
+      "source": "HISTORICAL_TRAINING_RESEARCH",
+      "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
+      "confirmedForward": false,
+      "verifiedForwardTrades": 0,
+      "experiments": 2,
+      "independentTrainingWindows": 1,
+      "distinctStrategiesTried": 12,
+      "latestTrainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainingBehavior": "MIXED_OR_RANGE",
+      "championModel": null,
+      "researchLeader": {
+        "family": "channel_breakout",
+        "parameters": {
+          "family": "channel_breakout",
+          "lookback": 40,
+          "exitLookback": 20
+        },
+        "name": "Channel 40/20",
+        "trainingClosedTrades": 22,
+        "trainingWinRatePct": 9.09,
+        "trainingNetGbp": -4.0403,
+        "meetsMinimumSample": true,
+        "sourceExperimentId": "05c32a6c2da3dbf349e155049264440494e915fb6999d659747d2b52de411802",
+        "trainedThrough": "2026-08-15T21:45:00.000Z",
+        "status": "TRAINING_LOSS_MAKING",
+        "outOfSampleVerified": false
+      },
+      "generations": [
+        {
+          "run": 1,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "29b9460384495a02795e9efefddaee43e33ade7a051f1795c5558a35eb030348",
+          "independentWindow": true,
+          "testedConfigurations": 6,
+          "grade": 0,
+          "leaderTrainingNetGbp": -8.1098,
+          "leaderStrategy": "Channel 20/10"
+        },
+        {
+          "run": 2,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "05c32a6c2da3dbf349e155049264440494e915fb6999d659747d2b52de411802",
+          "independentWindow": false,
+          "testedConfigurations": 6,
+          "grade": 0,
+          "leaderTrainingNetGbp": -4.0403,
+          "leaderStrategy": "Channel 40/20"
+        }
+      ]
+    },
+    {
+      "symbol": "SOL/USD",
+      "source": "HISTORICAL_TRAINING_RESEARCH",
+      "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
+      "confirmedForward": false,
+      "verifiedForwardTrades": 0,
+      "experiments": 2,
+      "independentTrainingWindows": 1,
+      "distinctStrategiesTried": 12,
+      "latestTrainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainingBehavior": "MIXED_OR_RANGE",
+      "championModel": null,
+      "researchLeader": {
+        "family": "rsi_reversion",
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 25,
+          "sellAbove": 55
+        },
+        "name": "RSI 9 / 25/55",
+        "trainingClosedTrades": 21,
+        "trainingWinRatePct": 4.76,
+        "trainingNetGbp": -3.3549,
+        "meetsMinimumSample": true,
+        "sourceExperimentId": "1c4e7e9985306d3a6d20bf5052062971bd4658338164c23f24a3210c372fc35e",
+        "trainedThrough": "2026-08-15T21:45:00.000Z",
+        "status": "TRAINING_LOSS_MAKING",
+        "outOfSampleVerified": false
+      },
+      "generations": [
+        {
+          "run": 1,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "d51d038a71292487cf07035a6ab9886883ccf9a02202265d713349665144d74f",
+          "independentWindow": true,
+          "testedConfigurations": 6,
+          "grade": 0,
+          "leaderTrainingNetGbp": -7.645,
+          "leaderStrategy": "Channel 20/10"
+        },
+        {
+          "run": 2,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "1c4e7e9985306d3a6d20bf5052062971bd4658338164c23f24a3210c372fc35e",
+          "independentWindow": false,
+          "testedConfigurations": 6,
+          "grade": 0,
+          "leaderTrainingNetGbp": -3.3549,
+          "leaderStrategy": "RSI 9 / 25/55"
+        }
+      ]
+    },
+    {
+      "symbol": "XRP/USD",
+      "source": "HISTORICAL_TRAINING_RESEARCH",
+      "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
+      "confirmedForward": false,
+      "verifiedForwardTrades": 0,
+      "experiments": 2,
+      "independentTrainingWindows": 1,
+      "distinctStrategiesTried": 12,
+      "latestTrainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainingBehavior": "DIRECTIONAL",
+      "championModel": null,
+      "researchLeader": {
+        "family": "rsi_reversion",
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 32,
+          "sellAbove": 60
+        },
+        "name": "RSI 14 / 32/60",
+        "trainingClosedTrades": 24,
+        "trainingWinRatePct": 16.67,
+        "trainingNetGbp": -3.3635,
+        "meetsMinimumSample": true,
+        "sourceExperimentId": "7829405c2ed3ec973f6905e4ed68b28912cb43ddeaba995d5c4a90f092880537",
+        "trainedThrough": "2026-08-15T21:45:00.000Z",
+        "status": "TRAINING_LOSS_MAKING",
+        "outOfSampleVerified": false
+      },
+      "generations": [
+        {
+          "run": 1,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "7829405c2ed3ec973f6905e4ed68b28912cb43ddeaba995d5c4a90f092880537",
+          "independentWindow": true,
+          "testedConfigurations": 6,
+          "grade": 1,
+          "leaderTrainingNetGbp": -3.3635,
+          "leaderStrategy": "RSI 14 / 32/60"
+        },
+        {
+          "run": 2,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "64ff84fa8d8e8348f4bda60d16b5d00878272002fd073f3ab1e52113ff510eef",
+          "independentWindow": false,
+          "testedConfigurations": 6,
+          "grade": 1,
+          "leaderTrainingNetGbp": -3.3635,
+          "leaderStrategy": "RSI 14 / 32/60"
+        }
+      ]
+    },
+    {
+      "symbol": "ADA/USD",
+      "source": "HISTORICAL_TRAINING_RESEARCH",
+      "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
+      "confirmedForward": false,
+      "verifiedForwardTrades": 0,
+      "experiments": 2,
+      "independentTrainingWindows": 1,
+      "distinctStrategiesTried": 12,
+      "latestTrainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainingBehavior": "MIXED_OR_RANGE",
+      "championModel": null,
+      "researchLeader": {
+        "family": "rsi_reversion",
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 25,
+          "sellAbove": 55
+        },
+        "name": "RSI 9 / 25/55",
+        "trainingClosedTrades": 27,
+        "trainingWinRatePct": 25.93,
+        "trainingNetGbp": -3.3148,
+        "meetsMinimumSample": true,
+        "sourceExperimentId": "f3572714bf5b7f6650903d77680d514ed76c8a221cde604c563ca6ba6a7b8874",
+        "trainedThrough": "2026-08-15T21:45:00.000Z",
+        "status": "TRAINING_LOSS_MAKING",
+        "outOfSampleVerified": false
+      },
+      "generations": [
+        {
+          "run": 1,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "6ce607d5579cd2fe3230d9ac86bff70182a1ee1d8ad5292916aaef0ffe99607e",
+          "independentWindow": true,
+          "testedConfigurations": 6,
+          "grade": 3,
+          "leaderTrainingNetGbp": -4.1385,
+          "leaderStrategy": "RSI 14 / 32/60"
+        },
+        {
+          "run": 2,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "f3572714bf5b7f6650903d77680d514ed76c8a221cde604c563ca6ba6a7b8874",
+          "independentWindow": false,
+          "testedConfigurations": 6,
+          "grade": 2,
+          "leaderTrainingNetGbp": -3.3148,
+          "leaderStrategy": "RSI 9 / 25/55"
+        }
+      ]
+    },
+    {
+      "symbol": "AVAX/USD",
+      "source": "HISTORICAL_TRAINING_RESEARCH",
+      "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
+      "confirmedForward": false,
+      "verifiedForwardTrades": 0,
+      "experiments": 2,
+      "independentTrainingWindows": 1,
+      "distinctStrategiesTried": 12,
+      "latestTrainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainingBehavior": "MIXED_OR_RANGE",
+      "championModel": null,
+      "researchLeader": {
+        "family": "rsi_reversion",
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 28,
+          "sellAbove": 56
+        },
+        "name": "RSI 14 / 28/56",
+        "trainingClosedTrades": 20,
+        "trainingWinRatePct": 25,
+        "trainingNetGbp": -3.6783,
+        "meetsMinimumSample": true,
+        "sourceExperimentId": "16450d2b2b9ba92ff2fd6900ec8a16e0466fe6d9f5e02163e8bfa0f02b12fd69",
+        "trainedThrough": "2026-08-15T21:45:00.000Z",
+        "status": "TRAINING_LOSS_MAKING",
+        "outOfSampleVerified": false
+      },
+      "generations": [
+        {
+          "run": 1,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "16450d2b2b9ba92ff2fd6900ec8a16e0466fe6d9f5e02163e8bfa0f02b12fd69",
+          "independentWindow": true,
+          "testedConfigurations": 6,
+          "grade": 2,
+          "leaderTrainingNetGbp": -3.6783,
+          "leaderStrategy": "RSI 14 / 28/56"
+        },
+        {
+          "run": 2,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "73fe586ced93a81cfafd9c676d15772aa32e9adaa49ca920cf25fc301a7c2bff",
+          "independentWindow": false,
+          "testedConfigurations": 6,
+          "grade": 2,
+          "leaderTrainingNetGbp": -3.6783,
+          "leaderStrategy": "RSI 14 / 28/56"
+        }
+      ]
+    },
+    {
+      "symbol": "LINK/USD",
+      "source": "HISTORICAL_TRAINING_RESEARCH",
+      "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
+      "confirmedForward": false,
+      "verifiedForwardTrades": 0,
+      "experiments": 2,
+      "independentTrainingWindows": 1,
+      "distinctStrategiesTried": 12,
+      "latestTrainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainingBehavior": "DIRECTIONAL",
+      "championModel": null,
+      "researchLeader": {
+        "family": "rsi_reversion",
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 32,
+          "sellAbove": 60
+        },
+        "name": "RSI 14 / 32/60",
+        "trainingClosedTrades": 21,
+        "trainingWinRatePct": 38.1,
+        "trainingNetGbp": -2.2907,
+        "meetsMinimumSample": true,
+        "sourceExperimentId": "6764c6a702dfd4ebb8b0d3700f16b647d6ef77e30b49696efc2080ed0d304d7c",
+        "trainedThrough": "2026-08-15T21:45:00.000Z",
+        "status": "TRAINING_LOSS_MAKING",
+        "outOfSampleVerified": false
+      },
+      "generations": [
+        {
+          "run": 1,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "6764c6a702dfd4ebb8b0d3700f16b647d6ef77e30b49696efc2080ed0d304d7c",
+          "independentWindow": true,
+          "testedConfigurations": 6,
+          "grade": 3,
+          "leaderTrainingNetGbp": -2.2907,
+          "leaderStrategy": "RSI 14 / 32/60"
+        },
+        {
+          "run": 2,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "641411089ed042c598ccd93af70a7f75a170538d6238ef39f2c0596e400bccc4",
+          "independentWindow": false,
+          "testedConfigurations": 6,
+          "grade": 3,
+          "leaderTrainingNetGbp": -2.2907,
+          "leaderStrategy": "RSI 14 / 32/60"
+        }
+      ]
+    },
+    {
+      "symbol": "DOGE/USD",
+      "source": "HISTORICAL_TRAINING_RESEARCH",
+      "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
+      "confirmedForward": false,
+      "verifiedForwardTrades": 0,
+      "experiments": 2,
+      "independentTrainingWindows": 1,
+      "distinctStrategiesTried": 12,
+      "latestTrainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainingBehavior": "MIXED_OR_RANGE",
+      "championModel": null,
+      "researchLeader": {
+        "family": "rsi_reversion",
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 32,
+          "sellAbove": 60
+        },
+        "name": "RSI 14 / 32/60",
+        "trainingClosedTrades": 20,
+        "trainingWinRatePct": 30,
+        "trainingNetGbp": -2.9599,
+        "meetsMinimumSample": true,
+        "sourceExperimentId": "1a8aa74e44508fb0935ead2bd52e0a5b4f47518db1343e25ca7a0521ad8c9b47",
+        "trainedThrough": "2026-08-15T21:45:00.000Z",
+        "status": "TRAINING_LOSS_MAKING",
+        "outOfSampleVerified": false
+      },
+      "generations": [
+        {
+          "run": 1,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "1a8aa74e44508fb0935ead2bd52e0a5b4f47518db1343e25ca7a0521ad8c9b47",
+          "independentWindow": true,
+          "testedConfigurations": 6,
+          "grade": 3,
+          "leaderTrainingNetGbp": -2.9599,
+          "leaderStrategy": "RSI 14 / 32/60"
+        },
+        {
+          "run": 2,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "f0a4ab261042fe22df3b09ff6c426ff28b849f5f5eb066e9d26fac291790b2b9",
+          "independentWindow": false,
+          "testedConfigurations": 6,
+          "grade": 3,
+          "leaderTrainingNetGbp": -2.9599,
+          "leaderStrategy": "RSI 14 / 32/60"
+        }
+      ]
+    },
+    {
+      "symbol": "LTC/USD",
+      "source": "HISTORICAL_TRAINING_RESEARCH",
+      "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
+      "confirmedForward": false,
+      "verifiedForwardTrades": 0,
+      "experiments": 2,
+      "independentTrainingWindows": 1,
+      "distinctStrategiesTried": 12,
+      "latestTrainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainingBehavior": "MIXED_OR_RANGE",
+      "championModel": null,
+      "researchLeader": {
+        "family": "rsi_reversion",
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 32,
+          "sellAbove": 60
+        },
+        "name": "RSI 14 / 32/60",
+        "trainingClosedTrades": 20,
+        "trainingWinRatePct": 15,
+        "trainingNetGbp": -3.0533,
+        "meetsMinimumSample": true,
+        "sourceExperimentId": "5e099d89a66e7a96eace3c8e0d3e1e623cfcb8caa97acd339abc81093aa56d0d",
+        "trainedThrough": "2026-08-15T21:45:00.000Z",
+        "status": "TRAINING_LOSS_MAKING",
+        "outOfSampleVerified": false
+      },
+      "generations": [
+        {
+          "run": 1,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "5e099d89a66e7a96eace3c8e0d3e1e623cfcb8caa97acd339abc81093aa56d0d",
+          "independentWindow": true,
+          "testedConfigurations": 6,
+          "grade": 1,
+          "leaderTrainingNetGbp": -3.0533,
+          "leaderStrategy": "RSI 14 / 32/60"
+        },
+        {
+          "run": 2,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "cce3f87ffe098d189251c92c6ac83c76b7d4c9363ad5accea48a053e714a1e31",
+          "independentWindow": false,
+          "testedConfigurations": 6,
+          "grade": 1,
+          "leaderTrainingNetGbp": -3.0533,
+          "leaderStrategy": "RSI 14 / 32/60"
+        }
+      ]
+    },
+    {
+      "symbol": "BCH/USD",
+      "source": "HISTORICAL_TRAINING_RESEARCH",
+      "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
+      "confirmedForward": false,
+      "verifiedForwardTrades": 0,
+      "experiments": 2,
+      "independentTrainingWindows": 1,
+      "distinctStrategiesTried": 12,
+      "latestTrainingEnd": "2026-08-15T21:45:00.000Z",
+      "trainingBehavior": "MIXED_OR_RANGE",
+      "championModel": null,
+      "researchLeader": {
+        "family": "rsi_reversion",
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 32,
+          "sellAbove": 60
+        },
+        "name": "RSI 14 / 32/60",
+        "trainingClosedTrades": 25,
+        "trainingWinRatePct": 24,
+        "trainingNetGbp": -4.4285,
+        "meetsMinimumSample": true,
+        "sourceExperimentId": "bdeabc24990c8c1c56ec6357cc4d1ddf65fd7a5d995572397127793640f3a24f",
+        "trainedThrough": "2026-08-15T21:45:00.000Z",
+        "status": "TRAINING_LOSS_MAKING",
+        "outOfSampleVerified": false
+      },
+      "generations": [
+        {
+          "run": 1,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "bdeabc24990c8c1c56ec6357cc4d1ddf65fd7a5d995572397127793640f3a24f",
+          "independentWindow": true,
+          "testedConfigurations": 6,
+          "grade": 2,
+          "leaderTrainingNetGbp": -4.4285,
+          "leaderStrategy": "RSI 14 / 32/60"
+        },
+        {
+          "run": 2,
+          "trainingEnd": "2026-08-15T21:45:00.000Z",
+          "experimentId": "b4cd47902e4e47231e5a03c3028064f33867e2092fb48a39c146a327089ba2b1",
+          "independentWindow": false,
+          "testedConfigurations": 6,
+          "grade": 2,
+          "leaderTrainingNetGbp": -4.4285,
+          "leaderStrategy": "RSI 14 / 32/60"
+        }
+      ]
+    }
+  ]
+}
