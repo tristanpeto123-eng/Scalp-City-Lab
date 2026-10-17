@@ -1,0 +1,36 @@
+name: Scalp City five-market research (no orders)
+on:
+  schedule:
+    - cron: '3,18,33,48 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: scalp-city-15min-research
+  cancel-in-progress: false
+
+jobs:
+  run-no-order-agents:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    name: Read-only 12-agent research on completed market candles
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax and broker-mocked safety verification
+        run: |
+          node --check paper-runtime/engine.mjs
+          node --check paper-runtime/once.mjs
+          node paper-runtime/tests.mjs
+          node paper-runtime/crypto-tests.mjs
+      - name: Consume real feeds; run agents; no order submission possible
+        env:
+          ALPACA_PAPER_KEY: ${{ secrets.ALPACA_PAPER_KEY }}
+          ALPACA_PAPER_SECRET: ${{ secrets.ALPACA_PAPER_SECRET }}
+        run: node paper-runtime/once.mjs
