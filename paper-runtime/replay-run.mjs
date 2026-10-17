@@ -1,7 +1,7 @@
 // Read-only historical bootstrapping on Alpaca crypto data.
 // Never constructs orders; uses existing PAPER credentials for GET requests only.
 import {AlpacaPaper} from './alpaca-paper.mjs';
-import {loadHistoricalCrypto,replayHistorical} from './replay-3r.mjs';
+import {loadHistoricalCrypto,replayHistorical} from './replay-profit.mjs';
 import {writeFile,mkdir} from 'node:fs/promises';
 import path from 'node:path';
 const symbols=['BTC/USD','ETH/USD'];
@@ -10,7 +10,8 @@ async function main(){
   throw Error('Paper-only read keys required as private environment secrets');
  const broker=new AlpacaPaper(),days=Number(process.env.SCALP_REPLAY_DAYS||180);
  const summary={mode:'HISTORICAL_AS_LIVE_NOT_FORWARD',tradingEnabled:false,
-   initialCapital:'GBP 50 VIRTUAL',rewardRisk:'3 NET modeled',minimumTrades:61,targetWinRatePct:80,
+   initialCapital:'GBP 50 VIRTUAL',netProfitTargetGbp:8000,targetBalanceGbp:8050,
+   fixedRewardRisk:null,secondaryMinimumTrades:61,secondaryTargetWinRatePct:80,
    checkedAt:new Date().toISOString(),results:[]};
  for(const symbol of symbols){
   const source=await loadHistoricalCrypto({broker,symbol,days});
