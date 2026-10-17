@@ -5,7 +5,7 @@
 import {measureGoal} from './performance.mjs';
 
 export const TRIAL_RULES=Object.freeze({
- version:'GBP50-PROFIT2000-v1',startingBalanceGbp:50,targetNetProfitGbp:2000,
+ version:'GBP50-PROFIT2000-v2',startingBalanceGbp:50,targetNetProfitGbp:2000,
  targetBalanceGbp:2050,riskFraction:0.01,stopFraction:0.02,
  cryptoFeeFractionPerSide:0.005,equityFeeFractionPerSide:0.001,
  maxAllocationFraction:0.50,minimumVirtualNotionalGbp:1
@@ -111,7 +111,7 @@ export function trialReport(state){
   targetReached:profit>=TRIAL_RULES.targetNetProfitGbp,closedTrades:metrics.closedTrades,
   ...Object.fromEntries(Object.entries(metrics).filter(([k])=>k!=='closedTrades')),
   expectancyGbp:expectancyUsd,netGbp:netUsd,maxDrawdownGbp:maxDrawdownUsd,
-  winRateSampleTarget:61,winRateGoalPct:70,mandatoryRewardRisk:null,
+  winRateSampleTarget:null,winRateGoalPct:80,tradeLimit:null,mandatoryRewardRisk:null,
   open:state.open,pending:state.pending,eligibleForRealMoney:false,
   brokerTradesSubmitted:0,disclaimer:'GBP virtual historical/research P&L; models fees, omits actual FX/slippage, never broker-settled or guaranteed.'};
 }
