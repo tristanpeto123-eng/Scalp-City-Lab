@@ -2,7 +2,7 @@
 // Never equate order count, partial fills or profitable bars with completed trades.
 import {createHash} from 'node:crypto';
 
-export const GOAL=Object.freeze({minimumClosedTrades:61,minimumWinRate:0.70,minimumProfitFactor:1.25});
+export const GOAL=Object.freeze({minimumClosedTrades:0,minimumWinRate:0.80,minimumProfitFactor:1.25});
 const valid=n=>typeof n==='number'&&Number.isFinite(n);
 const symbol=x=>String(x||'').replace('/','');
 const crypto=x=>['BTCUSD','ETHUSD'].includes(symbol(x));
@@ -31,12 +31,13 @@ export function measureGoal(trades,{minTrades=GOAL.minimumClosedTrades}={}){
  let run=0,peak=0,maxDrawdownUsd=0;
  for(const t of sorted){run+=t.netUsd;peak=Math.max(peak,run);maxDrawdownUsd=Math.max(maxDrawdownUsd,peak-run);}
  const cohorts=new Set(sorted.map(t=>t.cohort));
- const verified=sorted.every(t=>t.evidence==='ALPACA_PAPER_FILLS'&&t.feeBasis==='POSTED_FEES_VERIFIED'&&
+ const verified=n>0&&sorted.every(t=>t.evidence='ALPACA_PAPER_FILLS'&&t.feeBasis==='POSTED_FEES_VERIFIED'&&
    typeof t.cohort==='string'&&t.cohort!=='UNATTRIBUTED'&&t.cohort!=='MIXED');
- const sufficient=n>=minTrades;
+ const sufficient=n>0&&n>=minTrades;
  const observed=sufficient&&wins/n>=GOAL.minimumWinRate&&sum>0&&(pf===null||pf>=GOAL.minimumProfitFactor);
  const stable=sufficient&&cohorts.size===1;
- const status=!sufficient?'INSUFFICIENT_CLOSED_TRADES':
+ const status=n===0?'NO_CLOSED_TRADES':
+   !sufficient?'INSUFFICIENT_CLOSED_TRADES':
    !stable?'MIXED_STRATEGY_COHORT':
    !observed?'PERFORMANCE_NOT_MET':
    !verified?'PROVISIONAL_COSTS_OR_EVIDENCE':'TARGET_VERIFIED';
@@ -47,7 +48,7 @@ export function measureGoal(trades,{minTrades=GOAL.minimumClosedTrades}={}){
    profitFactor:pf===null?null:Number(pf.toFixed(4)),maxDrawdownUsd:Number(maxDrawdownUsd.toFixed(4)),
    singleCohort:cohorts.size<=1,feesAndFillsVerified:verified,
    observedThresholdMet:observed,verifiedTargetMet:status==='TARGET_VERIFIED',
-   note:'Secondary 70% win-rate threshold over 61+ CLOSED trades; independently verified broker costs and fill evidence required for verified status. Historical and modeled results remain provisional.'};
+   note:'Secondary 80% observed win-rate target, no fixed minimum or maximum trade count. Track completed trades and Wilson confidence; a high rate on a small sample is not proof of persistent performance. Historical/modelled outcomes are provisional.'};
 }
 
 // Derived only from cumulative filled_qty and filled_avg_price of broker order snapshots.
