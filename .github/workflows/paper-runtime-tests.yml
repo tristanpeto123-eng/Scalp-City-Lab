@@ -1,0 +1,31 @@
+name: Scalp paper runtime tests
+
+on:
+  pull_request:
+    paths:
+      - 'paper-runtime/**'
+      - 'agent-city-live.js'
+      - 'agent-city.html'
+      - '.github/workflows/paper-runtime-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-paper-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Assert runtime syntax
+        run: |
+          node --check paper-runtime/engine.mjs
+          node --check paper-runtime/alpaca-paper.mjs
+          node --check paper-runtime/service.mjs
+          node --check agent-city-live.js
+      - name: Execute broker-mocked safety tests
+        run: node paper-runtime/tests.mjs
