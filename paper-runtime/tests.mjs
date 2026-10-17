@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {simulate,validateHoldoutIndependently,curateBars,validate,AgentWorkflow,AGENTS,VERSION} from './engine.mjs';
+import {simulate,validateHoldoutIndependently,curateBars,validate,AgentWorkflow,AGENTS,VERSION,inOpeningGrace} from './engine.mjs';
 import {AlpacaPaper} from './alpaca-paper.mjs';
 
 const NOW=Date.parse('2026-10-16T19:00:00Z');
@@ -23,6 +23,10 @@ assert.throws(()=>curateBars(raw.slice(0,80),NOW),/require/);checked++;
 assert.throws(()=>curateBars([...raw,raw.at(-1)],NOW),/duplicate/);checked++;
 assert.throws(()=>curateBars(makeBars(200,NOW-2*3600_000),NOW),/stale/);checked++;
 assert.throws(()=>curateBars([...raw.slice(0,199),{...raw.at(-1),h:0}],NOW),/invalid/);checked++;
+assert.equal(inOpeningGrace(Date.parse('2026-10-19T13:32:00Z')),true);checked++;
+assert.equal(inOpeningGrace(Date.parse('2026-11-02T14:32:00Z')),true);checked++;
+assert.equal(inOpeningGrace(Date.parse('2026-10-19T13:47:00Z')),false);checked++;
+
 // Force validation rejection: no trades (a consistently flat set).
 const flatRaw=makeBars().map((b,i)=>({...b,o:100,h:100.1,l:99.9,c:100}));
 const fb=curateBars(flatRaw,NOW).bars;
@@ -71,4 +75,17 @@ await wired.reconcile();assert.equal(wired.getStatus().forwardFills.length,1);ch
 const closed=brokerFactory(raw);closed.clock=async()=>({is_open:false});
 const idle=new AgentWorkflow({broker:closed,journal:new Journal(),paperEnabled:true,now:()=>NOW});
 assert.equal((await idle.process('SPY')).status,'MARKET_CLOSED');assert.equal(closed.submitted.length,0);checked++;
+const monday=Date.parse('2026-10-19T13:32:00Z');
+const opening=new AgentWorkflow({broker:brokerFactory(raw),journal:new Journal(),paperEnabled:true,now:()=>monday});
+assert.equal((await opening.process('SPY')).status,'WAITING_FOR_OPENING_CANDLE');
+assert.equal(opening.halted,false);checked++;
+const pending=brokerFactory(raw);
+pending.openOrders=async()=>[{symbol:'QQQ',side:'buy'},{symbol:'IWM',side:'buy'}];
+const pendingFlow=new AgentWorkflow({broker:pending,journal:new Journal(),paperEnabled:true,now:()=>NOW});
+await assert.rejects(pendingFlow.evaluateRisk({symbol:'SPY',signal:1,curated:curateBars(raw,NOW),clock:{is_open:true}}),/maximum two/);checked++;
+const manual=brokerFactory(raw);
+manual.positions=async()=>[{symbol:'SPY',qty:'2'}];
+const manualFlow=new AgentWorkflow({broker:manual,journal:new Journal(),paperEnabled:true,now:()=>NOW});
+await assert.rejects(manualFlow.evaluateRisk({symbol:'SPY',signal:0,curated:curateBars(raw,NOW),clock:{is_open:true}}),/manual or unattributed/);checked++;
+
 console.log(`PASS ${checked} connected-agent checks · ${VERSION} · no real broker contacted`);
