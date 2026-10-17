@@ -1,0 +1,39 @@
+# Manual, read-only credential and IEX market-data preflight.
+# Available from Actions after this reviewed workflow reaches the default branch.
+# Never places or cancels orders; it calls preflight.mjs only.
+name: Alpaca paper account connection (read only)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect-paper-connection:
+    name: Verify paper account and IEX bars (no orders)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check paper secrets configured
+        env:
+          PAPER_KEY: ${{ secrets.ALPACA_PAPER_KEY }}
+          PAPER_SECRET: ${{ secrets.ALPACA_PAPER_SECRET }}
+        run: |
+          if [ -z "$PAPER_KEY" ] || [ -z "$PAPER_SECRET" ]; then
+            echo "::error::Add ALPACA_PAPER_KEY and ALPACA_PAPER_SECRET as repository Actions secrets. Never paste them into a chat or commit."
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate read-only preflight script
+        run: node --check paper-runtime/preflight.mjs
+      - name: Verify Alpaca paper account and IEX market bars
+        env:
+          ALPACA_PAPER_KEY: ${{ secrets.ALPACA_PAPER_KEY }}
+          ALPACA_PAPER_SECRET: ${{ secrets.ALPACA_PAPER_SECRET }}
+        run: node paper-runtime/preflight.mjs
