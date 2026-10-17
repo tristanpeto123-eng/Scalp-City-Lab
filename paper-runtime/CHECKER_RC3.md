@@ -1,6 +1,6 @@
 # Checker release candidate — SCALP-PAPER-0.1.0-rc3
 
-**Owner approval for this exact revision:** NOT YET GIVEN
+**Owner approved implementation and GitHub push:** 17 October 2026. **Exact release/merge approval:** NOT YET GIVEN
 **Merge and production deployment:** NOT AUTHORISED
 **Real-money path:** NONE
 **Paper orders:** DEFAULT OFF
@@ -31,7 +31,7 @@
 
 ### P0 — hard release blockers
 
-1. **Objective misalignment:** `engine.mjs` optimises one of three static EMA parameter pairs based on conventional long/flat simulated net returns; `trial-50gbp.mjs` independently measures 3:1 stop/take-profit outcomes. No strategy candidate is currently selected by walk-forward, out-of-sample **3R-adjusted win rate, expectancy, profit factor or 61-trade evidence**. Implement this selection and separate training/holdout before calling it a learner.
+1. **3R optimization now implemented; evaluation still limited:** `learning-3r.mjs` selects three static EMA candidates by 3:1 NET risk-reward outcomes, win rate, expectancy, profit factor and drawdown on an initial chronological training window. The chosen candidate is tested on a 25% later holdout, independently audited for arithmetic and stressed at 2x model costs. **Missing:** frozen unchanging candidate/evaluation epochs, true external 61-trade forward performance and feed-back of observed closed trades into future strategy selection. Do not call this a self-training learning model yet.
 2. **No adaptive feedback loop:** the operational service does not feed actual verified closed-trade outcomes to Researcher / Optimizer; no independent evaluation-epoch promotion or model version locking exists. It can collect virtual results only when running, not systematically learn from them.
 3. **No persistent deployment:** GitHub scheduled Actions are stateless and cannot preserve the £50 trade journal. Provision and verify a private persistent machine with durable storage, restart recovery and live telemetry; demonstrate a nonzero forward sample without retroactive entries.
 4. **No protective broker exit system:** native crypto bracket/OCO unsupported; 3R stops and targets are virtual only. Keep `SCALP_PAPER_ENABLED=true` hard-blocked until independent partial fill, downtime, disconnection, gap, commission and kill-switch tests pass.
@@ -40,7 +40,7 @@
 
 ### Acceptance sequence
 
-- **P1:** independently test and rank candidate strategies using 3:1 stop/target fills *after costs* on truly held-out walk-forward folds; log rejected candidates and avoid tuning on evaluation results.
+- **P1 (initial stage implemented):** independently rank 3R after-cost historical candidates on 75% training and evaluate the selected candidate on a later 25% holdout. Follow-up: multiple walk-forward folds with truly frozen evaluation epochs, independent leakage tests and rejected-candidate logs.
 - **P2:** add separate training and frozen evaluation cohorts; retain candidate fingerprints, no mixing of parameter revisions when measuring ≥61 completed trades.
 - **P3:** test durable journal recovery with network failures, duplicates, state corruption and backfill gaps; create a private always-on forward research runtime with public status disabled.
 - **P4:** accumulate ≥61 closed, chronological, non-retrospective forward £50 virtual trades and evaluate ≥80% net wins, positive net return, profit factor, drawdown and confidence interval. A 61-trade observed 80% does **not** prove true win probability ≥80%.
@@ -54,6 +54,7 @@
 - [x] Both final post-cleanup GitHub CI workflows passed for commit `9aaef75cfded56efeb78015b9966c70f3ae9ff84` (2026-10-17): Scalp paper runtime tests and Bootstrap & Checks.
 - [ ] Verified crypto broker partial fills, fractional quantity precision, dust and true tariff/market impact.
 - [x] Virtual £50 risk/3R mathematics, 61-trade scoring, stale-entry expiry and stop-first replay tested: 43 automated virtual-trial checks passed before this audit, plus two additional strategy-cohort tests now under CI. Previously 98 verified checks; post-audit total should reach 100 if final CI succeeds. GitHub Actions isolated-paper-tests successful on 17 October 2026, run 39065383406.
+- [x] **134 automated checks** including 34 new 3R-specific training, holdout isolation and independent P&L tests passed in GitHub Actions [run 39067133018](https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39067133018). Candidate ranking now uses the £50 net-3R trial rules.
 - [ ] Full persistent journal restart and actual forward trade collection tested with persistent host.
 - [ ] Verified restart recovery, lost/retried broker API response, journal integrity under real runtime conditions.
 - [ ] Verified deployed HTTPS read-only telemetry, broker permissions and user kill switch.
