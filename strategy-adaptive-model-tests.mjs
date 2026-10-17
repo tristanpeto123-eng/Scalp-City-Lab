@@ -46,6 +46,10 @@ test('all ten crypto pairs support independently frozen training-only strategy r
    candidates:model.candidates.length,
    bestConfirmationNet:model.candidates[0]?.confirmation.netGbp,
    bestStressNet:model.candidates[0]?.doubledFee.netGbp,
+   holdoutClosedTrades:result.replay?.closedTrades??null,
+   holdoutWinRatePct:result.replay?.winRatePct??null,
+   holdoutNetGbp:result.replay?.realizedNetProfitGbp??null,
+   holdoutDrawdownPct:result.replay?.maxDrawdownPct??null,
    actualForwardTrades:0
   }));
  }
