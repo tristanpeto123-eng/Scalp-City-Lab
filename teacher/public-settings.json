@@ -1,0 +1,7 @@
+{
+  "schema": "ROBOT_ACADEMY_PUBLIC_SETTINGS_V1",
+  "status": "NOT_PROVISIONED",
+  "feedUrl": null,
+  "signingPublicKeyBase64": null,
+  "note": "Configured only after authenticated teacher deployment, owner approval and pinned Ed25519 public key. Unsigned data is never a verified grade."
+}
