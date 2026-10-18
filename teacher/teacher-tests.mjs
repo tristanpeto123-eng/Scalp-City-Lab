@@ -49,7 +49,7 @@ test('grades need 30 unique closed paper round trips, settled fees and GBP FX',(
   assert.equal(pass.championModel,null);
   assert.equal(evaluateGrade({admission,brokerEvidence:make(30),feeEvidence:{settled:false},fxEvidence:fx(30)}).grade,null);
   assert.equal(evaluateGrade({admission,brokerEvidence:make(30),feeEvidence:fees(30),fxEvidence:{verified:false}}).grade,null);
-  const losing=make(30);losing.closedTrades[0].sellUsd=1;
+  const losing=make(30);for(let i=0;i<3;i++)losing.closedTrades[i].sellUsd=1;
   const result=evaluateGrade({admission,brokerEvidence:losing,feeEvidence:fees(30),fxEvidence:fx(30)});
   assert.equal(result.grade,9);assert.equal(result.qualified,false);assert.ok(result.netProfitGbp<0);
   const duplicate=make(30);duplicate.closedTrades[1].closeId='close-0';
