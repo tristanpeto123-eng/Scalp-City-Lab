@@ -122,7 +122,11 @@ test('full adapter -> grade -> signature -> verify pathway stays ungraded below 
   account:async()=>({status:'ACTIVE',id:'paper-007'}),
   recentOrders:async()=>orders,activities:async()=>activities,
   positions:async()=>[],openOrders:async()=>[]};
- const journal={unresolved:()=>[],orderIds:async()=>new Set([bid,sid])};
+ const journal={unresolved:()=>[],orderIds:async()=>new Set([bid,sid]),
+  virtualEvidence:async()=>[
+   {sequence:1,at:'2026-10-09T01:00:00Z',equity:50},
+   {sequence:2,at:'2026-10-15T00:00:00Z',equity:50.1}
+  ]};
  const fx={on:async()=>({source:'FRANKFURTER_ECB_REFERENCE',date:'2026-10-11',gbpPerUsd:.78})};
  const grade=await gradePupil({record:signed,signingSecret:secret,broker,journal,fx,now});
  assert.equal(grade.status,'FORWARD_TESTING');
@@ -168,7 +172,11 @@ test('full mocked 30-trade cohort earns signed grade only with reconciled real-s
  const broker={account:async()=>({status:'ACTIVE',id:'paper-007'}),
    recentOrders:async()=>orders,activities:async()=>activities,
    positions:async()=>[],openOrders:async()=>[]};
- const journal={unresolved:()=>[],orderIds:async()=>journalIds};
+ const journal={unresolved:()=>[],orderIds:async()=>journalIds,
+  virtualEvidence:async()=>Array.from({length:75},(_,i)=>({
+    sequence:i+1,at:new Date(Date.parse('2026-10-09T00:00:00Z')+i*2*3600_000).toISOString(),
+    equity:50+i*.05
+  }))};
  const fx={on:async()=>({source:'FRANKFURTER_ECB_REFERENCE',
    date:'2026-10-14',gbpPerUsd:.78})};
  const pair=generateKeyPairSync('ed25519');
