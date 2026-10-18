@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#081524"><title>Scalp City · Teacher's Office</title>
+<style>
+:root{color-scheme:dark;font:14px system-ui,-apple-system,sans-serif;--bg:#081525;--panel:#11263b;--line:#315269;--muted:#a4c4d3;--mint:#82e5cb;--gold:#f5d494;color:#effbff;background:var(--bg)}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 70% -10%,#1d4760,transparent 52%),linear-gradient(#0a1b2c,#081525)}
+button,a{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+a{color:#9be8f0}h1{font-size:clamp(29px,4vw,52px);line-height:1.06;letter-spacing:-.05em;margin:10px 0}h1 span{color:var(--mint)}
+h2{font-size:18px;margin:0 0 12px}p{line-height:1.55;color:#bdd3df}small,.muted{color:var(--muted)}.shell{max-width:1260px;margin:auto;padding:20px clamp(13px,3vw,40px) 50px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:16px;border-bottom:1px solid #365268;flex-wrap:wrap}
+.brand{font-size:11px;font-weight:900;letter-spacing:.2em;color:#8bd4cb}
+.nav{display:flex;gap:12px;flex-wrap:wrap}.nav a{font-size:12px;text-decoration:none;border:1px solid #47718b;border-radius:10px;padding:10px}
+.hero{display:flex;justify-content:space-between;gap:24px;margin:24px 0 18px;align-items:flex-end;flex-wrap:wrap}.hero p{max-width:630px;margin:8px 0}.note{border-left:3px solid #dcbb83;padding:9px 14px;max-width:350px;background:#61503724;font-size:12px;color:#f5dfbb;line-height:1.6}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:20px 0}.stat,.panel{border:1px solid var(--line);border-radius:16px;background:linear-gradient(160deg,#17314a,#102337);padding:16px}
+.stat span{color:var(--muted);font-size:11px;display:block}.stat b{font-size:27px;letter-spacing:-.045em;display:block;margin:3px 0}.stat small{font-size:10px}
+.tabs{display:flex;gap:8px;margin:12px 0 18px;flex-wrap:wrap}.tabs button,.btn{padding:10px 15px;border:1px solid #447089;background:#24415a;color:#e9faff;border-radius:11px;font-size:12px;font-weight:800}
+.tabs button.active{background:#5c9a9d;color:#051c2c;border-color:#84d7ca}.btn.gold{background:#f1cf8c;color:#183249;border-color:#f1cf8c}.btn:disabled{opacity:.45;cursor:not-allowed}
+.view[hidden]{display:none}.grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(290px,1fr);gap:15px}
+.room{border-radius:15px;overflow:hidden;position:relative;height:252px;border:1px solid #42657a;background:repeating-linear-gradient(90deg,#1b3b54 0 85px,#1d405a 86px,#1d405a 87px)}
+.windows{display:flex;gap:15px;margin:15px 24px}.window{height:72px;flex:1;border:5px solid #456c7d;border-radius:4px;background:linear-gradient(145deg,#6b97b2,#afc4c8 50%,#2c4b69 51%)}
+.board{position:absolute;top:100px;left:23%;right:16%;height:82px;border:6px solid #9db6ab;border-radius:6px;background:#ecf0de;color:#2a4958;display:grid;place-items:center;text-align:center;padding:8px;box-shadow:0 8px #0a2439}.board strong{font-size:17px;display:block}.board small{color:#57717b}
+.floor{position:absolute;bottom:0;left:0;right:0;height:55px;background:repeating-linear-gradient(100deg,#2a465d 0 110px,#355c75 113px)}
+.bot{position:absolute;bottom:30px;left:11%;width:60px;height:82px;z-index:2}.bot .head{height:47px;border:4px solid #ffe7a7;border-radius:13px;background:#cdb475;text-align:center;font-size:26px;color:#263e49;line-height:40px}.bot .body{height:25px;width:37px;margin:auto;background:#a8c5d3;border:3px solid #e5e9e5;border-radius:8px}
+.desk{position:absolute;left:8%;right:8%;bottom:17px;height:37px;background:linear-gradient(#c38b5d,#80563b);border:3px solid #deaa7a;border-radius:5px;z-index:3;color:#fff0c9;font-size:11px;letter-spacing:.1em;padding:8px}
+.stage{display:flex;flex-direction:column;gap:8px}.stageItem{display:flex;gap:10px;background:#0f283d;border:1px solid #345269;padding:12px;border-radius:10px}.stageItem .num{width:25px;height:25px;flex:none;border:1px solid #7595a6;border-radius:7px;text-align:center;line-height:23px;color:var(--mint);font-weight:bold}.stageItem strong{font-size:12px}.stageItem p{font-size:11px;margin:3px 0 0}
+.row{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap}.bad{color:#ffaca2}.good{color:#83e5c7}.warning{margin-top:12px;border-left:3px solid #e0ba80;background:#89683d24;padding:11px 12px;font-size:12px;color:#ecd5ae;line-height:1.5}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:9px}.tile{padding:11px;border-radius:10px;background:#0f283e;border:1px solid #35566e}.tile span{display:block;font-size:10px;color:#a9c4d2}.tile b{font-size:21px;display:block;margin-top:5px}
+.roster{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.pupil{background:#143047;border:1px solid #3a6079;border-radius:10px;color:#e9fbff;text-align:left;padding:10px 12px;display:flex;gap:9px;align-items:center}.pupil.sel{background:#275668;border-color:#8cddcc}.dot{width:12px;height:12px;background:var(--c);border-radius:4px;flex:none}.pupil b{font-size:12px}.pupil small{display:block;font-size:10px}
+.table{width:100%;border-collapse:collapse;font-size:12px}.table td,.table th{text-align:left;padding:10px 8px;border-bottom:1px solid #33536b}.table th{font-size:10px;letter-spacing:.09em;color:#aac1ce}.table tbody tr:hover{background:#1b3b54}.wraptable{overflow-x:auto}
+.gauge{height:11px;background:#1b3a50;border-radius:15px;overflow:hidden;margin:16px 0 6px}.gauge span{display:block;height:100%;width:0;background:linear-gradient(90deg,#64d7c8,#ebce87);transition:width .1s}
+.noticebox{border:1px solid #4c657d;border-radius:11px;padding:12px;margin:12px 0;font-size:12px;background:#112a40;color:#cfdfeb;line-height:1.6}
+.dangerlink{font-size:11px}.foot{margin-top:24px;padding-top:15px;border-top:1px solid #355069;color:#98b5c7;font-size:11px}
+@media(max-width:870px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:510px){.roster{grid-template-columns:1fr 1fr}.stats{gap:7px}.panel{padding:12px}.room{height:215px}.board{left:25%;right:7%}.desk{left:5%;right:5%}}
+</style></head>
+<body><div class="shell">
+<header><div><div class="brand">SCALP CITY / ROBOT ACADEMY</div><h1>TEACHER’S <span>OFFICE</span></h1></div>
+<nav class="nav"><a href="./robot-academy.html">← Academy</a><a href="./agent-city.html">3D City</a><a href="./trading-floor.html">Trading Floor ↗</a></nav></header>
+<div class="hero"><div><div class="brand">INDEPENDENT EXAMINER · TEACHER v0.2</div><p>Frozen models enter a forward-paper exam only after independent admission. Every result must reconcile with real paper broker records before a verified grade can appear.</p></div><div class="note"><b>SAFE MODE</b> — This screen is read-only. Mock examinations are clearly separated and cannot send orders, admit a pupil or change a verified result.</div></div>
+<div class="stats"><div class="stat"><span>CRYPTO PUPILS</span><b id="total">10</b><small>Connected to Academy research</small></div><div class="stat"><span>RESEARCH ELIGIBLE</span><b id="eligible">—</b><small>Initial historical screening only</small></div><div class="stat"><span>VERIFIED FORWARD GRADES</span><b id="verified">0</b><small>Cryptographic grade feed</small></div><div class="stat"><span>TEACHER SERVICE</span><b id="connected" style="font-size:16px">CHECKING</b><small id="feedExplain">Awaiting results configuration</small></div></div>
+<div class="tabs" role="tablist" aria-label="Teacher sections"><button class="active" data-tab="office" role="tab" aria-selected="true">Teacher’s Office</button><button data-tab="pupils" role="tab" aria-selected="false">Pupil Reports</button><button data-tab="evidence" role="tab" aria-selected="false">Evidence Ledger</button></div>
+<section class="view" id="office"><div class="grid"><div class="panel"><div class="room"><div class="windows"><div class="window"></div><div class="window"></div><div class="window"></div><div class="window"></div></div><div class="board"><div><strong>EXAMINATION GATE</strong><small id="boardStatus">Checking Academy research</small></div></div><div class="floor"></div><div class="bot"><div class="head">• •</div><div class="body"></div></div><div class="desk">TEACHER · CRYPTO PAPER</div></div><h2 style="margin-top:20px">Exam admission pipeline</h2><div class="stage">
+<div class="stageItem"><span class="num">1</span><div><strong>Independent research screen</strong><p>Training net positive and at least 30 research closes; independent holdout must also pass.</p></div></div>
+<div class="stageItem"><span class="num">2</span><div><strong>Model locked and signed</strong><p>Teacher verifies immutable model fingerprint and auditor signature.</p></div></div>
+<div class="stageItem"><span class="num">3</span><div><strong>Fresh paper forward examination</strong><p>Broker PAPER account only. Risk caps and persisted intent journal control all orders.</p></div></div>
+<div class="stageItem"><span class="num">4</span><div><strong>Reconcile, audit and publish</strong><p>Filled and partially filled orders, posted crypto fees, dated GBP FX, independent equity and signed result.</p></div></div></div>
+</div><div class="panel"><div class="row"><h2>Teacher’s clipboard</h2><small>READ ONLY</small></div><div class="mini"><div class="tile"><span>Paper allocation</span><b>$50</b></div><div class="tile"><span>Maximum entry</span><b>$25</b></div><div class="tile"><span>Required closed trades</span><b>30</b></div><div class="tile"><span>Maximum drawdown</span><b>10%</b></div></div>
+<div id="liveNotice" class="warning">Connecting to Academy research and signed paper results. No orders are enabled in this interface.</div>
+<div class="row" style="margin-top:16px"><button class="btn" id="reload">↻ Reload actual records</button><a href="./robot-academy.html" class="dangerlink">Open Academy grades ↗</a></div>
+<h2 style="margin-top:23px">Isolated mock examination</h2><p style="font-size:12px">A presentation-only rehearsal of the grade process. The 30 fills and grade are fictional; they never appear in the real Academy.</p>
+<div class="row"><button class="btn gold" id="runMock">▶ Run mock examination</button><button class="btn" id="resetMock">Reset demo</button></div>
+<div class="gauge"><span id="progress"></span></div><small id="progressLabel">0 / 30 fictional closes</small>
+<div id="mockResult" class="noticebox" hidden><strong>FICTIONAL EXAM: GRADE 8 (80% WIN RATE)</strong><p style="font-size:12px;margin:5px 0">24 wins from 30 invented round trips. No Alpaca account, historical model or production grade was changed.</p></div>
+</div></div></section>
+<section class="view" id="pupils" hidden><div class="grid"><div class="panel"><div class="row"><h2>Research pupils · 10 charts</h2><small id="researchStamp">Loading latest repository snapshot</small></div><div class="roster" id="roster"></div><div class="warning">Historical win-rate classroom placement is provisional. A model showing a loss cannot qualify for the actual Teacher paper examination.</div></div>
+<div class="panel"><h2 id="pupilName">Select a pupil</h2><p id="pupilModel" class="muted">Research profile</p><div id="metrics" class="mini"></div><div id="pupilGate" class="warning"></div><div class="noticebox"><strong>Paper examination</strong><p id="forwardStatus" style="margin-bottom:0">No signed record available.</p></div></div></div></section>
+<section class="view" id="evidence" hidden><div class="grid"><div class="panel"><div class="row"><h2>Independent evidence ledger</h2><small id="lastCheck">No signed report commissioned</small></div><div class="wraptable"><table class="table"><thead><tr><th>CONTROL</th><th>PROVENANCE</th><th>STATUS</th></tr></thead><tbody id="ledger"></tbody></table></div><button class="btn" style="margin-top:14px" id="refreshLedger">Re-check signed report</button></div><div class="panel"><h2>Graduation policy</h2><p>Confirmed grade: 30 or more separately closed forward-paper round trips, with complete broker fill, crypto fee, FX and equity evidence.</p><div class="noticebox"><strong>Classroom grade ≠ financial qualification</strong><p style="margin:5px 0">The grade records observed win rate in 10% increments. Qualification also needs positive net result and drawdown at or below 10%. Real-money promotion requires separate owner approval.</p></div><a href="https://github.com/tristanpeto123-eng/Scalp-City-Lab/pull/15" target="_blank" rel="noopener">Read Teacher v0.2 implementation →</a></div></div></section>
+<footer class="foot">Research statistics are fetched from <code>research-data/robot-academy.json</code>. Forward-paper grades come only from a freshly signed independent verifier. No browser control can place a broker order or approve promotion.</footer></div>
+<script>
+'use strict';
+const PAIRS=['BTC/USD','ETH/USD','SOL/USD','XRP/USD','ADA/USD','AVAX/USD','LINK/USD','DOGE/USD','LTC/USD','BCH/USD'];
+const COLORS=['#5dded6','#c4a9ff','#f6c777','#92c7ff','#ec95b0','#c4ef9d','#f3ae82','#e3d78f','#abc4f4','#ddafef'];
+const $=s=>document.getElementById(s);
+let research=null,records=new Map(),selected='BTC/USD',examTimer=null,examCount=0,teacherInfo='Not commissioned',feedState='NOT_CONFIGURED';
+function text(id,value){$(id).textContent=value}
+function cash(n){return Number.isFinite(n)?(n<0?'−':'')+'£'+Math.abs(n).toFixed(2):'—'}
+function researchGrade(p){const w=p?.researchLeader?.trainingWinRatePct;return Number.isFinite(w)?Math.min(10,Math.floor((w+1e-8)/10)):null}
+function actualResearch(p){return p?.researchLeader&&p.researchLeader.trainingNetGbp>0&&p.researchLeader.trainingClosedTrades>=30}
+function checkResearch(data){
+ if(!data||data.schema!=='ROBOT_ACADEMY_RESEARCH_V1'||data.source!=='GITHUB_PERSISTED_HISTORICAL_TRAINING'||data.sourcePolicy!=='GBP50-PROFIT2000-v2'||
+ data.verifiedForwardGrades!==0||data.actualBrokerOrders!==0||
+ !/^[a-f0-9]{64}$/.test(data.sourceDigest||'')||!Array.isArray(data.pupils)||data.pupils.length!==10)
+ throw Error('Research snapshot provenance invalid');
+ const seen=new Set();
+ for(const p of data.pupils){
+  if(!PAIRS.includes(p?.symbol)||seen.has(p.symbol)||p.source!=='HISTORICAL_TRAINING_RESEARCH'||p.confirmedForward!==false||
+  p.verifiedForwardTrades!==0||p.championModel!==null)throw Error('Research record invalid');
+  seen.add(p.symbol);
+  const l=p.researchLeader;
+  if(l&&(!Number.isFinite(l.trainingNetGbp)||!Number.isFinite(l.trainingWinRatePct)||
+   !Number.isInteger(l.trainingClosedTrades)||l.trainingClosedTrades<0||typeof l.name!=='string'))throw Error('Research leader invalid');
+ }
+ return data;
+}
+async function loadResearch(){
+ const res=await fetch('./research-data/robot-academy.json',{cache:'no-store',credentials:'omit'});
+ if(!res.ok)throw Error('Academy research HTTP '+res.status);
+ research=checkResearch(await res.json());
+ const candidate=research.pupils.filter(actualResearch).length;
+ text('eligible',candidate);
+ text('boardStatus',candidate?'Some pupils pass the initial training screen; independent holdout admission still required':'No pupils pass initial training profitability and count gates');
+ text('researchStamp','Training through '+(research.latestTrainingEnd||'unknown'));
+ renderPupils();renderLedger();
+}
+const buf64=s=>Uint8Array.from(atob(s),x=>x.charCodeAt(0));
+async function fetchVerified(){
+ const settings=await fetch('./teacher/public-settings.json',{cache:'no-store',credentials:'omit'});
+ if(!settings.ok)throw Error('Teacher settings not found');
+ const conf=await settings.json();
+ if(conf?.schema!=='ROBOT_ACADEMY_PUBLIC_SETTINGS_V1')throw Error('Teacher settings schema mismatch');
+ if(conf.status!=='CONFIGURED'||!conf.feedUrl||!conf.signingPublicKeyBase64){
+  feedState='NOT_CONFIGURED';throw Error('Signed paper examiner not yet commissioned');
+ }
+ if(!window.crypto?.subtle)throw Error('Browser lacks Ed25519 verifier');
+ const url=new URL(conf.feedUrl,location.href);
+ if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash)
+ throw Error('Untrusted Teacher endpoint');
+ const response=await fetch(url.href,{cache:'no-store',credentials:'omit'});
+ if(!response.ok)throw Error('Teacher HTTPS service '+response.status);
+ const envelope=await response.json();
+ if(envelope.algorithm!=='Ed25519'||typeof envelope.signature!=='string')
+ throw Error('Unsigned exam payload');
+ const pub=await crypto.subtle.importKey('spki',buf64(conf.signingPublicKeyBase64),'Ed25519',false,['verify']);
+ if(!await crypto.subtle.verify('Ed25519',pub,buf64(envelope.signature),
+    new TextEncoder().encode(JSON.stringify(envelope.payload))))
+ throw Error('Signed exam payload tampered');
+ const data=envelope.payload,at=Date.parse(data?.generatedAt);
+ if(data.schema!=='ROBOT_ACADEMY_SIGNED_FORWARD_V1'||data.source!=='SERVER_VERIFIED_ALPACA_PAPER'||data.paperOnly!==true||
+ !Number.isFinite(at)||at>Date.now()+300000||Date.now()-at>36*3600_000||
+ !Array.isArray(data.pupils)||data.pupils.length>10||!Number.isInteger(data.verifiedCount))
+ throw Error('Signed exam payload incompatible, future-dated or stale');
+ const found=new Map();let complete=0;
+ for(const p of data.pupils){
+  if(!PAIRS.includes(p?.symbol)||found.has(p.symbol))throw Error('Unknown/duplicate signed pupil');
+  if(p.status==='VERIFIED_FORWARD_GRADE'){
+   if(!Number.isInteger(p.closedTrades)||p.closedTrades<30||!Number.isInteger(p.wins)||
+    p.wins<0||p.wins>p.closedTrades||p.grade!==Math.min(10,Math.floor((p.wins/p.closedTrades*100+1e-8)/10))||
+    !Number.isFinite(p.netProfitGbp)||!Number.isFinite(p.maxDrawdownPct)||p.maxDrawdownPct<0||p.maxDrawdownPct>100||
+    p.qualified!==(p.netProfitGbp>0&&p.maxDrawdownPct<=10)||!/^[a-f0-9]{64}$/.test(p.evidenceHash||''))
+    throw Error('Invalid claimed verified paper grade');
+   complete++;
+  }else if(p.status!=='FORWARD_TESTING'&&p.status!=='EVIDENCE_PENDING')
+   throw Error('Unrecognized examiner status');
+  found.set(p.symbol,p);
+ }
+ if(complete!==data.verifiedCount)throw Error('Verified count differs from signed rows');
+ records=found;feedState='SIGNED_OK';teacherInfo='Verified at '+data.generatedAt;
+ text('lastCheck',teacherInfo);
+ text('verified',complete);
+ text('connected','SIGNED FEED');
+ text('feedExplain','Authenticated · '+complete+' graded');
+ renderPupils();renderLedger();
+}
+async function refresh(){
+ text('connected','CHECKING');text('feedExplain','Refreshing actual sources');
+ try{await loadResearch();}
+ catch(e){research=null;text('eligible','—');text('boardStatus','Research unavailable');text('researchStamp',String(e.message||e));}
+ records=new Map();text('verified','0');
+ try{await fetchVerified();text('liveNotice','Connected to authenticated, independently signed paper evidence. Trading is still disabled on this page.');}
+ catch(e){teacherInfo=String(e.message||e);text('connected',feedState==='NOT_CONFIGURED'?'NOT DEPLOYED':'OFFLINE');
+  text('feedExplain',teacherInfo);
+  text('lastCheck',teacherInfo);
+  text('liveNotice','Broker paper-feed connection not active: '+teacherInfo+'. No verified grades are being inferred or simulated.');
+ }
+ renderPupils();renderLedger();
+}
+function create(tag,cls,content){
+ const e=document.createElement(tag);if(cls)e.className=cls;if(content!==undefined)e.textContent=content;return e;
+}
+function renderPupils(){
+ const list=$('roster');list.replaceChildren();
+ if(!research){list.append(create('p','muted','Research snapshot unavailable'));return;}
+ for(const [i,symbol] of PAIRS.entries()){
+  const p=research.pupils.find(x=>x.symbol===symbol);
+  const box=create('button','pupil'+(selected===symbol?' sel':''));box.type='button';
+  const dot=create('span','dot');dot.style.setProperty('--c',COLORS[i]);
+  const info=create('span');info.append(create('b','',symbol),create('small','',p?.researchLeader?'Research G'+researchGrade(p)+' · provisional':'No leader'));
+  box.append(dot,info);box.onclick=()=>{selected=symbol;renderPupils();};list.append(box);
+ }
+ const p=research.pupils.find(x=>x.symbol===selected),l=p?.researchLeader,r=records.get(selected);
+ text('pupilName',selected+' · '+(l?'Research leader':'Awaiting research'));
+ text('pupilModel',l?.name||'None');
+ const values=[['Training win rate',l?l.trainingWinRatePct.toFixed(1)+'%':'—'],
+ ['Research grade',researchGrade(p)===null?'—':'G'+researchGrade(p)],
+ ['Historical net GBP',cash(l?.trainingNetGbp)],['Training closes',String(l?.trainingClosedTrades??'—')]];
+ const panel=$('metrics');panel.replaceChildren();
+ for(const [key,value] of values){const tile=create('div','tile');tile.append(create('span','',key),create('b','',value));panel.append(tile);}
+ text('pupilGate',!l?'NOT ADMITTED · No research leader identified':
+ l.trainingNetGbp<=0?'NOT ADMITTED · Training result '+cash(l.trainingNetGbp)+'; must be profitable before independent holdout':
+ l.trainingClosedTrades<30?'NOT ADMITTED · Training closes '+l.trainingClosedTrades+'; minimum 30':
+ 'INITIAL SCREEN ONLY · Requires sealed untouched holdout, 2× cost robustness and private admission signature');
+ text('forwardStatus',!r?'No authenticated Teacher paper result for this pupil.':
+ r.status==='VERIFIED_FORWARD_GRADE'?
+  'SIGNED GRADE '+r.grade+' · '+r.closedTrades+' forward closes, '+r.wins+' wins, net '+cash(r.netProfitGbp)+', maximum drawdown '+r.maxDrawdownPct.toFixed(2)+'%, qualified '+(r.qualified?'YES':'NO'):
+ 'SIGNED PAPER STATUS · '+r.status+' · '+(r.reason||'Not yet verified'));
+}
+function renderLedger(){
+ const items=[
+  ['Research provenance','Published Academy snapshot',Boolean(research)?'CONNECTED':'MISSING'],
+  ['Independent admission','Private signed frozen holdout','NOT PUBLISHED'],
+  ['Paper broker fills','Authenticated Alpaca account activities',feedState==='SIGNED_OK'?'CHECK SIGNED PUPIL':'NOT CONNECTED'],
+  ['Crypto fee settlement','Broker CFEE / FEE evidence',feedState==='SIGNED_OK'?'CHECK SIGNED PUPIL':'NOT CONNECTED'],
+  ['GBP and virtual risk','Daily FX and journal reconciliation',feedState==='SIGNED_OK'?'CHECK SIGNED PUPIL':'NOT CONNECTED'],
+  ['Grade signature','Pinned public-key validation',feedState==='SIGNED_OK'?'VERIFIED':'NOT CONFIGURED']
+ ];
+ const body=$('ledger');body.replaceChildren();
+ for(const [name,source,status] of items){const tr=document.createElement('tr');
+  tr.append(create('td','',name),create('td','muted',source),create('td',status==='VERIFIED'?'good':status==='CONNECTED'?'good':'bad',status));body.append(tr);}
+}
+for(const tab of document.querySelectorAll('[data-tab]'))tab.onclick=()=>{
+ for(const b of document.querySelectorAll('[data-tab]')){b.classList.toggle('active',b===tab);b.setAttribute('aria-selected',String(b===tab));}
+ for(const v of document.querySelectorAll('.view'))v.hidden=v.id!==tab.dataset.tab;
+};
+$('reload').onclick=refresh;$('refreshLedger').onclick=refresh;
+function mock(n){examCount=n;$('progress').style.width=(100*n/30)+'%';text('progressLabel',n+' / 30 FICTIONAL closes · local presentation only');$('mockResult').hidden=n!==30;}
+$('runMock').onclick=()=>{if(examTimer)clearInterval(examTimer);mock(0);$('runMock').disabled=true;
+ examTimer=setInterval(()=>{mock(Math.min(30,examCount+1));
+  if(examCount===30){clearInterval(examTimer);examTimer=null;$('runMock').disabled=false;}},85);
+};
+$('resetMock').onclick=()=>{if(examTimer)clearInterval(examTimer);examTimer=null;$('runMock').disabled=false;mock(0);};
+mock(0);refresh();
+</script></body></html>
