@@ -50,6 +50,18 @@ export class TeacherJournal {
     if(!values.length)throw Error('TEACHER: private equity baseline not initialized');
     return Math.max(...values);
   }
+  async virtual(symbol,equity){
+    if(!Number.isFinite(equity)||equity<0)throw Error('TEACHER: invalid $50 pupil mark');
+    return this.add('VIRTUAL',{symbol,equity});
+  }
+  async peakVirtual(symbol){
+    return Math.max(50,...this.events.filter(e=>e.type==='VIRTUAL'&&e.symbol===symbol).map(e=>e.equity));
+  }
+  async openVirtualToday(symbol,at=Date.now()){
+    const today=new Date(at).toISOString().slice(0,10);
+    return this.events.find(e=>e.type==='VIRTUAL'&&e.symbol===symbol&&
+      e.loggedAt.slice(0,10)===today)?.equity??50;
+  }
   async orderIds(symbol){
     return new Set(this.events.filter(e=>e.type==='INTENT'&&e.symbol===symbol).map(e=>e.clientOrderId));
   }
