@@ -3,10 +3,20 @@ on:
   pull_request:
     paths:
       - 'teacher/**'
+      - 'trading-floor.html'
+      - 'robot-academy.html'
+      - 'teacher-console.html'
+      - 'index.html'
+      - 'agent-city.html'
       - '.github/workflows/robot-teacher-tests.yml'
   push:
     paths:
       - 'teacher/**'
+      - 'trading-floor.html'
+      - 'robot-academy.html'
+      - 'teacher-console.html'
+      - 'index.html'
+      - 'agent-city.html'
       - '.github/workflows/robot-teacher-tests.yml'
   workflow_dispatch:
 permissions:
@@ -27,7 +37,9 @@ jobs:
           node --check teacher/runtime.mjs
           node --check teacher/teacher-tests.mjs
           node --check teacher/teacher-v2-tests.mjs
-          node --check teacher/teacher-console-tests.mjs
+          node --check teacher/teacher-console-tests.mjs teacher/public-client-tests.mjs
+          node --check teacher/public-client.mjs
+          node --check teacher/public-client-tests.mjs
           node --check teacher/auditor.mjs
           node --check teacher/admission-seal.mjs
           node --check teacher/evidence.mjs
