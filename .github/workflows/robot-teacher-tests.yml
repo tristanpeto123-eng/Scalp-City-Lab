@@ -35,6 +35,7 @@ jobs:
           node --check teacher/risk-ledger.mjs
           node --check teacher/grade-pipeline.mjs
           node --check teacher/grade-service.mjs
+          node --check teacher/paper-preflight.mjs
           node --check teacher/admit.mjs
       - name: Unit and adversarial mock-only tests
         env:
