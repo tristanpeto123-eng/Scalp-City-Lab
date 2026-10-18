@@ -1,23 +1,42 @@
-# Robot Academy — TEACHER-01 (review candidate)
-Release: ACADEMY-TEACHER-0.1.0-rc1. State: NOT APPROVED, NOT DEPLOYED.
-Execution: PAPER ONLY Alpaca crypto, OFF by default. No live-money URL, execution route or deposits.
+# Robot Academy Teacher v0.2 — audited PAPER examinations
+**Release candidate:** ACADEMY-TEACHER-0.2.0-rc1
+**State:** draft PR; NOT MERGED, NOT DEPLOYED, NO TEACHER PAPER ORDERS, NO VERIFIED PUPIL RESULTS.
+**Order endpoint:** \`https://paper-api.alpaca.markets/v2/orders\` only. No live trade, deposits or withdrawals.
 
-## Examination workflow
-1. Research -> Inspector: select frozen best per-pair historical candidate by net return, not win-rate alone. Only positive net strategies with 30+ historical closes can attempt independent chronological holdout.
-2. Independent Validator -> Teacher admission: require a REAL, independently computed and reviewed sealed holdout with 30+ closed trades, positive after-cost GBP net and 2x cost GBP net, drawdown <=8%, no overlapping time with model training, and a parameter hash. Engine gates readiness and freezes a model hash. JSON alone is not proof: trusted independent validation and operator review remain TODO.
-3. Teacher -> Forward Paper: independent dedicated Alpaca paper account per pupil; no public browser credentials. Consumes only fresh completed 15-minute crypto candles AFTER admission. Model is fixed through the exam. One long-only position, no leverage, shorts, external/manual positions, stale bars, or overlapping orders.
-4. US$50 virtual exam bankroll per pupil; max US$25 notional paper buy, broker minimum size and precision enforced. Close-of-candle 2% stop, 1% paper account daily-loss veto, 10% peak drawdown veto. Stop is not guaranteed due to latency and gaps. IOC markets may not fill. Minimum BTC trade size can make US$25 insufficient; blocks rather than violating caps.
-5. Paper order writes require exact owner approval of ACADEMY-TEACHER-0.1.0-rc1 and TEACHER_PAPER_ENABLED=true on a private persistent host. No paper orders ever executed by CI.
-6. Exam scorer: demands authenticated reconciled broker fill roundtrips, published complete crypto fees (including delayed CFEE), independent GBP conversion, no exposure or outside orders, 30+ unique forward closes. Grade is floor(win rate/10), independent of profitability. Qualification ALSO needs positive net GBP and <=10% drawdown. Neither status permits automatic live trading. championModel always null.
+## What was actually built
+| Stage | File | Current coverage |
+|---|---|---|
+| Research provenance / sealed out-of-sample test | auditor.mjs | Reconstruct exact training fingerprint from independently archived history and 15-minute Alpaca bars, evaluate strictly later bars with next-open execution and 2x cost |
+| Operator-controlled enrollment | admit.mjs / admission-seal.mjs | Immutable model hash, historical profitability & risk gates, signed admission; separate *explicit exact release* gate for paper execution |
+| Paper-only strategy examiner | engine.mjs / alpaca-crypto.mjs | 10 crypto pairs, frozen per-chart strategy, 15-minute *completed* bar, IOC-only paper orders, fail closed on ambiguous order/position |
+| Pupil exposure budget | risk-ledger.mjs / runtime.mjs | $50 research/paper risk ledger, max $25 per order, 1% daily stop and 10% peak drawdown latch, persist sampled virtual marks in private hash journal |
+| Broker evidence collector | evidence.mjs | Match broker orders against individual FILL activities, detect partial fills, deduplicate broker IDs, collapse all partials into a single independent round trip, account for coin CFEE versus USD FEE without double counting |
+| External GBP reference | fx-reference.mjs | Fetch dated GBP-per-USD daily ECB reference rates via Frankfurter read-only API; refuse stale/missing data |
+| Independent grading | grade-pipeline.mjs | Count 30+ paper closed round trips, finalized fees, actual net GBP, marked and realized drawdown; sign sanitized result with Ed25519 |
+| Publisher / Academy UI | grade-service.mjs / robot-academy.html / public-settings.json | Local read-only signed public feed; browser must import *pinned* Ed25519 public key and verify payload signature before changing a pupil's official grade |
+| Checker | teacher-tests.mjs / teacher-v2-tests.mjs | Mock-only structural, contamination, accounting, crypto fee, duplicated-fill, $50 budget, 30-roundtrip and signed-evidence regression checks |
 
-## Critical missing integrations
-- A genuine independently run holdout auditor and reviewed admission generator; no self-authored audit is acceptable.
-- Complete broker fill/order/partial-execution/crypto-fee reconciliation, replay-safe evidence ledger, and timely CFEE settlement.
-- Independent dated USD-to-GBP FX provider and authenticated server-issued Academy forward-grade feed.
-- Persistent hosting, startup recovery for ambiguous POST outcomes, incident handling for outstanding paper orders, operator circuit breaker, observability, owner approval.
-- Present historical classroom does not recognize generated JSON as verified evidence.
-- Current ten pupils have negative historical research net. NONE ready. One prior crypto paper account preflight was confirmed, not ten distinct account keys.
+## Mandatory gates and settings
+1. **G0 — Research admission:** Reconcile trusted \`scalp-learning-memory\` branch JSON to current saved Academy leader and a snapshot containing the **same training fingerprint**. Unseen historical holdout must have 30+ closes, positive net GBP, positive at 2x costs, and <=8% drawdown. *This is not forward evidence*. At this time all ten published research leaders are loss-making, so no one qualifies.
+2. **G1 — Independent model enrollment:** Run \`node teacher/admit.mjs\` on a controlled host with a private copy of research memory and original snapshots. Default is report-only. Explicitly issuing admissions additionally requires \`TEACHER_ISSUE_ADMISSIONS=true\`, the private signing secret \`TEACHER_ADMISSION_SIGNING_SECRET\` (48+ chars), and review of the records in \`TEACHER_PRIVATE_DIR/admissions.json\`. **Never commit admissions or secrets.**
+3. **G2 — Genuine broker paper execution:** Provide separate Alpaca PAPER-account key pair per admitted pupil to \`TEACHER_PAPER_CREDENTIALS_JSON\`, with credentials stored as server-side secrets. \`TEACHER_PRIVATE_DIR\` must be an absolute private durable path. \`node teacher/runtime.mjs\` is dry-run until the user explicitly approves **ACADEMY-TEACHER-0.2.0-rc1** and the operator *deliberately* sets **both** \`TEACHER_RELEASE_APPROVED=ACADEMY-TEACHER-0.2.0-rc1\` and \`TEACHER_PAPER_ENABLED=true\`. This release approval does not authorize live money. Requires a private supervised always-on Node 22+ host, not GitHub Actions or GitHub Pages.
+4. **G3 — Reconciled 30+ forwards:** At least 30 distinct closed round trips **after** admission, no external positions, fills and aggregate orders agree, crypto fee activities posted, no outstanding orders, final paper flat inventory, risk journal covers first opening to last close, daily independently sourced GBP rates available. **Grade 0–10** is determined by real paper win rate in 10% bands. A pupil qualifies for further graduation review only with positive actual net GBP and <=10% independently recorded peak drawdown. Any ambiguity displays \`EVIDENCE_PENDING\`, not a grade.
+5. **G4 — Signed Academy publication:** Provision an Ed25519 signing key privately via \`TEACHER_PUBLISH_PRIVATE_KEY_PEM\`; set its matching *public* SPKI bytes (base64) and a real HTTPS feed URL in repository \`teacher/public-settings.json\`, status \`CONFIGURED\`, **only after deployment approval**. Run \`node teacher/grade-service.mjs\` separately behind an authenticated/supervised HTTPS reverse proxy. The public endpoint is GET-only \`/api/academy\`, with CORS limited to this project's Pages origin; reporter writes only sanitized, signed \`public-exam-report.json\` to a private folder. Browser rejects unsigned, tampered or >36h stale grade feeds and falls back to provisional research; self-asserted JSON previews cannot change verified grades.
 
-Private host: TEACHER_PRIVATE_DIR points to a private absolute directory with reviewed admissions.json and journal. TEACHER_PAPER_CREDENTIALS_JSON is a private environment variable mapping each pupil symbol to unique paper account keys. node teacher/runtime.mjs performs dry-run by default. No credentials in GitHub, ChatGPT, browser or committed files.
+## Critical validation still required before real paper deployment
+- Read-only paper account and venue preflight during fresh trading (data freshness, precision, asset eligibility, funding, cancellation, uptime). The previous connection proves only BTC/ETH crypto *read-only* eligibility, not the Teacher executor. One existing paper account was verified; ten separate test accounts were not.
+- Exercise actual Alpaca **FILL/CFEE/FEE** field shapes and timing. Alpaca says CFEE can post at day end, not always with an order ID. This implementation fails closed when cost/date assignment is ambiguous; even 48 hours elapsed plus observed fee activity is an **operational settlement policy**, not a contractual guarantee of fee finality. Fee corrections require grade invalidation/republication with an audit trail.
+- Test sudden network loss between pre-order INTENT, POST, ACK and fill, IOC partials, asset-minimum-size rounding, coin-fee position mismatches, midnight, and manual emergency cancellation.
+- Independent risk review must inspect the $50 virtual mark: default Alpaca demo account equity may be much larger and cannot be used as the pupil's risk baseline.
+- Deploy HTTPS feed and pin the *real* publisher public key before the static Academy can show grades. No keys are bundled in this PR.
 
-This is a Teacher PAPER execution release candidate, not an actively trading teacher or a published verified grade.
+## Local tests (safe; no credentials or broker network)
+\`node --test teacher/teacher-tests.mjs teacher/teacher-v2-tests.mjs\`
+\`node --test robot-academy-tests.mjs\`
+
+The GitHub Actions Teacher Checker workflow runs syntax and these mock tests only. **A passing CI job proves code-level mock behavior, not genuine forward profitability, broker compatibility, or readiness for real-money orders.**
+
+## Risk/governance
+Historical parent training and historical audit are separate from **forward broker fill evidence**. A 100% observed win rate with negative net profit is not profitable qualification. No automated decision can grant real-money execution, unfreeze a model mid-exam, or bypass an explicitly withheld owner release. Broker failures stop the service; emergency stops are not guaranteed to cancel accepted orders or close holdings.
+
+**Known blockers today:** zero eligible historical champions, zero Teacher forward orders, zero published verified grades, no private always-on Teacher deployment, public key/feed unprovisioned. These are tracked as launch gates rather than disguised as completed production tests.
