@@ -92,7 +92,15 @@ export async function start(){
       broker.account(a.symbol),broker.positions(a.symbol),broker.openOrders(a.symbol)]);
     if(!account.id||ids.has(account.id))throw Error('TEACHER: shared or missing paper account identity');
     ids.add(account.id);
-    if(positions.length||orders.length)throw Error('TEACHER: start from a clean dedicated paper account');
+    const known=await journal.orderIds(a.symbol);
+    if(orders.some(o=>o.symbol!==a.symbol||!known.has(o.client_order_id)))
+      throw Error('TEACHER: unknown outstanding order at startup');
+    if(positions.some(p=>p.symbol!==a.symbol||Number(p.qty)<0))
+      throw Error('TEACHER: foreign paper position at startup');
+    for(const p of positions){
+      if(!await broker.ownedPosition(a.symbol,known,Number(p.qty)))
+        throw Error('TEACHER: restart position cannot be attributed to examiner');
+    }
     if(!journal.events.some(e=>e.type==='EQUITY'&&e.symbol===a.symbol))
       await journal.observe(a.symbol,Number(account.equity));
   }
