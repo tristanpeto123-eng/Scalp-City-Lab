@@ -89,7 +89,7 @@ const base=source.map((symbol,i)=>({symbol,name:titles[i],color:colors[i]}));
 const byId=id=>document.getElementById(id);
 let research=null,grades=new Map(),reports=new Map(),current='BTC/USD',signedReportAt=null,examTimer=null,simCount=0,feedMessage='Not configured',lastConnection='NOT PROVISIONED',version=0;
 const money=n=>Number.isFinite(n)?(n<0?'−':'')+'£'+Math.abs(n).toFixed(2):'—';
-const rate=p=>p?.researchLeader?.trainingWinRatePct;
+const rate=p=>p?.leader?.trainingWinRatePct;
 const gradePercent=n=>Number.isFinite(n)?Math.min(10,Math.floor((n+1e-8)/10)):null;
 const winner=p=>grades.get(p.symbol);
 function record(p){const v=winner(p);const leader=research?.pupils?.find(x=>x.symbol===p.symbol)?.researchLeader;
@@ -193,7 +193,7 @@ function validateAndMap(report){
     !/^[a-f0-9]{64}$/.test(p.evidenceHash||''))throw Error('Signed grade fails independent arithmetic');
    nextGrades.set(p.symbol,p);
   }else if(p.status==='FORWARD_TESTING'){
-   if(p.closedTrades!==undefined&&(!Number.isInteger(p.closedTrades)||p.closedTrades<0))throw Error('Signed forward count invalid');
+   if(p.closedTrades!==undefined&&(!Number.isInteger(p.closedTrades)||p.closedTrades<0||p.closedTrades>=30))throw Error('Signed forward count invalid');
   }else if(p.status!=='EVIDENCE_PENDING')throw Error('Unknown examiner status');
   nextReports.set(p.symbol,p);
  }
