@@ -1,0 +1,32 @@
+name: Robot Academy Teacher — mock-only Checker
+on:
+  pull_request:
+    paths:
+      - 'teacher/**'
+      - '.github/workflows/robot-teacher-tests.yml'
+  push:
+    paths:
+      - 'teacher/**'
+      - '.github/workflows/robot-teacher-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  checker-teacher:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Static checks — no broker credentials supplied
+        run: |
+          node --check teacher/engine.mjs
+          node --check teacher/alpaca-crypto.mjs
+          node --check teacher/runtime.mjs
+          node --check teacher/teacher-tests.mjs
+      - name: Unit and adversarial mock-only tests
+        env:
+          TEACHER_PAPER_ENABLED: 'false'
+        run: node --test teacher/teacher-tests.mjs
