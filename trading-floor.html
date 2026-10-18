@@ -1,26 +1,208 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Scalp City · Penthouse Trading Floor</title><style>
-:root{color-scheme:dark;font:15px system-ui;background:#070b15;color:#edf4ff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#182d47,#070b15 70%)}header{padding:22px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #263a4f}a{color:#7ee7ff}main{max-width:1200px;margin:auto;padding:20px}.muted,small{color:#9eafc4}h1{font-size:28px;margin:5px 0}h2{font-size:18px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(265px,1fr));gap:14px}.card{background:#101c2c;border:1px solid #304358;border-radius:14px;padding:17px}.agent{cursor:pointer;text-align:left;color:inherit;width:100%}.agent[aria-pressed=true]{border-color:#65e7c2;box-shadow:0 0 0 2px #65e7c244}.stat{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #27384a}button,input,select{font:inherit}button{background:#193b4a;color:white;border:1px solid #4b8790;border-radius:9px;padding:10px 14px;cursor:pointer}button:disabled{opacity:.4;cursor:not-allowed}input,select{width:100%;background:#091422;border:1px solid #506277;border-radius:7px;color:white;padding:10px;margin:7px 0 13px}label{display:block;font-size:13px}.good{color:#71e3b7}.bad{color:#ff9c9c}.pill{display:inline-block;border:1px solid #577188;border-radius:20px;padding:4px 8px;font-size:11px}section{margin:24px 0}table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:9px;border-bottom:1px solid #293a4d;text-align:left}.notice{border-left:3px solid #f6b95d;padding:12px;background:#3d301d66}#journal{max-height:220px;overflow:auto}#journal li{margin:8px 0}@media(max-width:600px){header{align-items:flex-start;flex-direction:column}h1{font-size:23px}}
-</style></head><body><header><div><small>SCALP CITY LAB / PENTHOUSE</small><h1>Trading Floor</h1><span class="pill">SIMULATION ONLY · NO BROKER CONNECTION</span></div><nav><a href="./agent-city.html">← Agent City</a> · <a href="./robot-academy.html">Academy</a> · <a href="./teacher-console.html">Teacher’s Office</a> · <a href="./">Research floor</a></nav></header><main>
-<p class="notice">All results below are synthetic demonstrations, not market data, real profitability or verified model confidence. Live mode is intentionally unavailable. No deposits or real orders are accepted.</p>
-<section><h2>Profit-seeking apprentices</h2><p class="muted">Select an agent to inspect its training record and allocate a virtual account. Graduation requires independent evidence; demonstration agents are not certified.</p><div id="agents" class="grid"></div></section>
-<section class="grid"><div class="card"><h2>Selected operator</h2><div id="details"></div><label for="mode">Account type</label><select id="mode"><option value="demo">Demo / simulated</option><option value="live" disabled>Live / locked until independently validated</option></select><label for="capital">Virtual capital (£)</label><input id="capital" type="number" min="50" max="1000000" step="10" value="1000"><label for="risk">Maximum drawdown (%)</label><input id="risk" type="number" min="1" max="20" value="10"><button id="start">Start demo account</button> <button id="stop" disabled>Stop</button><p id="message" role="status" class="muted">Select an apprentice.</p></div>
-<div class="card"><h2>Account monitor</h2><div id="monitor"></div><p class="muted">Synthetic price path with fixed seeded pseudo-randomness. Results are not predictions.</p><button id="tick" disabled>Simulate next session</button> <button id="batch" disabled>Simulate 20 sessions</button></div></section>
-<section class="card"><h2>Audit journal</h2><ol id="journal"></ol><button id="export">Export session JSON</button></section>
-<section class="card"><h2>Evolution laboratory</h2><p class="muted">Creates versioned research candidates. Candidate creation does not grant graduation, demo privileges, or live execution rights.</p><button id="evolve">Create successor candidate</button><div id="candidates"></div></section>
-</main><script>
-"use strict";
-const initial=[{id:"XAU-01",market:"XAU/USD",style:"Momentum",grade:3,wr:57,dd:7.2,trades:84,verified:false},{id:"EUR-02",market:"EUR/USD",style:"Mean reversion",grade:2,wr:53,dd:5.9,trades:120,verified:false},{id:"NAS-03",market:"NASDAQ",style:"Breakout",grade:1,wr:49,dd:11.4,trades:56,verified:false}];
-const agents=initial.map(a=>({...a}));let selected=agents[0],account=null,seed=73491;const journal=[],candidates=[];
-const el=id=>document.getElementById(id);const money=n=>"£"+n.toFixed(2);const pct=n=>n.toFixed(2)+"%";
-function rnd(){seed=(1664525*seed+1013904223)>>>0;return seed/4294967296}
-function log(message){journal.unshift({time:new Date().toISOString(),message});el("journal").innerHTML=journal.slice(0,100).map(e=>"<li>"+e.time+" — "+e.message+"</li>").join("")}
-function renderAgents(){el("agents").innerHTML=agents.map(a=>'<button class="card agent" data-id="'+a.id+'" aria-pressed="'+(selected.id===a.id)+'"><strong>'+a.id+'</strong> · '+a.market+'<div class="stat"><span>Style</span><b>'+a.style+'</b></div><div class="stat"><span>Grade</span><b>'+a.grade+'</b></div><div class="stat"><span>Training win rate</span><b>'+a.wr+'%</b></div><div class="stat"><span>Training max DD</span><b>'+a.dd+'%</b></div><div class="stat"><span>Training trades</span><b>'+a.trades+'</b></div><small>UNVERIFIED SAMPLE DATA</small></button>').join("");document.querySelectorAll(".agent").forEach(b=>b.onclick=()=>{if(account){el("message").textContent="Stop the active demo before changing operator.";return}selected=agents.find(a=>a.id===b.dataset.id);render()})}
-function render(){renderAgents();el("details").innerHTML='<p><strong>'+selected.id+'</strong> — '+selected.market+'</p><p class="muted">Graduation: NOT VERIFIED · Demo sandbox access only</p>';el("monitor").innerHTML=account?'<div class="stat"><span>Operator</span><b>'+account.agent+'</b></div><div class="stat"><span>Balance</span><b>'+money(account.balance)+'</b></div><div class="stat"><span>Net P&L</span><b class="'+(account.balance>=account.initial?'good':'bad')+'">'+money(account.balance-account.initial)+'</b></div><div class="stat"><span>Sessions</span><b>'+account.sessions+'</b></div><div class="stat"><span>Peak drawdown</span><b>'+pct(account.maxDD)+'</b></div><div class="stat"><span>Account</span><b>'+account.status+'</b></div>':'<p>No demo account active.</p>';el("tick").disabled=!account||account.status!=="RUNNING";el("batch").disabled=el("tick").disabled;el("stop").disabled=!account||account.status!=="RUNNING";el("start").disabled=!!account&&account.status==="RUNNING";el("candidates").innerHTML=candidates.map(c=>'<p>'+c.id+' · parent '+c.parent+' · '+c.status+'</p>').join("")||"<p>No successors yet.</p>"}
-function session(){if(!account||account.status!=="RUNNING")return;const change=(rnd()-.52)*.035;const before=account.balance;account.balance=Math.max(0,account.balance*(1+change));account.sessions++;account.peak=Math.max(account.peak,account.balance);account.maxDD=Math.max(account.maxDD,100*(account.peak-account.balance)/account.peak);log("SIM "+account.agent+" session "+account.sessions+": "+money(before)+" → "+money(account.balance));if(account.maxDD>=account.limit||account.balance===0){account.status="HALTED";log("RISK HALT: drawdown threshold reached")}render()}
-el("start").onclick=()=>{const capital=Number(el("capital").value),limit=Number(el("risk").value);if(!Number.isFinite(capital)||capital<50||capital>1000000||!Number.isFinite(limit)||limit<1||limit>20){el("message").textContent="Invalid capital or risk limit.";return}if(el("mode").value!=="demo"){el("message").textContent="Live trading is locked.";return}account={agent:selected.id,initial:capital,balance:capital,peak:capital,maxDD:0,limit,sessions:0,status:"RUNNING"};log("Started isolated synthetic demo for "+selected.id+" with "+money(capital));el("message").textContent="Demo started. No real orders will be placed.";render()};
-el("stop").onclick=()=>{if(account){account.status="STOPPED";log("Operator stopped demo");render()}};
-el("tick").onclick=session;el("batch").onclick=()=>{for(let i=0;i<20&&account?.status==="RUNNING";i++)session()};
-el("evolve").onclick=()=>{const c={id:selected.id+"-C"+String(candidates.length+1).padStart(3,"0"),parent:selected.id,status:"UNVALIDATED — research only",created:new Date().toISOString()};candidates.push(c);log("Created unvalidated successor "+c.id);render()};
-el("export").onclick=()=>{const blob=new Blob([JSON.stringify({schema:"scalp-lab-demo-v1",synthetic:true,agents,account,candidates,journal},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="scalp-city-demo-audit.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
-log("Trading floor opened: simulation only");render();
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scalp City · Trading Floor</title><meta name="theme-color" content="#0b1827"><style>
+:root{color-scheme:dark;font:14px ui-rounded,Inter,system-ui,-apple-system,sans-serif;background:#081523;color:#e7f6fc;--line:#35566b;--mint:#79ddc9;--muted:#adbece}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 70% -10%,#22445b,transparent 60%),linear-gradient(140deg,#081422,#0c1d2c);min-height:100vh}a{color:#98e8eb}
+header{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;align-items:center;padding:20px clamp(14px,4vw,45px);border-bottom:1px solid #355469}
+header h1{font-size:clamp(28px,4vw,42px);letter-spacing:-.05em;margin:4px 0}header small{letter-spacing:.14em;font-weight:850;color:#91bbb9}
+nav{display:flex;flex-wrap:wrap;gap:8px}nav a{text-decoration:none;border:1px solid #47728b;padding:9px 11px;border-radius:9px;font-size:12px}
+main{max-width:1320px;margin:auto;padding:20px clamp(14px,3vw,38px) 48px}
+h2{font-size:18px;letter-spacing:-.02em;margin:0 0 13px}p{line-height:1.55;color:#b7cad8}
+section{margin:17px 0}.small{font-size:12px;color:#adc1d2}.box,.card{border:1px solid var(--line);background:linear-gradient(145deg,#152e43,#101f32);border-radius:16px;padding:16px}
+.alert{border-left:3px solid #d7b378;background:#8c6d3030;padding:12px;margin:0 0 18px;border-radius:0 9px 9px 0;font-size:12px;line-height:1.6}
+.statRow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat small{display:block;color:#99b7c9;font-size:10px;letter-spacing:.07em}.stat strong{display:block;font-size:26px;margin:6px 0;font-weight:900;letter-spacing:-.045em}.stat em{font-size:11px;color:#9ab7ca;font-style:normal}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.badge{display:inline-block;background:#102b40;border:1px solid #486e87;border-radius:20px;color:#cfebf2;padding:5px 9px;font-size:10px;font-weight:850;letter-spacing:.04em}
+.badge.good{border-color:#548a79;color:#8be6be}
+#pupils{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:9px}
+.pupil{padding:13px;text-align:left;color:inherit;background:#162c41;border:1px solid #395872;border-radius:12px;cursor:pointer;font:inherit;min-height:141px}
+.pupil[aria-pressed=true]{border-color:var(--mint);background:#235268;box-shadow:0 0 0 1px #79ddc955}.pupil strong{display:block;font-size:16px}.pupil small{color:#aec9d9;font-size:11px}.pupil .grade{float:right;font-size:11px;font-weight:900;color:#f6da93}
+.pupil .model{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:8px 0;font-size:11px;color:#c6dcea}
+.prog{height:6px;background:#234258;border-radius:8px;overflow:hidden}.prog span{height:100%;display:block;background:linear-gradient(90deg,#5dc7c5,#e7c587);width:0}
+.layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(270px,1fr);gap:14px}
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.metric{background:#0b2538;border:1px solid #38566a;border-radius:11px;padding:11px}.metric small{display:block;color:#9ebaca;font-size:11px}.metric b{font-size:21px;display:block;margin-top:5px}
+label{display:block;font-size:12px;margin-top:12px;color:#b6cddb}input,select{font:inherit;background:#0d2639;color:#ebf7fb;border:1px solid #537a8e;border-radius:9px;padding:9px;width:100%;margin-top:5px}
+button{font:inherit}button:not(.pupil){background:#25506a;color:#f2fbff;border:1px solid #478298;padding:10px 14px;border-radius:10px;font-size:12px;font-weight:750;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid #ffe0a3;outline-offset:2px}button:disabled{opacity:.45;cursor:not-allowed}
+.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}.primary{background:#e8c98d!important;color:#193344!important;border-color:#e8c98d!important}
+.notice{padding:12px;border-left:3px solid #e7c17c;background:#25384b;font-size:12px;line-height:1.5;border-radius:0 7px 7px 0;margin:13px 0}
+.nums{display:flex;flex-wrap:wrap;gap:7px}.nums span{background:#102b40;border:1px solid #3b5d71;border-radius:8px;padding:7px 10px;font-size:11px}
+table{width:100%;border-collapse:collapse;font-size:12px}td,th{padding:9px;text-align:left;border-bottom:1px solid #385169}th{font-size:10px;color:#a6bed0}#journal{max-height:225px;overflow:auto;padding-left:20px;font-size:12px;line-height:1.7;color:#bcd5e0}
+.ok{color:#89e3be}.bad{color:#ffb8ad}
+footer{padding-top:15px;border-top:1px solid #355269;font-size:11px;color:#a9bdcc}
+@media(max-width:930px){.layout{grid-template-columns:1fr}.statRow{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){#pupils{grid-template-columns:repeat(2,1fr)}.box,.card{padding:12px}header{padding:14px}}
+</style></head><body>
+<header><div><small>SCALP CITY · THE FOUNDRY</small><h1>Trading Floor</h1><span class="badge" id="modeBadge">RESEARCH-ONLY · NO REAL OR PAPER ORDER CONTROLS</span></div>
+<nav><a href="./agent-city.html">3D City</a><a href="./robot-academy.html">Robot Academy</a><a href="./teacher-console.html">Teacher’s Office</a><a href="./">Research Floor</a></nav>
+</header><main>
+<p class="alert"><b>Connection policy:</b> The ten pupils and research statistics come from the actual saved Academy data. Independently verified grades are only shown from a signed Teacher report. The sandbox below is synthetic; it is never Alpaca paper execution and cannot send real orders or deposit money.</p>
+<section class="statRow" aria-label="Research and examiner status">
+ <div class="stat"><small>ACTIVE CHART PUPILS</small><strong id="countPupils">10</strong><em>BTC, ETH, SOL and seven more</em></div>
+ <div class="stat"><small>INITIAL RESEARCH ELIGIBLE</small><strong id="countEligible">—</strong><em>Positive training P&L and 30+ closes</em></div>
+ <div class="stat"><small>VERIFIED FORWARD GRADES</small><strong id="countVerified">0</strong><em>Signed broker examination only</em></div>
+ <div class="stat"><small>SIGNED EXAMINER FEED</small><strong id="feedStatus" style="font-size:15px">CHECKING</strong><em id="feedDetail">Awaiting configuration</em></div>
+</section>
+<section class="box"><div class="row"><div><h2>Profit-seeking apprentices</h2><p class="small">Select a real Academy research pupil. Grades shown as <b>RESEARCH</b> are provisional; no strategy is admitted on training win rate alone.</p></div><button id="refresh">↻ Refresh actual data</button></div><div id="pupils"></div></section>
+<section class="layout"><div class="box"><div class="row"><h2 id="selectedTitle">Operator dossier</h2><span class="badge" id="pupilState">NOT ADMITTED</span></div>
+ <p class="small" id="strategyName">Loading actual model history.</p><div class="metrics" id="metrics"></div>
+ <div id="qualification" class="notice">Broker readiness remains locked until research and unseen holdout criteria pass.</div>
+ <div class="row"><a id="teacherLink" href="./teacher-console.html">Review this pupil with Teacher ↗</a><span class="badge" id="gradeSource">HISTORICAL RESEARCH</span></div>
+ <h2 style="margin-top:24px">Synthetic account sandbox</h2>
+ <p class="small">These controls demonstrate capital allocation only. Synthetic returns have no relationship to the selected pupil’s strategy or live market behavior.</p>
+ <div class="metrics"><label>Account type<select id="mode"><option value="demo">Synthetic demo only</option><option value="paper" disabled>Real Alpaca PAPER · Teacher-only</option><option value="live" disabled>Live money · not approved</option></select></label><label>Virtual capital (£)<input id="capital" type="number" value="1000" min="50" max="1000000" step="10"></label></div>
+ <label>Sandbox maximum drawdown (%)<input id="risk" type="number" min="1" max="20" step="1" value="10"></label>
+ <div class="actions"><button class="primary" id="start">Start synthetic demo</button><button id="step" disabled>Simulate session</button><button id="batch" disabled>Simulate 20</button><button id="stop" disabled>Stop</button></div>
+ <p role="status" class="small" id="notice">Research records are loading. No account is connected.</p>
+</div><div class="box"><h2>Sandbox monitor</h2><div id="monitor" class="metrics"></div><p class="small" id="monitorExplain">No synthetic demo running. No broker wallet connected.</p>
+ <h2 style="margin-top:23px">Evidence and deployment status</h2><div id="evidence" class="notice">Signed Teacher feed has not been provisioned.</div>
+ <div class="nums"><span>Minimum 30 closes</span><span>Maximum 10% DD</span><span>Net result &gt; £0</span><span>Verified fills + fees</span></div>
+ <h2 style="margin-top:24px">Local synthetic journal</h2><ol id="journal"></ol>
+ <button id="export">Export synthetic demo JSON</button>
+</div></section>
+<footer>All actual figures are sourced from <code>research-data/robot-academy.json</code> or authenticated signed Teacher records. The account sandbox is fictional and isolated. This page does not have brokerage credentials, submit orders or trigger model promotion.</footer>
+</main>
+<script type="module">
+import {PAIRS,readResearch,readSignedPaperFeed} from './teacher/public-client.mjs';
+const $=id=>document.getElementById(id);
+const colors=['#5dded6','#c4a9ff','#f6c777','#92c7ff','#ec95b0','#c4ef9d','#f3ae82','#e3d78f','#abc4f4','#ddafef'];
+let research=null,grades=new Map(),examStatuses=new Map(),selected=PAIRS[0],acct=null,
+  feedNote='Not provisioned',feedOk=false,seed=73491,entries=[],cycle=0,request=0;
+const gbp=x=>Number.isFinite(x)?(x<0?'−':'')+'£'+Math.abs(x).toFixed(2):'—';
+const pct=x=>Number.isFinite(x)?x.toFixed(1)+'%':'—';
+const num=(name,value)=>{const el=document.createElement('span');el.textContent=name+': '+value;return el};
+const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n};
+const one=s=>research?.pupils?.find(p=>p.symbol===s);
+const winGrade=w=>Math.min(10,Math.floor((w+1e-8)/10));
+function renderRoster(){
+ const node=$('pupils');node.replaceChildren();
+ for(let i=0;i<PAIRS.length;i++){
+  const symbol=PAIRS[i],p=one(symbol),lead=p?.researchLeader,grade=grades.get(symbol);
+  const btn=el('button','pupil');btn.type='button';btn.setAttribute('aria-pressed',String(selected===symbol));
+  const head=el('div');const tag=el('span','grade',grade?'PAPER G'+grade.grade:lead?'RESEARCH G'+winGrade(lead.trainingWinRatePct):'UNRATED');
+  head.append(tag,el('strong','',symbol));btn.append(head,
+    el('span','model',lead?.name||'No research leader available'),
+    el('small','',grade?grade.closedTrades+' confirmed closes · '+pct(100*grade.wins/grade.closedTrades):
+       lead?lead.trainingClosedTrades+' training closes · '+pct(lead.trainingWinRatePct):'Awaiting research'));
+  const bar=el('div','prog');bar.append(el('span'));bar.firstChild.style.width=Number.isFinite(grade?.wins)&&grade.closedTrades?
+   (grade.wins/grade.closedTrades*100)+'%':lead?lead.trainingWinRatePct+'%':'0';
+  btn.append(bar);btn.style.borderTop='3px solid '+colors[i];
+  btn.addEventListener('click',()=>{if(acct?.status==='RUNNING'){
+    $('notice').textContent='Stop the synthetic sandbox before selecting a different pupil.';return;}
+    selected=symbol;render();});
+  node.append(btn);
+ }
+}
+function render(){
+ renderRoster();
+ const p=one(selected),lead=p?.researchLeader,grade=grades.get(selected),exam=examStatuses.get(selected);
+ $('selectedTitle').textContent=selected+' · Operator dossier';
+ $('strategyName').textContent='Current research leader: '+(lead?.name||'none')+
+   '. Strategies are never activated based solely on historical research.';
+ const metrics=[
+  ['Training win rate',lead?pct(lead.trainingWinRatePct):'—'],
+  ['Research grade',lead?'G'+winGrade(lead.trainingWinRatePct)+' (PROVISIONAL)':'—'],
+  ['Training closes',lead?String(lead.trainingClosedTrades):'—'],
+  ['Historical net',gbp(lead?.trainingNetGbp)],
+  ['Verified paper grade',grade?'G'+grade.grade:'NOT AVAILABLE'],
+  ['Verified paper net',grade?gbp(grade.netProfitGbp):'—']
+ ];
+ const panel=$('metrics');panel.replaceChildren();
+ for(const [k,v] of metrics){const box=el('div','metric');box.append(el('small','',k),el('b','',v));panel.append(box);}
+ $('pupilState').textContent=grade?(grade.qualified?'PAPER QUALIFIED':'PAPER GRADED / NOT QUALIFIED'):
+    exam?'SIGNED '+exam.status:'NOT ADMITTED';
+ $('gradeSource').textContent=grade?'VERIFIED PAPER · SIGNED':'HISTORICAL RESEARCH · PROVISIONAL';
+ $('qualification').textContent=grade?
+   'Signed paper result: '+grade.closedTrades+' distinct closes, '+grade.wins+' winners, net '+gbp(grade.netProfitGbp)+
+     ', drawdown '+pct(grade.maxDrawdownPct)+'. '+(grade.qualified?'Meets paper qualification policy.':'Does not meet paper qualification policy.')+' Live money still requires owner approval.':
+   exam?'Signed Teacher status: '+exam.status+'. '+(exam.reason||'No final grade yet.'):
+   lead?.trainingNetGbp<=0?'Not admitted: historical research net '+gbp(lead?.trainingNetGbp)+
+     ' is negative. Teacher requires positive training, 30+ closes, and an independent profitable unseen holdout.':
+   'Not independently admitted: research must pass the separate holdout and signed-model gate.';
+ $('teacherLink').href='./teacher-console.html?pupil='+encodeURIComponent(selected.replace('/',''));
+ $('monitor').replaceChildren();
+ const shown=acct?[
+   ['Account',acct.status],['Balance',gbp(acct.balance)],
+   ['Synthetic profit',gbp(acct.balance-acct.initial)],
+   ['Sessions',String(acct.sessions)],['Maximum drawdown',pct(acct.maxDD)],
+   ['Operator',acct.symbol]
+ ]:[['Status','IDLE'],['Broker connection','NONE'],['Account type','SYNTHETIC'],['Funds','NO FUNDS']];
+ for(const [name,value] of shown){const box=el('div','metric');box.append(el('small','',name),el('b','',value));$('monitor').append(box);}
+ const active=acct?.status==='RUNNING';
+ $('step').disabled=!active;$('batch').disabled=!active;$('stop').disabled=!active;$('start').disabled=active;
+ $('capital').disabled=active;$('risk').disabled=active;
+ $('monitorExplain').textContent=acct?
+   'All changes to this account are fictional and local to this browser. No actual Alpaca orders are made.':
+   'No synthetic demo running. No broker wallet connected.';
+ $('evidence').textContent=(feedOk?'SIGNED FEED VERIFIED. ':'Signed Teacher feed unavailable. ')+feedNote+
+   '. Browser-only demo cannot publish graduation grades.';
+ const list=$('journal');list.replaceChildren();
+ for(const log of entries.slice(0,50)){const n=el('li','',log.at+' · '+log.message);list.append(n);}
+}
+function nextRandom(){seed=(Math.imul(1664525,seed)+1013904223)>>>0;return seed/4294967296}
+function log(message){entries.unshift({at:new Date().toISOString(),message});}
+function session(){
+ if(!acct||acct.status!=='RUNNING')return;
+ const before=acct.balance,move=(nextRandom()-.52)*.035;
+ acct.balance=Math.max(0,before*(1+move));acct.sessions++;
+ acct.peak=Math.max(acct.peak,acct.balance);
+ acct.maxDD=Math.max(acct.maxDD,100*(acct.peak-acct.balance)/acct.peak);
+ log('SYNTHETIC '+acct.symbol+' session '+acct.sessions+': '+gbp(before)+' → '+gbp(acct.balance));
+ if(acct.maxDD>=acct.limit||acct.balance===0){acct.status='HALTED';log('Synthetic sandbox drawdown stop');}
+}
+async function refresh(){
+ const serial=++request;$('refresh').disabled=true;
+ $('feedStatus').textContent='CHECKING';
+ const [rr,fr]=await Promise.allSettled([
+   readResearch({baseUrl:location.href}),readSignedPaperFeed({baseUrl:location.href})
+ ]);
+ if(serial!==request)return;
+ research=rr.status==='fulfilled'?rr.value:null;
+ const qualified=(research?.pupils||[]).filter(p=>p.researchLeader?.trainingNetGbp>0&&p.researchLeader.trainingClosedTrades>=30).length;
+ $('countEligible').textContent=research?String(qualified):'—';
+ if(fr.status==='fulfilled'){
+   grades=fr.value.grades;examStatuses=fr.value.statuses;feedOk=true;
+   feedNote='Publisher signature valid. Last report '+new Date(fr.value.generatedAt).toLocaleString();
+ }else{
+   grades=new Map();examStatuses=new Map();feedOk=false;
+   feedNote=String(fr.reason?.message||fr.reason);
+ }
+ $('countVerified').textContent=String(grades.size);
+ $('feedStatus').textContent=feedOk?'VERIFIED':'NOT CONNECTED';
+ $('feedDetail').textContent=research?'Academy research linked':'Research unavailable';
+ $('modeBadge').textContent=feedOk?'SIGNED STATUS · ORDERS DISABLED':'RESEARCH ONLY · PAPER NOT CONNECTED';
+ $('refresh').disabled=false;
+ render();
+}
+$('refresh').addEventListener('click',refresh);
+$('start').onclick=()=>{
+ const capital=Number($('capital').value),risk=Number($('risk').value);
+ if(!Number.isFinite(capital)||capital<50||capital>1000000||!Number.isFinite(risk)||risk<1||risk>20||
+    $('mode').value!=='demo'){
+  $('notice').textContent='Invalid sandbox inputs or locked account type.';return;
+ }
+ if(acct?.status==='RUNNING')return;
+ acct={symbol:selected,initial:capital,balance:capital,peak:capital,maxDD:0,
+    limit:risk,sessions:0,status:'RUNNING'};
+ entries=[];log('Started browser-only SYNTHETIC sandbox for '+selected+' with '+gbp(capital));
+ $('notice').textContent='Local synthetic simulation started. No Alpaca paper order submitted.';
+ render();
+};
+$('step').onclick=()=>{session();render();};
+$('batch').onclick=()=>{for(let i=0;i<20&&acct?.status==='RUNNING';i++)session();render();};
+$('stop').onclick=()=>{if(acct){acct.status='STOPPED';log('Synthetic sandbox stopped');render();}};
+$('export').onclick=()=>{
+ const data={schema:'SCALP_CITY_TRADING_FLOOR_SYNTHETIC_V2',realTrades:0,
+    warning:'Synthetic browser fixture. Not an Alpaca transaction or proof of profitability.',
+    researchConnected:Boolean(research),verifiedGradesReferenced:grades.size,
+    sandbox:acct,journal:entries};
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='scalp-city-synthetic-account.json';a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
+const requested=new URLSearchParams(location.search).get('pupil');
+if(requested){const match=PAIRS.find(s=>s.replace('/','')===requested.toUpperCase());if(match)selected=match;}
+render();refresh();
 </script></body></html>
