@@ -159,7 +159,7 @@ test('training process contains no broker order or real deposit actions',async()
 test('five-minute scheduled research fetches 10 fresh Alpaca feeds before every lesson and never falls back to stale data',async()=>{
  const workflow=await readFile(new URL('../.github/workflows/robot-research-training.yml',import.meta.url),'utf8');
  const worker=await readFile(new URL('./run-robot-training.mjs',import.meta.url),'utf8');
- assert.match(workflow,/cron: '7,37 \* \* \* \*'/);
+ assert.match(workflow,/cron: '2,7,12,17,22,27,32,37,42,47,52,57/);
  assert.match(workflow,/concurrency:/);
  assert.match(workflow,/cancel-in-progress: false/);
  assert.match(workflow,/refreshAll/);
