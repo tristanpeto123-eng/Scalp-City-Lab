@@ -76,7 +76,7 @@ function toSimulator(p){
  // Strictly intersect archived strategy rules with the live validator's
  // narrower parameter bounds. Archived out-of-bounds parents are not executed.
  if(p.family==='ema_trend'&&(p.fast<3||p.slow>96))throw Error('Unsupported EMA validator bounds');
- if(p.family==='rsi_reversion'&&(p.period<7||p.period>30||p.sellAbove>85))
+ if(p.family==='rsi_reversion'&&(p.period<7||p.period>30||p.buyBelow>40||p.sellAbove>85))
   throw Error('Unsupported RSI validator bounds');
  if(p.family==='channel_breakout'&&(p.lookback<10||p.exitLookback<5))
   throw Error('Unsupported breakout validator bounds');
