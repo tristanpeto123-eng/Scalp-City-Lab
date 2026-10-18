@@ -89,13 +89,14 @@ test('teacher never orders if no pupil is admitted, and dry-runs ready pupils',a
   });
   const journal={hasBar:async()=>false,hasIntent:async()=>false,
     peakEquity:async()=>100000,observe:async()=>{},orderIds:async()=>new Set(),
+    peakVirtual:async()=>50,openVirtualToday:async()=>50,virtual:async()=>{},
     bar:async()=>{},intent:async()=>{throw Error('should not submit')},
     ack:async()=>{throw Error('should not submit')}};
   const broker={account:async()=>({status:'ACTIVE',equity:'100000',last_equity:'100000',
       non_marginable_buying_power:'1000'}),
     positions:async()=>[],openOrders:async()=>[],asset:async()=>({symbol:'BTC/USD',
       class:'crypto',tradable:true,marginable:false,shortable:false,min_order_size:'0.0001'}),
-    history:async()=>({symbol:'BTC/USD',source:'ALPACA_KRAKEN_US_US-1',
+    recentOrders:async()=>[],history:async()=>({symbol:'BTC/USD',source:'ALPACA_KRAKEN_US_US-1',
       timeframe:'15Min',bars}),orderByClientId:async()=>null};
   const no=new Teacher({broker,journal,admissions:[],now:()=>now});
   assert.equal((await no.cycle('BTC/USD')).status,'NOT_READY');
