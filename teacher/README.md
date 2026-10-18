@@ -39,7 +39,7 @@ The GitHub Actions Teacher Checker workflow runs syntax and these mock tests onl
 ## Risk/governance
 Historical parent training and historical audit are separate from **forward broker fill evidence**. A 100% observed win rate with negative net profit is not profitable qualification. No automated decision can grant real-money execution, unfreeze a model mid-exam, or bypass an explicitly withheld owner release. Broker failures stop the service; emergency stops are not guaranteed to cancel accepted orders or close holdings.
 
-**Known blockers today:** zero eligible historical champions, zero Teacher forward orders, zero verified grades, no PAPER keys in private Railway examiner, no independent per-pupil broker preflight. Persistent hosting and pinned HTTPS gateway are now commissioned; absent trade evidence correctly returns 503.
+**Latest checkpoint (18 Oct 2026):** the private Railway examiner verified **3/3 dedicated Alpaca PAPER accounts** using GET only, but ten Academy pupils independently screened at **0/10 qualified**, zero signed admissions and zero forward fills. The existing separate GitHub Actions read-only research credential returned Alpaca crypto historical feed **HTTP 401** on run 39138376609 and must be securely refreshed by the owner. See `teacher/QUALIFICATION-2026-10-18.md` and automated daily `teacher-qualification.yml`. PAPER order controls remain OFF; no actual fill evidence, broker-verified grades or real trading.
 
 ## Integrated Teacher UI (connection update)
 The review branch now includes \`teacher-console.html\`, with navigation from:

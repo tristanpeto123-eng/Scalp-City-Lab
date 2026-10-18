@@ -117,3 +117,15 @@ test('durable hash-chain journal rejects edits and retains order-intent proof',a
 test('signals cannot work without actual warmup market history',()=>{
   assert.throws(()=>closedSignal([],params),/warmup/);
 });
+
+test('actual PAPER execution admits no more than three isolated pupils at once',()=>{
+ const symbols=['BTC/USD','ETH/USD','SOL/USD','XRP/USD'];
+ const admissions=symbols.map(symbol=>({symbol}));
+ const credentials=Object.fromEntries(symbols.map(symbol=>[symbol,{key:'mock-'+symbol,secret:'test'}]));
+ assert.throws(
+  ()=>reviewConfiguration({admissions,credentials,enabled:false}),
+  /maximum three isolated PAPER exam seats/
+ );
+ assert.equal(reviewConfiguration({admissions:admissions.slice(0,3),
+   credentials,enabled:false}),true);
+});
