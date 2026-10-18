@@ -109,7 +109,7 @@ test('loads all ten markets independently, appending exactly ten research events
  assert.equal(all.brokerOrders,0);
  assert.equal(all.independentForwardEvidence,0);
  assert.equal(new Set(all.memory.experiments.map(e=>e.symbol)).size,10);
- assert.equal(all.memory.experiments.filter(e=>e.acceptedForLearning).length,10);
+ assert.equal(all.memory.experiments.filter(e=>e.acceptedForLearning).length,11); // 1 existing + 10 independent nonoverlapping
 });
 test('uses strict GitHub-only append with expected blob sha, not full rewriting',async()=>{
  const key='TEST-TOKEN',blob='b'.repeat(40),commit='c'.repeat(40);
