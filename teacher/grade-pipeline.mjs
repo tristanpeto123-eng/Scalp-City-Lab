@@ -73,7 +73,7 @@ export function verifyReport(bundle,publisherPublicKey){
   if(bundle?.algorithm!=='Ed25519'||!bundle.payload||!bundle.signature)
     throw Error('PUBLISHER: unsigned report');
   if(!verify(null,Buffer.from(JSON.stringify(bundle.payload),'utf8'),
-       createPublicKey(publisherPublicKey),Buffer.from(bundle.signature,'base64')))
+       (publisherPublicKey?.type==='public'?publisherPublicKey:createPublicKey(publisherPublicKey)),Buffer.from(bundle.signature,'base64')))
     throw Error('PUBLISHER: report signature invalid');
   return bundle.payload;
 }
