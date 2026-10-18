@@ -1,0 +1,38 @@
+name: Teacher PAPER three-slot status verification (read-only)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/teacher-paper-status-once.yml'
+permissions:
+  contents: read
+jobs:
+  check-public-status:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Verify private PAPER examiner via sanitized public HTTPS status
+        run: |
+          node --input-type=module <<'NODE'
+          const url='https://teacher-signed-gateway-production.up.railway.app/api/connection';
+          const response=await fetch(url,{redirect:'error',signal:AbortSignal.timeout(15000),
+            headers:{Accept:'application/json'}});
+          console.log('HTTPS_STATUS='+response.status);
+          const s=await response.json();
+          if(s.schema!=='TEACHER_PUBLIC_CONNECTION_V1')throw Error('Unexpected server schema');
+          const a=s.paperAccounts??{};
+          for(const k of ['status','required','academyPupils','configured','checked',
+                           'passed','allPassed','checkedAt'])
+             console.log('ACCOUNT_'+k.toUpperCase()+'='+String(a[k]??'NOT_REPORTED'));
+          console.log('PRIVATE_EXAMINER_LINKED='+s.privateExaminerLinked);
+          console.log('SIGNER_PINNED='+s.signerPinned);
+          console.log('EXAMINER_STATUS='+s.examinerStatus);
+          console.log('PAPER_ORDERS_ENABLED='+s.paperOrdersEnabled);
+          if(!response.ok||s.signerPinned!==true||s.privateExaminerLinked!==true)
+             throw Error('Private signer or HTTPS host is not linked');
+          if(s.paperOrdersEnabled!==false)throw Error('Order safety latch is not disabled');
+          NODE
