@@ -27,6 +27,29 @@ export async function gradePupil({
     accountId:account.id,now});
   if(!evidence.verifiedByPaperBroker)
     return {symbol,modelId,status:'EVIDENCE_PENDING',reason:evidence.reason,grade:null};
+  // Profitability alone is not enough: confirm the complete marked-to-market
+  // excursion from the private, hash-chained exam journal before any final grade.
+  const riskMarks=await journal.virtualEvidence(symbol,admission.startedAt);
+  if(!Array.isArray(riskMarks)||riskMarks.length<evidence.closedTrades.length||
+     !riskMarks.length)
+    return {symbol,modelId,status:'EVIDENCE_PENDING',reason:'Insufficient independent mark-to-market journal',grade:null};
+  const sortedMarks=[...riskMarks].sort((a,b)=>Date.parse(a.at)-Date.parse(b.at));
+  const firstTrade=evidence.closedTrades[0],lastTrade=evidence.closedTrades.at(-1);
+  if(firstTrade&&(Date.parse(sortedMarks[0].at)>Date.parse(firstTrade.openedAt)||
+      Date.parse(sortedMarks.at(-1).at)<Date.parse(lastTrade.closedAt)))
+    return {symbol,modelId,status:'EVIDENCE_PENDING',reason:'Mark-to-market timeline does not cover all trades',grade:null};
+  let peakMark=50,observedDrawdown=0,lastAt=0;
+  const seenSeq=new Set();
+  for(const mark of sortedMarks){
+    const t=Date.parse(mark.at);
+    if(!Number.isFinite(t)||t<lastAt||t>Date.parse(new Date(now).toISOString())||
+       !Number.isFinite(mark.equity)||mark.equity<0||
+       !Number.isInteger(mark.sequence)||seenSeq.has(mark.sequence))
+      throw Error('GRADER: invalid or duplicated independent risk journal');
+    seenSeq.add(mark.sequence);lastAt=t;
+    peakMark=Math.max(peakMark,mark.equity);
+    observedDrawdown=Math.max(observedDrawdown,100*(peakMark-mark.equity)/peakMark);
+  }
   const ratesByCloseId=[];
   for(const t of evidence.closedTrades){
     const reference=await fx.on(t.closedAt);
@@ -36,9 +59,12 @@ export async function gradePupil({
   const fxEvidence={verified:true,source:'FRANKFURTER_ECB_REFERENCE',ratesByCloseId};
   const grade=evaluateGrade({admission,brokerEvidence:evidence,
     fxEvidence,feeEvidence:evidence.feeEvidence});
+  grade.maxDrawdownPct=Number(Math.max(grade.maxDrawdownPct,observedDrawdown).toFixed(4));
+  grade.qualified=grade.status==='VERIFIED_FORWARD_GRADE'&&
+    grade.netProfitGbp>0&&grade.maxDrawdownPct<=10;
   return {...grade,
     brokerAccountFingerprint:sha(account.id).slice(0,16),
-    evidenceHash:sha({orders,activities,fxEvidence,admissionFingerprint:admission.fingerprint}),
+    evidenceHash:sha({orders,activities,fxEvidence,riskMarks,admissionFingerprint:admission.fingerprint}),
     method:'SERVER_RECONCILED_FILLS_CFEE_DAILY_ECB_V1',
     checkedAt:new Date(now).toISOString()};
 }
