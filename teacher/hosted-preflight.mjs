@@ -4,9 +4,13 @@ import {PAIRS} from '../strategy-validation-core.mjs';
 import {CryptoTeacherBroker} from './alpaca-crypto.mjs';
 import {preflightPaper} from './paper-preflight.mjs';
 const own=Object.prototype.hasOwnProperty;
+// Alpaca currently permits three separate PAPER accounts per owner.
+// Ten research pupils queue for up to three isolated examiner seats.
+export const MAX_PAPER_SLOTS=3;
 const INITIAL=()=>({
  schema:'TEACHER_PAPER_ACCOUNTS_PUBLIC_V1',
- status:'NOT_CONFIGURED',required:PAIRS.length,configured:0,checked:0,passed:0,
+ status:'NOT_CONFIGURED',required:MAX_PAPER_SLOTS,academyPupils:PAIRS.length,
+ configured:0,checked:0,passed:0,
  allPassed:false,checks:[],checkedAt:null,operation:'READ_ONLY_GET',paperOrdersEnabled:false
 });
 export function initialPaperStatus(){return INITIAL();}
@@ -33,6 +37,8 @@ export async function inspectPaperAccounts({
  }
  reply.configured=valid.length;
  if(!valid.length)return reply;
+ if(valid.length>MAX_PAPER_SLOTS)
+   return {...reply,status:'EXCEEDS_PROVIDER_LIMIT'};
  if(new Set(valid.map(p=>credentials[p].key)).size!==valid.length)
    return {...reply,status:'DUPLICATED_CREDENTIALS'};
  const factory=brokerFactory||((items)=>new CryptoTeacherBroker({
@@ -54,10 +60,10 @@ export async function inspectPaperAccounts({
      reasonCount:Array.isArray(r.reasons)?r.reasons.length:0
    }));
    const passed=checks.filter(x=>x.passed).length;
-   const allPassed=valid.length===PAIRS.length&&report.allPassed===true&&passed===valid.length;
-   return {...reply,status:allPassed?'ALL_ACCOUNTS_VERIFIED':
-        valid.length<PAIRS.length?'PARTIAL_ACCOUNTS':
-        passed===valid.length?'NEEDS_REVIEW':'SOME_ACCOUNTS_FAILED',
+   const allPassed=valid.length===MAX_PAPER_SLOTS&&report.allPassed===true&&passed===valid.length;
+   return {...reply,status:allPassed?'ALL_SLOTS_VERIFIED':
+        passed<valid.length?'SOME_ACCOUNTS_FAILED':
+        valid.length<MAX_PAPER_SLOTS?'PARTIAL_SLOTS':'NEEDS_REVIEW',
      checked:checks.length,passed,allPassed,
      checks,checkedAt:now().toISOString()};
  }catch{

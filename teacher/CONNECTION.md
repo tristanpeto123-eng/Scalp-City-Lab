@@ -51,3 +51,9 @@ GitHub Pages \`teacher/public-settings.json\` is \`CONFIGURED\` to point to that
 5. After full preflight, operator must explicitly review the risk kill-switches, trading venue order constraints, fees and rollover; only then may any paper-order switch be enabled. No live trading path has been enabled or approved.
 
 This checkpoint supersedes earlier paragraphs in this file that described HTTPS hosting as hypothetical or \`public-settings.json\` as \`NOT_PROVISIONED\`. External service acceptance does **not** mean Alpaca PAPER exams are commissioned.
+
+## October 18 commissioning amendment — Alpaca three-paper-account limit
+
+Alpaca permits up to **3 distinct PAPER accounts per owner login**, so the earlier 10-concurrent-account assumption is obsolete. Ten Academy pupils continue independent research; only **three active examiner seats** can be assigned to independently admitted models at a time. Do not try to create ten PAPER accounts through one login, reuse the same broker account concurrently, or treat additional login workarounds as necessary. The exact private JSON map can hold **one to three unique PAPER key pairs** for any three selected Academy symbols; the full independent-preflight gate is `3/3`, with all ten research agents remaining in the Academy. Read the authoritative setup at `teacher/ACCOUNT-SETUP.md`.
+
+This does not relax existing safety rules: each simultaneously paper-examined pupil must have a separate account, and order execution remains disabled until independently validated historical admission, an exact owner-approved paper-release gate, full broker safety checks, and reconciled examination data. Rotating a seat requires flat positions, no open broker orders, archive/reconciliation of that pupil's evidence and another read-only preflight before reassignment.

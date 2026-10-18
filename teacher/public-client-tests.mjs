@@ -118,14 +118,15 @@ test('private account preflight counts never imply real paper examination',async
   if(url.endsWith('/api/connection'))return {ok:true,json:async()=>({
    ...await original.json(),
    paperAccounts:{schema:'TEACHER_PAPER_ACCOUNTS_PUBLIC_V1',
-     status:'ALL_ACCOUNTS_VERIFIED',required:10,configured:10,checked:10,
-     passed:10,allPassed:true,checkedAt:'2026-10-18T12:00:00Z'}
+     status:'ALL_SLOTS_VERIFIED',required:3,academyPupils:10,configured:3,checked:3,
+     passed:3,allPassed:true,checkedAt:'2026-10-18T12:00:00Z'}
   })};
   return original;
  };
  const result=await readHostingConnection({fetchImpl:wrapped,baseUrl:base});
  assert.equal(result.paperAccounts.allPassed,true);
- assert.equal(result.paperAccounts.passed,10);
+ assert.equal(result.paperAccounts.passed,3);
+ assert.equal(result.paperAccounts.academyPupils,10);
  assert.equal(result.brokerExaminationProven,false);
  assert.equal(result.paperOrdersEnabled,false);
 });

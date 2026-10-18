@@ -1,41 +1,40 @@
-# Teacher PAPER credentials — safe Railway setup
+# Alpaca three-seat PAPER account commissioning
 
-**Credentials must be entered in Railway, not in ChatGPT, GitHub commits, Issues, Pages, or the public gateway.**
+**Alpaca permits three PAPER accounts under one owner login.** Three separate accounts are sufficient for the ten-pupil Scalp City Academy: only up to three independently qualified pupils may be assigned to live PAPER examination seats concurrently; the other pupils stay in research/queue. No account should be reused concurrently by two active paper traders.
 
-1. Open the Railway project **Scalp City Teacher Paper Exams**.
-2. Select **teacher-private-examiner** (not **teacher-signed-gateway**).
-3. Under **Variables**, select **New Variable**. Name it exactly `TEACHER_PAPER_CREDENTIALS_JSON`.
-4. Value: one JSON object containing each pupil's dedicated **PAPER** API key/secret pair. Replace the example strings locally, directly in Railway. An incomplete object is permitted for staged checking but can never pass the complete 10-account gate:
+Official references: https://alpaca.markets/learn/start-paper-trading and https://docs.alpaca.markets/us/docs/paper-trading
+
+## Secure configuration (3 real PAPER keys, never in source or chat)
+
+1. Open the Railway **Scalp City Teacher Paper Exams** project.
+2. Select **teacher-private-examiner**, not **teacher-signed-gateway**.
+3. Go to **Variables → New Variable**. Name it `TEACHER_PAPER_CREDENTIALS_JSON`.
+4. Paste this **template in Railway's private variable editor**, replacing only the six placeholder strings with the corresponding three dedicated Alpaca PAPER account credentials:
 
 ```json
 {
-  "BTC/USD":  {"key": "BTC_PAPER_KEY",  "secret": "BTC_PAPER_SECRET"},
-  "ETH/USD":  {"key": "ETH_PAPER_KEY",  "secret": "ETH_PAPER_SECRET"},
-  "SOL/USD":  {"key": "SOL_PAPER_KEY",  "secret": "SOL_PAPER_SECRET"},
-  "XRP/USD":  {"key": "XRP_PAPER_KEY",  "secret": "XRP_PAPER_SECRET"},
-  "ADA/USD":  {"key": "ADA_PAPER_KEY",  "secret": "ADA_PAPER_SECRET"},
-  "AVAX/USD": {"key": "AVAX_PAPER_KEY", "secret": "AVAX_PAPER_SECRET"},
-  "LINK/USD": {"key": "LINK_PAPER_KEY", "secret": "LINK_PAPER_SECRET"},
-  "DOGE/USD": {"key": "DOGE_PAPER_KEY", "secret": "DOGE_PAPER_SECRET"},
-  "LTC/USD":  {"key": "LTC_PAPER_KEY",  "secret": "LTC_PAPER_SECRET"},
-  "BCH/USD":  {"key": "BCH_PAPER_KEY",  "secret": "BCH_PAPER_SECRET"}
+  "BTC/USD": {"key": "PAPER_BTC_KEY_ID", "secret": "PAPER_BTC_SECRET_KEY"},
+  "ETH/USD": {"key": "PAPER_ETH_KEY_ID", "secret": "PAPER_ETH_SECRET_KEY"},
+  "SOL/USD": {"key": "PAPER_SOL_KEY_ID", "secret": "PAPER_SOL_SECRET_KEY"}
 }
 ```
 
-Each key/secret belongs to the corresponding *distinct PAPER account*, not to a live account. The account's dashboard label is only for human reference; the exact JSON key above (`BTC/USD`, etc.) maps it to the robot. Railway's Variables panel redeploys the service when the variable is committed.
+The three currencies above are **example assignments**, not a hard-coded condition. If you have made three differently named PAPER accounts, their dashboard names don't matter: map each distinct real PAPER key pair to whichever three Academy pairs you actually want to commission, choosing from BTC/USD, ETH/USD, SOL/USD, XRP/USD, ADA/USD, AVAX/USD, LINK/USD, DOGE/USD, LTC/USD and BCH/USD. `TEACHER_PAPER_CREDENTIALS_JSON` maps chart symbols to *PAPER API credentials*, not Alpaca account display names.
 
-**No enabling switches:** Keep `TEACHER_PAPER_ENABLED=false` and `TEACHER_ENABLE_EXAMINER=false`. They are independent controls. Never set them true merely because credentials were added.
+**Never** store Alpaca keys in chat, GitHub, screenshots, client storage or the public signed gateway. Never use LIVE Alpaca API credentials here.
 
-## Automatic read-only verification
+5. Save and apply Railway's deployment changes.
+6. Keep `TEACHER_ENABLE_EXAMINER=false` and `TEACHER_PAPER_ENABLED=false` at all times during this commissioning stage.
+7. Confirm read-only status from the existing signed HTTPS gateway `GET https://teacher-signed-gateway-production.up.railway.app/api/connection`.
 
-At startup, the private examiner:
-- Parses only this private environment variable.
-- Rejects invalid JSON, unexpected symbols, duplicate keys and shared Alpaca account IDs.
-- For each supplied account, uses **GET only** against `https://paper-api.alpaca.markets` for account state, crypto asset permission, positions and open orders. It never submits or cancels orders.
-- Reports only bounded check metadata (pupil symbol, pass/fail and counts), not the API keys, secrets, account ID, account balance or raw broker response.
+## What counts as success
 
-View sanitized status at [Teacher connection status](https://teacher-signed-gateway-production.up.railway.app/api/connection) after the private examiner and gateway have picked up this release. `paperAccounts.status=ALL_ACCOUNTS_VERIFIED` and `passed=10` indicate ten accounts have passed connection checks, **not** that research pupils have been admitted, trades have occurred or grades were verified.
+`paperAccounts.status = ALL_SLOTS_VERIFIED` with `required=3`, `configured=3`, `checked=3`, `passed=3`, and `academyPupils=10`. That result means **three distinct PAPER accounts** were independently validated for their selected symbols via GET-only requests. It does **not** prove paper fills, strategy profit, eligibility, a signed forward grade, or authorize trading.
 
-If credentials are missing, the public status is `NOT_CONFIGURED`. Other statuses include `PARTIAL_ACCOUNTS`, `DUPLICATED_CREDENTIALS`, `SOME_ACCOUNTS_FAILED` and `READ_ONLY_CHECK_ERROR`. Review accounts in Alpaca / Railway privately; do not expose the JSON configuration in screenshots or support tickets.
+A single or two-account setup returns `PARTIAL_SLOTS`; a mapping with more than three returns `EXCEEDS_PROVIDER_LIMIT` and does not contact the broker. Duplicate API keys or broker account IDs, blocked/unclean accounts and missing crypto trading permissions cause failed checks. Preflight never places, modifies or cancels orders.
 
-Independent model qualification, funded live account trading and withdrawals remain separately controlled and **disabled**.
+## Rotation after a pupil finishes
+
+Archive that pupil's signed history and stop its paper cycle; ensure that account has **zero unowned positions and outstanding orders** before reassigning the seat. Keep the past immutable and explicitly map the reassigned broker keys to the next chosen Academy symbol in Railway. Changing the JSON mapping alone **does not** constitute proof of a completed examination or authorize order writes. Re-run independent read-only preflight and require a separate signed admission and approval for any subsequent examination.
+
+**The ten research pupils continue running/researching irrespective of only three PAPER accounts.** Real-money trading, deposits and withdrawals are not available in this commissioning workflow.
