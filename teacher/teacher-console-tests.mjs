@@ -66,3 +66,15 @@ test('read-only broker preflight checks unique paper identity and does not order
  assert.equal(used.allPassed,false);
  await assert.rejects(preflightPaper({broker,symbols:['BTC/USD','BTC/USD']}),/duplicate/);
 });
+
+test('operator paper preflight workflow is manual, read-only and confined to Alpaca PAPER',async()=>{
+ const yml=await read('.github/workflows/teacher-paper-account-preflight.yml');
+ assert.match(yml,/workflow_dispatch:/);
+ assert.doesNotMatch(yml,/\bschedule\s*:/);
+ assert.match(yml,/secrets\.ALPACA_PAPER_KEY/);
+ assert.match(yml,/secrets\.ALPACA_PAPER_SECRET/);
+ assert.match(yml,/opts\?\.method!=='GET'/);
+ assert.match(yml,/https:\/\/paper-api\.alpaca\.markets\//);
+ assert.doesNotMatch(yml,/paperOrder\(/);
+ assert.doesNotMatch(yml,/method:\s*['"]POST['"]/);
+});
