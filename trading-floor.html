@@ -64,7 +64,7 @@ footer{padding-top:15px;border-top:1px solid #355269;font-size:11px;color:#a9bdc
 <footer>All actual figures are sourced from <code>research-data/robot-academy.json</code> or authenticated signed Teacher records. The account sandbox is fictional and isolated. This page does not have brokerage credentials, submit orders or trigger model promotion.</footer>
 </main>
 <script type="module">
-import {PAIRS,readResearch,readSignedPaperFeed} from './teacher/public-client.mjs';
+import {PAIRS,readResearch,readSignedPaperFeed,readHostingConnection} from './teacher/public-client.mjs';
 const $=id=>document.getElementById(id);
 const colors=['#5dded6','#c4a9ff','#f6c777','#92c7ff','#ec95b0','#c4ef9d','#f3ae82','#e3d78f','#abc4f4','#ddafef'];
 let research=null,grades=new Map(),examStatuses=new Map(),selected=PAIRS[0],acct=null,
@@ -154,8 +154,8 @@ function session(){
 async function refresh(){
  const serial=++request;$('refresh').disabled=true;
  $('feedStatus').textContent='CHECKING';
- const [rr,fr]=await Promise.allSettled([
-   readResearch({baseUrl:location.href}),readSignedPaperFeed({baseUrl:location.href})
+ const [rr,fr,host]=await Promise.allSettled([
+   readResearch({baseUrl:location.href}),readSignedPaperFeed({baseUrl:location.href}),readHostingConnection({baseUrl:location.href})
  ]);
  if(serial!==request)return;
  research=rr.status==='fulfilled'?rr.value:null;
@@ -169,9 +169,13 @@ async function refresh(){
    feedNote=String(fr.reason?.message||fr.reason);
  }
  $('countVerified').textContent=String(grades.size);
- $('feedStatus').textContent=feedOk?'VERIFIED':'NOT CONNECTED';
- $('feedDetail').textContent=research?'Academy research linked':'Research unavailable';
- $('modeBadge').textContent=feedOk?'SIGNED STATUS · ORDERS DISABLED':'RESEARCH ONLY · PAPER NOT CONNECTED';
+ $('feedStatus').textContent=feedOk?'VERIFIED':host.status==='fulfilled'?'HOST ONLINE':'NOT CONNECTED';
+ $('feedDetail').textContent=feedOk?'Authenticated paper report':host.status==='fulfilled'?
+   'Private examiner linked; no paper evidence':'Signed host unavailable';
+ $('modeBadge').textContent=feedOk?'SIGNED STATUS · ORDERS DISABLED':
+   host.status==='fulfilled'?'HOST READY · EXAMINATION LOCKED':'RESEARCH ONLY · PAPER NOT CONNECTED';
+ if(!feedOk&&host.status==='fulfilled')
+   feedNote='Railway private examiner linked and signing key pinned, but no qualifying authenticated paper grade exists. Broker order execution is '+(host.value.paperOrdersEnabled?'armed':'disabled')+'.';
  $('refresh').disabled=false;
  render();
 }
