@@ -40,3 +40,25 @@ The GitHub Actions Teacher Checker workflow runs syntax and these mock tests onl
 Historical parent training and historical audit are separate from **forward broker fill evidence**. A 100% observed win rate with negative net profit is not profitable qualification. No automated decision can grant real-money execution, unfreeze a model mid-exam, or bypass an explicitly withheld owner release. Broker failures stop the service; emergency stops are not guaranteed to cancel accepted orders or close holdings.
 
 **Known blockers today:** zero eligible historical champions, zero Teacher forward orders, zero published verified grades, no private always-on Teacher deployment, public key/feed unprovisioned. These are tracked as launch gates rather than disguised as completed production tests.
+
+## Integrated Teacher UI (connection update)
+The review branch now includes \`teacher-console.html\`, with navigation from:
+- \`robot-academy.html\` (dedicated Teacher's Office links)
+- \`agent-city.html\` (Teacher link)
+- \`trading-floor.html\` (Teacher link)
+- \`index.html\` (main Scalp City entry)
+
+The console fetches the real, versioned historical training record at \`research-data/robot-academy.json\`, plus the same **signed and pinned** forward-paper feed contract the Academy consumes. Verified records override research grades only after a valid Ed25519 signature and sound arithmetic; broker-reconciled provisional paper closes may be shown as exam progress but never as a confirmed grade. Outages, an unprovisioned publisher, stale or mismatched keys show **NOT CONNECTED** and cannot create grades. A 30-close visual demonstration is explicitly MOCK and isolated from the verified results state.
+
+### Read-only live broker connectivity probe
+With **PAPER** Alpaca credentials provided securely via a private host environment (never in GitHub or browser):
+
+\`\`\`bash
+TEACHER_PAPER_CREDENTIALS_JSON='{"BTC/USD":{"key":"YOUR_PAPER_KEY","secret":"YOUR_PAPER_SECRET"}}' \
+  TEACHER_PREFLIGHT_SYMBOLS=BTC/USD \
+  node teacher/paper-preflight.mjs
+\`\`\`
+
+It sends **GET only** requests for account, asset, positions and open orders; validates paper-only identity and crypto access; reports whether the account is suitable for a later separately approved paper trial. This script does **not** submit, cancel or amend orders. Using one paper credential cannot operate the current ten-pupil segregated design: every admitted pupil needs a distinct account. Account credentials are not connected in this PR and no preflight with the user's genuine credentials has run.
+
+A private always-on host must run \`teacher/runtime.mjs\` with owner-approved exact release and at least one signed admission; \`teacher/grade-service.mjs\` can then serve the signed report behind HTTPS. GitHub Pages can host the UI but **cannot** host a continuously running broker examiner or keep account secrets. Do not configure \`teacher/public-settings.json\` until the server is accessible over HTTPS and the public signing key is pinned.
