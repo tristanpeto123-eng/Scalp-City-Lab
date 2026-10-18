@@ -62,6 +62,13 @@ export class TeacherJournal {
     return this.events.find(e=>e.type==='VIRTUAL'&&e.symbol===symbol&&
       e.loggedAt.slice(0,10)===today)?.equity??50;
   }
+  async virtualEvidence(symbol,startedAt){
+    const start=Date.parse(startedAt);
+    return this.events.filter(e=>e.type==='VIRTUAL'&&e.symbol===symbol&&
+      Date.parse(e.loggedAt)>=start).map(e=>({
+        sequence:e.seq,at:e.loggedAt,equity:e.equity
+      }));
+  }
   async orderIds(symbol){
     return new Set(this.events.filter(e=>e.type==='INTENT'&&e.symbol===symbol).map(e=>e.clientOrderId));
   }
