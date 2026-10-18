@@ -185,8 +185,10 @@ function render(){
    const lesson=document.createElement('p');lesson.className='note';
    lesson.textContent='Lesson '+g.run+' · '+(g.grade===null?'Ungraded':'Grade '+g.grade)+
     ' · best training net '+money(g.leaderTrainingNetGbp)+
-    ' · '+g.testedConfigurations+' configurations · '+
-    (g.independentWindow?'Initial independent training slice':'Reused/overlapping history: NOT independent evidence');
+    ' · '+g.testedConfigurations+' configurations'+
+    (g.parentStrategy?' · seeded from '+g.parentStrategy+
+      ' (older research '+money(g.parentHistoricalNetGbp)+')':' · initial exploration')+
+    ' · '+(g.independentWindow?'Non-overlapping with saved training':'Reused/overlapping history: NOT independent evidence');
    report.append(lesson);
   }
  }
