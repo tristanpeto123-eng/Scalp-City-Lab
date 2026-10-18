@@ -102,7 +102,13 @@ function render(){
  byId('countReady').textContent=String(research?.pupils?.filter(p=>p.researchLeader?.trainingNetGbp>0&&p.researchLeader?.trainingClosedTrades>=30).length??0);
  byId('countStudents').textContent=String(base.length);
  byId('connectionState').textContent=lastConnection;
- byId('dataState').textContent=research?'REPOSITORY RESEARCH LOADED':'RESEARCH UNAVAILABLE';
+ const trainedAt=Date.parse(research?.latestTrainingEnd||'');
+ const daysOld=Number.isFinite(trainedAt)?Math.max(0,Math.floor((Date.now()-trainedAt)/86400_000)):null;
+ byId('dataState').textContent=research?
+   (daysOld===null?'RESEARCH DATE UNKNOWN':daysOld>7?'RESEARCH STALE · '+daysOld+'D':'RESEARCH · '+daysOld+'D OLD'):'RESEARCH UNAVAILABLE';
+ byId('dataState').title=research?'Latest training candle: '+(research.latestTrainingEnd||'unknown'):
+   'Research source not available';
+
  byId('teacherUpdated').textContent=signedReportAt?'SIGNED '+new Date(signedReportAt).toLocaleString():'NO VERIFIED REPORT';
  const rooms=byId('rooms');rooms.replaceChildren();
  for(let g=0;g<=10;g++){
@@ -138,7 +144,9 @@ function render(){
  byId('whiteboard').textContent=count?'SIGNED FORWARD GRADES: '+count:'AWAITING SIGNED EXAMS';
  byId('whiteboardSub').textContent=reports.size?'Some exams report status; no browser trade controls':feedMessage;
  byId('officeBadge').textContent=reports.size?'SIGNED EXAM FEED':'EXECUTION NOT PROVISIONED';
- byId('clipboard').textContent='Current pupil '+current+' · '+(pending?pending.status+(pending.reason?': '+pending.reason:''):'No signed admission/forward record.')+' All broker orders remain a server-only action.';
+ const trainingNotice=daysOld!==null&&daysOld>7?
+   ' Research observations are '+daysOld+' days old; new overlapping training runs do not constitute independent validation.':'';
+ byId('clipboard').textContent='Current pupil '+current+' · '+(pending?pending.status+(pending.reason?': '+pending.reason:''):'No signed admission/forward record.')+' All broker orders remain a server-only action.'+trainingNotice;
  const exam=byId('examStats');exam.replaceChildren();
  const metrics=[['Examination status',pending?.status??'NOT ADMITTED'],['Closed paper trades',pending?.closedTrades??'—'],['Confirmed grade',data.confirmed?'G'+data.paper.grade:'—'],['Profit qualification',data.confirmed?(data.paper.qualified?'PASS':'NOT PASSED'):'PENDING']];
  for(const [label,value] of metrics){const tile=document.createElement('div');tile.className='tile';const k=document.createElement('small'),v=document.createElement('strong');k.textContent=label;v.textContent=String(value);tile.append(k,v);exam.append(tile);}
