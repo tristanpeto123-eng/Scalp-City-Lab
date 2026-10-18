@@ -173,3 +173,20 @@ test('half-hour scheduled research fetches 10 fresh Alpaca feeds before every le
  assert.doesNotMatch(workflow,/ref:\s*feat\/crypto-paper-agents/);
  assert.doesNotMatch(workflow,/\/v2\/orders|submitOrder\s*\(/);
 });
+
+test('archived RSI boundary mutations are filtered before strict simulator execution',()=>{
+ const sample={...oldRecord,id:'d'.repeat(64),trainingOptions:[
+  {params:{family:'rsi_reversion',period:14,buyBelow:40,sellAbove:60},
+    closedTrades:45,netProfitGbp:0.5,winRatePct:40,trainingScore:null}
+ ]};
+ const saved={...empty,experiments:[sample]};
+ const plan=proposeResearchLesson(saved,{symbol:'BTC/USD',feed:'us-1',fingerprint:'f'.repeat(64)});
+ assert.ok(plan.candidates.length>0);
+ assert.ok(plan.candidates.every(p=>p.family!=='rsi_reversion'||p.buyBelow<=40),
+   'Proposals must not exceed the actual validator RSI buy threshold');
+ const result=runResearchLesson(saved,{snapshot:snapshots.get('BTC/USD'),symbol:'BTC/USD',now});
+ assert.equal(result.changed,true);
+ assert.ok(result.memory.experiments.at(-1).trainingOptions.every(
+   o=>o.params.family!=='rsi_reversion'||o.params.buyBelow<=40));
+ assert.equal(result.brokerOrders,0);
+});
