@@ -35,13 +35,16 @@ async function readOrGenerate(name,generate){
 async function startExaminer(){
  if(!path.isAbsolute(privateRoot))throw Error('EXAMINER: durable private absolute directory required');
  await fs.mkdir(privateRoot,{recursive:true,mode:0o700});
- const keyPem=await readOrGenerate('paper-signer.private.pem',()=>{
-   const {privateKey}=crypto.generateKeyPairSync('ed25519');
-   return privateKey.export({type:'pkcs8',format:'pem'});
- });
+ const keyPem=process.env.TEACHER_PUBLISH_PRIVATE_KEY_PEM||
+   await readOrGenerate('paper-signer.private.pem',()=>{
+     const {privateKey}=crypto.generateKeyPairSync('ed25519');
+     return privateKey.export({type:'pkcs8',format:'pem'});
+   });
  const pub=crypto.createPublicKey(keyPem);
+ if(pub.asymmetricKeyType!=='ed25519')throw Error('EXAMINER: Ed25519 signing key required');
  const publicSpki=pub.export({type:'spki',format:'der'}).toString('base64');
- const signingSecret=await readOrGenerate('admission.secret',()=>crypto.randomBytes(48).toString('hex'));
+ const signingSecret=process.env.TEACHER_ADMISSION_SIGNING_SECRET||
+   await readOrGenerate('admission.secret',()=>crypto.randomBytes(48).toString('hex'));
  process.env.TEACHER_PUBLISH_PRIVATE_KEY_PEM=keyPem;
  process.env.TEACHER_ADMISSION_SIGNING_SECRET=signingSecret.trim();
  process.env.TEACHER_PRIVATE_DIR=privateRoot;
