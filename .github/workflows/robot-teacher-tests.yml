@@ -27,6 +27,7 @@ jobs:
           node --check teacher/runtime.mjs
           node --check teacher/teacher-tests.mjs
           node --check teacher/teacher-v2-tests.mjs
+          node --check teacher/teacher-console-tests.mjs
           node --check teacher/auditor.mjs
           node --check teacher/admission-seal.mjs
           node --check teacher/evidence.mjs
@@ -38,4 +39,4 @@ jobs:
       - name: Unit and adversarial mock-only tests
         env:
           TEACHER_PAPER_ENABLED: 'false'
-        run: node --test teacher/teacher-tests.mjs teacher/teacher-v2-tests.mjs
+        run: node --test teacher/teacher-tests.mjs teacher/teacher-v2-tests.mjs teacher/teacher-console-tests.mjs
