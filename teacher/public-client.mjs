@@ -124,10 +124,23 @@ export async function readHostingConnection({
     status.signerPinned!==true||status.privateExaminerLinked!==true||
     typeof status.examinerStatus!=='string'||typeof status.paperOrdersEnabled!=='boolean')
    throw Error('PAPER_HOST_PRIVATE_HANDSHAKE_FAILED');
+ const a=status.paperAccounts;
+ if(a!==undefined&&(a?.schema!=='TEACHER_PAPER_ACCOUNTS_PUBLIC_V1'||
+    !Number.isInteger(a.required)||a.required!==PAIRS.length||
+    !Number.isInteger(a.configured)||a.configured<0||a.configured>10||
+    !Number.isInteger(a.checked)||a.checked<0||a.checked>10||
+    !Number.isInteger(a.passed)||a.passed<0||a.passed>a.checked||
+    typeof a.status!=='string'||typeof a.allPassed!=='boolean'))
+   throw Error('PAPER_ACCOUNT_STATUS_INVALID');
  return Object.freeze({
    hosted:true,signerPinned:true,privateExaminerLinked:true,
    examinerStatus:status.examinerStatus,
    paperOrdersEnabled:status.paperOrdersEnabled,
-   brokerExaminationProven:false
+   brokerExaminationProven:false,
+   paperAccounts:a?Object.freeze({
+     status:a.status,configured:a.configured,checked:a.checked,
+     passed:a.passed,required:a.required,allPassed:a.allPassed,
+     checkedAt:a.checkedAt||null
+   }):null
  });
 }
