@@ -50,8 +50,10 @@ jobs:
           node --check teacher/grade-service.mjs
           node --check teacher/commission-server.mjs
           node --check teacher/paper-preflight.mjs
+          node --check teacher/hosted-preflight.mjs
+          node --check teacher/hosted-preflight-tests.mjs
           node --check teacher/admit.mjs
       - name: Unit and adversarial mock-only tests
         env:
           TEACHER_PAPER_ENABLED: 'false'
-        run: node --test teacher/teacher-tests.mjs teacher/teacher-v2-tests.mjs teacher/teacher-console-tests.mjs teacher/public-client-tests.mjs teacher/grade-service-tests.mjs
+        run: node --test teacher/teacher-tests.mjs teacher/teacher-v2-tests.mjs teacher/teacher-console-tests.mjs teacher/public-client-tests.mjs teacher/grade-service-tests.mjs teacher/hosted-preflight-tests.mjs
