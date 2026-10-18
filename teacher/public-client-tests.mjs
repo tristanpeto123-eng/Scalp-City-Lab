@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {generateKeyPairSync,sign,webcrypto} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import {PAIRS,checkResearch,checkSignedReport,readSignedPaperFeed,
-  readResearch} from './public-client.mjs';
+  readResearch,readHostingConnection} from './public-client.mjs';
 const base='https://scalp.example/Scalp-City-Lab/trading-floor.html';
 const source=JSON.parse(await readFile(new URL('../research-data/robot-academy.json',import.meta.url),'utf8'));
 const keypair=generateKeyPairSync('ed25519');
@@ -27,10 +27,17 @@ function mockFetch({payload=record,signed=report(payload),configured=true}={}){
         schema:'ROBOT_ACADEMY_PUBLIC_SETTINGS_V1',
         status:configured?'CONFIGURED':'NOT_PROVISIONED',
         feedUrl:'https://paper.example/api/academy',
+        connectionUrl:'https://paper.example/api/connection',
         signingPublicKeyBase64:pub
       })};
    if(url==='https://paper.example/api/academy')
      return {ok:true,json:async()=>signed};
+   if(url==='https://paper.example/api/connection')
+     return {ok:true,json:async()=>({
+       schema:'TEACHER_PUBLIC_CONNECTION_V1',
+       signerPinned:true,privateExaminerLinked:true,
+       examinerStatus:'NOT_ADMITTED',paperOrdersEnabled:false
+     })};
    throw Error('Mock must never call outside read-only whitelisted sources: '+url);
  };
 }
@@ -83,4 +90,24 @@ test('trading-floor app imports the authoritative verifier; broker trades are in
  const office=await readFile(new URL('../teacher-console.html',import.meta.url),'utf8');
  assert.match(office,/URLSearchParams\(location\.search\)/);
  assert.match(office,/Ed25519/);
+});
+
+test('authenticated host handshake is not falsely counted as a paper grade',async()=>{
+ const hosting=await readHostingConnection({fetchImpl:mockFetch(),baseUrl:base});
+ assert.equal(hosting.hosted,true);
+ assert.equal(hosting.signerPinned,true);
+ assert.equal(hosting.paperOrdersEnabled,false);
+ assert.equal(hosting.brokerExaminationProven,false);
+});
+test('hosting unavailable and forged key matching cannot become verified',async()=>{
+ await assert.rejects(readHostingConnection({
+   fetchImpl:mockFetch({configured:false}),baseUrl:base}),/NOT_CONFIGURED/);
+ const tamper=async url=>{
+   const good=await mockFetch()(url);
+   if(url.endsWith('/api/connection'))return {ok:true,json:async()=>({
+     schema:'TEACHER_PUBLIC_CONNECTION_V1',signerPinned:false,
+     privateExaminerLinked:true,examinerStatus:'READY',paperOrdersEnabled:false})};
+   return good;
+ };
+ await assert.rejects(readHostingConnection({fetchImpl:tamper,baseUrl:base}),/HANDSHAKE_FAILED/);
 });
