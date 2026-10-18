@@ -1,7 +1,7 @@
 name: Scalp City — repeated parent-seeded chart research lessons
 on:
   schedule:
-    - cron: '5 7 * * *'
+    - cron: '7,37 * * * *' # every 30 minutes UTC; GitHub Actions may run late
   workflow_dispatch:
   push:
     branches: [main]
@@ -16,7 +16,7 @@ jobs:
   train-research-and-publish:
     if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,12 +29,30 @@ jobs:
         run: |
           node --check scripts/run-robot-training.mjs
           node --test scripts/run-robot-training-tests.mjs
+          node --test scripts/refresh-alpaca-snapshots-tests.mjs
           node --test scripts/export-robot-academy-tests.mjs
           node --test strategy-adaptive-model-tests.mjs
           node --test robot-academy-tests.mjs
-      - name: Run one research generation on each saved crypto chart (NO orders)
+      - name: Fetch new, completed Alpaca candles for all 10 charts (GET only)
+        env:
+          ALPACA_PAPER_KEY: ${{ secrets.ALPACA_PAPER_KEY }}
+          ALPACA_PAPER_SECRET: ${{ secrets.ALPACA_PAPER_SECRET }}
+        run: |
+          node --input-type=module <<'NODE'
+          import {refreshAll} from './scripts/refresh-alpaca-snapshots.mjs';
+          const {updated,requestMethods,paperOrders,generatedAt}=await refreshAll({
+            key:process.env.ALPACA_PAPER_KEY,
+            secret:process.env.ALPACA_PAPER_SECRET,
+            outputDir:'research-inputs'
+          });
+          if(updated!==10||requestMethods.length!==1||requestMethods[0]!=='GET'||paperOrders!==0)
+            throw Error('Read-only research data preflight failed');
+          console.log('10 chart datasets captured at '+generatedAt+'; no orders');
+          NODE
+      - name: Run one research generation per crypto chart (NO orders)
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          SCALP_RESEARCH_INPUT_DIR: research-inputs
         run: node scripts/run-robot-training.mjs
       - name: Checkout updated standalone research memory after successful write
         uses: actions/checkout@v4
