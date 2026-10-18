@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a1628"><title>Scalp City | Teacher's Office</title>
+<style>
+:root{font-family:Inter,ui-rounded,system-ui,-apple-system,sans-serif;color:#ecf7ff;background:#081321;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 70% -10%,#28536c 0,transparent 52%),linear-gradient(145deg,#081321,#102137 60%,#091321)}
+a{color:#9ae7e1}button{font:inherit;cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid #ffe0a4;outline-offset:3px}
+.wrap{max-width:1320px;margin:auto;padding:24px clamp(14px,3vw,36px) 60px}.top{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;border-bottom:1px solid #304d65;padding-bottom:20px}
+.brand{color:#a7d9d4;font-weight:900;letter-spacing:.15em;font-size:.76rem}.back{text-decoration:none;border:1px solid #40637a;padding:10px 14px;border-radius:12px}
+h1{font-size:clamp(2.15rem,5vw,3.5rem);letter-spacing:-.055em;margin:16px 0 8px}h1 span{color:#82dbce}
+h2{font-size:1.2rem;letter-spacing:-.025em;margin:0 0 12px}h3{font-size:.96rem;margin:0 0 9px}
+.muted{color:#acc4d7}.lede{max-width:780px;line-height:1.55;font-size:.92rem}.pill{display:inline-block;border:1px solid #66849c;border-radius:99px;padding:7px 10px;color:#bed2e3;font-weight:800;letter-spacing:.06em;font-size:.69rem}.pill.warn{color:#ffe0a4;border-color:#987a4d}.pill.green{color:#8df1d4;border-color:#4b947f}
+.meta{display:flex;gap:10px;flex-wrap:wrap;margin:17px 0 23px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
+.stat,.panel{background:linear-gradient(145deg,#152b43,#112135);border:1px solid #304c64;border-radius:16px;padding:18px;min-width:0}
+.stat small{display:block;color:#a5c2d3;letter-spacing:.07em;text-transform:uppercase;font-size:.67rem;font-weight:800}.stat strong{display:block;margin:10px 0 2px;font-size:1.8rem;font-weight:900;font-variant-numeric:tabular-nums}.stat span{font-size:.72rem;color:#9db9cb}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 14px}.tab,.btn{border:1px solid #50738b;border-radius:11px;background:#29455c;color:#e8f9ff;padding:11px 15px;font-weight:750}.tab.selected,.btn.primary{background:#ebcc8b;color:#21374b;border-color:#ebcc8b}
+.view[hidden]{display:none}.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:16px}.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px;flex-wrap:wrap}
+.rooms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.room{border:1px solid #43627d;background:#23364e;border-radius:11px;overflow:hidden;min-height:109px}
+.room label{display:flex;justify-content:space-between;gap:3px;background:#245167;padding:8px;color:#f6e7b2;font-size:.75rem;font-weight:800}.room label small{font-weight:400;color:#bfdaea}.room.advanced label{background:#5a554a}
+.members{display:flex;flex-wrap:wrap;gap:4px;align-items:center;justify-content:center;padding:14px 5px;min-height:76px}
+.robot{--c:#73dbd1;display:flex;flex-direction:column;align-items:center;background:transparent;border:0;color:white;min-width:55px}.robot i{position:relative;display:block;width:44px;height:35px;background:var(--c);border:3px solid #d5f8ec;border-radius:12px 12px 10px 10px;box-shadow:0 5px 0 #28455c}.robot i:before{content:"•  •";color:#102d43;position:absolute;left:7px;top:2px;font-size:16px}.robot i:after{content:"";position:absolute;width:4px;height:10px;background:#dbf2eb;left:16px;top:-12px}.robot b{font-size:.7rem;margin-top:11px}
+.robot[aria-pressed=true] i{outline:3px solid #ecca8b;outline-offset:2px}.roster{display:grid;grid-template-columns:1fr 1fr;gap:7px}.student{padding:10px;background:#162f46;color:#eafaff;border:1px solid #466179;border-radius:10px;text-align:left}
+.student[aria-pressed=true]{background:#326174;border-color:#a1ded4}.student b{display:block}.student small{display:block;color:#afc8d7;margin-top:3px;font-size:.69rem}
+.detail{border-top:1px solid #36526b;margin-top:15px;padding-top:14px}.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.tile{background:#10243a;border:1px solid #324c65;border-radius:11px;padding:11px}.tile small{display:block;color:#b1c7d6;font-size:.68rem}.tile strong{display:block;font-size:1.13rem;margin-top:4px}
+.warning{border-left:3px solid #d4aa69;background:#886a421c;padding:12px;color:#f5dfb7;font-size:.82rem;line-height:1.5;border-radius:6px;margin:12px 0}
+.office{height:320px;position:relative;border-radius:15px;overflow:hidden;border:1px solid #557c87;background:linear-gradient(#2d5c76 0 50%,#294258 50% 100%);margin:12px 0}
+.office:before{content:"";position:absolute;inset:8px 12px auto;height:87px;background:repeating-linear-gradient(90deg,#8cb2b7 0 17%,#233e59 17.7% 20%);border:9px solid #24455d;opacity:.8}
+.whiteboard{position:absolute;top:115px;left:23%;right:12%;height:93px;background:#e6ead3;color:#28445e;border:8px solid #a6ada0;border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-shadow:0 7px #172f46;text-align:center;padding:5px}
+.whiteboard strong{font-size:clamp(.8rem,2vw,1.3rem);letter-spacing:.06em}.whiteboard small{font-size:.7rem}
+.desk{position:absolute;bottom:18px;left:12%;right:8%;height:44px;background:linear-gradient(#c38c5c,#845a39);border:4px solid #c9a079;border-radius:5px;box-shadow:0 13px 15px #0004}
+.teacherbot{position:absolute;bottom:61px;left:15%;height:92px;width:74px;background:linear-gradient(#eec78e 0 45%,#6c9db2 46%);border:5px solid #b8e1e5;border-radius:23px 23px 12px 12px;box-shadow:0 7px 18px #0005}.teacherbot:before{content:"●  ●";position:absolute;top:10px;left:11px;font-size:20px;color:#153e56}
+.steps{display:grid;gap:10px}.step{border:1px solid #34566d;border-radius:12px;background:#122d43;padding:13px}.step strong{display:block;margin-bottom:5px}.step small{color:#b6cedc;line-height:1.45}
+.progress{height:9px;background:#122d42;border-radius:10px;overflow:hidden}.progress>div{height:100%;background:linear-gradient(90deg,#6bd6c9,#ecca83);width:0;transition:width .2s}
+.ledger{width:100%;border-collapse:collapse;font-size:.83rem}.ledger th,.ledger td{text-align:left;border-bottom:1px solid #35516b;padding:13px 9px}.ledger th{color:#a5c2d2;font-size:.68rem;letter-spacing:.07em}.ledger td:last-child{font-weight:800}.foot{margin-top:22px;color:#8eacbe;font-size:.75rem;line-height:1.6}
+@media(max-width:950px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.rooms{grid-template-columns:repeat(2,minmax(0,1fr))}.stat strong{font-size:1.45rem}.wrap{padding:14px}.office{height:270px}.teacherbot{left:8%}.whiteboard{left:22%;right:7%}}
+</style></head><body>
+<div class="wrap">
+<header class="top"><div class="brand">SCALP CITY / ROBOT ACADEMY / TEACHER-01</div><nav><a class="back" href="./robot-academy.html">← Academy</a> <a class="back" href="./trading-floor.html">Trading Floor ↗</a></nav></header>
+<h1>Teacher's <span>Office</span></h1><p class="lede muted">Connected to the saved Robot Academy research register and the cryptographically signed forward-paper report endpoint. Simulated examples never alter actual grades or place broker orders.</p>
+<div class="meta"><span class="pill warn" id="connectionState">NOT PROVISIONED</span><span class="pill" id="dataState">LOADING RESEARCH</span><span class="pill" id="teacherUpdated">NO VERIFIED REPORT</span></div>
+<div class="stats">
+ <div class="stat"><small>Registered pupils</small><strong id="countStudents">10</strong><span>Separate chart-specific models</span></div>
+ <div class="stat"><small>Research screen pass</small><strong id="countReady">0</strong><span>Not the same as admission</span></div>
+ <div class="stat"><small>Verified grades</small><strong id="countGrades">0</strong><span>Signed paper-broker evidence only</span></div>
+ <div class="stat"><small>Paper execution</small><strong id="statusPaper" style="font-size:1.15rem;color:#ffdda4">UNKNOWN / LOCKED</strong><span>Cannot be armed from the browser</span></div>
+</div>
+<div class="tabs" role="tablist" aria-label="Teacher sections">
+ <button class="tab selected" data-tab="class" role="tab" aria-selected="true">Classrooms</button>
+ <button class="tab" data-tab="teacher" role="tab" aria-selected="false">Teacher's Office</button>
+ <button class="tab" data-tab="evidence" role="tab" aria-selected="false">Evidence Ledger</button>
+ <button class="btn" id="refresh" type="button">↻ Refresh verified data</button>
+</div>
+<section class="view" id="class"><div class="grid">
+ <div class="panel"><div class="sectionhead"><h2>🏫 Robot Academy</h2><span class="pill">GRADES 0–10</span></div><div class="rooms" id="rooms"></div><p class="muted" style="font-size:.76rem;line-height:1.5">Research grades describe historical training win rates only. An independently verified forward-paper grade supersedes a research classroom.</p></div>
+ <aside class="panel"><div class="sectionhead"><h2>Pupil Register</h2><span class="pill">10 CHARTS</span></div><div class="roster" id="roster"></div><div class="detail"><h3 id="person">BTC / Bitcoin</h3><p class="muted" id="personText" style="font-size:.78rem">Loading saved training history...</p><div class="tiles" id="tiles"></div><div class="warning" id="personGate"></div><button class="btn" id="inspectTeacher">Inspect examination →</button></div></aside>
+</div></section>
+<section class="view" id="teacher" hidden><div class="grid">
+ <div class="panel"><div class="sectionhead"><h2>Examiner's Room</h2><span class="pill warn" id="officeBadge">ADMISSIONS LOCKED</span></div>
+ <div class="office" aria-label="Illustrated Teacher's classroom"><div class="whiteboard"><strong id="whiteboard">AWAITING ELIGIBLE PUPILS</strong><small id="whiteboardSub">No confirmed forward grades</small></div><div class="teacherbot"></div><div class="desk"></div></div>
+ <h2>Examination progression</h2><div class="steps" id="steps"></div></div>
+ <div class="panel"><h2>Teacher's Clipboard</h2><p class="muted" style="font-size:.83rem;line-height:1.5" id="clipboard">Reading the signed results feed. No order controls are exposed.</p>
+ <div class="tiles"><div class="tile"><small>Virtual pupil budget</small><strong>US$50</strong></div><div class="tile"><small>Largest order</small><strong>US$25</strong></div><div class="tile"><small>Minimum verified closes</small><strong>30</strong></div><div class="tile"><small>Max accepted drawdown</small><strong>10%</strong></div></div>
+ <h3>Independent live result</h3><div class="tiles" id="examStats"></div>
+ <div class="warning" id="lockNote">Only the server may submit Alpaca PAPER orders after the owner approves the exact release and deployment checks pass.</div>
+ <div class="sectionhead"><h3 style="margin:0">Isolated UI demonstration</h3><span class="pill">FICTIONAL</span></div>
+ <button class="btn primary" id="mockRun">▶ Preview 30 simulated closes</button> <button class="btn" id="mockClear">Reset</button>
+ <p class="muted" style="font-size:.74rem" id="mockText">The example changes no research records or verified grades.</p>
+ <div class="progress" aria-label="Demo exam progress"><div id="mockBar"></div></div>
+ </div>
+</div></section>
+<section class="view" id="evidence" hidden><div class="grid">
+ <div class="panel"><div class="sectionhead"><h2>Forward examination ledger</h2><span class="pill" id="ledgerProof">NO SIGNED REPORT</span></div>
+ <p class="muted" style="line-height:1.5;font-size:.79rem">Only records in the authenticated, server-signed report can be considered verified. This display cannot read private Alpaca credentials or publish grades.</p>
+ <table class="ledger"><thead><tr><th>GATE</th><th>CONTROL</th><th>STATUS</th></tr></thead><tbody id="ledgerRows"></tbody></table></div>
+ <aside class="panel"><h2>Current examiner status</h2><div class="warning" id="evidenceDetails">No independently signed forward examination report connected.</div>
+ <h3>Acceptance conditions</h3><div class="steps">
+ <div class="step"><strong>30 distinct round trips</strong><small>Executed paper fills are matched to separate model IDs; partial fills do not create extra trials.</small></div>
+ <div class="step"><strong>Net fees, FX and drawdown verified</strong><small>Crypto fees, external GBP conversion, and journalled capital exposure must reconcile.</small></div>
+ <div class="step"><strong>Signed publisher</strong><small>The result feed is verified against a pinned Ed25519 public key, not browser JSON.</small></div></div></aside></div></section>
+<p class="foot">Teacher v0.2 · Connected Academy console on the review branch. Research numbers are historical, and the only real result channel is signed and read-only. The demo is synthetic; it cannot issue orders, promote pupils, or approve releases.</p>
+</div>
+<script>
+(()=>{'use strict';
+const source=['BTC/USD','ETH/USD','SOL/USD','XRP/USD','ADA/USD','AVAX/USD','LINK/USD','DOGE/USD','LTC/USD','BCH/USD'];
+const titles=['Bitcoin','Ether','Solana','Ripple','Cardano','Avalanche','Chainlink','Dogecoin','Litecoin','Bitcoin Cash'];
+const colors=['#66d4cc','#c4afff','#f4c878','#99c9ff','#e6a7c1','#b9df94','#ffa98d','#e3cd7d','#9fbaf1','#e4b6e2'];
+const base=source.map((symbol,i)=>({symbol,name:titles[i],color:colors[i]}));
+const byId=id=>document.getElementById(id);
+let research=null,grades=new Map(),reports=new Map(),current=(()=>{const raw=new URLSearchParams(location.search).get('pupil');return source.find(s=>s.replace('/','')===String(raw||'').toUpperCase())||'BTC/USD';})(),signedReportAt=null,examTimer=null,simCount=0,feedMessage='Not configured',lastConnection='NOT PROVISIONED',version=0;
+const money=n=>Number.isFinite(n)?(n<0?'−':'')+'£'+Math.abs(n).toFixed(2):'—';
+const rate=p=>p?.leader?.trainingWinRatePct;
+const gradePercent=n=>Number.isFinite(n)?Math.min(10,Math.floor((n+1e-8)/10)):null;
+const winner=p=>grades.get(p.symbol);
+function record(p){const v=winner(p);const leader=research?.pupils?.find(x=>x.symbol===p.symbol)?.researchLeader;
+return {paper:v,leader,grade:v?v.grade:gradePercent(leader?.trainingWinRatePct),confirmed:!!v};}
+function choose(symbol){current=symbol;render();}
+function switchTab(t){for(const x of ['class','teacher','evidence'])byId(x).hidden=x!==t;for(const b of document.querySelectorAll('[data-tab]')){b.classList.toggle('selected',b.dataset.tab===t);b.setAttribute('aria-selected',String(b.dataset.tab===t));}render();}
+function render(){
+ const count=grades.size;
+ byId('countGrades').textContent=String(count);
+ byId('countReady').textContent=String(research?.pupils?.filter(p=>p.researchLeader?.trainingNetGbp>0&&p.researchLeader?.trainingClosedTrades>=30).length??0);
+ byId('countStudents').textContent=String(base.length);
+ byId('connectionState').textContent=lastConnection;
+ const trainedAt=Date.parse(research?.latestTrainingEnd||'');
+ const daysOld=Number.isFinite(trainedAt)?Math.max(0,Math.floor((Date.now()-trainedAt)/86400_000)):null;
+ byId('dataState').textContent=research?
+   (daysOld===null?'RESEARCH DATE UNKNOWN':daysOld>7?'RESEARCH STALE · '+daysOld+'D':'RESEARCH · '+daysOld+'D OLD'):'RESEARCH UNAVAILABLE';
+ byId('dataState').title=research?'Latest training candle: '+(research.latestTrainingEnd||'unknown'):
+   'Research source not available';
+
+ byId('teacherUpdated').textContent=signedReportAt?'SIGNED '+new Date(signedReportAt).toLocaleString():'NO VERIFIED REPORT';
+ const rooms=byId('rooms');rooms.replaceChildren();
+ for(let g=0;g<=10;g++){
+   const room=document.createElement('div');room.className='room'+(g===10?' advanced':'');
+   const label=document.createElement('label');label.append(document.createTextNode(g===10?'🎓 Graduation':'Grade '+g));
+   const small=document.createElement('small');small.textContent=g===10?'100%':String(g*10)+'–'+String(g*10+9)+'%';label.append(small);room.append(label);
+   const members=document.createElement('div');members.className='members';
+   let found=false;for(const p of base){const x=record(p);if(x.grade!==g)continue;found=true;
+     const bot=document.createElement('button');bot.className='robot';bot.style.setProperty('--c',p.color);
+     bot.setAttribute('aria-pressed',String(current===p.symbol));bot.title=p.symbol+(x.confirmed?' verified PAPER grade':' provisional RESEARCH grade');
+     const face=document.createElement('i'),name=document.createElement('b');name.textContent=p.symbol.split('/')[0];bot.append(face,name);
+     bot.onclick=()=>choose(p.symbol);members.append(bot);}
+   if(!found){const span=document.createElement('span');span.className='muted';span.textContent='Empty classroom';span.style.fontSize='.72rem';members.append(span);}
+   room.append(members);rooms.append(room);
+ }
+ const roster=byId('roster');roster.replaceChildren();
+ for(const p of base){const x=record(p);const b=document.createElement('button');b.className='student';b.setAttribute('aria-pressed',String(current===p.symbol));const title=document.createElement('b');title.textContent=p.symbol;
+   const status=document.createElement('small');status.textContent=x.grade===null?'Ungraded':('Grade '+x.grade+(x.confirmed?' · VERIFIED PAPER':' · RESEARCH'));
+   b.append(title,status);b.onclick=()=>choose(p.symbol);roster.append(b);}
+ const p=base.find(p=>p.symbol===current),data=record(p),pending=reports.get(current);
+ byId('person').textContent=p.symbol+' / '+p.name;
+ byId('personText').textContent=data.confirmed?'INDEPENDENT FORWARD-PAPER RESULT':data.leader?'Saved historical research model: '+data.leader.name:'No saved research leader';
+ const tiles=data.confirmed?[
+   ['Verified paper closes',data.paper.closedTrades],['Paper win rate',(100*data.paper.wins/data.paper.closedTrades).toFixed(1)+'%'],
+   ['Paper net GBP',money(data.paper.netProfitGbp)],['Max drawdown',data.paper.maxDrawdownPct.toFixed(2)+'%']
+ ]:[
+   ['Training closes',data.leader?.trainingClosedTrades??'—'],['Research win rate',Number.isFinite(rate(data))?rate(data).toFixed(1)+'%':'—'],
+   ['Historical net GBP',money(data.leader?.trainingNetGbp)],['Provisional grade',data.grade===null?'—':'G'+data.grade]
+ ];
+ byId('tiles').replaceChildren();
+ for(const [k,v] of tiles){const d=document.createElement('div');d.className='tile';const small=document.createElement('small');small.textContent=k;const strong=document.createElement('strong');strong.textContent=String(v);d.append(small,strong);byId('tiles').append(d);}
+ byId('personGate').textContent=data.confirmed?(data.paper.qualified?'Verified grade; profitability/risk gate PASSED. Owner promotion still separate.':'Verified grade; profitability/risk gate NOT PASSED.'):(pending?'Independent examination: '+pending.status+(pending.reason?' — '+pending.reason:'')+'. No confirmed grade.':(data.leader?'Not admitted: saved historical net '+money(data.leader.trainingNetGbp)+'. Independent holdout and signed server admission required.':'Not admitted: no research leader.'));
+ byId('whiteboard').textContent=count?'SIGNED FORWARD GRADES: '+count:'AWAITING SIGNED EXAMS';
+ byId('whiteboardSub').textContent=reports.size?'Some exams report status; no browser trade controls':feedMessage;
+ byId('officeBadge').textContent=reports.size?'SIGNED EXAM FEED':'EXECUTION NOT PROVISIONED';
+ const trainingNotice=daysOld!==null&&daysOld>7?
+   ' Research observations are '+daysOld+' days old; new overlapping training runs do not constitute independent validation.':'';
+ byId('clipboard').textContent='Current pupil '+current+' · '+(pending?pending.status+(pending.reason?': '+pending.reason:''):'No signed admission/forward record.')+' All broker orders remain a server-only action.'+trainingNotice;
+ const exam=byId('examStats');exam.replaceChildren();
+ const metrics=[['Examination status',pending?.status??'NOT ADMITTED'],['Closed paper trades',pending?.closedTrades??'—'],['Confirmed grade',data.confirmed?'G'+data.paper.grade:'—'],['Profit qualification',data.confirmed?(data.paper.qualified?'PASS':'NOT PASSED'):'PENDING']];
+ for(const [label,value] of metrics){const tile=document.createElement('div');tile.className='tile';const k=document.createElement('small'),v=document.createElement('strong');k.textContent=label;v.textContent=String(value);tile.append(k,v);exam.append(tile);}
+ const steps=[
+  ['Research screening',data.leader?.trainingNetGbp>0?'Research leader has positive net; auditor still required':'Not eligible: positive research profit missing'],
+  ['Signed independent admission',pending?'Exam record available (independent server)':'No independent admission publication'],
+  ['Forward-paper orders',pending?.closedTrades?pending.closedTrades+' documented closed trades':'No authenticated completed trade count'],
+  ['Fees and broker evidence',data.confirmed?'Reconciled and verified':'Unverified or pending settlement'],
+  ['Signed grade publication',data.confirmed?'SIGNED GRADE '+data.paper.grade:'Grade locked'],
+ ];
+ byId('steps').replaceChildren();for(const [name,value] of steps){const el=document.createElement('div');el.className='step';const strong=document.createElement('strong'),sm=document.createElement('small');strong.textContent=name;sm.textContent=value;el.append(strong,sm);byId('steps').append(el);}
+ byId('ledgerProof').textContent=signedReportAt?'ED25519 SIGNATURE VERIFIED':'NO VERIFIED FEED';
+ const checks=[['Research snapshot','GitHub historical data',research?'PRESENT':'UNAVAILABLE'],
+ ['Independent admission','Server-only signed examiner record',pending?'STATUS AVAILABLE':'NOT DOCUMENTED'],
+ ['Paper forward trades','Alpaca order/fill reconciliation',pending?.closedTrades?String(pending.closedTrades)+' CLOSES':'NOT VERIFIED'],
+ ['Fees and GBP','Posted CFEE + external GBP reference',data.confirmed?'VERIFIED':'PENDING'],
+ ['Pupil risk','Private signed journal drawdown',data.confirmed?'VERIFIED':'PENDING'],
+ ['Publisher signature','Pinned Ed25519 verification',signedReportAt?'VERIFIED':'NOT PROVISIONED'],
+ ['Confirmed grade','30+ reconciled paper closes',data.confirmed?'GRADE '+data.paper.grade:'LOCKED']];
+ const ledger=byId('ledgerRows');ledger.replaceChildren();
+ for(const row of checks){const tr=document.createElement('tr');for(const cell of row){const td=document.createElement('td');td.textContent=cell;tr.append(td);}ledger.append(tr);}
+ byId('evidenceDetails').textContent=feedMessage+' · '+(pending?'Pupil '+current+': '+pending.status:'No independently verified forward-paper examination record for '+current)+'.';
+}
+function cleanResearch(payload){
+ if(payload?.schema!=='ROBOT_ACADEMY_RESEARCH_V1'||payload.source!=='GITHUB_PERSISTED_HISTORICAL_TRAINING'||payload.verifiedForwardGrades!==0||
+   !/^[a-f0-9]{64}$/.test(payload.sourceDigest||'')||!Array.isArray(payload.pupils)||payload.pupils.length!==10||
+   new Set(payload.pupils.map(p=>p.symbol)).size!==10)throw Error('Research provenance rejected');
+ for(const p of payload.pupils)if(!source.includes(p.symbol)||p.source!=='HISTORICAL_TRAINING_RESEARCH'||p.confirmedForward!==false||
+   (p.researchLeader&&(!Number.isFinite(p.researchLeader.trainingNetGbp)||!Number.isFinite(p.researchLeader.trainingWinRatePct)||
+   !Number.isInteger(p.researchLeader.trainingClosedTrades))))throw Error('Invalid research pupil');
+ return payload;
+}
+async function readResearch(){
+ const res=await fetch('./research-data/robot-academy.json',{cache:'no-store',credentials:'omit'});
+ if(!res.ok)throw Error('GitHub training snapshot HTTP '+res.status);
+ return cleanResearch(await res.json());
+}
+function validateAndMap(report){
+ const issued=Date.parse(report?.generatedAt);
+ if(report?.schema!=='ROBOT_ACADEMY_SIGNED_FORWARD_V1'||report.source!=='SERVER_VERIFIED_ALPACA_PAPER'||report.paperOnly!==true||
+  !Array.isArray(report.pupils)||report.pupils.length>10||
+  !Number.isInteger(report.verifiedCount)||!Number.isFinite(issued)||
+  issued>Date.now()+300000||Date.now()-issued>36*3600_000)throw Error('Signed report invalid/expired');
+ const nextReports=new Map(),nextGrades=new Map();
+ for(const p of report.pupils){
+  if(!source.includes(p?.symbol)||nextReports.has(p.symbol)||typeof p.status!=='string')throw Error('Signed pupil identity invalid');
+  if(p.status==='VERIFIED_FORWARD_GRADE'){
+   if(!Number.isInteger(p.closedTrades)||p.closedTrades<30||!Number.isInteger(p.wins)||p.wins<0||p.wins>p.closedTrades||
+    !Number.isFinite(p.netProfitGbp)||!Number.isFinite(p.maxDrawdownPct)||p.maxDrawdownPct<0||p.maxDrawdownPct>100||
+    p.grade!==gradePercent(100*p.wins/p.closedTrades)||typeof p.qualified!=='boolean'||
+    p.qualified!==(p.netProfitGbp>0&&p.maxDrawdownPct<=10)||
+    !/^[a-f0-9]{64}$/.test(p.evidenceHash||''))throw Error('Signed grade fails independent arithmetic');
+   nextGrades.set(p.symbol,p);
+  }else if(p.status==='FORWARD_TESTING'){
+   if(p.closedTrades!==undefined&&(!Number.isInteger(p.closedTrades)||p.closedTrades<0||p.closedTrades>=30))throw Error('Signed forward count invalid');
+  }else if(p.status!=='EVIDENCE_PENDING')throw Error('Unknown examiner status');
+  nextReports.set(p.symbol,p);
+ }
+ if(nextGrades.size!==report.verifiedCount)throw Error('Signed report graduate count mismatch');
+ return {nextReports,nextGrades,issued};
+}
+async function readFeed(){
+ const cfgRes=await fetch('./teacher/public-settings.json',{cache:'no-store',credentials:'omit'});
+ if(!cfgRes.ok)throw Error('Public Teacher settings HTTP '+cfgRes.status);
+ const cfg=await cfgRes.json();
+ if(cfg?.schema!=='ROBOT_ACADEMY_PUBLIC_SETTINGS_V1'||cfg.status!=='CONFIGURED'||
+ typeof cfg.feedUrl!=='string'||typeof cfg.signingPublicKeyBase64!=='string')
+  throw Error('Server/feed not provisioned (no signed grades)');
+ const url=new URL(cfg.feedUrl,location.href);
+ if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash||!crypto.subtle)
+  throw Error('Teacher endpoint is not an authenticated HTTPS source');
+ const response=await fetch(url.href,{cache:'no-store',credentials:'omit'});
+ if(!response.ok)throw Error('Teacher HTTPS feed '+response.status);
+ const bundle=await response.json();
+ if(bundle?.algorithm!=='Ed25519'||!bundle.payload||typeof bundle.signature!=='string')throw Error('Unsigned Teacher response');
+ const decode=x=>Uint8Array.from(atob(x),c=>c.charCodeAt(0));
+ const pub=await crypto.subtle.importKey('spki',decode(cfg.signingPublicKeyBase64),'Ed25519',false,['verify']);
+ if(!await crypto.subtle.verify('Ed25519',pub,decode(bundle.signature),new TextEncoder().encode(JSON.stringify(bundle.payload))))
+  throw Error('Teacher publisher signature rejected');
+ return validateAndMap(bundle.payload);
+}
+async function readHostingStatus(){
+ const config=await fetch('./teacher/public-settings.json',{cache:'no-store',credentials:'omit'});
+ if(!config.ok)throw Error('Public Teacher settings HTTP '+config.status);
+ const settings=await config.json();
+ if(settings.schema!=='ROBOT_ACADEMY_PUBLIC_SETTINGS_V1'||
+    settings.status!=='CONFIGURED'||typeof settings.connectionUrl!=='string'||
+    typeof settings.feedUrl!=='string')throw Error('Teacher host not provisioned');
+ const locationUrl=new URL(settings.connectionUrl,location.href);
+ const feedUrl=new URL(settings.feedUrl,location.href);
+ if(locationUrl.protocol!=='https:'||locationUrl.origin!==feedUrl.origin||
+    locationUrl.pathname!=='/api/connection'||locationUrl.search||locationUrl.hash)
+    throw Error('Untrusted hosting connection endpoint');
+ const response=await fetch(locationUrl.href,{cache:'no-store',credentials:'omit'});
+ if(!response.ok)throw Error('Private examiner handshake not active');
+ const status=await response.json();
+ if(status.schema!=='TEACHER_PUBLIC_CONNECTION_V1'||
+    status.signerPinned!==true||status.privateExaminerLinked!==true||
+    typeof status.examinerStatus!=='string'||typeof status.paperOrdersEnabled!=='boolean')
+   throw Error('Private examiner did not authenticate successfully');
+ return status;
+}
+async function reload(){
+ const serial=++version;
+ byId('refresh').disabled=true;
+ const [r,t,hosting]=await Promise.allSettled([readResearch(),readFeed(),readHostingStatus()]);
+ if(serial!==version)return;
+ research=r.status==='fulfilled'?r.value:null;
+ if(t.status==='fulfilled'){reports=t.value.nextReports;grades=t.value.nextGrades;signedReportAt=t.value.issued;lastConnection='SIGNED FEED VERIFIED';feedMessage='Signed feed accepted; '+grades.size+' verified pupil grades';}
+ else{reports=new Map();grades=new Map();signedReportAt=null;
+   feedMessage=hosting.status==='fulfilled'?
+     'Authenticated Railway host online · no independently verified paper results; '+String(t.reason?.message||t.reason):
+     String(t.reason?.message||t.reason);
+   lastConnection=hosting.status==='fulfilled'?'HOST ONLINE · NO GRADES':'NOT CONNECTED';}
+ byId('refresh').disabled=false;render();
+}
+for(const b of document.querySelectorAll('[data-tab]'))b.onclick=()=>switchTab(b.dataset.tab);
+byId('inspectTeacher').onclick=()=>switchTab('teacher');byId('refresh').onclick=reload;
+byId('mockRun').onclick=()=>{
+ if(examTimer)clearInterval(examTimer);
+ simCount=0;byId('mockRun').disabled=true;byId('mockBar').style.width='0%';
+ byId('mockText').textContent='0 / 30 MOCK closes · synthetic-only visual exercise.';
+ examTimer=setInterval(()=>{simCount=Math.min(30,simCount+1);byId('mockBar').style.width=(simCount/30*100)+'%';
+ byId('mockText').textContent=simCount+'/30 simulated closes · no broker orders and no verified grade changes';
+ if(simCount>=30){clearInterval(examTimer);examTimer=null;byId('mockRun').disabled=false;
+ byId('mockText').textContent='DEMO COMPLETE · grade 8, 24/30 wins (FICTIONAL). Official grade remains '+(grades.get(current)?.grade??'UNCONFIRMED')+'.';}},70);
+};
+byId('mockClear').onclick=()=>{if(examTimer)clearInterval(examTimer);examTimer=null;simCount=0;byId('mockRun').disabled=false;byId('mockBar').style.width='0%';byId('mockText').textContent='Mock cleared. No changes to actual evidence.';};
+render();reload();
+})();
+</script></body></html>
