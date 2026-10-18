@@ -1,6 +1,6 @@
 # Robot Academy Teacher v0.2 — audited PAPER examinations
 **Release candidate:** ACADEMY-TEACHER-0.2.0-rc1
-**State:** draft PR; NOT MERGED, NOT DEPLOYED, NO TEACHER PAPER ORDERS, NO VERIFIED PUPIL RESULTS.
+**State (18 Oct 2026):** merged to main; two Railway services and a public pinned-key HTTPS status gateway deployed and independently checked. Actual Alpaca PAPER examinations are NOT enabled: zero admitted pupils, zero Teacher orders, zero verified grades. See `teacher/CONNECTION.md` for verified commissioning evidence.
 **Order endpoint:** \`https://paper-api.alpaca.markets/v2/orders\` only. No live trade, deposits or withdrawals.
 
 ## What was actually built
@@ -39,7 +39,7 @@ The GitHub Actions Teacher Checker workflow runs syntax and these mock tests onl
 ## Risk/governance
 Historical parent training and historical audit are separate from **forward broker fill evidence**. A 100% observed win rate with negative net profit is not profitable qualification. No automated decision can grant real-money execution, unfreeze a model mid-exam, or bypass an explicitly withheld owner release. Broker failures stop the service; emergency stops are not guaranteed to cancel accepted orders or close holdings.
 
-**Known blockers today:** zero eligible historical champions, zero Teacher forward orders, zero published verified grades, no private always-on Teacher deployment, public key/feed unprovisioned. These are tracked as launch gates rather than disguised as completed production tests.
+**Known blockers today:** zero eligible historical champions, zero Teacher forward orders, zero verified grades, no PAPER keys in private Railway examiner, no independent per-pupil broker preflight. Persistent hosting and pinned HTTPS gateway are now commissioned; absent trade evidence correctly returns 503.
 
 ## Integrated Teacher UI (connection update)
 The review branch now includes \`teacher-console.html\`, with navigation from:
@@ -59,6 +59,6 @@ TEACHER_PAPER_CREDENTIALS_JSON='{"BTC/USD":{"key":"YOUR_PAPER_KEY","secret":"YOU
   node teacher/paper-preflight.mjs
 \`\`\`
 
-It sends **GET only** requests for account, asset, positions and open orders; validates paper-only identity and crypto access; reports whether the account is suitable for a later separately approved paper trial. This script does **not** submit, cancel or amend orders. Using one paper credential cannot operate the current ten-pupil segregated design: every admitted pupil needs a distinct account. Account credentials are not connected in this PR and no preflight with the user's genuine credentials has run.
+It sends **GET only** requests for account, asset, positions and open orders; validates paper-only identity and crypto access; reports whether the account is suitable for a later separately approved paper trial. This script does **not** submit, cancel or amend orders. Using one paper credential cannot operate the current ten-pupil segregated design: every admitted pupil needs a distinct account. One existing GitHub Actions PAPER credential pair was successfully read-only preflighted for BTC/USD on 18 October 2026 (run 39132172472), but **these keys are not provisioned on Railway** and do not establish ten independent accounts. No order was sent.
 
-A private always-on host must run \`teacher/runtime.mjs\` with owner-approved exact release and at least one signed admission; \`teacher/grade-service.mjs\` can then serve the signed report behind HTTPS. GitHub Pages can host the UI but **cannot** host a continuously running broker examiner or keep account secrets. Do not configure \`teacher/public-settings.json\` until the server is accessible over HTTPS and the public signing key is pinned.
+The private always-on Railway host and HTTPS gateway are now deployed using `teacher/commission-server.mjs`. The gateway and private signer passed the real public HTTPS acceptance run 39132293037. The real exam cycle (`teacher/runtime.mjs`) remains disabled until per-pupil PAPER secrets, signed historical admissions and operator-controlled paper-risk acceptance are complete. GitHub Pages hosts the UI only and has no broker secrets.
