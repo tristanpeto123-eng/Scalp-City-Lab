@@ -55,3 +55,16 @@ The official `championModel` remains **null** until separate future independent 
 **Checker tests:** `scripts/run-robot-training-tests.mjs` and `scripts/export-robot-academy-tests.mjs` test seeding, per-pair isolation, append-only saving, chronological holdout integrity, duplicate history controls and champion provenance. The live page requires no account credentials.
 
 **Risk and reliability:** GitHub's scheduled jobs may be delayed or missed, source snapshots may become stale, rate limits or write conflicts can block a cycle, and historical fee estimates omit actual liquidity/spreads/FX/slippage. No paper or live broker orders, withdrawals, deposits, payouts or user account access are authorised. A passed automated code test proves the software behaved as tested, not that a trading strategy is profitable.
+
+## Repeated research schedule — every half hour
+
+The user-approved **Robot Academy research trainer** runs on GitHub Actions cron `7,37 * * * *` (minute 7 and 37, UTC; one cycle approximately every 30 minutes). Scheduled GitHub Actions may start late or be skipped under platform load; this is **not an exact 30-minute service-level guarantee**.
+
+Every cycle:
+1. Run Checker tests; download fresh 15-minute **completed** historical Alpaca/Kraken US candles for all ten pairs with server-held paper API credentials using read-only GET requests. Block if any pair is missing or fails source/continuity validation.
+2. Read existing pair-scoped training evidence from the `scalp-learning-memory` branch. For each pair, seed research from its best prior **training net GBP** candidate, even if it was loss-making, then test bounded variations. No chart borrows another pair's parent.
+3. Append only genuinely new settings and historical research experiments via SHA-safe GitHub memory writes. Overlapping historical windows are recorded as **non-independent**; old bars never become new forward evidence merely because a schedule repeated. The archive limits experiments to eight per pair per historical training-end day; a run can correctly record **no new lessons**.
+4. Export the validated training-only ten-pupil report to `research-data/robot-academy.json` and publish changes when there is new model-memory evidence; the Academy fetches that file read-only. Training grades remain provisional; no live-forward verified grades, bank balances, or actual profits are claimed.
+5. Never enable brokerage orders, payments, automatic model promotion or deposit handling.
+
+The separate six-hour historical snapshot refresh is still available for the public Strategy Validation page; the 30-minute trainer does **not** rely on those older snapshots and will not silently fall back to them on an Alpaca error.

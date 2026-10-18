@@ -1,7 +1,7 @@
 name: Robot Academy grading and demo checks
 on:
   push:
-    branches: [feat/robot-academy-graduation-v1, release/robot-academy-v1, feat/robot-academy-real-history-v1, feat/robot-academy-repeated-training-v1, main]
+    branches: [feat/robot-academy-graduation-v1, release/robot-academy-v1, feat/robot-academy-real-history-v1, feat/robot-academy-repeated-training-v1, release/robot-training-half-hour-v1, main]
     paths:
       - robot-academy.html
       - robot-academy-tests.mjs
@@ -9,6 +9,9 @@ on:
       - scripts/export-robot-academy-tests.mjs
       - scripts/run-robot-training.mjs
       - scripts/run-robot-training-tests.mjs
+      - scripts/refresh-alpaca-snapshots.mjs
+      - scripts/refresh-alpaca-snapshots-tests.mjs
+      - robot-training.trigger
       - .github/workflows/robot-research-training.yml
       - .github/workflows/robot-academy-sync.yml
       - robot-academy-schema.json
@@ -24,6 +27,9 @@ on:
       - scripts/export-robot-academy-tests.mjs
       - scripts/run-robot-training.mjs
       - scripts/run-robot-training-tests.mjs
+      - scripts/refresh-alpaca-snapshots.mjs
+      - scripts/refresh-alpaca-snapshots-tests.mjs
+      - robot-training.trigger
       - .github/workflows/robot-research-training.yml
       - .github/workflows/robot-academy-sync.yml
       - robot-academy-schema.json
@@ -49,3 +55,4 @@ jobs:
           node --test scripts/export-robot-academy-tests.mjs
           node --check scripts/run-robot-training.mjs
           node --test scripts/run-robot-training-tests.mjs
+          node --test scripts/refresh-alpaca-snapshots-tests.mjs

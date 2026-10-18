@@ -322,14 +322,17 @@ async function main(){
  const token=process.env.GITHUB_TOKEN;
  if(!token)throw Error('GITHUB_TOKEN required: no file-based fallback');
  const {memory:before,blobSha}=await fetchMemory({token});
- const result=await evaluateAll({memory:before});
+ // Each scheduled cycle uses independently refreshed, completed read-only
+ // Alpaca bars if provided. Never silently fall back to an older snapshot.
+ const selectedDir=process.env.SCALP_RESEARCH_INPUT_DIR||'validation-data';
+ const result=await evaluateAll({memory:before,dataDir:selectedDir});
  const saved=await persistMemory({token,expectedSha:blobSha,previous:before,next:result.memory});
  console.log('ROBOT_TRAINING_CYCLE '+JSON.stringify({
   status:saved.status,savedCommit:saved.commitSha??null,
   priorExperiments:before.experiments.length,
   newExperiments:result.addedExperiments,
   charts:result.reports,
-  brokerOrders:0,liveForwardValidated:false,
+  dataDirectory:selectedDir,brokerOrders:0,liveForwardValidated:false,
   note:'Research only, no real funds. Historical re-runs never justify trader graduation or predict earnings.'
  }));
  if(saved.written){
