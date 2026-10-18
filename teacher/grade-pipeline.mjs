@@ -89,6 +89,11 @@ export async function makeReport({records,signingSecret,broker,journal,fx,
         netProfitGbp:x.netProfitGbp,maxDrawdownPct:x.maxDrawdownPct,
         qualified:x.qualified,modelId:x.modelId,
         evidenceHash:x.evidenceHash
+      }:x.status==='FORWARD_TESTING'?{
+        closedTrades:x.closedTrades,wins:x.wins,
+        netProfitGbp:x.netProfitGbp,maxDrawdownPct:x.maxDrawdownPct,
+        modelId:x.modelId,evidenceHash:x.evidenceHash,
+        note:'BROKER-RECONCILED BUT PROVISIONAL; NO CONFIRMED GRADE'
       }:{reason:x.reason||'Forward evidence not final'})
     }))};
   const data=Buffer.from(JSON.stringify(payload),'utf8');
