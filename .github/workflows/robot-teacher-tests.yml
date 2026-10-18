@@ -26,7 +26,16 @@ jobs:
           node --check teacher/alpaca-crypto.mjs
           node --check teacher/runtime.mjs
           node --check teacher/teacher-tests.mjs
+          node --check teacher/teacher-v2-tests.mjs
+          node --check teacher/auditor.mjs
+          node --check teacher/admission-seal.mjs
+          node --check teacher/evidence.mjs
+          node --check teacher/fx-reference.mjs
+          node --check teacher/risk-ledger.mjs
+          node --check teacher/grade-pipeline.mjs
+          node --check teacher/grade-service.mjs
+          node --check teacher/admit.mjs
       - name: Unit and adversarial mock-only tests
         env:
           TEACHER_PAPER_ENABLED: 'false'
-        run: node --test teacher/teacher-tests.mjs
+        run: node --test teacher/teacher-tests.mjs teacher/teacher-v2-tests.mjs
