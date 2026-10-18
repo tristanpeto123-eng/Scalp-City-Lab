@@ -1,7 +1,8 @@
 {
   "schema": "ROBOT_ACADEMY_PUBLIC_SETTINGS_V1",
-  "status": "NOT_PROVISIONED",
-  "feedUrl": null,
-  "signingPublicKeyBase64": null,
-  "note": "Configured only after authenticated teacher deployment, owner approval and pinned Ed25519 public key. Unsigned data is never a verified grade."
+  "status": "CONFIGURED",
+  "feedUrl": "https://teacher-signed-gateway-production.up.railway.app/api/academy",
+  "connectionUrl": "https://teacher-signed-gateway-production.up.railway.app/api/connection",
+  "signingPublicKeyBase64": "MCowBQYDK2VwAyEAlbxIivWfk5W5836FrJxOKolx6oH6CQzvO8VtdkZtZ60=",
+  "note": "HTTPS hosting and pinned publisher key provisioned. No Alpaca paper credentials, no admitted pupils, no evidence-backed grades yet. A 503 indicates no authenticated forward-paper result; never assume success."
 }
