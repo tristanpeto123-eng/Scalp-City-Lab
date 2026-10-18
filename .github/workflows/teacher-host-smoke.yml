@@ -1,0 +1,23 @@
+name: Teacher Railway HTTPS private-link smoke test (GET only)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/check-teacher-host.mjs'
+      - '.github/workflows/teacher-host-smoke.yml'
+      - 'teacher/public-settings.json'
+      - 'teacher/commission-server.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-host:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify real HTTPS signed gateway, authenticated private examiner and safe empty evidence feed
+        run: node scripts/check-teacher-host.mjs
