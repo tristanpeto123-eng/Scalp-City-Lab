@@ -104,3 +104,30 @@ export async function readSignedPaperFeed({
    throw Error('Examiner signature did not match pinned public key');
  return checkSignedReport(bundle.payload,now);
 }
+
+// Hosting connectivity does NOT establish Alpaca broker connectivity.
+export async function readHostingConnection({
+ fetchImpl=globalThis.fetch,
+ baseUrl='https://tristanpeto123-eng.github.io/Scalp-City-Lab/'}={}){
+ const settings=await getJson(fetchImpl,new URL('./teacher/public-settings.json',baseUrl).href);
+ if(settings?.schema!=='ROBOT_ACADEMY_PUBLIC_SETTINGS_V1'||
+    settings.status!=='CONFIGURED'||typeof settings.connectionUrl!=='string'||
+    typeof settings.feedUrl!=='string')
+   throw Error('PAPER_HOST_NOT_CONFIGURED');
+ const target=new URL(settings.connectionUrl,baseUrl);
+ const feed=new URL(settings.feedUrl,baseUrl);
+ if(target.protocol!=='https:'||target.username||target.password||target.search||
+    target.hash||target.origin!==feed.origin||target.pathname!=='/api/connection')
+   throw Error('PAPER_HOST_UNTRUSTED_URL');
+ const status=await getJson(fetchImpl,target.href);
+ if(status?.schema!=='TEACHER_PUBLIC_CONNECTION_V1'||
+    status.signerPinned!==true||status.privateExaminerLinked!==true||
+    typeof status.examinerStatus!=='string'||typeof status.paperOrdersEnabled!=='boolean')
+   throw Error('PAPER_HOST_PRIVATE_HANDSHAKE_FAILED');
+ return Object.freeze({
+   hosted:true,signerPinned:true,privateExaminerLinked:true,
+   examinerStatus:status.examinerStatus,
+   paperOrdersEnabled:status.paperOrdersEnabled,
+   brokerExaminationProven:false
+ });
+}
