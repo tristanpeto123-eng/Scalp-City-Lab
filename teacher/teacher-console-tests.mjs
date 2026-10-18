@@ -32,11 +32,12 @@ test('Academy, trading floor, central 3D city and agent city link Teacher consol
   assert.match(await read(p),/href="\.\/teacher-console\.html"/,p+' missing teacher link');
  }
 });
-test('default feed is unprovisioned and cannot supply forged positive grades',async()=>{
+test('public HTTPS gateway has exact pinned public key and no order authority',async()=>{
  const cfg=JSON.parse(await read('teacher/public-settings.json'));
- assert.equal(cfg.status,'NOT_PROVISIONED');
- assert.equal(cfg.feedUrl,null);
- assert.equal(cfg.signingPublicKeyBase64,null);
+ assert.equal(cfg.status,'CONFIGURED');
+ assert.match(cfg.feedUrl,/^https:\/\/[^/]+\/api\/academy$/);
+ assert.match(cfg.connectionUrl,/^https:\/\/[^/]+\/api\/connection$/);
+ assert.match(cfg.signingPublicKeyBase64,/^[A-Za-z0-9+/=]+$/);
  assert.match(consolePage,/lastConnection='NOT PROVISIONED'/);
 });
 test('provisional teacher results may show 0-29 closes but never a fake confirmed grade',async()=>{
