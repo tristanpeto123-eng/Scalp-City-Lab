@@ -170,8 +170,10 @@ async function refresh(){
  }
  $('countVerified').textContent=String(grades.size);
  $('feedStatus').textContent=feedOk?'VERIFIED':host.status==='fulfilled'?'HOST ONLINE':'NOT CONNECTED';
+ const a=host.status==='fulfilled'?host.value.paperAccounts:null;
  $('feedDetail').textContent=feedOk?'Authenticated paper report':host.status==='fulfilled'?
-   'Private examiner linked; no paper evidence':'Signed host unavailable';
+   a?'Broker preflight: '+a.passed+'/'+a.required+' accounts · '+a.status:
+   'Private examiner linked; broker preflight not reported':'Signed host unavailable';
  $('modeBadge').textContent=feedOk?'SIGNED STATUS · ORDERS DISABLED':
    host.status==='fulfilled'?'HOST READY · EXAMINATION LOCKED':'RESEARCH ONLY · PAPER NOT CONNECTED';
  if(!feedOk&&host.status==='fulfilled')
