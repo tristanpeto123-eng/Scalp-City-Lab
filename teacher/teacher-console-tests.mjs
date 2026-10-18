@@ -46,3 +46,23 @@ test('provisional teacher results may show 0-29 closes but never a fake confirme
  assert.match(consolePage,/p\.closedTrades>=30/);
  assert.match(consolePage,/p\.status==='VERIFIED_FORWARD_GRADE'/);
 });
+
+test('read-only broker preflight checks unique paper identity and does not order',async()=>{
+ const {preflightPaper}=await import('./paper-preflight.mjs');
+ const broker={
+  account:async()=>({id:'mock-paper-id-1',status:'ACTIVE',
+    crypto_status:'ACTIVE',non_marginable_buying_power:'100',
+    trading_blocked:false,account_blocked:false}),
+  asset:async()=>({symbol:'BTC/USD',class:'crypto',tradable:true,
+    marginable:false,shortable:false,min_order_size:'0.0001',
+    min_trade_increment:'0.0001'}),
+  positions:async()=>[],openOrders:async()=>[],
+  paperOrder:async()=>{throw Error('MUST NOT PLACE ORDERS');}
+ };
+ const good=await preflightPaper({broker,symbols:['BTC/USD']});
+ assert.equal(good.allPassed,true);
+ assert.equal(good.rows[0].operation,'READ_ONLY_GET');
+ const used=await preflightPaper({broker:{...broker,openOrders:async()=>[{}]},symbols:['BTC/USD']});
+ assert.equal(used.allPassed,false);
+ await assert.rejects(preflightPaper({broker,symbols:['BTC/USD','BTC/USD']}),/duplicate/);
+});
