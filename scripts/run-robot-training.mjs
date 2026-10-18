@@ -72,6 +72,13 @@ export function checkParams(p){
 }
 function toSimulator(p){
  checkParams(p);
+ // Strictly intersect archived strategy rules with the live validator's
+ // narrower parameter bounds. Archived out-of-bounds parents are not executed.
+ if(p.family==='ema_trend'&&(p.fast<3||p.slow>96))throw Error('Unsupported EMA validator bounds');
+ if(p.family==='rsi_reversion'&&(p.period<7||p.period>30||p.sellAbove>85))
+  throw Error('Unsupported RSI validator bounds');
+ if(p.family==='channel_breakout'&&(p.lookback<10||p.exitLookback<5))
+  throw Error('Unsupported breakout validator bounds');
  if(p.family==='ema_trend')return {strategy:'ema',strategyParams:{fast:p.fast,slow:p.slow}};
  if(p.family==='rsi_reversion')return {strategy:'rsi',strategyParams:{
   period:p.period,buyBelow:p.buyBelow,sellAbove:p.sellAbove}};
@@ -91,7 +98,10 @@ export function selectHistoricalParent(memory,symbol,feed='us-1'){
  // Do not use training win rate alone. Prefer greatest historic net profit
  // among strategies with meaningful sample size, though it can be a loser.
  // Cross-period net comparisons are only *heuristic research seeds*.
- const admissible=options.filter(o=>o.closedTrades>=20);
+ const admissible=options.filter(o=>{
+  if(o.closedTrades<20)return false;
+  try{toSimulator(o.params);return true}catch{return false}
+ });
  admissible.sort((a,b)=>b.netProfitGbp-a.netProfitGbp||
   b.closedTrades-a.closedTrades||
   Date.parse(b.trainingEnd)-Date.parse(a.trainingEnd)||
@@ -109,7 +119,7 @@ function variantsAround(parent){
   {family:'channel_breakout',lookback:20,exitLookback:10}
  ];
  const proposals=[];
- const add=p=>{try{const clean=checkParams(p);if(!proposals.some(x=>canonical(x)===canonical(clean)))
+ const add=p=>{try{const clean=checkParams(p);toSimulator(clean);if(!proposals.some(x=>canonical(x)===canonical(clean)))
   proposals.push(clean);}catch{}};
  for(const p of bases){
   add(p);
