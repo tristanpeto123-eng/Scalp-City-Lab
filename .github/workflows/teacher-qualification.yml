@@ -1,0 +1,75 @@
+name: Teacher — independent model qualification (no orders)
+on:
+  push:
+    branches: [feat/teacher-qualification-review-20261018, main]
+    paths:
+      - 'teacher/qualification-runner.mjs'
+      - '.github/workflows/teacher-qualification.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '47 14 * * *'
+permissions:
+  contents: read
+jobs:
+  research-admission-screen:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fetch append-only independently archived training memory
+        uses: actions/checkout@v4
+        with:
+          ref: scalp-learning-memory
+          path: research-memory
+          persist-credentials: false
+      - name: Checker verifies evaluator source and unit suites (no Alpaca order access)
+        env:
+          TEACHER_ENABLE_EXAMINER: 'false'
+          TEACHER_PAPER_ENABLED: 'false'
+        run: |
+          node --check teacher/qualification-runner.mjs
+          node --check teacher/admit.mjs
+          node --check teacher/auditor.mjs
+          node --test teacher/teacher-tests.mjs teacher/teacher-v2-tests.mjs teacher/hosted-preflight-tests.mjs
+      - name: Screen ten published Academy leaders against source-matched untouched chronology
+        env:
+          TEACHER_ENABLE_EXAMINER: 'false'
+          TEACHER_PAPER_ENABLED: 'false'
+        run: |
+          node teacher/qualification-runner.mjs \
+            research-memory/scalp-learning/history.json \
+            research-data/robot-academy.json \
+            validation-data \
+            qualification-results/report.json
+      - name: Record independent screening outcome without admitting or trading
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const result=JSON.parse(fs.readFileSync('qualification-results/report.json','utf8'));
+          if(result.pupilsTotal!==10||result.admissionsIssued!==0||result.brokerOrdersSubmitted!==0)
+            throw Error('Qualification gate cannot create broker activity or admissions');
+          console.log('QUALIFICATION_RESULT='+result.status);
+          console.log('QUALIFIED_CANDIDATES='+result.eligibleCount);
+          console.log('SLOTS_AVAILABLE='+result.availablePaperSlots);
+          for(const p of result.pupils)
+            console.log('SCREEN '+p.symbol+' '+p.verdict+' closed='+p.trainingTrades+
+              ' net_gbp='+p.trainingNetGbp+' '+p.reasons.join('; ').slice(0,190));
+          const summary=['## Independent Robot Academy qualification',
+            'Historical research only. No admissions or trades.','',
+            '| Pupil | Train closes | Train net GBP | Holdout net GBP | Verdict |',
+            '|---|---:|---:|---:|---|',
+            ...result.pupils.map(p=>`| ${p.symbol} | ${p.trainingTrades} | ${p.trainingNetGbp} | ${p.holdoutNetGbp??'unverified'} | ${p.verdict} |`),
+            '',`**Eligible:** ${result.eligibleCount}/10; **paper seats:** ${result.availablePaperSlots}; **orders:** 0`,''];
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,summary.join('\n'));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: independent-teacher-qualification
+          path: qualification-results/report.json
+          retention-days: 30
