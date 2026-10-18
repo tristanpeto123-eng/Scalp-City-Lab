@@ -27,3 +27,27 @@ GitHub Actions workflows run those tests on the draft PR. The tests use fake res
 GitHub Pages is a static site; it cannot securely keep private Alpaca credentials, sign reports, run forward trades or persist the examiner journal. Current approval permits this code to be built and reviewed on a branch, **not** to merge/deploy it or place paper orders. Never route real money through the demo Trading Floor.
 
 If no eligible pupils or no valid public signed evidence exist, show \`NOT ADMITTED\` / \`NOT CONNECTED\` and keep verified forward grades at zero. This is the expected safe state today.
+
+
+## Commissioning checkpoint — 18 October 2026 (verified)
+**Hosting and HTTPS are actually deployed, not merely proposed.** PR #15 merged to \`main\`.
+Railway project \`Scalp City Teacher Paper Exams\` has two Node 22 services:
+- \`teacher-private-examiner\` — private only; no public domain; persistent 500 MB volume at \`/data\`. Examinations and order submissions remain OFF. Publisher Ed25519 private key and admission secret remain in private service storage/configuration.
+- \`teacher-signed-gateway\` — Railway-managed HTTPS hostname \`teacher-signed-gateway-production.up.railway.app\`; verifies the privately pinned Ed25519 signer and does **not** contain Alpaca order API keys.
+
+GitHub Pages \`teacher/public-settings.json\` is \`CONFIGURED\` to point to that HTTPS gateway and the real signer SPKI fingerprint. The **independently run live HTTPS GitHub Actions acceptance** [run 39132293037](https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39132293037) passed:
+- Public \`GET /health\` returned 200.
+- Public \`GET /api/connection\` returned 200 with \`signerPinned=true\`, \`privateExaminerLinked=true\`, \`examinerStatus=NOT_ADMITTED\`, \`paperOrdersEnabled=false\`.
+- GitHub Pages actually served the same pinned key and endpoint as repository configuration.
+- \`GET /api/academy\` returned expected **503**, with 0 verified grades (no signed broker evidence). This is a secure fail-closed result.
+
+**Existing Alpaca PAPER credentials work in GitHub Actions.** The read-only [run 39132172472](https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/39132172472) successfully performed **GET only** broker calls for BTC/USD: account \`ACTIVE\`, no preflight concerns, zero submitted orders. This establishes **one** genuine PAPER account/asset eligibility, not ten isolated accounts and not broker execution.
+
+**Remaining external commissioning dependencies — NOT COMPLETE:**
+1. Open separate PAPER accounts in the [Alpaca Dashboard](https://app.alpaca.markets/) using the paper-account selector → **Open New Paper Account**. Generate per-account PAPER API key/secret. Each concurrently admitted pupil requires its own distinct account. An existing account in GitHub Actions cannot be read back through GitHub APIs, and it has *not* been transferred to Railway.
+2. Place secrets **only** in Railway project → \`teacher-private-examiner\` → Variables, as \`TEACHER_PAPER_CREDENTIALS_JSON\`, keyed by pupil symbol (e.g., \`{"BTC/USD":{"key":"...","secret":"..."}}\`). Use Railway's private variable editor, **not this chat, not a Git commit, not a browser page**. No actual Alpaca keys currently appear among the examiner's Railway variable names.
+3. Execute private host read-only preflight for **each** distinct account, verify owner/account identities and history before enabling the exam engine. Keep \`TEACHER_ENABLE_EXAMINER=false\`, \`TEACHER_PAPER_ENABLED=false\` until the exact candidate frozen admission passes independent research and held-out stress and the production account/fill/fee behaviors pass a real safe trial.
+4. Current **ten research leaders remain loss-making**, thus there are no qualified signed admissions and no broker forward round trips. Graduation is not possible before new profitable research is independently reproduced and 30 genuine settled paper closes are verified.
+5. After full preflight, operator must explicitly review the risk kill-switches, trading venue order constraints, fees and rollover; only then may any paper-order switch be enabled. No live trading path has been enabled or approved.
+
+This checkpoint supersedes earlier paragraphs in this file that described HTTPS hosting as hypothetical or \`public-settings.json\` as \`NOT_PROVISIONED\`. External service acceptance does **not** mean Alpaca PAPER exams are commissioned.
