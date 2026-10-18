@@ -22,7 +22,7 @@ jobs:
       - name: Inspect configured PAPER account with GET only
         env:
           ALPACA_PAPER_KEY: ${{ secrets.ALPACA_PAPER_KEY }}
-          ALPACA_PAPER_SECRET: \${{ secrets.ALPACA_PAPER_SECRET }}
+          ALPACA_PAPER_SECRET: ${{ secrets.ALPACA_PAPER_SECRET }}
         run: |
           node --input-type=module <<'NODE'
           import {CryptoTeacherBroker} from './teacher/alpaca-crypto.mjs';
