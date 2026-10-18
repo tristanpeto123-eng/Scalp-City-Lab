@@ -2,6 +2,7 @@
 import {createHash} from 'node:crypto';
 import {PAIRS,checkSnapshot} from '../strategy-validation-core.mjs';
 import {checkParams} from '../scripts/run-robot-training.mjs';
+import {virtualPaperEquity} from './risk-ledger.mjs';
 
 const PERIOD=15*60_000;
 const id=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
@@ -170,13 +171,16 @@ export class Teacher {
     if(!finite(qty)||qty<0)throw Error('TEACHER: invalid paper holding');
     if(qty>0&&!await this.broker.ownedPosition(symbol,await this.journal.orderIds(symbol),qty))
       throw Error('TEACHER: cannot prove examiner owns paper inventory');
-    const peak=await this.journal.peakEquity(symbol);
-    const equity=Number(account.equity),start=Number(account.last_equity);
-    if(!finite(equity)||!finite(start)||!finite(peak)||equity<=0||start<=0)
-      throw Error('TEACHER: invalid paper equity');
-    if(equity/start<1-POLICY.dailyStopPct/100||equity/peak<1-POLICY.maxDrawdownPct/100)
-      throw Error('TEACHER: drawdown/loss circuit breaker; manual reset only');
-    await this.journal.observe(symbol,equity);
+    const history=await this.broker.recentOrders(symbol);
+    const owned=await this.journal.orderIds(symbol);
+    const virtual=virtualPaperEquity({symbol,orders:history,positions,
+      ownedClientIds:owned,markPrice:bar.c});
+    const peak=await this.journal.peakVirtual(symbol);
+    const dayStart=await this.journal.openVirtualToday(symbol,now);
+    if(virtual.equity/dayStart<1-POLICY.dailyStopPct/100||
+       virtual.equity/peak<1-POLICY.maxDrawdownPct/100)
+      throw Error('TEACHER: $50 pupil loss/drawdown circuit breaker; manual reset only');
+    await this.journal.virtual(symbol,virtual.equity);
     const signal=closedSignal(bars,exam.parameters);
     // Exits are always prioritised; actual stop protection depends on runtime uptime.
     const entry=Number(pos?.avg_entry_price);
