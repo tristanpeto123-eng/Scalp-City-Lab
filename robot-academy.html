@@ -120,7 +120,9 @@ function render(){
   research?'Loaded '+research.pupils.reduce((s,p)=>s+p.experiments,0)+
   ' stored historical research experiments across 10 charts. Independently signed forward-paper grades: '+overall+'. Last training candle: '+
   (research.latestTrainingEnd||'unknown')+
-  '. These are training-only replays, not independently verified profitable or forward-paper trades. No verified forward-paper results are connected.':
+  '. Training-only replay performance does not prove forward returns. '+(overall?
+  'Only server-signed forward-paper grades are confirmed.':
+  'No verified forward-paper results have been commissioned.'):'
   'No verified forward-paper results are connected. '+(researchError||'Loading genuine historical training records…');
  $('lesson').disabled=!demo; $('demo').classList.toggle('active',demo);
  const rooms=$('rooms');rooms.replaceChildren();
@@ -153,6 +155,15 @@ function render(){
  const p=pupils[selected],v=percent(p),g=grade(p);
  const report=$('report');report.replaceChildren();
  const h=document.createElement('h3');h.textContent=p.name+' — '+p.symbol;report.append(h);
+ const actionLinks=document.createElement('p');actionLinks.className='note';
+ for(const [name,route] of [
+  ['Teacher examination','./teacher-console.html?pupil='+encodeURIComponent(p.symbol.replace('/',''))],
+  ['Trading-floor dossier','./trading-floor.html?pupil='+encodeURIComponent(p.symbol.replace('/',''))]
+ ]){
+   const link=document.createElement('a');link.href=route;link.textContent=name+' ↗';
+   link.style.marginRight='14px';actionLinks.append(link);
+ }
+ report.append(actionLinks);
  const subtitle=document.createElement('p');subtitle.className='note';
  subtitle.textContent=demo?'SIMULATED PUPIL · NOT REAL TRADES':p.source==='HISTORICAL_TRAINING_RESEARCH'?'HISTORICAL TRAINING REPLAY · PROVISIONAL':confirmed(p)?'VERIFIED FORWARD-PAPER RECORD':'NO VERIFIED OUTCOMES';
  report.append(subtitle);
