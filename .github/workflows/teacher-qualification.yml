@@ -4,6 +4,7 @@ on:
     branches: [feat/teacher-qualification-review-20261018, main]
     paths:
       - 'teacher/qualification-runner.mjs'
+      - 'research-data/robot-academy.json'
       - '.github/workflows/teacher-qualification.yml'
   workflow_dispatch:
   schedule:
