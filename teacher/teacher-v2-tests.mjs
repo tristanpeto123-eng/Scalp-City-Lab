@@ -133,3 +133,67 @@ test('full adapter -> grade -> signature -> verify pathway stays ungraded below 
  assert.equal(verifyReport(bundle,publicKey).pupils[0].status,'FORWARD_TESTING');
  assert.throws(()=>verifyReport({...bundle,payload:{...bundle.payload,verifiedCount:1}},publicKey),/signature invalid/);
 });
+
+
+test('full mocked 30-trade cohort earns signed grade only with reconciled real-style evidence',async()=>{
+ const orders=[],activities=[],journalIds=new Set();
+ const start=Date.parse('2026-10-10T02:00:00Z');
+ const eachDay=new Map();
+ for(let i=0;i<30;i++){
+   const buyAt=new Date(start+i*3*3600_000).toISOString();
+   const sellAt=new Date(start+(i*3+1)*3600_000).toISOString();
+   const d=buyAt.slice(0,10),row=eachDay.get(d)||{buys:0,sells:0};
+   row.buys++;row.sells++;eachDay.set(d,row);
+   const buyId='buy-'+i,sellId='sell-'+i;
+   const buyClient='teacher-'+hash(['b',i]).slice(0,34);
+   const sellClient='teacher-'+hash(['s',i]).slice(0,34);
+   journalIds.add(buyClient);journalIds.add(sellClient);
+   orders.push({id:buyId,client_order_id:buyClient,symbol:'BTC/USD',
+     side:'buy',status:'filled',filled_qty:'0.1',filled_avg_price:'100'});
+   orders.push({id:sellId,client_order_id:sellClient,symbol:'BTC/USD',
+     side:'sell',status:'filled',filled_qty:'0.0999',filled_avg_price:'102'});
+   activities.push({id:'buy-fill-'+i,activity_type:'FILL',order_id:buyId,
+     symbol:'BTC/USD',side:'buy',qty:'0.1',price:'100',transaction_time:buyAt});
+   activities.push({id:'sell-fill-'+i,activity_type:'FILL',order_id:sellId,
+     symbol:'BTC/USD',side:'sell',qty:'0.0999',price:'102',transaction_time:sellAt});
+ }
+ for(const [d,item] of eachDay){
+   activities.push({id:'coin-fee-'+d,activity_type:'CFEE',date:d,
+     net_amount:'0',qty:String(-0.0001*item.buys),price:'100',symbol:'BTCUSD'});
+   activities.push({id:'cash-fee-'+d,activity_type:'FEE',date:d,
+     net_amount:String(-0.02*item.sells),qty:'0',symbol:'BTCUSD'});
+ }
+ const reconciled=reconcilePaper({...props,orders,activities,journalOrderIds:journalIds});
+ assert.equal(reconciled.closedTrades.length,30);
+ const broker={account:async()=>({status:'ACTIVE',id:'paper-007'}),
+   recentOrders:async()=>orders,activities:async()=>activities,
+   positions:async()=>[],openOrders:async()=>[]};
+ const journal={unresolved:()=>[],orderIds:async()=>journalIds};
+ const fx={on:async()=>({source:'FRANKFURTER_ECB_REFERENCE',
+   date:'2026-10-14',gbpPerUsd:.78})};
+ const pair=generateKeyPairSync('ed25519');
+ const signedReport=await makeReport({records:[signed],signingSecret:secret,
+   broker,journal,fx,publisherPrivateKey:pair.privateKey,now});
+ const outcome=verifyReport(signedReport,pair.publicKey);
+ assert.equal(outcome.verifiedCount,1);
+ assert.equal(outcome.pupils[0].status,'VERIFIED_FORWARD_GRADE');
+ assert.equal(outcome.pupils[0].grade,10);
+ assert.equal(outcome.pupils[0].wins,30);
+ assert.equal(outcome.pupils[0].qualified,true);
+ assert.ok(outcome.pupils[0].netProfitGbp>0);
+ assert.match(outcome.pupils[0].evidenceHash,/^[0-9a-f]{64}$/);
+});
+
+test('Academy uses pinned public signature verification, never trusts JSON alone',async()=>{
+ const {readFile}=await import('node:fs/promises');
+ const html=await readFile(new URL('../robot-academy.html',import.meta.url),'utf8');
+ const settings=JSON.parse(await readFile(new URL('./public-settings.json',import.meta.url),'utf8'));
+ assert.match(html,/crypto\.subtle\.verify\('Ed25519'/);
+ assert.match(html,/signingPublicKeyBase64/);
+ assert.match(html,/signatureValid/);
+ assert.match(html,/ROBOT_ACADEMY_SIGNED_FORWARD_V1/);
+ assert.match(html,/report\.verifiedCount/);
+ assert.match(html,/if\(verified\)return/);
+ assert.equal(settings.status,'NOT_PROVISIONED');
+ assert.equal(settings.signingPublicKeyBase64,null);
+});
