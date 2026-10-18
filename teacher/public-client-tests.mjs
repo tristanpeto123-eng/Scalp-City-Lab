@@ -111,3 +111,21 @@ test('hosting unavailable and forged key matching cannot become verified',async(
  };
  await assert.rejects(readHostingConnection({fetchImpl:tamper,baseUrl:base}),/HANDSHAKE_FAILED/);
 });
+
+test('private account preflight counts never imply real paper examination',async()=>{
+ const wrapped=async url=>{
+  const original=await mockFetch()(url);
+  if(url.endsWith('/api/connection'))return {ok:true,json:async()=>({
+   ...await original.json(),
+   paperAccounts:{schema:'TEACHER_PAPER_ACCOUNTS_PUBLIC_V1',
+     status:'ALL_ACCOUNTS_VERIFIED',required:10,configured:10,checked:10,
+     passed:10,allPassed:true,checkedAt:'2026-10-18T12:00:00Z'}
+  })};
+  return original;
+ };
+ const result=await readHostingConnection({fetchImpl:wrapped,baseUrl:base});
+ assert.equal(result.paperAccounts.allPassed,true);
+ assert.equal(result.paperAccounts.passed,10);
+ assert.equal(result.brokerExaminationProven,false);
+ assert.equal(result.paperOrdersEnabled,false);
+});
