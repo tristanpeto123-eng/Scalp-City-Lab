@@ -5,8 +5,11 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {Teacher} from './engine.mjs';
 import {CryptoTeacherBroker} from './alpaca-crypto.mjs';
+import {verifyAdmission} from './admission-seal.mjs';
+import {makeReport} from './grade-pipeline.mjs';
+import {DailyGBPReference} from './fx-reference.mjs';
 
-export const RELEASE='ACADEMY-TEACHER-0.1.0-rc1';
+export const RELEASE='ACADEMY-TEACHER-0.2.0-rc1';
 const hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
 const delay=ms=>new Promise(r=>setTimeout(r,ms));
 export class TeacherJournal {
@@ -77,7 +80,10 @@ export function reviewConfiguration({admissions,credentials,enabled,approval}){
 export async function start(){
   const directory=process.env.TEACHER_PRIVATE_DIR;
   if(!directory||!path.isAbsolute(directory))throw Error('TEACHER: private absolute journal directory required');
-  const admissions=JSON.parse(await fs.readFile(path.join(directory,'admissions.json'),'utf8'));
+  const records=JSON.parse(await fs.readFile(path.join(directory,'admissions.json'),'utf8'));
+  if(!Array.isArray(records))throw Error('TEACHER: signed admission list required');
+  const signingSecret=process.env.TEACHER_ADMISSION_SIGNING_SECRET;
+  const admissions=records.map(r=>verifyAdmission(r,signingSecret));
   const credentials=parse(process.env.TEACHER_PAPER_CREDENTIALS_JSON,'paper-account credentials');
   const enabled=process.env.TEACHER_PAPER_ENABLED==='true';
   reviewConfiguration({admissions,credentials,enabled,approval:process.env.TEACHER_RELEASE_APPROVED});
@@ -112,6 +118,8 @@ export async function start(){
   let running=true;
   process.on('SIGTERM',()=>{running=false;});
   process.on('SIGINT',()=>{running=false;});
+  const fx=new DailyGBPReference();
+  let lastPublishedAt=0;
   while(running){
     for(const a of admissions){
       if(!running)break;
@@ -124,6 +132,18 @@ export async function start(){
         await journal.add('HALT',{symbol:a.symbol,reason:String(e.message)});
         throw e; // fail closed; manual restart and review mandatory
       }
+    }
+    if(running&&process.env.TEACHER_PUBLISH_PRIVATE_KEY_PEM&&
+       Date.now()-lastPublishedAt>900000){
+      // A signing failure or broker/account outage halts the entire examiner.
+      // Never publish synthetic or partially verified rows as confirmed.
+      const report=await makeReport({records,signingSecret,broker,journal,fx,
+        publisherPrivateKey:process.env.TEACHER_PUBLISH_PRIVATE_KEY_PEM});
+      const filename=path.join(directory,'public-exam-report.json');
+      const temp=filename+'.partial';
+      await fs.writeFile(temp,JSON.stringify(report)+'\n',{mode:0o600});
+      await fs.rename(temp,filename);
+      lastPublishedAt=Date.now();
     }
     if(running)await delay(60_000);
   }
