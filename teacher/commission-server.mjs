@@ -64,10 +64,16 @@ async function startExaminer(){
   if(req.method==='GET'&&req.url==='/health')
     return json(res,200,{service:'private-paper-examiner',runtime:'RUNNING',
       examination:examStatus,version,paperOnly:true});
-  if(req.method!=='GET'||req.url!=='/internal/signed-report')
+  const protectedRoute=req.url==='/internal/signed-report'||req.url==='/internal/status';
+  if(req.method!=='GET'||!protectedRoute)
     return json(res,404,{error:'NOT_FOUND'});
   if(!safeToken(req.headers.authorization?.replace(/^Bearer /,''),
       expectedToken))return json(res,403,{error:'FORBIDDEN'});
+  if(req.url==='/internal/status')
+    return json(res,200,{schema:'TEACHER_PRIVATE_CONNECTION_V1',
+      version,privateNetwork:true,publicSpki,examStatus,
+      paperOrdersEnabled:process.env.TEACHER_PAPER_ENABLED==='true'&&
+        process.env.TEACHER_ENABLE_EXAMINER==='true'});
   try{
    const doc=JSON.parse(await fs.readFile(path.join(privateRoot,'public-exam-report.json'),'utf8'));
    const payload=verifyReport(doc,pub);
@@ -93,6 +99,29 @@ function startGateway(){
    if(req.method==='GET'&&req.url==='/health')
      return json(res,200,{service:'public-signed-paper-gateway',hosted:true,
        brokerAccountsVerified:false,version});
+   if(req.method==='GET'&&req.url==='/api/connection'){
+     try{
+       const statusUrl=new URL(upstream);
+       statusUrl.pathname='/internal/status';
+       const response=await fetch(statusUrl,{method:'GET',redirect:'error',
+         headers:{Authorization:'Bearer '+token},
+         signal:AbortSignal.timeout(8000)});
+       if(!response.ok)throw Error('Private examiner unreachable');
+       const status=await response.json();
+       if(status.schema!=='TEACHER_PRIVATE_CONNECTION_V1'||
+          status.publicSpki!==pinned||status.privateNetwork!==true||
+          status.version!==version)
+          throw Error('Private examiner signing key mismatch');
+       return json(res,200,{schema:'TEACHER_PUBLIC_CONNECTION_V1',
+         signerPinned:true,privateExaminerLinked:true,
+         examinerStatus:status.examStatus,paperOrdersEnabled:status.paperOrdersEnabled,
+         version,feedStatus:'NO_VERIFIED_PAPER_RESULTS_UNTIL_PROVEN'});
+     }catch{
+       return json(res,503,{schema:'TEACHER_PUBLIC_CONNECTION_V1',
+         signerPinned:false,privateExaminerLinked:false,
+         paperOrdersEnabled:false,feedStatus:'PRIVATE_EXAMINER_UNAVAILABLE'});
+     }
+   }
    if(req.method!=='GET'||req.url!=='/api/academy')
      return json(res,404,{error:'NOT_FOUND'});
    try{
