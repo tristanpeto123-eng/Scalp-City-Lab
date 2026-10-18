@@ -9,7 +9,7 @@ const finite=x=>typeof x==='number'&&Number.isFinite(x);
 const at=x=>Date.parse(x);
 export const POLICY=Object.freeze({
  minimumForwardCloses:30,maxDrawdownPct:10,dailyStopPct:1,
- perPupilVirtualUsd:50,maxOrderFraction:.20,stopLossPct:2,
+ perPupilVirtualUsd:50,maxOrderFraction:.50,stopLossPct:2,
  maxConcurrentPositions:1,brokerOrdersRequireExactRelease:true
 });
 
