@@ -175,12 +175,12 @@ export class Teacher {
     const owned=await this.journal.orderIds(symbol);
     const virtual=virtualPaperEquity({symbol,orders:history,positions,
       ownedClientIds:owned,markPrice:bar.c});
+    await this.journal.virtual(symbol,virtual.equity);
     const peak=await this.journal.peakVirtual(symbol);
     const dayStart=await this.journal.openVirtualToday(symbol,now);
     if(virtual.equity/dayStart<1-POLICY.dailyStopPct/100||
        virtual.equity/peak<1-POLICY.maxDrawdownPct/100)
       throw Error('TEACHER: $50 pupil loss/drawdown circuit breaker; manual reset only');
-    await this.journal.virtual(symbol,virtual.equity);
     const signal=closedSignal(bars,exam.parameters);
     // Exits are always prioritised; actual stop protection depends on runtime uptime.
     const entry=Number(pos?.avg_entry_price);
