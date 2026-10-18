@@ -88,3 +88,18 @@ test('exporter produces parseable published JSON with no credentials or orders',
   assert.equal(result.pupils[0].championModel,null);
  }finally{await rm(dir,{recursive:true,force:true})}
 });
+
+test('provisional lesson lineage shows saved historical parent without declaring it a verified champion',()=>{
+ const seeded={...sample,experiments:[sample.experiments[0],{
+  ...sample.experiments[1],
+  parentResearchModel:{params:{family:'rsi_reversion',period:14,buyBelow:30,sellAbove:65},
+   previousNetGbp:-2.5,sourceExperimentId:'a'.repeat(64),
+   confirmedChampion:false}
+ }]};
+ const result=buildAcademySnapshot(seeded);
+ const btc=result.pupils.find(p=>p.symbol==='BTC/USD');
+ assert.equal(btc.generations[1].parentStrategy,'RSI 14 / 30/65');
+ assert.equal(btc.generations[1].parentHistoricalNetGbp,-2.5);
+ assert.equal(btc.championModel,null);
+ assert.equal(btc.confirmedForward,false);
+});
