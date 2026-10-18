@@ -7,6 +7,7 @@ import {createHash} from 'node:crypto';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {PAIRS,checkSnapshot,simulateValidation} from '../strategy-validation-core.mjs';
+export {PAIRS};
 
 const MEMORY_BRANCH='scalp-learning-memory';
 const MEMORY_PATH='scalp-learning/history.json';
