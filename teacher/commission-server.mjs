@@ -7,6 +7,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {start as startTeacher} from './runtime.mjs';
 import {verifyReport} from './grade-pipeline.mjs';
+import {initialPaperStatus,inspectPaperAccounts} from './hosted-preflight.mjs';
 
 const role=process.env.TEACHER_SERVICE_ROLE;
 const port=Number(process.env.PORT||8080);
@@ -53,6 +54,7 @@ async function startExaminer(){
  // Public SPKI is safe to share, but never print private keys, broker credentials or admission secret.
  console.log('TEACHER_PUBLIC_SPKI_BASE64='+publicSpki);
  let examStatus='NOT_ADMITTED';
+ let accountCheck=initialPaperStatus();
  if(process.env.TEACHER_ENABLE_EXAMINER==='true'){
    examStatus='STARTING';
    startTeacher().then(()=>{examStatus='STOPPED';}).catch(e=>{
@@ -60,7 +62,7 @@ async function startExaminer(){
      process.exitCode=1;process.kill(process.pid,'SIGTERM');
    });
  }
- return http.createServer(async(req,res)=>{
+ const server=http.createServer(async(req,res)=>{
   if(req.method==='GET'&&req.url==='/health')
     return json(res,200,{service:'private-paper-examiner',runtime:'RUNNING',
       examination:examStatus,version,paperOnly:true});
@@ -73,7 +75,8 @@ async function startExaminer(){
     return json(res,200,{schema:'TEACHER_PRIVATE_CONNECTION_V1',
       version,privateNetwork:true,publicSpki,examStatus,
       paperOrdersEnabled:process.env.TEACHER_PAPER_ENABLED==='true'&&
-        process.env.TEACHER_ENABLE_EXAMINER==='true'});
+        process.env.TEACHER_ENABLE_EXAMINER==='true',
+      paperAccounts:accountCheck});
   try{
    const doc=JSON.parse(await fs.readFile(path.join(privateRoot,'public-exam-report.json'),'utf8'));
    const payload=verifyReport(doc,pub);
@@ -85,6 +88,15 @@ async function startExaminer(){
    return json(res,200,doc);
   }catch{return json(res,503,{status:'NO_VERIFIED_BROKER_EXAMINATION'});}
  }).listen(port,'0.0.0.0');
+ // Account registration is only read from the private Railway environment,
+ // never received via HTTP, GitHub Pages, or browser-provided secrets.
+ if(process.env.TEACHER_PAPER_CREDENTIALS_JSON){
+   accountCheck={...initialPaperStatus(),status:'CHECKING'};
+   void inspectPaperAccounts({raw:process.env.TEACHER_PAPER_CREDENTIALS_JSON})
+     .then(result=>{accountCheck=result;})
+     .catch(()=>{accountCheck={...initialPaperStatus(),status:'READ_ONLY_CHECK_ERROR'};});
+ }
+ return server;
 }
 function startGateway(){
  const upstream=process.env.TEACHER_PRIVATE_REPORT_URL||'';
@@ -115,6 +127,8 @@ function startGateway(){
        return json(res,200,{schema:'TEACHER_PUBLIC_CONNECTION_V1',
          signerPinned:true,privateExaminerLinked:true,
          examinerStatus:status.examStatus,paperOrdersEnabled:status.paperOrdersEnabled,
+         // Safe, bounded status metadata only; never broker IDs, keys or balances.
+         paperAccounts:status.paperAccounts,
          version,feedStatus:'NO_VERIFIED_PAPER_RESULTS_UNTIL_PROVEN'});
      }catch{
        return json(res,503,{schema:'TEACHER_PUBLIC_CONNECTION_V1',
