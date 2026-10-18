@@ -228,14 +228,39 @@ async function readFeed(){
   throw Error('Teacher publisher signature rejected');
  return validateAndMap(bundle.payload);
 }
+async function readHostingStatus(){
+ const config=await fetch('./teacher/public-settings.json',{cache:'no-store',credentials:'omit'});
+ if(!config.ok)throw Error('Public Teacher settings HTTP '+config.status);
+ const settings=await config.json();
+ if(settings.schema!=='ROBOT_ACADEMY_PUBLIC_SETTINGS_V1'||
+    settings.status!=='CONFIGURED'||typeof settings.connectionUrl!=='string'||
+    typeof settings.feedUrl!=='string')throw Error('Teacher host not provisioned');
+ const locationUrl=new URL(settings.connectionUrl,location.href);
+ const feedUrl=new URL(settings.feedUrl,location.href);
+ if(locationUrl.protocol!=='https:'||locationUrl.origin!==feedUrl.origin||
+    locationUrl.pathname!=='/api/connection'||locationUrl.search||locationUrl.hash)
+    throw Error('Untrusted hosting connection endpoint');
+ const response=await fetch(locationUrl.href,{cache:'no-store',credentials:'omit'});
+ if(!response.ok)throw Error('Private examiner handshake not active');
+ const status=await response.json();
+ if(status.schema!=='TEACHER_PUBLIC_CONNECTION_V1'||
+    status.signerPinned!==true||status.privateExaminerLinked!==true||
+    typeof status.examinerStatus!=='string'||typeof status.paperOrdersEnabled!=='boolean')
+   throw Error('Private examiner did not authenticate successfully');
+ return status;
+}
 async function reload(){
  const serial=++version;
  byId('refresh').disabled=true;
- const [r,t]=await Promise.allSettled([readResearch(),readFeed()]);
+ const [r,t,hosting]=await Promise.allSettled([readResearch(),readFeed(),readHostingStatus()]);
  if(serial!==version)return;
  research=r.status==='fulfilled'?r.value:null;
  if(t.status==='fulfilled'){reports=t.value.nextReports;grades=t.value.nextGrades;signedReportAt=t.value.issued;lastConnection='SIGNED FEED VERIFIED';feedMessage='Signed feed accepted; '+grades.size+' verified pupil grades';}
- else{reports=new Map();grades=new Map();signedReportAt=null;feedMessage=String(t.reason?.message||t.reason);lastConnection='NOT CONNECTED';}
+ else{reports=new Map();grades=new Map();signedReportAt=null;
+   feedMessage=hosting.status==='fulfilled'?
+     'Authenticated Railway host online · no independently verified paper results; '+String(t.reason?.message||t.reason):
+     String(t.reason?.message||t.reason);
+   lastConnection=hosting.status==='fulfilled'?'HOST ONLINE · NO GRADES':'NOT CONNECTED';}
  byId('refresh').disabled=false;render();
 }
 for(const b of document.querySelectorAll('[data-tab]'))b.onclick=()=>switchTab(b.dataset.tab);
