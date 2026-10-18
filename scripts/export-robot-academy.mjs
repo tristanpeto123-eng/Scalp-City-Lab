@@ -82,6 +82,9 @@ export function buildAcademySnapshot(memory){
   records.push({id:e.id,symbol:e.symbol,
    trainingStart:e.trainingStart,trainingEnd:e.trainingEnd,
    independent:e.acceptedForLearning,sourceFingerprint:e.trainFingerprint,
+   // Historical parent lineage is research provenance, NEVER proof of
+   // validated strategy graduation or independently observed profits.
+   parentResearchModel:e.parentResearchModel??null,
    candidates});
  }
  const pupils=PAIRS.map(symbol=>{
@@ -96,6 +99,8 @@ export function buildAcademySnapshot(memory){
     sourceExperimentId:e.id,trainedThrough:e.trainingEnd})));
    generations.push({run:i+1,trainingEnd:e.trainingEnd,
     experimentId:e.id,independentWindow:e.independent,
+    parentStrategy:e.parentResearchModel?.params?paramsLabel(e.parentResearchModel.params):null,
+    parentHistoricalNetGbp:e.parentResearchModel?.previousNetGbp??null,
     testedConfigurations:e.candidates.length,
     // Re-used historical candles add experiments but NOT independent outcomes.
     grade:leader?Math.min(10,Math.floor((leader.trainingWinRatePct+1e-8)/10)):null,
