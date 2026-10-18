@@ -1,6 +1,6 @@
 // Compute $50 examiner-level mark from *paper fills*, not the broker's
 // unrelated $100k default buying power. Conservative before final CFEE posting.
-import {POLICY} from './engine.mjs';
+const CAPITAL=50;
 const num=x=>Number(x);
 const val=n=>Number.isFinite(n)&&n>=0;
 export function virtualPaperEquity({symbol,orders,positions,ownedClientIds,markPrice}){
@@ -30,10 +30,10 @@ export function virtualPaperEquity({symbol,orders,positions,ownedClientIds,markP
   throw Error('RISK: broker holding exceeds explained fills');
  // Conservative 0.5% per-side upper allowance until posted broker fees settle.
  const reserve=turnover*.005;
- const equity=POLICY.perPupilVirtualUsd-buys+sells+held*markPrice-reserve;
+ const equity=CAPITAL-buys+sells+held*markPrice-reserve;
  if(!Number.isFinite(equity)||equity<0)
   throw Error('RISK: negative or uncomputable virtual equity');
- return {equity,netUsd:equity-POLICY.perPupilVirtualUsd,
+ return {equity,netUsd:equity-CAPITAL,
    held,brokerQuote:markPrice,estimatedFeeReserveUsd:reserve,
    method:'FILLS_BASED_CONSERVATIVE_VIRTUAL_$50'};
 }
