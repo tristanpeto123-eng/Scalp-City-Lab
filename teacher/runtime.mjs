@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {Teacher} from './engine.mjs';
+import {MAX_PAPER_SLOTS} from './hosted-preflight.mjs';
 import {CryptoTeacherBroker} from './alpaca-crypto.mjs';
 import {verifyAdmission} from './admission-seal.mjs';
 import {makeReport} from './grade-pipeline.mjs';
@@ -82,8 +83,10 @@ function parse(value,name){
   try{return JSON.parse(value)}catch{throw Error('TEACHER: malformed '+name);}
 }
 export function reviewConfiguration({admissions,credentials,enabled,approval}){
-  if(!Array.isArray(admissions)||!admissions.length||admissions.length>10)
+  if(!Array.isArray(admissions)||!admissions.length)
     throw Error('TEACHER: no independently admitted pupil available');
+  if(admissions.length>MAX_PAPER_SLOTS)
+    throw Error('TEACHER: maximum three isolated PAPER exam seats');
   if(enabled&&approval!==RELEASE)throw Error('TEACHER: exact owner release approval absent');
   const seen=new Set();
   for(const a of admissions){
