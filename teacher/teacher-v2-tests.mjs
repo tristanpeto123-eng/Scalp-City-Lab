@@ -202,6 +202,8 @@ test('Academy uses pinned public signature verification, never trusts JSON alone
  assert.match(html,/ROBOT_ACADEMY_SIGNED_FORWARD_V1/);
  assert.match(html,/report\.verifiedCount/);
  assert.match(html,/if\(verified\)return/);
- assert.equal(settings.status,'NOT_PROVISIONED');
- assert.equal(settings.signingPublicKeyBase64,null);
+ assert.equal(settings.status,'CONFIGURED');
+ assert.match(settings.feedUrl,/^https:\/\//);
+ assert.match(settings.connectionUrl,/^https:\/\//);
+ assert.match(settings.signingPublicKeyBase64,/^[A-Za-z0-9+/=]+$/);
 });
