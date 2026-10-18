@@ -22,7 +22,7 @@ export function readiness(pupil,audit){
   if(!leader||leader.outOfSampleVerified!==false)reasons.push('Unexpected research provenance');
   if(!audit||audit.source!=='INDEPENDENT_CHRONOLOGICAL_HOLDOUT'||
      audit.symbol!==pupil?.symbol||audit.modelExperimentId!==leader?.sourceExperimentId||
-     audit.paramsDigest!==id(leader?.parameters)||audit.closedTrades<30||
+     audit.paramsDigest!==(leader?id(leader.parameters):null)||audit.closedTrades<30||
      !finite(audit.netGbp)||audit.netGbp<=0||
      !finite(audit.doubleCostNetGbp)||audit.doubleCostNetGbp<=0||
      !finite(audit.maxDrawdownPct)||audit.maxDrawdownPct>8||
@@ -168,12 +168,15 @@ export class Teacher {
     if(await this.journal.hasBar(barId))return {status:'NO_NEW_CANDLE',symbol};
     const pos=positions[0],qty=pos?Number(pos.qty):0;
     if(!finite(qty)||qty<0)throw Error('TEACHER: invalid paper holding');
+    if(qty>0&&!await this.broker.ownedPosition(symbol,await this.journal.orderIds(symbol),qty))
+      throw Error('TEACHER: cannot prove examiner owns paper inventory');
     const peak=await this.journal.peakEquity(symbol);
     const equity=Number(account.equity),start=Number(account.last_equity);
     if(!finite(equity)||!finite(start)||!finite(peak)||equity<=0||start<=0)
       throw Error('TEACHER: invalid paper equity');
     if(equity/start<1-POLICY.dailyStopPct/100||equity/peak<1-POLICY.maxDrawdownPct/100)
       throw Error('TEACHER: drawdown/loss circuit breaker; manual reset only');
+    await this.journal.observe(symbol,equity);
     const signal=closedSignal(bars,exam.parameters);
     // Exits are always prioritised; actual stop protection depends on runtime uptime.
     const entry=Number(pos?.avg_entry_price);
