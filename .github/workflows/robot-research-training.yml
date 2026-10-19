@@ -29,6 +29,7 @@ jobs:
         run: |
           node --check scripts/run-robot-training.mjs
           node --test scripts/run-robot-training-tests.mjs
+          node --test scripts/historical-training-folds-tests.mjs
           node --test scripts/robot-rewards-tests.mjs
           node --test scripts/build-training-monitor-tests.mjs
           node --test scripts/refresh-alpaca-snapshots-tests.mjs
