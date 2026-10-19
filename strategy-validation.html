@@ -78,7 +78,13 @@ details p,details li{color:#b3c9d6;font-size:12px}
   <button id="reload" type="button" class="ghost small">↻ Load newest published Alpaca data</button>
   <p class="hint">Reload checks the latest dataset published to this website, not live order-book data. Alpaca market-data keys stay on the server.</p>
  </section>
- <section class="panel" aria-labelledby="goal-heading">
+ <section class="panel" aria-label="Published Academy model history">
+ <div class="panel-heading"><span class="step">PUPIL / RESEARCH HISTORY</span><span class="pill" id="pupil-state">Loading archive</span></div>
+ <h2>What has this robot learned so far?</h2>
+ <div id="pupil-summary"><p class="muted">Loading the published, chart-specific Academy research register. It is independent of this temporary experiment.</p></div>
+ <p class="hint">This history is read-only. Training wins do not imply future success; an archived research leader is not an approved champion.</p>
+</section>
+<section class="panel" aria-labelledby="goal-heading">
   <div class="panel-heading"><span class="step">STEP 1 / MISSION</span><span class="pill">Virtual only</span></div>
   <h2 id="goal-heading">What should this agent achieve?</h2>
   <div class="form-grid">
@@ -184,6 +190,37 @@ async function loadPair({force=false}={}){
   setStatus('Data unavailable','bad');
  }finally{if(serial===request)$('reload').disabled=false;}
 }
+let academy=null;
+function renderPupil(){
+ const target=$('pupil-summary'),p=academy?.pupils?.find(x=>x.symbol===$('pair').value);
+ target.replaceChildren();
+ if(!p){$('pupil-state').textContent='Archive unavailable';add(target,'p','The existing Academy research register is unavailable or this chart has no published history. Current experimentation still works independently.','hint');return;}
+ $('pupil-state').textContent='Published history';
+ const leader=p.researchLeader;
+ renderMetricGrid(target,[
+  ['Historical runs',String(p.experiments??0)],
+  ['Distinct tested rules',String(p.distinctStrategiesTried??0)],
+  ['Different training windows',String(p.independentTrainingWindows??0)],
+  ['Archive training leader',leader?.name||'None'],
+  ['Leader training-only net',leader?money(leader.trainingNetGbp):'Unreported'],
+  ['Verified forward trades',String(p.verifiedForwardTrades??0)]
+ ]);
+ add(target,'p','Latest archived lesson: '+(p.latestTrainingEnd||'not reported')+
+  '. Research status: '+(leader?.status||p.evidenceStatus||'unverified')+
+  '. This page does not automatically retrain or overwrite that model.','hint');
+}
+async function loadAcademy(){
+ try{
+  const response=await fetch('./research-data/robot-academy.json',{cache:'no-store',credentials:'omit'});
+  if(!response.ok)throw Error('Academy archive HTTP '+response.status);
+  const data=await response.json();
+  if(!Array.isArray(data.pupils)||data.pupils.length!==10||data.actualBrokerOrders!==0)
+   throw Error('Untrusted Academy research archive');
+  academy=data;
+ }catch{academy=null;}
+ renderPupil();
+}
+
 function formInput(){
  const balance=Number($('balance').value),limit=Number($('limit').value);
  if(!Number.isFinite(balance)||balance<50||balance>1000000)throw Error('Virtual capital must be between £50 and £1,000,000');
@@ -293,7 +330,7 @@ function runLab(){
   $('result-status').textContent='Blocked';$('export-actions').hidden=true;lastPacket=null;
  }finally{active=false;$('run').disabled=!selected;$('run').textContent='Run research experiment →';}
 }
-$('pair').addEventListener('change',()=>{lastPacket=null;$('export-actions').hidden=true;loadPair();});
+$('pair').addEventListener('change',()=>{lastPacket=null;$('export-actions').hidden=true;renderPupil();loadPair();});
 $('reload').addEventListener('click',()=>loadPair({force:true}));
 $('mode').addEventListener('change',()=>{
  const duration=$('mode').value==='duration';
@@ -315,7 +352,7 @@ const requested=new URLSearchParams(location.search);
 const requestedPair=requested.get('pair'),requestedMode=requested.get('strategy');
 if([...$('pair').options].some(o=>o.value===requestedPair))$('pair').value=requestedPair;
 if(['auto','invent','ema','rsi','breakout'].includes(requestedMode))$('strategy').value=requestedMode;
-goalNote();methodNote();loadPair();
+goalNote();methodNote();loadPair();loadAcademy();
 </script>
 <script src="./journey-nav.js" defer></script>
 </body></html>
