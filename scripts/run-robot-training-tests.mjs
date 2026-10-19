@@ -201,3 +201,25 @@ test('training rewards are measured and tracked without disclosing holdout or pl
  assert.ok(r.memory.experiments.at(-1).trainingOptions.every(o=>o.researchReward.forwardVerified===false));
  assert.ok(r.memory.experiments.at(-1).trainingOptions.every(o=>o.researchReward.points>=0));
 });
+
+test('bounded multi-batch research accelerates attempts without creating forward evidence',async()=>{
+ const read=async filename=>{
+  const symbol=filename.split('/').at(-1).replace('-', '/').replace('.json','');
+  return JSON.stringify(snapshots.get(symbol));
+ };
+ const result=await evaluateAll({memory:empty,dataDir:'validation-data',read,now,batchesPerPupil:3});
+ assert.equal(result.reports.length,10);
+ assert.equal(result.addedExperiments,30);
+ assert.equal(result.brokerOrders,0);
+ assert.equal(result.independentForwardEvidence,0);
+ assert.ok(result.reports.every(x=>x.researchBatchesAttempted===3&&
+   x.savedExperiments===3&&x.repeatedHistoryDoesNotCountAsIndependent===true));
+ assert.ok(result.memory.experiments.filter(x=>x.acceptedForLearning).length<=10);
+ assert.ok(result.reports.every(x=>x.chronologicalTrainingWindows>=1));
+});
+test('invalid historical batch budgets are refused',async()=>{
+ for(const n of [0,4,-1,1.5,Infinity]){
+  await assert.rejects(evaluateAll({memory:empty,batchesPerPupil:n}),
+   /batches per pupil/);
+ }
+});
