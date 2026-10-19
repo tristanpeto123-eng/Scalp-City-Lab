@@ -22,3 +22,6 @@
 .sc-journey-links a{color:#a4e7db!important;text-decoration:underline!important;font-size:12px!important}
 @media(max-width:680px){.sc-journey-dock{right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px))}.sc-journey-trigger{font-size:11px!important;padding:10px 13px!important}.sc-journey-panel{max-height:calc(100dvh - 125px)}}
 @media(prefers-reduced-motion:no-preference){.sc-journey-panel{animation:sc-appear .15s ease-out}@keyframes sc-appear{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}}
+
+/* Float above interactive building selection in mobile Agent City. */
+@media(max-width:750px){body:has(#agentCityCanvas) .sc-journey-dock{bottom:calc(163px + env(safe-area-inset-bottom,0px))}}
