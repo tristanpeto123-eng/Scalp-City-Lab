@@ -152,6 +152,7 @@ const noteByMethod={
 function status(message,kind=''){const el=$('state');el.textContent=message;el.className='status '+kind}
 async function loadPair({force=false}={}){
  const pair=$('pair').value,request=++serial;
+ invalidateSession('Loading '+pair+' history. Previous results are cleared because the research data may have changed.');
  selected=null;$('run').disabled=true;$('reload').disabled=true;
  status('Checking '+pair+' history…');$('dataset').textContent='Retrieving published candles for '+pair+'…';
  try{
@@ -186,7 +187,13 @@ async function loadPair({force=false}={}){
   status('Historical data unavailable','warning');
  }finally{if(request===serial)$('reload').disabled=false}
 }
+function invalidateSession(message='Research brief changed. Run the session again to generate fresh, matching evidence.'){
+ session=null;chosenCandidate=-1;
+ $('empty-state').hidden=false;$('empty-state').textContent=message;
+ $('outcome').hidden=true;$('research-evidence').hidden=true;$('replay-section').hidden=true;
+}
 function goalChanged(){
+ invalidateSession();
  const duration=$('mode').value==='duration';
  $('limitName').textContent=duration?'Duration (days)':'Target cumulative realised NET profit (£)';
  $('limit').value=duration?'14':'2000';
@@ -340,7 +347,9 @@ function exportReport(){
 $('pair').addEventListener('change',()=>{renderPupil();loadPair();});
 $('reload').addEventListener('click',()=>loadPair({force:true}));
 $('mode').addEventListener('change',goalChanged);
-$('strategy').addEventListener('change',()=>$('method-note').textContent=noteByMethod[$('strategy').value]);
+$('strategy').addEventListener('change',()=>{invalidateSession();$('method-note').textContent=noteByMethod[$('strategy').value];});
+$('balance').addEventListener('input',()=>invalidateSession());
+$('limit').addEventListener('input',()=>invalidateSession());
 $('run').addEventListener('click',run);
 $('reset').addEventListener('click',()=>{
  $('balance').value='50';$('pair').value='BTC/USD';$('mode').value='duration';goalChanged();$('strategy').value='auto';$('method-note').textContent=noteByMethod.auto;loadPair();
