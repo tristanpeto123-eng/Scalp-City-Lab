@@ -136,7 +136,149 @@ function validate(data,symbol){
     !Number.isInteger(d.simulatedClosedTrades))
       throw Error('Out-of-order or untrusted model action');
  }
+ if(data.tradeJournalSchema!==undefined){
+  if(data.tradeJournalSchema!=='SCALP_VIRTUAL_TRADE_JOURNAL_V1'||
+     data.marketPriceCurrency!=='USD'||data.accountingCurrency!=='VIRTUAL_UNITS'||
+     !Number.isFinite(data.startingVirtualBalance)||
+     !Number.isFinite(data.simulatedFeeRate)||!Number.isFinite(data.simulatedSlippageRate)||
+     !Array.isArray(data.virtualFills)||!Array.isArray(data.closedTrades))
+     throw Error('Untrusted virtual journal provenance');
+  const fillsByTime=new Map(),closedByExit=new Map();
+  for(const fill of data.virtualFills){
+   if(!['BUY','SELL'].includes(fill.side)||
+      ![fill.candleTime,fill.sourceDecisionTime,fill.marketOpenPriceUsd,
+         fill.executionPriceUsd,fill.quantityCrypto,fill.feeVirtual].every(Number.isFinite)||
+      fill.quantityCrypto<=0||fill.feeVirtual<0||fillsByTime.has(fill.candleTime)||
+      fill.marketCurrency!=='USD'||fill.accountingCurrency!=='VIRTUAL_UNITS'||
+      fill.marketOpenPriceUsd<=0||fill.sourceDecisionTime+300000!==fill.candleTime)
+      throw Error('Untrusted or duplicated source virtual fill');
+   const target=fill.marketOpenPriceUsd*
+     (1+(fill.side==='BUY'?1:-1)*data.simulatedSlippageRate);
+   if(Math.abs(fill.executionPriceUsd-target)>1e-7*Math.max(1,Math.abs(target)))
+      throw Error('Impossible simulated execution price');
+   fillsByTime.set(fill.candleTime,fill);
+  }
+  let held=false,closes=0;
+  for(const d of data.decisions){
+   const fill=fillsByTime.get(d.nextCandleTime);
+   const requiredSide=d.openPosition===held?null:(d.openPosition?'BUY':'SELL');
+   if(d.executionSide!==requiredSide || (fill?.side||null)!==requiredSide)
+     throw Error('Fill side does not reconcile with position transitions');
+   if(fill && (Math.abs(d.executionPriceUsd-fill.executionPriceUsd)>1e-8||
+      Math.abs(fill.marketOpenPriceUsd-d.nextOpenPrice)>1e-8))
+      throw Error('Fill execution does not reconcile with source candle');
+   held=d.openPosition;if(fill?.side==='SELL')closes++;
+   if(closes!==d.simulatedClosedTrades)
+      throw Error('Virtual trade count does not reconcile with decisions');
+  }
+  for(const trade of data.closedTrades){
+   if(![trade.entryTime,trade.exitTime,trade.netProfitVirtual,trade.entryCostVirtual,
+      trade.exitProceedsVirtual,trade.entryExecutionPriceUsd,
+      trade.exitExecutionPriceUsd,trade.netReturnPct].every(Number.isFinite)||
+      trade.exitTime<=trade.entryTime||trade.entryCostVirtual<=0||
+      closedByExit.has(trade.exitTime)||trade.marketCurrency!=='USD'||
+      trade.accountingCurrency!=='VIRTUAL_UNITS'||
+      !fillsByTime.has(trade.entryTime)||!fillsByTime.has(trade.exitTime))
+      throw Error('Untrusted closed trade record');
+   const entry=fillsByTime.get(trade.entryTime),exit=fillsByTime.get(trade.exitTime);
+   const pnl=trade.exitProceedsVirtual-trade.entryCostVirtual;
+   if(entry.side!=='BUY'||exit.side!=='SELL'||
+      Math.abs(pnl-trade.netProfitVirtual)>1e-6||
+      Math.abs(100*pnl/trade.entryCostVirtual-trade.netReturnPct)>1e-5||
+      Math.abs(entry.executionPriceUsd-trade.entryExecutionPriceUsd)>1e-8||
+      Math.abs(exit.executionPriceUsd-trade.exitExecutionPriceUsd)>1e-8)
+      throw Error('Closed trade P&L/fill mismatch');
+   closedByExit.set(trade.exitTime,trade);
+  }
+  if(closes!==data.closedTrades.length||
+      fillsByTime.size!==data.closedTrades.length*2+(held?1:0)||
+      (held&&!data.openVirtualEntry)||(!held&&data.openVirtualEntry))
+      throw Error('Virtual journal and simulator positions diverge');
+ }
  return data;
+}
+function appendCell(row,value,className){
+ const td=document.createElement('td');td.textContent=String(value);
+ if(className)td.className=className;
+ row.append(td);
+}
+function visibleLegacyEvents(through){
+ const output=[];let held=false;
+ for(const d of trace.decisions){
+  if(d.nextCandleTime>through)break;
+  if(d.openPosition!==held){
+   output.push({side:d.openPosition?'BUY':'SELL',candleTime:d.nextCandleTime,
+     executionPriceUsd:null,marketOpenPriceUsd:d.nextOpenPrice,
+     feeVirtual:null,realizedProfitVirtual:null,legacy:true});
+  }
+  held=d.openPosition;
+ }
+ return output;
+}
+function journalUntil(through){
+ const exact=trace.tradeJournalSchema==='SCALP_VIRTUAL_TRADE_JOURNAL_V1';
+ return {
+  exact,
+  fills:exact?trace.virtualFills.filter(f=>f.candleTime<=through):visibleLegacyEvents(through),
+  trades:exact?trace.closedTrades.filter(t=>t.exitTime<=through):[]
+ };
+}
+function renderJournal(through){
+ const j=journalUntil(through),rows=$('tradeRows'),events=$('eventRows');
+ rows.replaceChildren();events.replaceChildren();
+ for(const t of j.trades){
+  const row=document.createElement('tr');
+  appendCell(row,'#'+t.tradeOrdinal);appendCell(row,time(t.entryTime));
+  appendCell(row,time(t.exitTime));
+  appendCell(row,priceUsd(t.entryExecutionPriceUsd));
+  appendCell(row,priceUsd(t.exitExecutionPriceUsd));
+  appendCell(row,signedVirtual(t.netProfitVirtual),t.netProfitVirtual>0?'win':'loss');
+  appendCell(row,pct(t.netReturnPct));
+  appendCell(row,t.outcome,t.outcome==='WIN'?'win':'loss');
+  rows.append(row);
+ }
+ for(const f of j.fills.slice(-25).reverse()){
+  const row=document.createElement('tr');
+  appendCell(row,time(f.candleTime));
+  appendCell(row,f.legacy?f.side+' (legacy position change)':f.side);
+  appendCell(row,f.legacy?'Not recorded':priceUsd(f.executionPriceUsd));
+  appendCell(row,f.legacy?'Not recorded':virtualMoney(f.feeVirtual));
+  appendCell(row,f.legacy?'No exact fill data':
+    f.side==='SELL'?signedVirtual(f.realizedProfitVirtual):'Position opened');
+  events.append(row);
+ }
+ const pnl=j.trades.reduce((sum,t)=>sum+t.netProfitVirtual,0);
+ $('realized').textContent=j.exact?signedVirtual(pnl):'Not in older trace';
+ $('lasttrade').textContent=j.trades.length?
+  j.trades.at(-1).outcome+' · '+signedVirtual(j.trades.at(-1).netProfitVirtual):
+  'No closed trades';
+ $('journalEmpty').hidden=j.trades.length>0;
+ $('journalEmpty').textContent=j.exact?
+   (j.fills.length?'Position open or no completed trades yet.':'No trades placed in this replay so far.'):
+   (j.fills.length?'Legacy position changes shown below; individual P&L not recorded.':
+      'No entries or exits in this historical replay so far.');
+ $('legacyNotice').hidden=j.exact;
+ $('journalStatus').textContent=j.trades.length+' completed virtual trades · '+
+   j.fills.length+' order events through '+time(through)+
+   (j.exact?' · source-recorded fills and net results':' · earlier trace, unverified execution details');
+ $('export').disabled=!j.exact||j.trades.length===0;
+}
+function exportJournal(){
+ if(!trace)return;
+ const j=journalUntil(trace.candles[index].t);
+ if(!j.exact||!j.trades.length)return;
+ const fields=['tradeOrdinal','symbol','entryTime','exitTime','entryExecutionPriceUsd',
+   'exitExecutionPriceUsd','quantityCrypto','entryFeeVirtual','exitFeeVirtual',
+   'entryCostVirtual','exitProceedsVirtual','netProfitVirtual','netReturnPct','outcome'];
+ const header=fields.join(',');
+ const values=j.trades.map(t=>fields.map(k=>
+   k==='entryTime'||k==='exitTime'?new Date(t[k]).toISOString():
+   String(t[k]??'').replaceAll(',', ';')).join(','));
+ const blob=new Blob([[header,...values].join('\\n')+'\\n'],{type:'text/csv;charset=utf-8'});
+ const link=document.createElement('a'),url=URL.createObjectURL(blob);
+ link.href=url;link.download='scalp-'+trace.symbol.replace('/','-')+'-closed-trades.csv';
+ document.body.append(link);link.click();link.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 function draw(){
  const canvas=$('chart'),ctx=canvas.getContext('2d'),dpi=Math.min(window.devicePixelRatio||1,2);
