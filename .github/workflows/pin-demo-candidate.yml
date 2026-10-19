@@ -1,0 +1,75 @@
+name: Scalp City — freeze one ungraded DEMO candidate
+on:
+  workflow_dispatch:
+    inputs:
+      symbol:
+        description: Symbol for independent demo paper pilot
+        type: choice
+        options: [BTC/USD, ETH/USD, SOL/USD, XRP/USD, ADA/USD, AVAX/USD, LINK/USD, DOGE/USD, LTC/USD, BCH/USD]
+        default: ADA/USD
+      expected_sha:
+        description: Exact 64-char DQN model SHA from RL research report
+        type: string
+        required: true
+permissions:
+  contents: write
+jobs:
+  freeze-demo-candidate:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: rl-learning-memory
+          path: rl-history
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: paper-sandbox-models
+          path: demo-models
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Checker — only explicit hash and training provenance are copied
+        env:
+          MODEL_SYMBOL: ${{ inputs.symbol }}
+          MODEL_SHA: ${{ inputs.expected_sha }}
+        run: |
+          python - <<'PY'
+          import json,os,hashlib,pathlib
+          from rl.model_registry import freeze_candidate
+          symbol=os.environ['MODEL_SYMBOL'];sha=os.environ['MODEL_SHA']
+          report=json.loads(pathlib.Path('rl-history/rl-rapid/latest.json').read_text())
+          pupil=next((x for x in report['pupils'] if x['symbol']==symbol),None)
+          if (pupil is None or pupil['modelSha256']!=sha or
+              report['verifiedForwardGrades'] or report['paperOrders'] or
+              report['liveOrders'] or report['marketBarTimeframe']!='5Min'):
+              raise SystemExit('DEMO_MODEL: requested hash not latest verified research model')
+          checkpoint=pathlib.Path('rl-history/models')/(symbol.replace('/','-')+'-dqn.pt')
+          if hashlib.sha256(checkpoint.read_bytes()).hexdigest()!=sha:
+              raise SystemExit('DEMO_MODEL: model bytes mismatch manifest')
+          frozen=freeze_candidate(
+              symbol=symbol,learned_weights=checkpoint,
+              registry_dir='demo-models/frozen',
+              source_run_sha=pupil['sourceTrainingFingerprint'])
+          if frozen['tradingFloorAdmitted'] or frozen['signedGradeVerified']:
+              raise SystemExit('DEMO_MODEL: cannot claim grading')
+          print('DEMO_CANDIDATE_FROZEN '+symbol+' '+sha+'; simulated money ONLY')
+          PY
+      - name: Commit immutable ungraded research candidate
+        run: |
+          git -C demo-models config user.name 'github-actions[bot]'
+          git -C demo-models config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C demo-models add -- frozen/
+          if git -C demo-models diff --cached --quiet; then
+            echo 'Exact candidate already archived, no new release'
+          else
+            git -C demo-models commit -m 'paper-only: pin ungraded frozen model for exact demo pilot'
+            git -C demo-models push origin HEAD:paper-sandbox-models
+          fi
