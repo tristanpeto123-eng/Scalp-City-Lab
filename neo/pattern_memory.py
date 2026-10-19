@@ -11,7 +11,6 @@ import json
 import math
 from datetime import datetime, timezone
 from pathlib import Path
-from . import __doc__ as _package_doc
 from rl.dqn_experiment import SYMBOLS, FIVE_MIN_MS, validate_snapshot, split_development
 
 SCHEMA='SCALP_NEO_MEMORY_V1'
@@ -131,7 +130,17 @@ def process_all(input_dir,root):
         prepared.append((p,state))
         totals['known']+=len(state['patterns'])
         totals['new']+=state['newPatternCount']
+    predictions=[]
     for p,state in prepared:
+        source=snapshots[state['symbol']]
+        training,_,_=split_development(validate_snapshot(source))
+        current=pattern_features(training,len(training)-1)
+        result=predict(state,current,training[-1]['t'])
+        predictions.append({'symbol':state['symbol'],
+            'observedTime':training[-1]['t'],'matched':result['matched'],
+            'analogueSignal':result['action'],'status':result['status'],
+            'estimatedNetLogReturn':result['estimatedNetLogReturn'],
+            'patternAgreement':result['confidence']})
         p.write_text(json.dumps(state,separators=(',',':'))+'\n')
     status={'schema':'SCALP_NEO_STATUS_V1',
         'name':'NEO','mode':'RESEARCH_PATTERN_MEMORY','generatedAt':datetime.now(timezone.utc).isoformat(),
@@ -141,6 +150,7 @@ def process_all(input_dir,root):
                     'new':s['newPatternCount'],'sourceBars':s['sourceBarCount'],
                     'initialTrainingEnd':s['initialTrainingEnd'],
                     'firstDevelopmentCandle':s['initialDevelopmentStart']} for _,s in prepared],
+        'predictionsOnEligibleTrainingHistory':predictions,
         'trainingOnly':True,'paperOrders':0,'liveOrders':0,'teacherGrades':0,
         'finalHoldoutTouched':False,
         'caveat':'Immutable eligible training-pattern bank; not visual pixel memory or demonstrated profitable forecasts.'}
