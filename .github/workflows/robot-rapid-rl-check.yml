@@ -82,8 +82,8 @@ jobs:
               raise SystemExit('Checker G1: five-minute only or release safety invariant missing')
           from rl.profit_objective import OBJECTIVE_ID
           assert OBJECTIVE_ID=='MAXIMISE_NET_PROFIT_AFTER_FEES_AND_SLIPPAGE_V1'
-          if "'profitObjective':profit_objective" not in policy or
-             "'profitGoalPassingPupils'" not in engine:
+          if ("'profitObjective':profit_objective" not in policy or
+              "'profitGoalPassingPupils'" not in engine):
               raise SystemExit('Checker G1: missing after-fee profit audit')
           print('G1: net profit objective verified, later validation separate, final 20% untouched')
           PY
