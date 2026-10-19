@@ -9,6 +9,8 @@ auditor, paper order executor, forward fill examiner, or signed public grade.
 - `scripts/research-v2.mjs`: parallel Worker Thread evaluations across 10 charts.
 - `scripts/research-v2-tests.mjs`: separation, determinism, brokerless output,
   thread agreement and historical tamper regression.
+- `scripts/research-v2-handoff.mjs`: produces a source-digested, unsigned,
+  no-orders Teacher **review queue** from shortlisted historical models.
 - `scripts/research-v2-archive.mjs`: chronological overlapping archive with
   immutable content-addressed raw files and manifest chaining; abort on a
   mismatched historical candle or gap.
@@ -36,7 +38,9 @@ auditor, paper order executor, forward fill examiner, or signed public grade.
    at normal and doubled fees, max fold drawdown <=8%, and positive outcomes
    in at least two-thirds of folds. Rank by risk-penalised, stress-cost
    outcomes and archive failures too.
-6. **Execution:** schedule parallel evaluation in up to 4 workers. GitHub
+6. **Execution:** automatic workload selection runs small batches sequentially
+   (thread startup proved slower on the 19 October GitHub CI runner),
+   reserving up to 4 parallel workers for large candidate budgets. GitHub
    writes only an Actions artifact; no Alpaca credentials, live feeds, secrets,
    order privileges, portfolio control, automatic admission or grading.
 
@@ -59,7 +63,8 @@ Run:
 
 ```bash
 node --test scripts/research-v2-tests.mjs
-node scripts/research-v2.mjs research-memory/scalp-learning/history.json validation-data qualification-results/scalp-research-v2.json 4 36
+node scripts/research-v2.mjs research-memory/scalp-learning/history.json validation-data qualification-results/scalp-research-v2.json auto 36
+node scripts/research-v2-handoff.mjs qualification-results/scalp-research-v2.json qualification-results/teacher-review-v2.json
 ```
 
 For immutable private historical backups, run:
@@ -74,8 +79,11 @@ at 20,000 candles; sharding is required before larger datasets can be ingested.
 Historical archive assembly into multi-epoch training remains a follow-up.
 
 ## Outstanding prerequisites before production training replacement
-- Benchmark V1 vs V2 using the same datasets and actual CI timings; parallel
-  workers can cost *more* under restricted CPU. Do not claim a speedup yet.
+- Benchmark V1 vs V2 at equal candidate count and realistic regimes. In GitHub
+  CI on 19 October, the same 360 candidate evaluations completed in 1093 ms
+  serial versus 1181 ms forced four-worker (0.925x speed ratio); hence
+  lightweight workload auto mode now favours one worker. These are run-specific
+  timings, not guarantees.
 - Resolve disagreement between canonical simulator's intrabar stops and the
   independent Teacher auditor's next-open close checks. A V2 result is not
   evidence of Teacher parity or executable returns.
