@@ -3,6 +3,7 @@ import unittest
 from datetime import datetime, timedelta, timezone
 import numpy as np
 from rl.dqn_experiment import MarketEnv, run, split_development, validate_snapshot
+from rl.profit_objective import OBJECTIVE_ID
 
 def snapshot():
     start=datetime(2024,1,1,tzinfo=timezone.utc)
@@ -45,6 +46,16 @@ class DeepRLTests(unittest.TestCase):
         _,_,_,_,info=env.step(0)
         self.assertEqual(info['closedTrades'],1)
 
+    def test_flat_position_gets_no_fake_activity_penalty(self):
+        bars=validate_snapshot(snapshot())[:90]
+        env=MarketEnv(bars)
+        env.reset()
+        for _ in range(15):
+            _,reward,_,_,info=env.step(0)
+            self.assertEqual(reward,0)
+            self.assertEqual(info['netProfitGbp'],0)
+            self.assertEqual(info['closedTrades'],0)
+
     def test_sealed_holdout_cannot_change_training_or_validation(self):
         data=snapshot()
         original=validate_snapshot(data)
@@ -66,6 +77,14 @@ class DeepRLTests(unittest.TestCase):
         self.assertFalse(result['champion'])
         self.assertIsNone(result['officialGrade'])
         self.assertIn('validationDoubleCostStress',result)
+        self.assertEqual(result['trainingGoal'],OBJECTIVE_ID)
+        self.assertEqual(result['training']['optimisationObjective'],OBJECTIVE_ID)
+        self.assertEqual(result['training']['tradeCountReward'],0)
+        self.assertEqual(result['training']['winRateReward'],0)
+        self.assertEqual(result['training']['flatActionPenalty'],0)
+        self.assertEqual(result['profitObjective']['objectiveId'],OBJECTIVE_ID)
+        self.assertEqual(result['profitObjective']['brokerOrders'],0)
+        self.assertFalse(result['profitObjective']['automaticPromotion'])
 
 if __name__=='__main__':
     unittest.main()
