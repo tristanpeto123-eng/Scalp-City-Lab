@@ -132,14 +132,17 @@ test('constant/flat markets are not portrayed as profitable intelligence',()=>{
  assert.ok(model.candidates.every(c=>c.rejection.length>0));
  assert.equal(chartBehavior(flat.bars.slice(0,Math.floor(flat.bars.length*.4))).regime,'MIXED');
 });
-test('page exposes adaptive option and reports rejection without placing orders',async()=>{
+test('research page exposes candidate evidence and clearly denies automatic broker approval',async()=>{
  const page=await readFile(new URL('./strategy-validation.html',import.meta.url),'utf8');
  assert.match(page,/value="auto"/);
- assert.match(page,/validateAdaptive/);
- assert.match(page,/modelExplanation/);
- assert.match(page,/NO QUALIFYING STRATEGY/);
- assert.match(page,/localStorage/);
- assert.match(page,/same historical window not double-counted/);
+ assert.match(page,/strategy-research-session\.mjs/);
+ assert.match(page,/candidate-list/);
+ assert.match(page,/showCandidates/);
+ assert.match(page,/No qualifying development candidate/);
+ assert.match(page,/No independent later-history replay was run/);
+ assert.match(page,/research-data\/robot-academy\.json/);
+ assert.match(page,/No PAPER orders/);
+ assert.match(page,/browser journal|local research|local exports/i);
  assert.doesNotMatch(page,/paperOrder\s*\(/);
  assert.doesNotMatch(page,/APCA-API-SECRET-KEY/);
 });

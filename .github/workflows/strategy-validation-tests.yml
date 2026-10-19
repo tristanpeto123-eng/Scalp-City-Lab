@@ -4,8 +4,11 @@ on:
     branches: [release/strategy-validation-static-v1, release/alpaca-snapshots-v2, feat/chart-adaptive-validation-v1, main]
     paths:
       - strategy-validation.html
+      - strategy-lab-ui-tests.mjs
       - strategy-validation-core.mjs
       - strategy-adaptive-model.mjs
+      - strategy-research-session.mjs
+      - strategy-research-session-tests.mjs
       - strategy-free-discovery.mjs
       - strategy-free-discovery-tests.mjs
       - strategy-adaptive-model-tests.mjs
@@ -21,6 +24,8 @@ on:
       - strategy-validation.html
       - strategy-validation-core.mjs
       - strategy-adaptive-model.mjs
+      - strategy-research-session.mjs
+      - strategy-research-session-tests.mjs
       - strategy-free-discovery.mjs
       - strategy-free-discovery-tests.mjs
       - strategy-adaptive-model-tests.mjs
@@ -45,8 +50,11 @@ jobs:
           node --check strategy-validation-core.mjs
           node --check strategy-validation-tests.mjs
           node --test strategy-validation-tests.mjs
+          node --test strategy-lab-ui-tests.mjs
           node --check strategy-adaptive-model.mjs
           node --test strategy-adaptive-model-tests.mjs
+          node --check strategy-research-session.mjs
+          node --test strategy-research-session-tests.mjs
           node --check strategy-free-discovery.mjs
           node --test strategy-free-discovery-tests.mjs
           node --check scripts/refresh-alpaca-snapshots.mjs
