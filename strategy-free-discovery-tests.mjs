@@ -81,8 +81,8 @@ test('browser UI exposes both strategies and reports invented rule provenance',a
  assert.match(html,/value="auto"/);
  assert.match(html,/value="invent"/);
  assert.match(html,/strategy-research-session\\.mjs/);
- assert.match(html,/No later-history replay was selected/);
- assert.match(html,/Training selection uses the first 40%/);
+ assert.match(html,/No independent later-history replay was run/);
+ assert.match(html,/Discovery, independent confirmation, and later historical evaluation/);
  assert.match(html,/new URLSearchParams\(location\.search\)/);
  const academy=await readFile(new URL('./robot-academy.html',import.meta.url),'utf8');
  assert.match(academy,/Invent strategy/);
