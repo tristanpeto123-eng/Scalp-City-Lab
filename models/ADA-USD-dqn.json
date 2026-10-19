@@ -2,19 +2,19 @@
   "schema": "SCALP_DQN_DEVELOPMENT_V1",
   "symbol": "ADA/USD",
   "modelType": "DEEP_Q_NETWORK",
-  "policySha256": "f16dedf1621af2b44d538d04a99909fcc30c52693ed76428ed7c2532de56d19c",
+  "policySha256": "20a2dedea2c5b3b38cae9c1e86827bd2f23c39d80b69b144fd22f6381f555402",
   "trainingDataSha256": "66f6fa562fbf0bf3054793523da3f01676ced0bd9888a7e368620ae5aac0b911",
   "seed": 7,
   "training": {
     "steps": 15450,
     "gradientUpdates": 3847,
     "episodes": 3,
-    "simulatedClosedTrades": 1645,
-    "simulatedOpens": 1646,
-    "trainingElapsedSeconds": 5.8725,
-    "decisionsPerSecond": 2630.89,
-    "virtualClosesPerSecond": 280.12,
-    "gradientUpdatesPerSecond": 655.08,
+    "simulatedClosedTrades": 1652,
+    "simulatedOpens": 1653,
+    "trainingElapsedSeconds": 6.2603,
+    "decisionsPerSecond": 2467.92,
+    "virtualClosesPerSecond": 263.88,
+    "gradientUpdatesPerSecond": 614.5,
     "marketTimeframe": "5Min",
     "cadenceType": "ACCELERATED_HISTORICAL_REPLAY_NOT_REALTIME_1S"
   },
@@ -27,25 +27,29 @@
     "holdoutStart": 1791923400000,
     "sealedHoldoutTouched": false
   },
-  "previousCheckpointSha256": "d206cb8964c4ae7ba9a624a2b40f358d61c7781c1f2a1670ef6072942e2d375b",
+  "previousCheckpointSha256": "f16dedf1621af2b44d538d04a99909fcc30c52693ed76428ed7c2532de56d19c",
   "cumulativeGradientUpdatesVerified": false,
   "validation": {
-    "equityGbp": 49.8318,
-    "netProfitGbp": -0.1682,
-    "maxDrawdownPct": 0.9691,
+    "equityGbp": 49.1171,
+    "netProfitGbp": -0.8829,
+    "maxDrawdownPct": 2.1393,
     "closedTrades": 1,
     "wins": 0,
     "openedPositions": 1,
-    "openPosition": false
+    "openPosition": false,
+    "lastVirtualFill": null,
+    "realizedProfitVirtual": -0.882942
   },
   "validationDoubleCostStress": {
-    "equityGbp": 49.6586,
-    "netProfitGbp": -0.3414,
-    "maxDrawdownPct": 1.2156,
+    "equityGbp": 48.9488,
+    "netProfitGbp": -1.0512,
+    "maxDrawdownPct": 2.3788,
     "closedTrades": 1,
     "wins": 0,
     "openedPositions": 1,
-    "openPosition": false
+    "openPosition": false,
+    "lastVirtualFill": null,
+    "realizedProfitVirtual": -1.051174
   },
   "benchmarks": {
     "cash": {
@@ -55,7 +59,9 @@
       "closedTrades": 0,
       "wins": 0,
       "openedPositions": 0,
-      "openPosition": false
+      "openPosition": false,
+      "lastVirtualFill": null,
+      "realizedProfitVirtual": 0.0
     },
     "buy_hold": {
       "equityGbp": 48.1122,
@@ -64,7 +70,9 @@
       "closedTrades": 0,
       "wins": 0,
       "openedPositions": 1,
-      "openPosition": true
+      "openPosition": true,
+      "lastVirtualFill": null,
+      "realizedProfitVirtual": 0.0
     }
   },
   "status": "EXPERIMENTAL_HISTORICAL_RESEARCH_ONLY",

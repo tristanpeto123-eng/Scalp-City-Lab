@@ -2,19 +2,19 @@
   "schema": "SCALP_DQN_DEVELOPMENT_V1",
   "symbol": "AVAX/USD",
   "modelType": "DEEP_Q_NETWORK",
-  "policySha256": "3ee114d90d4f52eb11c92011bc9748ddc8e32b2351a247ddf0613481058a1db4",
+  "policySha256": "f4bdeed8502b4976cef5829317cd4500c3617afaa6783a68b0171338abe73e64",
   "trainingDataSha256": "61ddc151825cef3a074902fca98f6f062e8bd94ce869f19997cec515ca684366",
   "seed": 7,
   "training": {
     "steps": 15450,
     "gradientUpdates": 3847,
     "episodes": 3,
-    "simulatedClosedTrades": 1638,
-    "simulatedOpens": 1639,
-    "trainingElapsedSeconds": 5.8161,
-    "decisionsPerSecond": 2656.4,
-    "virtualClosesPerSecond": 281.63,
-    "gradientUpdatesPerSecond": 661.43,
+    "simulatedClosedTrades": 1668,
+    "simulatedOpens": 1669,
+    "trainingElapsedSeconds": 6.2739,
+    "decisionsPerSecond": 2462.6,
+    "virtualClosesPerSecond": 265.87,
+    "gradientUpdatesPerSecond": 613.18,
     "marketTimeframe": "5Min",
     "cadenceType": "ACCELERATED_HISTORICAL_REPLAY_NOT_REALTIME_1S"
   },
@@ -27,25 +27,29 @@
     "holdoutStart": 1791923400000,
     "sealedHoldoutTouched": false
   },
-  "previousCheckpointSha256": "e9779438380a6c1e5d903db8866ca8ed051bf221ad4a36faf55fcffb085c9ef6",
+  "previousCheckpointSha256": "3ee114d90d4f52eb11c92011bc9748ddc8e32b2351a247ddf0613481058a1db4",
   "cumulativeGradientUpdatesVerified": false,
   "validation": {
-    "equityGbp": 46.3499,
-    "netProfitGbp": -3.6501,
-    "maxDrawdownPct": 7.8097,
-    "closedTrades": 5,
-    "wins": 1,
-    "openedPositions": 6,
-    "openPosition": true
+    "equityGbp": 45.7329,
+    "netProfitGbp": -4.2671,
+    "maxDrawdownPct": 9.037,
+    "closedTrades": 10,
+    "wins": 3,
+    "openedPositions": 11,
+    "openPosition": true,
+    "lastVirtualFill": null,
+    "realizedProfitVirtual": -4.171871
   },
   "validationDoubleCostStress": {
-    "equityGbp": 45.5778,
-    "netProfitGbp": -4.4222,
-    "maxDrawdownPct": 9.5254,
-    "closedTrades": 5,
+    "equityGbp": 44.0435,
+    "netProfitGbp": -5.9565,
+    "maxDrawdownPct": 12.1696,
+    "closedTrades": 8,
     "wins": 1,
-    "openedPositions": 5,
-    "openPosition": false
+    "openedPositions": 9,
+    "openPosition": true,
+    "lastVirtualFill": null,
+    "realizedProfitVirtual": -5.710667
   },
   "benchmarks": {
     "cash": {
@@ -55,7 +59,9 @@
       "closedTrades": 0,
       "wins": 0,
       "openedPositions": 0,
-      "openPosition": false
+      "openPosition": false,
+      "lastVirtualFill": null,
+      "realizedProfitVirtual": 0.0
     },
     "buy_hold": {
       "equityGbp": 47.9328,
@@ -64,7 +70,9 @@
       "closedTrades": 0,
       "wins": 0,
       "openedPositions": 1,
-      "openPosition": true
+      "openPosition": true,
+      "lastVirtualFill": null,
+      "realizedProfitVirtual": 0.0
     }
   },
   "status": "EXPERIMENTAL_HISTORICAL_RESEARCH_ONLY",

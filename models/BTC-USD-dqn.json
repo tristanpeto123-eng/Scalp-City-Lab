@@ -2,19 +2,19 @@
   "schema": "SCALP_DQN_DEVELOPMENT_V1",
   "symbol": "BTC/USD",
   "modelType": "DEEP_Q_NETWORK",
-  "policySha256": "95a4470540439d771a3ddccf312f37fac06de1dae7ac753ed904f4eba2430bec",
+  "policySha256": "a1a2f3c4b42cc6705869fe8cccbc15e69046f898b60ecf68aba82327d8ce3575",
   "trainingDataSha256": "c18232d41c5d2269807f019dd2ea13412bb62e3497d5b15a2461c47679daf997",
   "seed": 7,
   "training": {
     "steps": 15450,
     "gradientUpdates": 3847,
     "episodes": 3,
-    "simulatedClosedTrades": 1716,
-    "simulatedOpens": 1717,
-    "trainingElapsedSeconds": 5.9465,
-    "decisionsPerSecond": 2598.15,
-    "virtualClosesPerSecond": 288.57,
-    "gradientUpdatesPerSecond": 646.93,
+    "simulatedClosedTrades": 1685,
+    "simulatedOpens": 1686,
+    "trainingElapsedSeconds": 6.3009,
+    "decisionsPerSecond": 2452.04,
+    "virtualClosesPerSecond": 267.42,
+    "gradientUpdatesPerSecond": 610.55,
     "marketTimeframe": "5Min",
     "cadenceType": "ACCELERATED_HISTORICAL_REPLAY_NOT_REALTIME_1S"
   },
@@ -27,7 +27,7 @@
     "holdoutStart": 1791923400000,
     "sealedHoldoutTouched": false
   },
-  "previousCheckpointSha256": "18267e51912c87857b97c694e8a11a87c6c2758376f3b6d3bb87172a940b931b",
+  "previousCheckpointSha256": "95a4470540439d771a3ddccf312f37fac06de1dae7ac753ed904f4eba2430bec",
   "cumulativeGradientUpdatesVerified": false,
   "validation": {
     "equityGbp": 50.0,
@@ -36,7 +36,9 @@
     "closedTrades": 0,
     "wins": 0,
     "openedPositions": 0,
-    "openPosition": false
+    "openPosition": false,
+    "lastVirtualFill": null,
+    "realizedProfitVirtual": 0.0
   },
   "validationDoubleCostStress": {
     "equityGbp": 50.0,
@@ -45,7 +47,9 @@
     "closedTrades": 0,
     "wins": 0,
     "openedPositions": 0,
-    "openPosition": false
+    "openPosition": false,
+    "lastVirtualFill": null,
+    "realizedProfitVirtual": 0.0
   },
   "benchmarks": {
     "cash": {
@@ -55,7 +59,9 @@
       "closedTrades": 0,
       "wins": 0,
       "openedPositions": 0,
-      "openPosition": false
+      "openPosition": false,
+      "lastVirtualFill": null,
+      "realizedProfitVirtual": 0.0
     },
     "buy_hold": {
       "equityGbp": 49.8207,
@@ -64,7 +70,9 @@
       "closedTrades": 0,
       "wins": 0,
       "openedPositions": 1,
-      "openPosition": true
+      "openPosition": true,
+      "lastVirtualFill": null,
+      "realizedProfitVirtual": 0.0
     }
   },
   "status": "EXPERIMENTAL_HISTORICAL_RESEARCH_ONLY",
