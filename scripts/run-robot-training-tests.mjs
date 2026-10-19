@@ -223,3 +223,31 @@ test('invalid historical batch budgets are refused',async()=>{
    /batches per pupil/);
  }
 });
+
+test('research continues exploring new bounded models after original neighbourhood is exhausted',()=>{
+ const fingerprint='f'.repeat(64),prior=new Set();
+ let saved={...empty,experiments:[]};
+ for(let generation=0;generation<14;generation++){
+   const plan=proposeResearchLesson(saved,{symbol:'BTC/USD',fingerprint,feed:'us-1'});
+   assert.ok(plan.candidates.length>0,'Need new research parameters at generation '+generation);
+   for(const p of plan.candidates){
+     const signature=JSON.stringify(p);
+     assert.equal(prior.has(signature),false,'Cannot retest identical parameters on same candles');
+     prior.add(signature);
+   }
+   const opts=plan.candidates.map(params=>({
+     params,closedTrades:22,netProfitGbp:-1,winRatePct:40,trainingScore:null
+   }));
+   saved={...saved,experiments:[...saved.experiments,{
+     id:generation.toString(16).padStart(64,'0'),symbol:'BTC/USD',feed:'us-1',
+     trainingStart:'2026-08-01T00:00:00Z',trainingEnd:'2026-08-15T00:00:00Z',
+     trainFingerprint:fingerprint,acceptedForLearning:generation===0,
+     trainingOptions:opts
+   }]};
+ }
+ assert.ok(prior.size>=65,'Broader search must extend beyond the exhausted fixed bank');
+ assert.ok([...prior].some(v=>v.includes('channel_breakout')));
+ assert.ok([...prior].some(v=>v.includes('ema_trend')));
+ assert.ok([...prior].some(v=>v.includes('rsi_reversion')));
+ assert.equal(checkMemory(saved),saved);
+});
