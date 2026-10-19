@@ -394,6 +394,7 @@ async function main(){
  const telemetry={schema:'SCALP_TRAINING_CYCLE_V1',startedAt,completedAt:new Date().toISOString(),
   evaluationDurationMs:Number(elapsedMs.toFixed(3)),
   candidateEvaluations:evaluated,uniqueCandidateConfigurations:candidates,
+  batchesPerPupil,measuredBatchAttempts:result.reports.reduce((n,r)=>n+(r.researchBatchesAttempted||0),0),
   researchFolds:'PRE_HOLDOUT_NONOVERLAPPING_V1',
   evaluationsPerSecond:Number((1000*evaluated/elapsedMs).toFixed(2)),
   newlySavedLessons:result.addedExperiments,
@@ -403,6 +404,7 @@ async function main(){
   charts:result.reports.map(r=>({symbol:r.symbol,status:r.status,
    evaluations:(r.testedParams||0)*(r.chronologicalTrainingWindows||0)*2,
    configurations:r.testedParams||0,folds:r.chronologicalTrainingWindows||0,
+   batchesAttempted:r.researchBatchesAttempted||1,savedExperiments:r.savedExperiments||0,
    newTrainingCandles:r.newTrainingCandles||0,
    rewardCredits:r.rewardCreditsAwarded||0,trainingEnd:r.trainingEnd||null,
    snapshotAt:r.snapshotAt||null}))};
