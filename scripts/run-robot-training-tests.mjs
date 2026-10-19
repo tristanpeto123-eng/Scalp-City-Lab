@@ -156,7 +156,7 @@ test('training process contains no broker order or real deposit actions',async()
  assert.match(code,/observedHoldoutUsedToSelect:false/);
 });
 
-test('half-hourly historical research uses versioned local data, never live broker during training',async()=>{
+test('five-minute historical research uses versioned local data, never live broker during training',async()=>{
  const workflow=await readFile(new URL('../.github/workflows/robot-research-training.yml',import.meta.url),'utf8');
  const refresh=await readFile(new URL('../.github/workflows/refresh-alpaca-validation.yml',import.meta.url),'utf8');
  const worker=await readFile(new URL('./run-robot-training.mjs',import.meta.url),'utf8');
@@ -189,4 +189,15 @@ test('archived RSI boundary mutations are filtered before strict simulator execu
  assert.ok(result.memory.experiments.at(-1).trainingOptions.every(
    o=>o.params.family!=='rsi_reversion'||o.params.buyBelow<=40));
  assert.equal(result.brokerOrders,0);
+});
+
+test('training rewards are measured and tracked without disclosing holdout or placing orders',async()=>{
+ const source=await readFile(new URL('./run-robot-training.mjs',import.meta.url),'utf8');
+ assert.match(source,/scoreTrainingReward/);
+ assert.match(source,/rewardCreditsAwarded/);
+ assert.match(source,/TRAINING_CYCLE_TELEMETRY/);
+ assert.match(source,/evaluationDurationMs/);
+ const r=runResearchLesson(memory,{snapshot:snapshots.get('BTC/USD'),symbol:'BTC/USD',now});
+ assert.ok(r.memory.experiments.at(-1).trainingOptions.every(o=>o.researchReward.forwardVerified===false));
+ assert.ok(r.memory.experiments.at(-1).trainingOptions.every(o=>o.researchReward.points>=0));
 });
