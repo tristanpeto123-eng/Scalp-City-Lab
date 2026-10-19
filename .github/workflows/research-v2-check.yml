@@ -51,6 +51,22 @@ jobs:
           }
           console.log('CHECKER_V2: '+r.evaluatedCandidates+' offline candidate evaluations; no broker orders; holdouts quarantined');
           NODE
+      - name: Checker benchmark — compare identical serial and parallel candidate results
+        run: |
+          node scripts/research-v2.mjs research-memory/scalp-learning/history.json validation-data qualification-results/scalp-research-v2-serial.json 1 36
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const parallel=JSON.parse(fs.readFileSync('qualification-results/scalp-research-v2.json','utf8'));
+          const serial=JSON.parse(fs.readFileSync('qualification-results/scalp-research-v2-serial.json','utf8'));
+          if(JSON.stringify(parallel.symbols)!==JSON.stringify(serial.symbols))
+            throw Error('Serial vs parallel candidate result mismatch');
+          console.log('V2_BENCHMARK '+JSON.stringify({
+            candidateCount:parallel.evaluatedCandidates,
+            serialMs:serial.elapsedMilliseconds,
+            parallelMs:parallel.elapsedMilliseconds,
+            ratio:Number((serial.elapsedMilliseconds/parallel.elapsedMilliseconds).toFixed(3)),
+            noOrders:true,identicalResults:true}));
+          NODE
       - name: Upload development-only candidate evidence (never admissions)
         uses: actions/upload-artifact@v4
         with:
