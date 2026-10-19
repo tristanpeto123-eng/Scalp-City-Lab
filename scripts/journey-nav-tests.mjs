@@ -41,3 +41,21 @@ test('current-stage handoff is visible and routes all steps without exposing tra
  assert.match(monitor,/Next: Independent Qualification/);
  assert.doesNotMatch(js,/\/v2\/orders|APCA-API-SECRET-KEY/);
 });
+
+test('pupil focus survives Academy -> Teacher -> Trading Floor without storing broker state',async()=>{
+ const nav=await readFile(new URL('journey-nav.js',root),'utf8');
+ const academy=await readFile(new URL('robot-academy.html',root),'utf8');
+ const teacher=await readFile(new URL('teacher-console.html',root),'utf8');
+ const floor=await readFile(new URL('trading-floor.html',root),'utf8');
+ assert.match(nav,/scalp:pupil-selected/);
+ assert.match(nav,/pupilRoutes\.has\(current\)/);
+ assert.match(nav,/history\.replaceState/);
+ assert.match(nav,/syncPupilLinks/);
+ assert.match(nav,/url\.searchParams\.set\('pupil',selectedPupil\)/);
+ for(const html of [academy,teacher,floor])
+  assert.match(html,/scalp:pupil-selected/);
+ assert.match(academy,/URLSearchParams\(location\.search\)\.get\('pupil'\)/);
+ assert.match(teacher,/URLSearchParams\(location\.search\)\.get\('pupil'\)/);
+ assert.match(floor,/URLSearchParams\(location\.search\)\.get\('pupil'\)/);
+ assert.doesNotMatch(nav,/localStorage|sessionStorage|paperOrder\(|APCA-API-SECRET-KEY/);
+});
