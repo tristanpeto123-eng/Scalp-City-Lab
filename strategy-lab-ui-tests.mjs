@@ -15,7 +15,7 @@ test('new Lab is a connected goal → chart pupil → exploration → evidence �
  'What has this robot learned so far?','Invent my own strategy',
  'Research report','Strategy research','Teacher','rejectionDescription',
  'renderPupil','loadAcademy','export-actions','No candidate passed all historical training',
- 'no later-history replay','dataSource:selected.verified.source'])assert.ok(html.includes(text),text);
+ 'No later-history replay','dataSource:selected.verified.source'])assert.ok(html.includes(text),text);
  assert.match(html,/value="auto"/);
  assert.match(html,/value="invent"/);
  assert.match(html,/source-dot/);
