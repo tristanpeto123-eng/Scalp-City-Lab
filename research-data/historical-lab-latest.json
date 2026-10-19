@@ -43,14 +43,14 @@
       "bestResearchCandidate": {
         "parameters": {
           "family": "rsi_reversion",
-          "period": 14,
-          "buyBelow": 32,
+          "period": 9,
+          "buyBelow": 27,
           "sellAbove": 65
         },
-        "normalNetAcrossOverlappingFolds": -2.4,
-        "stressedNetAcrossOverlappingFolds": -4.24,
+        "normalNetAcrossOverlappingFolds": -1.52,
+        "stressedNetAcrossOverlappingFolds": -5.09,
         "profitableFolds": 0,
-        "researchRankScore": -4.24,
+        "researchRankScore": -5.09,
         "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -80,14 +80,15 @@
       "candidatesEvaluated": 6,
       "bestResearchCandidate": {
         "parameters": {
-          "family": "channel_breakout",
-          "lookback": 50,
-          "exitLookback": 25
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 28,
+          "sellAbove": 56
         },
-        "normalNetAcrossOverlappingFolds": -3.26,
-        "stressedNetAcrossOverlappingFolds": -4.96,
+        "normalNetAcrossOverlappingFolds": -1.63,
+        "stressedNetAcrossOverlappingFolds": -3.52,
         "profitableFolds": 0,
-        "researchRankScore": -4.96,
+        "researchRankScore": -3.52,
         "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -118,14 +119,14 @@
       "bestResearchCandidate": {
         "parameters": {
           "family": "rsi_reversion",
-          "period": 14,
-          "buyBelow": 30,
+          "period": 9,
+          "buyBelow": 25,
           "sellAbove": 55
         },
-        "normalNetAcrossOverlappingFolds": -1.4,
-        "stressedNetAcrossOverlappingFolds": -3.43,
+        "normalNetAcrossOverlappingFolds": -1.69,
+        "stressedNetAcrossOverlappingFolds": -4.8,
         "profitableFolds": 0,
-        "researchRankScore": -3.43,
+        "researchRankScore": -4.8,
         "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -194,14 +195,14 @@
       "bestResearchCandidate": {
         "parameters": {
           "family": "rsi_reversion",
-          "period": 14,
-          "buyBelow": 30,
+          "period": 9,
+          "buyBelow": 25,
           "sellAbove": 60
         },
-        "normalNetAcrossOverlappingFolds": -0.17,
-        "stressedNetAcrossOverlappingFolds": -2.64,
+        "normalNetAcrossOverlappingFolds": -1.82,
+        "stressedNetAcrossOverlappingFolds": -4.76,
         "profitableFolds": 1,
-        "researchRankScore": -2.63,
+        "researchRankScore": -4.75,
         "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -233,13 +234,13 @@
         "parameters": {
           "family": "rsi_reversion",
           "period": 14,
-          "buyBelow": 23,
-          "sellAbove": 56
+          "buyBelow": 32,
+          "sellAbove": 60
         },
-        "normalNetAcrossOverlappingFolds": 2.72,
-        "stressedNetAcrossOverlappingFolds": 1.34,
-        "profitableFolds": 5,
-        "researchRankScore": 1.39,
+        "normalNetAcrossOverlappingFolds": 2.43,
+        "stressedNetAcrossOverlappingFolds": -0.65,
+        "profitableFolds": 3,
+        "researchRankScore": -0.62,
         "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -271,13 +272,13 @@
         "parameters": {
           "family": "rsi_reversion",
           "period": 14,
-          "buyBelow": 32,
-          "sellAbove": 65
+          "buyBelow": 28,
+          "sellAbove": 56
         },
-        "normalNetAcrossOverlappingFolds": -2.56,
-        "stressedNetAcrossOverlappingFolds": -5.45,
-        "profitableFolds": 1,
-        "researchRankScore": -5.44,
+        "normalNetAcrossOverlappingFolds": -1.36,
+        "stressedNetAcrossOverlappingFolds": -2.88,
+        "profitableFolds": 2,
+        "researchRankScore": -2.86,
         "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -307,15 +308,14 @@
       "candidatesEvaluated": 6,
       "bestResearchCandidate": {
         "parameters": {
-          "family": "rsi_reversion",
-          "period": 14,
-          "buyBelow": 37,
-          "sellAbove": 65
+          "family": "ema_trend",
+          "fast": 9,
+          "slow": 34
         },
-        "normalNetAcrossOverlappingFolds": -6.08,
-        "stressedNetAcrossOverlappingFolds": -9.26,
-        "profitableFolds": 0,
-        "researchRankScore": -9.26,
+        "normalNetAcrossOverlappingFolds": -5.83,
+        "stressedNetAcrossOverlappingFolds": -10.48,
+        "profitableFolds": 1,
+        "researchRankScore": -10.47,
         "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -346,14 +346,14 @@
       "bestResearchCandidate": {
         "parameters": {
           "family": "rsi_reversion",
-          "period": 14,
-          "buyBelow": 37,
+          "period": 9,
+          "buyBelow": 32,
           "sellAbove": 65
         },
-        "normalNetAcrossOverlappingFolds": 0.93,
-        "stressedNetAcrossOverlappingFolds": -2.81,
-        "profitableFolds": 2,
-        "researchRankScore": -2.79,
+        "normalNetAcrossOverlappingFolds": 0.51,
+        "stressedNetAcrossOverlappingFolds": -4.66,
+        "profitableFolds": 0,
+        "researchRankScore": -4.66,
         "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -384,14 +384,14 @@
       "bestResearchCandidate": {
         "parameters": {
           "family": "rsi_reversion",
-          "period": 14,
-          "buyBelow": 32,
+          "period": 9,
+          "buyBelow": 27,
           "sellAbove": 55
         },
-        "normalNetAcrossOverlappingFolds": -1.22,
-        "stressedNetAcrossOverlappingFolds": -4.66,
-        "profitableFolds": 2,
-        "researchRankScore": -4.64,
+        "normalNetAcrossOverlappingFolds": -3.11,
+        "stressedNetAcrossOverlappingFolds": -7.36,
+        "profitableFolds": 1,
+        "researchRankScore": -7.35,
         "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
