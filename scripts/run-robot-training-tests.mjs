@@ -160,7 +160,7 @@ test('five-minute historical research uses versioned local data, never live brok
  const workflow=await readFile(new URL('../.github/workflows/robot-research-training.yml',import.meta.url),'utf8');
  const refresh=await readFile(new URL('../.github/workflows/refresh-alpaca-validation.yml',import.meta.url),'utf8');
  const worker=await readFile(new URL('./run-robot-training.mjs',import.meta.url),'utf8');
- assert.match(workflow,/cron: '2,7,12,17,22,27,32,37,42,47,52,57 \\* \\* \\* \\*'/);
+ assert.ok(workflow.includes("cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *'"));
  assert.match(workflow,/concurrency:/);
  assert.match(workflow,/cancel-in-progress: false/);
  assert.match(workflow,/SCALP_RESEARCH_INPUT_DIR: validation-data/);
