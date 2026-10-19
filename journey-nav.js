@@ -11,16 +11,26 @@
     {path:'trading-floor.html',name:'Trading Floor',description:'Monitor admitted traders or run synthetic demo'}
   ];
   const current=location.pathname.split('/').pop()||'index.html';
-  const idx=stages.findIndex(s=>s.path===current);
+  // Training Monitor is a subroom of the Academy, not a fifth stage.
+  const idx=current==='training-monitor.html'?1:stages.findIndex(s=>s.path===current);
+  const active=idx>=0?stages[idx]:null;
+  const next=idx>=0&&idx<stages.length-1?stages[idx+1]:null;
+  const previous=idx>0?stages[idx-1]:null;
+  const quick=next?{path:next.path,label:'Continue to '+next.name}:
+    idx===3?{path:'mission-control.html',label:'Return to Mission Control'}:
+    {path:current==='mission-control.html'?'strategy-validation.html':'mission-control.html',
+     label:current==='mission-control.html'?'Start in Historical Lab':'Open Mission Control'};
   const link=document.createElement('link');
   link.rel='stylesheet';link.href='./journey-nav.css';document.head.appendChild(link);
   const dock=document.createElement('aside');dock.className='sc-journey-dock';
   dock.setAttribute('aria-label','Scalp City journey navigation');
+  const forward=document.createElement('a');forward.className='sc-journey-quick';
+  forward.href='./'+quick.path;forward.textContent=quick.label+' →';
   const toggle=document.createElement('button');
   toggle.type='button';toggle.className='sc-journey-trigger';
   toggle.setAttribute('aria-controls','sc-journey-panel');toggle.setAttribute('aria-expanded','false');
   const dot=document.createElement('span');dot.className='sc-dot';dot.setAttribute('aria-hidden','true');
-  toggle.append(dot,document.createTextNode(idx>=0?'Journey · '+(idx+1)+'/4':'Explore Scalp City'));
+  toggle.append(dot,document.createTextNode(active?'STEP '+(idx+1)+'/4 · '+active.name:'Explore Scalp City'));
   const panel=document.createElement('nav');panel.className='sc-journey-panel';
   panel.id='sc-journey-panel';panel.hidden=true;
   panel.setAttribute('aria-label','Scalp City section journey');
@@ -33,7 +43,16 @@
   close.setAttribute('aria-label','Close journey navigator');
   top.append(heading,close);
   const copy=document.createElement('p');copy.className='sc-journey-copy';
-  copy.textContent='Historical research comes first. Qualification is separate, and PAPER orders stay locked until independently approved.';
+  copy.textContent='Historical research comes first. Qualification and forward PAPER examination remain separate, independently verified stages.';
+  const context=document.createElement('div');context.className='sc-journey-context';
+  const present=document.createElement('strong');
+  present.textContent=active?'You are here · '+active.name:'You are in the Scalp City overview';
+  const guidance=document.createElement('p');
+  guidance.textContent=active?active.description+'. The next screen provides the next part of the evidence, not automatic promotion.':
+    'Begin at the historical laboratory, then follow the pupils into qualification.';
+  context.append(present,guidance);
+  const advance=document.createElement('a');advance.className='sc-journey-next';
+  advance.href='./'+quick.path;advance.textContent=quick.label+' →';
   const list=document.createElement('ol');list.className='sc-journey-stages';
   for(const [index,stage] of stages.entries()){
     const li=document.createElement('li');
@@ -47,12 +66,18 @@
   }
   const extras=document.createElement('div');extras.className='sc-journey-links';
   for(const [label,url] of [
+    ['Training Monitor','./training-monitor.html'],
     ['Mission Control','./mission-control.html'],
     ['Explore 3D City','./agent-city.html'],
     ['Legacy research scene','./index.html']
   ]){const a=document.createElement('a');a.href=url;a.textContent=label;
     if(current===url.slice(2))a.setAttribute('aria-current','page');extras.append(a);}
-  panel.append(top,copy,list,extras);dock.append(toggle,panel);document.body.append(dock);
+  const back=previous?document.createElement('a'):null;
+  if(back){back.href='./'+previous.path;back.className='sc-journey-back';back.textContent='← Previous · '+previous.name;}
+  panel.append(top,copy,context,list,advance);
+  if(back)panel.append(back);
+  panel.append(extras);
+  dock.append(forward,toggle,panel);document.body.append(dock);
   const setOpen=open=>{
     panel.hidden=!open;toggle.setAttribute('aria-expanded',String(open));
     if(open)close.focus();else toggle.focus();
