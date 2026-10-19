@@ -1,5 +1,10 @@
 name: Robot Academy - native five-minute crypto history (read-only)
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/refresh-rl-5m.yml'
+      - 'scripts/refresh-rl-5m.mjs'
   schedule:
     - cron: '23 */6 * * *' # completed 5-minute bars; no broker calls
   workflow_dispatch:
