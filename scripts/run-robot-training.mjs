@@ -7,6 +7,7 @@ import {createHash} from 'node:crypto';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {PAIRS,checkSnapshot,simulateValidation} from '../strategy-validation-core.mjs';
+import {scoreTrainingReward,checkTrainingReward} from './robot-rewards.mjs';
 export {PAIRS};
 
 const MEMORY_BRANCH='scalp-learning-memory';
@@ -46,6 +47,7 @@ export function checkMemory(memory){
   ids.add(e.id);
   for(const o of e.trainingOptions){
    checkParams(o.params);
+   checkTrainingReward(o.researchReward);
    if(!Number.isInteger(o.closedTrades)||o.closedTrades<0||
       !goodNumber(o.netProfitGbp)||!goodNumber(o.winRatePct)||
       o.winRatePct<0||o.winRatePct>100||
@@ -94,7 +96,8 @@ export function selectHistoricalParent(memory,symbol,feed='us-1'){
  const options=previous.flatMap(e=>e.trainingOptions.map(o=>({
   experimentId:e.id,trainingEnd:e.trainingEnd,
   params:o.params,closedTrades:o.closedTrades,
-  winRatePct:o.winRatePct,netProfitGbp:o.netProfitGbp
+  winRatePct:o.winRatePct,netProfitGbp:o.netProfitGbp,
+  rewardPoints:e.acceptedForLearning&&o.researchReward?.eligible?o.researchReward.points:0
  })));
  // Do not use training win rate alone. Prefer greatest historic net profit
  // among strategies with meaningful sample size, though it can be a loser.
@@ -103,7 +106,9 @@ export function selectHistoricalParent(memory,symbol,feed='us-1'){
   if(o.closedTrades<20)return false;
   try{toSimulator(o.params);return true}catch{return false}
  });
- admissible.sort((a,b)=>b.netProfitGbp-a.netProfitGbp||
+ // Reinforce only cost-stressed positive training on nonoverlapping historical
+ // windows. Old saved data has no reward and retains the net-profit fallback.
+ admissible.sort((a,b)=>b.rewardPoints-a.rewardPoints||b.netProfitGbp-a.netProfitGbp||
   b.closedTrades-a.closedTrades||
   Date.parse(b.trainingEnd)-Date.parse(a.trainingEnd)||
   canonical(a.params).localeCompare(canonical(b.params)));
@@ -173,7 +178,12 @@ export function proposeResearchLesson(memory,{symbol,feed='us-1',fingerprint}={}
  const result=[];
  const add=p=>{if(!result.some(q=>canonical(q)===canonical(p)))result.push(p);};
  if(parent&&!triedOnSameCandles.has(canonical(parent.params)))add(parent.params);
- for(const candidate of remaining)add(candidate);
+ // Preserve exploration across rule families, rather than always cloning the
+ // last rewarded parent. At least two seats are reserved for other families.
+ const diversity=parent?remaining.filter(p=>p.family!==parent.params.family).slice(0,2):[];
+ const coreLimit=RESEARCH_LIMITS.candidatesPerCycle-diversity.length;
+ for(const candidate of remaining){if(result.length>=coreLimit)break;add(candidate);}
+ for(const candidate of diversity)add(candidate);
  return {symbol,feed,seed:parent,candidates:result.slice(0,RESEARCH_LIMITS.candidatesPerCycle),
   alreadyTriedOnTheseCandles:triedOnSameCandles.size,
   selectionBasis:'PREVIOUS_CHART_BEST_NET_GBP_THEN_BOUNDED_NEIGHBOUR_MUTATIONS',
@@ -221,6 +231,13 @@ export function runResearchLesson(memory,{snapshot,symbol,now=Date.now()}={}){
   return {memory,changed:false,status:plan.candidates.length?'DAILY_EXPERIMENT_CAP':'NO_NEW_PARAMETERS_ON_SAME_CANDLES',
    symbol,seed:plan.seed,holdoutUsedForSelection:false,brokerOrders:0};
  }
+ const acceptedForLearning=!memory.experiments.some(e=>
+   e.symbol===symbol&&e.feed==='us-1'&&e.acceptedForLearning&&
+   Date.parse(start)<Date.parse(e.trainingEnd)&&Date.parse(e.trainingStart)<Date.parse(end));
+ const lastAcceptedEnd=memory.experiments.filter(e=>e.symbol===symbol&&e.feed==='us-1'&&e.acceptedForLearning)
+   .reduce((latest,e)=>Math.max(latest,Date.parse(e.trainingEnd)),0);
+ const newTrainingCandles=acceptedForLearning?(lastAcceptedEnd?
+   Math.max(0,Math.floor((Date.parse(end)-lastAcceptedEnd)/PERIOD)) : training.length):0;
  const dataset={...snapshot,bars:snapshot.bars.slice(0,boundary)};
  const outcomes=plan.candidates.map(p=>{
   const config=toSimulator(p);
@@ -233,17 +250,19 @@ export function runResearchLesson(memory,{snapshot,symbol,now=Date.now()}={}){
   const score=result.closedTrades>=20&&result.realizedNetProfitGbp>0&&
     stress.realizedNetProfitGbp>0&&result.maxDrawdownPct<=10?
     round(result.realizedNetProfitGbp-result.maxDrawdownPct*.05):null;
+  const researchReward=scoreTrainingReward({closedTrades:result.closedTrades,
+    netProfitGbp:result.realizedNetProfitGbp,
+    stressNetProfitGbp:stress.realizedNetProfitGbp,
+    maxDrawdownPct:result.maxDrawdownPct},{independent:acceptedForLearning});
   return {params:p,closedTrades:result.closedTrades,netProfitGbp:result.realizedNetProfitGbp,
-   winRatePct:result.winRatePct??0,trainingScore:score};
+   stressNetProfitGbp:stress.realizedNetProfitGbp,maxDrawdownPct:result.maxDrawdownPct,
+   winRatePct:result.winRatePct??0,trainingScore:score,researchReward};
  });
  const ids=outcomes.map(o=>canonical(o.params)).sort();
  const recordId=hash([POLICY,symbol,'us-1',start,end,fingerprint,hash(ids)]);
  if(memory.experiments.some(e=>e.id===recordId))
   return {memory,changed:false,status:'IDENTICAL_EXPERIMENT_DEDUPED',
    symbol,seed:plan.seed,holdoutUsedForSelection:false,brokerOrders:0};
- const acceptedForLearning=!memory.experiments.some(e=>
-   e.symbol===symbol&&e.feed==='us-1'&&e.acceptedForLearning&&
-   Date.parse(start)<Date.parse(e.trainingEnd)&&Date.parse(e.trainingStart)<Date.parse(end));
  if(memory.experiments.length>=2000)throw Error('Model memory capacity reached, manual archive policy required');
  const record={
   id:recordId,symbol,feed:'us-1',trainingStart:start,trainingEnd:end,
@@ -260,7 +279,8 @@ export function runResearchLesson(memory,{snapshot,symbol,now=Date.now()}={}){
  checkMemory(next);
  return {memory:next,changed:true,symbol,status:record.reason,
   seed:plan.seed,
-  testedParams:outcomes.length,
+  testedParams:outcomes.length,newTrainingCandles,snapshotAt:snapshot.generatedAt??null,
+  trainingEnd:end,rewardCreditsAwarded:outcomes.reduce((sum,o)=>sum+o.researchReward.points,0),
   bestObservedTrainingNetGbp:Math.max(...outcomes.map(x=>x.netProfitGbp)),
   bestObservedTrainingWinRatePct:Math.max(...outcomes.map(x=>x.winRatePct)),
   holdoutUsedForSelection:false,brokerOrders:0,
@@ -325,8 +345,27 @@ async function main(){
  // Each scheduled cycle uses independently refreshed, completed read-only
  // Alpaca bars if provided. Never silently fall back to an older snapshot.
  const selectedDir=process.env.SCALP_RESEARCH_INPUT_DIR||'validation-data';
+ const startedAt=new Date().toISOString(),startMs=performance.now();
  const result=await evaluateAll({memory:before,dataDir:selectedDir});
+ const elapsedMs=Math.max(.001,performance.now()-startMs);
  const saved=await persistMemory({token,expectedSha:blobSha,previous:before,next:result.memory});
+ const {writeFile,mkdir}=await import('node:fs/promises');
+ await mkdir('research-data',{recursive:true});
+ const evaluated=result.reports.reduce((sum,r)=>sum+(r.testedParams||0),0);
+ const telemetry={schema:'SCALP_TRAINING_CYCLE_V1',startedAt,completedAt:new Date().toISOString(),
+  evaluationDurationMs:Number(elapsedMs.toFixed(3)),
+  candidateEvaluations:evaluated,
+  evaluationsPerSecond:Number((1000*evaluated/elapsedMs).toFixed(2)),
+  newlySavedLessons:result.addedExperiments,
+  newTrainingCandles:result.reports.reduce((sum,r)=>sum+(r.newTrainingCandles||0),0),
+  totalRewardCredits:result.reports.reduce((sum,r)=>sum+(r.rewardCreditsAwarded||0),0),
+  persistence:saved.status,brokerOrders:0,verifiedForwardGrades:0,
+  charts:result.reports.map(r=>({symbol:r.symbol,status:r.status,
+   evaluations:r.testedParams||0,newTrainingCandles:r.newTrainingCandles||0,
+   rewardCredits:r.rewardCreditsAwarded||0,trainingEnd:r.trainingEnd||null,
+   snapshotAt:r.snapshotAt||null}))};
+ await writeFile('research-data/training-cycle-latest.json',JSON.stringify(telemetry,null,2)+'\n');
+ console.log('TRAINING_CYCLE_TELEMETRY '+JSON.stringify(telemetry));
  console.log('ROBOT_TRAINING_CYCLE '+JSON.stringify({
   status:saved.status,savedCommit:saved.commitSha??null,
   priorExperiments:before.experiments.length,
