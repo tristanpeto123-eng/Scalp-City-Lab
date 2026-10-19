@@ -22,6 +22,46 @@
      label:current==='mission-control.html'?'Start in Historical Lab':'Open Mission Control'};
   const link=document.createElement('link');
   link.rel='stylesheet';link.href='./journey-nav.css';document.head.appendChild(link);
+  // Persistent, inline progress rail: the 4-stage learning journey should not
+  // require opening a floating menu. It describes locations, NOT gate approval.
+  const inlinePages=new Set([
+    'mission-control.html','strategy-validation.html','robot-academy.html',
+    'training-monitor.html','teacher-console.html','trading-floor.html'
+  ]);
+  const host=document.querySelector('body > .shell > header, body > .wrap > header, body > header, body > main > nav');
+  if(inlinePages.has(current)&&host){
+    const rail=document.createElement('nav');
+    rail.className='sc-workflow-rail';
+    rail.setAttribute('aria-label','Four-stage research and examination journey');
+    const heading=document.createElement('div');heading.className='sc-workflow-heading';
+    const title=document.createElement('strong');title.textContent='The Foundry / four stages';
+    const note=document.createElement('span');
+    note.textContent='Navigate stages freely · exams and promotions require verified evidence';
+    heading.append(title,note);
+    const track=document.createElement('ol');track.className='sc-workflow-track';
+    const shortNames=['Historical Lab','Robot Academy',"Teacher's Office",'Trading Floor'];
+    const hints=['Explore past data','Train and compare pupils','Review independent evidence','Watch approved PAPER trials'];
+    const rawPupil=new URLSearchParams(location.search).get('pupil');
+    const pupil=/^(BTC|ETH|SOL|XRP|ADA|AVAX|LINK|DOGE|LTC|BCH)USD$/.test(rawPupil||'')?rawPupil:null;
+    for(const [i,stage] of stages.entries()){
+      const li=document.createElement('li');
+      const a=document.createElement('a');
+      const url=new URL(stage.path,location.href);
+      if(pupil&&(stage.path==='teacher-console.html'||stage.path==='trading-floor.html'))
+        url.searchParams.set('pupil',pupil);
+      a.href=url.href;
+      a.className='sc-workflow-step';
+      if(i===idx)a.setAttribute('aria-current','page');
+      const num=document.createElement('span');num.className='sc-workflow-num';num.textContent=String(i+1).padStart(2,'0');
+      const labels=document.createElement('span');labels.className='sc-workflow-labels';
+      const label=document.createElement('strong');label.textContent=shortNames[i];
+      const sub=document.createElement('small');sub.textContent=hints[i];
+      labels.append(label,sub);a.append(num,labels);
+      li.append(a);track.append(li);
+    }
+    rail.append(heading,track);
+    host.insertAdjacentElement('afterend',rail);
+  }
   const dock=document.createElement('aside');dock.className='sc-journey-dock';
   dock.setAttribute('aria-label','Scalp City journey navigation');
   const forward=document.createElement('a');forward.className='sc-journey-quick';

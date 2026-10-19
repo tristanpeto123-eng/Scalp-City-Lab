@@ -30,6 +30,7 @@ table{border-collapse:collapse;width:100%;text-align:left;min-width:660px}th,td{
 <section class="stats" aria-label="Measured training results">
 <div class="stat"><small>Measured historical evaluations / second</small><strong id="eps">—</strong><small>Last completed candidate batch</small></div>
 <div class="stat"><small>Candidate evaluations</small><strong id="evaluations">—</strong><small>Measured, not presumed</small></div>
+<div class="stat"><small>Historical research batches</small><strong id="batches">—</strong><small>Attempted on saved candles; not independent tests</small></div>
 <div class="stat"><small>Last successful new lesson</small><strong id="lesson">—</strong><small>Saved research, not a grade</small></div>
 <div class="stat"><small>New training candles consumed</small><strong id="newdata">—</strong><small>0 means historical data was reused</small></div>
 <div class="stat"><small>Recent failed workflow runs</small><strong id="failures">—</strong><small>Among last 10 GitHub Actions runs</small></div>
@@ -107,6 +108,7 @@ async function loadPublished(){
   const c=lastMonitor?.lastMeasuredCycle;
   $('eps').textContent=Number.isFinite(c?.evaluationsPerSecond)?c.evaluationsPerSecond.toFixed(2):'Not yet measured';
   $('evaluations').textContent=Number.isInteger(c?.candidateEvaluations)?String(c.candidateEvaluations):'Not yet measured';
+  $('batches').textContent=Number.isInteger(c?.measuredBatchAttempts)?String(c.measuredBatchAttempts)+' across 10 pupils':'Not yet measured';
   $('lesson').textContent=data?.lastSuccessfulLessonAt?ago(data.lastSuccessfulLessonAt):'No new lesson yet';
   $('newdata').textContent=Number.isInteger(c?.newTrainingCandles)?String(c.newTrainingCandles):'Not yet measured';
   const verified=lastMonitor?.outOfSample;
@@ -133,7 +135,7 @@ async function loadPublished(){
   }
  }catch(err){
   lastMonitor=null;lastRoster=null;
-  $('eps').textContent=$('evaluations').textContent=$('lesson').textContent=$('newdata').textContent='Unavailable';
+  $('eps').textContent=$('evaluations').textContent=$('batches').textContent=$('lesson').textContent=$('newdata').textContent='Unavailable';
   $('ooscount').textContent=$('positive').textContent=$('deltaCount').textContent='—';
   $('publisheddate').textContent='Research ledger unavailable: '+String(err.message||err);
   $('archive-note').textContent='Cannot verify saved historical data.';

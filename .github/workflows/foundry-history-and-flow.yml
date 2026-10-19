@@ -1,0 +1,49 @@
+name: Foundry historical throughput and journey — Checker
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/historical-lab.mjs'
+      - 'scripts/historical-lab-tests.mjs'
+      - 'scripts/run-robot-training.mjs'
+      - 'scripts/run-robot-training-tests.mjs'
+      - 'scripts/foundry-flow-tests.mjs'
+      - 'journey-nav.js'
+      - 'journey-nav.css'
+      - 'mission-control.html'
+      - 'training-monitor.html'
+      - '.github/workflows/foundry-history-and-flow.yml'
+  push:
+    branches: [main, feat/foundry-history-and-flow-20261019]
+    paths:
+      - 'scripts/historical-lab.mjs'
+      - 'scripts/historical-lab-tests.mjs'
+      - 'scripts/run-robot-training.mjs'
+      - 'scripts/run-robot-training-tests.mjs'
+      - 'scripts/foundry-flow-tests.mjs'
+      - 'journey-nav.js'
+      - 'journey-nav.css'
+      - 'mission-control.html'
+      - 'training-monitor.html'
+      - '.github/workflows/foundry-history-and-flow.yml'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Independent historical and site route safety checks (offline only)
+        env:
+          TEACHER_PAPER_ENABLED: 'false'
+          TEACHER_ENABLE_EXAMINER: 'false'
+        run: |
+          node --check scripts/run-robot-training.mjs
+          node --check scripts/historical-lab.mjs
+          node --check scripts/foundry-flow-tests.mjs
+          node --check journey-nav.js
+          node --test scripts/foundry-flow-tests.mjs scripts/run-robot-training-tests.mjs scripts/historical-lab-tests.mjs scripts/historical-training-folds-tests.mjs scripts/robot-rewards-tests.mjs scripts/training-monitor-tests.mjs

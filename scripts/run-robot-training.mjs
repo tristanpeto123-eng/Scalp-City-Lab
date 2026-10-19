@@ -294,16 +294,41 @@ export function runResearchLesson(memory,{snapshot,symbol,now=Date.now()}={}){
   promotion:'NONE_RESEARCH_ONLY',
   note:'Three disjoint historical folds within earlier 40%; overlapping refreshes never count as fresh independent forward proof.'};
 }
-export async function evaluateAll({memory,dataDir='validation-data',read=readFile,now=Date.now()}={}){
+export async function evaluateAll({memory,dataDir='validation-data',read=readFile,
+ now=Date.now(),batchesPerPupil=1}={}){
  checkMemory(memory);
+ if(!Number.isInteger(batchesPerPupil)||batchesPerPupil<1||batchesPerPupil>3)
+   throw Error('RESEARCH: batches per pupil must be between 1 and 3');
  let next=memory;const reports=[];
  for(const symbol of PAIRS){
+  // Read one immutable historical snapshot per pupil per cycle. Independent
+  // experiments are NOT inferred from multiple runs over these same candles.
   const filename=path.join(dataDir,symbol.replace('/','-')+'.json');
   const snapshot=JSON.parse(await read(filename,'utf8'));
-  const item=runResearchLesson(next,{snapshot,symbol,now});
-  next=item.memory;
-  const {memory:_secret,...publicReport}=item;
-  reports.push(publicReport);
+  const batches=[];
+  for(let i=0;i<batchesPerPupil;i++){
+   const item=runResearchLesson(next,{snapshot,symbol,now});
+   next=item.memory;
+   const {memory:_secret,...publicReport}=item;
+   batches.push(publicReport);
+   if(!item.changed)break;
+  }
+  const first=batches[0],completed=batches.filter(x=>x.changed);
+  const candidates=batches.reduce((sum,x)=>sum+(x.testedParams||0),0);
+  reports.push({...first,
+   status:completed.length?completed.at(-1).status:first.status,
+   testedParams:candidates,
+   chronologicalTrainingWindows:first.chronologicalTrainingWindows||0,
+   newTrainingCandles:first.newTrainingCandles||0,
+   rewardCreditsAwarded:batches.reduce((sum,x)=>sum+(x.rewardCreditsAwarded||0),0),
+   researchBatchesAttempted:batches.length,
+   savedExperiments:completed.length,
+   bestObservedTrainingNetGbp:completed.length?
+     Math.max(...completed.map(x=>x.bestObservedTrainingNetGbp)):null,
+   bestObservedTrainingWinRatePct:completed.length?
+     Math.max(...completed.map(x=>x.bestObservedTrainingWinRatePct)):null,
+   repeatedHistoryDoesNotCountAsIndependent:true,
+   brokerOrders:0});
  }
  return {memory:next,reports,
   addedExperiments:next.experiments.length-memory.experiments.length,
@@ -353,7 +378,10 @@ async function main(){
  // Alpaca bars if provided. Never silently fall back to an older snapshot.
  const selectedDir=process.env.SCALP_RESEARCH_INPUT_DIR||'validation-data';
  const startedAt=new Date().toISOString(),startMs=performance.now();
- const result=await evaluateAll({memory:before,dataDir:selectedDir});
+ // Bounded multi-generation exploration on a locally archived dataset.
+ // Do not expand independent evidence counts or inspect the sealed holdout.
+ const batchesPerPupil=Number(process.env.SCALP_HISTORICAL_BATCH_PASSES||3);
+ const result=await evaluateAll({memory:before,dataDir:selectedDir,batchesPerPupil});
  const elapsedMs=Math.max(.001,performance.now()-startMs);
  const saved=await persistMemory({token,expectedSha:blobSha,previous:before,next:result.memory});
  const {writeFile,mkdir}=await import('node:fs/promises');
@@ -366,6 +394,7 @@ async function main(){
  const telemetry={schema:'SCALP_TRAINING_CYCLE_V1',startedAt,completedAt:new Date().toISOString(),
   evaluationDurationMs:Number(elapsedMs.toFixed(3)),
   candidateEvaluations:evaluated,uniqueCandidateConfigurations:candidates,
+  batchesPerPupil,measuredBatchAttempts:result.reports.reduce((n,r)=>n+(r.researchBatchesAttempted||0),0),
   researchFolds:'PRE_HOLDOUT_NONOVERLAPPING_V1',
   evaluationsPerSecond:Number((1000*evaluated/elapsedMs).toFixed(2)),
   newlySavedLessons:result.addedExperiments,
@@ -375,6 +404,7 @@ async function main(){
   charts:result.reports.map(r=>({symbol:r.symbol,status:r.status,
    evaluations:(r.testedParams||0)*(r.chronologicalTrainingWindows||0)*2,
    configurations:r.testedParams||0,folds:r.chronologicalTrainingWindows||0,
+   batchesAttempted:r.researchBatchesAttempted||1,savedExperiments:r.savedExperiments||0,
    newTrainingCandles:r.newTrainingCandles||0,
    rewardCredits:r.rewardCreditsAwarded||0,trainingEnd:r.trainingEnd||null,
    snapshotAt:r.snapshotAt||null}))};

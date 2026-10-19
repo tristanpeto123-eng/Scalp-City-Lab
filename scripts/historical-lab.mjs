@@ -13,7 +13,7 @@ export const LAB_POLICY=Object.freeze({
  source:'PUBLISHED_HISTORICAL_15MIN_CANDLES',
  reserveUntouchedFraction:0.20,
  minFoldCandles:1200,
- strideCandles:600,
+ strideCandles:1200,
  maxFolds:6,
  maxCandidates:6,
  regularFeePerSide:0.0025,
@@ -27,6 +27,8 @@ export function developmentFolds(bars){
  const training=bars.slice(0,sealedHoldoutStart),length=LAB_POLICY.minFoldCandles;
  if(training.length<length*2)throw Error('HISTORICAL_LAB: insufficient training-only development data');
  const folds=[];
+ // Development fold scores must not double-count the same 15-minute bars.
+ // Consecutive folds are disjoint; the final 20% stays quarantined.
  for(let start=0;start+length<=training.length&&folds.length<LAB_POLICY.maxFolds;
      start+=LAB_POLICY.strideCandles){
    const end=start+length;
@@ -72,11 +74,11 @@ export function evaluateHistoricalPupil({snapshot,memory,symbol,now=Date.now()}=
    const normalNet=foldsEvaluated.reduce((a,b)=>a+b.netGbp,0);
    const stressedNet=foldsEvaluated.reduce((a,b)=>a+b.stressNetGbp,0);
    const profitableFolds=foldsEvaluated.filter(f=>f.netGbp>0&&f.stressNetGbp>0).length;
-   return {parameters:params,normalNetAcrossOverlappingFolds:n(normalNet),
-     stressedNetAcrossOverlappingFolds:n(stressedNet),
+   return {parameters:params,normalNetAcrossDisjointFolds:n(normalNet),
+     stressedNetAcrossDisjointFolds:n(stressedNet),
      profitableFolds,foldsEvaluated,
      researchRankScore:n(stressedNet+profitableFolds*0.01),
-     note:'Overlapping folds are not independent trading samples or admissible paper evidence'};
+     note:'Disjoint development folds are historical research, not broker fills or untouched admission evidence'};
  });
  tests.sort((a,b)=>b.researchRankScore-a.researchRankScore||
    b.profitableFolds-a.profitableFolds);
@@ -84,6 +86,7 @@ export function evaluateHistoricalPupil({snapshot,memory,symbol,now=Date.now()}=
    snapshotAt:snapshot.generatedAt||null,snapshotSha:sha(snapshot),
    historicalCandles:source.bars.length,
    developmentFoldCount:folds.length,
+   disjointDevelopmentFolds:true,
    developmentWindow:{start:source.sampleStart,end:new Date(Date.parse(trainingEnd)+900000).toISOString()},
    heldOutQuarantine:{start:new Date(source.bars[sealedHoldoutStart].t).toISOString(),
      end:source.sampleEnd,candles:reservedCandles,
