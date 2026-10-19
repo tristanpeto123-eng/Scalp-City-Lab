@@ -1,0 +1,96 @@
+name: Robot Academy — accelerated Deep RL historical replay
+on:
+  schedule:
+    - cron: '11,41 * * * *' # twice hourly, best effort; NOT a continuous 1Hz broker worker
+  workflow_dispatch:
+    inputs:
+      episodes:
+        description: Replay episodes per pupil (1–3)
+        default: '1'
+        type: choice
+        options: ['1', '2', '3']
+permissions:
+  contents: write
+concurrency:
+  group: scalp-dqn-historical-learning
+  cancel-in-progress: false
+jobs:
+  ten-pupil-replay:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    env:
+      PYTHONUNBUFFERED: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - name: Fetch reviewed research code and completed historical bars
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Fetch independently authenticated native 5m history
+        uses: actions/checkout@v4
+        with:
+          ref: rl-5m-data
+          path: rl-5m-data
+          persist-credentials: false
+      - name: Fetch isolated append-versioned RL learning checkpoint branch
+        uses: actions/checkout@v4
+        with:
+          ref: rl-learning-memory
+          path: rl-history
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install offline research dependencies
+        run: python -m pip install numpy 'torch>=2.3,<3'
+      - name: Checker — check historical replay policy and gradient integrity
+        run: |
+          python -m unittest rl.test_dqn_experiment rl.test_rapid_replay -v
+          python -m compileall -q rl
+      - name: Reject stale or fabricated source feeds before research
+        run: |
+          python - <<'PY'
+          import json,datetime,pathlib
+          from rl.dqn_experiment import SYMBOLS,validate_snapshot
+          for symbol in SYMBOLS:
+              p=pathlib.Path('rl-5m-data/snapshots')/(symbol.replace('/','-')+'.json')
+              data=json.loads(p.read_text())
+              if data.get('timeframe')!='5Min':
+                  raise SystemExit('Only genuine completed 5-minute bars permitted')
+              validate_snapshot(data)
+              stamped=datetime.datetime.fromisoformat(data['generatedAt'].replace('Z','+00:00'))
+              if datetime.datetime.now(datetime.timezone.utc)-stamped>datetime.timedelta(hours=36):
+                  raise SystemExit('Snapshot too stale for autonomous RL replay: '+symbol)
+          print('CHECKER: ten historical validated completed 15-minute datasets, no broker')
+          PY
+      - name: Train 10 individual Deep Q Networks from prior audited model weights
+        env:
+          EPISODES: ${{ inputs.episodes || '1' }}
+        run: |
+          python -m rl.rapid_replay --data-dir rl-5m-data/snapshots --root rl-history --episodes "$EPISODES" --symbol ALL
+      - name: Checker — no signed grades, invented seconds data or broker orders
+        run: |
+          python - <<'PY'
+          import json,pathlib
+          r=json.loads(pathlib.Path('rl-history/rl-rapid/latest.json').read_text())
+          if (r['schema']!='SCALP_RAPID_RL_REPLAY_V1' or len(r['pupils'])!=10 or
+              r['paperOrders'] or r['liveOrders'] or r['automaticAdmissions'] or
+              r['verifiedForwardGrades'] or r['sealedHoldoutAccessed'] or
+              r['marketBarTimeframe']!='5Min' or r['decisionsAreNotBrokerTrades'] is not True or
+              r['decisionCount']<=0 or r['gradientUpdates']<=0):
+              raise SystemExit('CHECKER: RL policy evidence failed')
+          print('CHECKER: '+str(r['decisionCount'])+
+                ' simulated action decisions, '+str(r['simulatedClosedTrades'])+
+                ' simulated closes, '+str(r['gradientUpdates'])+' actual gradient updates')
+          PY
+      - name: Store model checkpoints and public-safe RL research report
+        run: |
+          git -C rl-history config user.name 'github-actions[bot]'
+          git -C rl-history config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C rl-history add -- models/ rl-rapid/latest.json rl-rapid/replays/
+          git -C rl-history commit -m 'research: measured 10-pupil accelerated DQN training; no orders'
+          git -C rl-history push origin HEAD:rl-learning-memory
