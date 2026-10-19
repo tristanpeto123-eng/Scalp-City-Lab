@@ -10,7 +10,7 @@
  <canvas id="agentCityCanvas" aria-label="3D Scalp City with robotic agents in individual buildings"></canvas>
  <header class="topbar">
   <div class="brand"><span class="brandmark">SC<span>▣</span>LP</span><span class="subbrand">CITY <em>LAB</em><small>AGENT OPERATIONS / THREE-DIMENSIONAL WORLD</small></span></div>
-  <div class="topActions"><span class="mode" id="sourceMode">ILLUSTRATIVE DATA</span><button id="overview" aria-label="Return to city overview">CITY OVERVIEW</button><a href="./robot-academy.html" class="back">ROBOT ACADEMY ↗</a><a href="./trading-floor.html" class="back" style="border-color:#65e7c2;color:#65e7c2">TRADING FLOOR ↑</a><a href="./teacher-console.html" class="back">TEACHER’S OFFICE ↗</a><a href="./" class="back" aria-label="Back to research floor">RESEARCH FLOOR ↗</a></div>
+  <div class="topActions"><a href="./mission-control.html" class="back" style="border-color:#e5c48d;color:#e5c48d">MISSION CONTROL ↗</a><span class="mode" id="sourceMode">ILLUSTRATIVE DATA</span><button id="overview" aria-label="Return to city overview">CITY OVERVIEW</button><a href="./robot-academy.html" class="back">ROBOT ACADEMY ↗</a><a href="./trading-floor.html" class="back" style="border-color:#65e7c2;color:#65e7c2">TRADING FLOOR ↑</a><a href="./teacher-console.html" class="back">TEACHER’S OFFICE ↗</a><a href="./" class="back" aria-label="Back to research floor">RESEARCH FLOOR ↗</a></div>
  </header>
  <div class="bottomHUD"><div class="legend"><strong>SIMULATION ENVIRONMENT</strong><span>SELECT A BUILDING TO ENTER ITS OPERATIONS ROOM</span></div><div class="hudRight"><span id="activity">12 AGENT STATIONS</span><button id="play" aria-pressed="false">▶ SHOW WORKFLOW</button><button id="pause" aria-pressed="false" hidden>Ⅱ PAUSE</button></div></div>
  <nav class="stationRail" id="stationRail" aria-label="Agent buildings"></nav>
@@ -35,5 +35,6 @@ setTimeout(() => {
 </script>
 <script type="module" src="./agent-city.js"></script>
 <script src="./agent-city-live.js" defer></script>
+<script src="./journey-nav.js" defer></script>
 </body>
 </html>
