@@ -46,6 +46,7 @@ jobs:
           node --check teacher/admit.mjs
           node --check teacher/auditor.mjs
           node --test teacher/teacher-tests.mjs teacher/teacher-v2-tests.mjs teacher/hosted-preflight-tests.mjs
+          node --test teacher/qualification-workflow-tests.mjs
       - name: Screen ten published Academy leaders against source-matched untouched chronology
         env:
           TEACHER_ENABLE_EXAMINER: 'false'
@@ -82,3 +83,53 @@ jobs:
           name: independent-teacher-qualification
           path: qualification-results/report.json
           retention-days: 30
+
+  publish-public-historical-report:
+    name: Publish read-only historical verdicts (not a grade)
+    needs: research-admission-screen
+    if: needs.research-admission-screen.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    concurrency:
+      group: scalp-teacher-historical-publication
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read independent job artifact; no recomputation under publishing token
+        uses: actions/download-artifact@v4
+        with:
+          name: independent-teacher-qualification
+          path: qualification-results
+      - name: Checker G0 — validated historical-only publication
+        run: |
+          node --check scripts/publish-teacher-screen.mjs
+          node --test scripts/publish-teacher-screen-tests.mjs
+          node scripts/publish-teacher-screen.mjs qualification-results/report.json research-data/teacher-qualification.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const x=JSON.parse(fs.readFileSync('research-data/teacher-qualification.json','utf8'));
+          if(x.pupils.length!==10||x.admissionsIssued!==0||x.brokerOrdersSubmitted!==0||
+             x.verifiedForwardGrades!==0||x.trainingOnly!==true)
+             throw Error('PUBLICATION_BLOCKED: not a no-orders historical Teacher report');
+          NODE
+      - name: Publish only the sanitized read-only historical report
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- research-data/teacher-qualification.json
+          if git diff --cached --quiet; then
+            echo 'No change to the independently screened historical report'
+          else
+            git commit -m 'research: publish read-only independent historical Teacher screening'
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
+          fi

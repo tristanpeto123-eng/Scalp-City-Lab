@@ -41,7 +41,7 @@ h2{font-size:1.2rem;letter-spacing:-.025em;margin:0 0 12px}h3{font-size:.96rem;m
 <div class="meta"><span class="pill warn" id="connectionState">NOT PROVISIONED</span><span class="pill" id="dataState">LOADING RESEARCH</span><span class="pill" id="teacherUpdated">NO VERIFIED REPORT</span></div>
 <div class="stats">
  <div class="stat"><small>Registered pupils</small><strong id="countStudents">10</strong><span>Separate chart-specific models</span></div>
- <div class="stat"><small>Research screen pass</small><strong id="countReady">0</strong><span>Not the same as admission</span></div>
+ <div class="stat"><small>Independent historical screen</small><strong id="countReady">0</strong><span>Manual review only; not a PAPER admission</span></div>
  <div class="stat"><small>Verified grades</small><strong id="countGrades">0</strong><span>Signed paper-broker evidence only</span></div>
  <div class="stat"><small>Paper execution</small><strong id="statusPaper" style="font-size:1.15rem;color:#ffdda4">UNKNOWN / LOCKED</strong><span>Cannot be armed from the browser</span></div>
 </div>
@@ -78,6 +78,7 @@ h2{font-size:1.2rem;letter-spacing:-.025em;margin:0 0 12px}h3{font-size:.96rem;m
  <div class="step"><strong>30 distinct round trips</strong><small>Executed paper fills are matched to separate model IDs; partial fills do not create extra trials.</small></div>
  <div class="step"><strong>Net fees, FX and drawdown verified</strong><small>Crypto fees, external GBP conversion, and journalled capital exposure must reconcile.</small></div>
  <div class="step"><strong>Signed publisher</strong><small>The result feed is verified against a pinned Ed25519 public key, not browser JSON.</small></div></div></aside></div></section>
+<section id="qualification-bridge" aria-label="Published research qualification audit"><h2>Independent historical screening</h2><p>Checking published historical-screen decisions…</p></section>
 <p class="foot">Teacher v0.2 · Connected Academy console on the review branch. Research numbers are historical, and the only real result channel is signed and read-only. The demo is synthetic; it cannot issue orders, promote pupils, or approve releases.</p>
 </div>
 <script>
@@ -99,7 +100,7 @@ function switchTab(t){for(const x of ['class','teacher','evidence'])byId(x).hidd
 function render(){
  const count=grades.size;
  byId('countGrades').textContent=String(count);
- byId('countReady').textContent=String(research?.pupils?.filter(p=>p.researchLeader?.trainingNetGbp>0&&p.researchLeader?.trainingClosedTrades>=30).length??0);
+ byId('countReady').textContent=window.ScalpHistoricalScreen?String(window.ScalpHistoricalScreen.eligibleCount):'—';
  byId('countStudents').textContent=String(base.length);
  byId('connectionState').textContent=lastConnection;
  const trainedAt=Date.parse(research?.latestTrainingEnd||'');
@@ -151,7 +152,12 @@ function render(){
  const metrics=[['Examination status',pending?.status??'NOT ADMITTED'],['Closed paper trades',pending?.closedTrades??'—'],['Confirmed grade',data.confirmed?'G'+data.paper.grade:'—'],['Profit qualification',data.confirmed?(data.paper.qualified?'PASS':'NOT PASSED'):'PENDING']];
  for(const [label,value] of metrics){const tile=document.createElement('div');tile.className='tile';const k=document.createElement('small'),v=document.createElement('strong');k.textContent=label;v.textContent=String(value);tile.append(k,v);exam.append(tile);}
  const steps=[
-  ['Research screening',data.leader?.trainingNetGbp>0?'Research leader has positive net; auditor still required':'Not eligible: positive research profit missing'],
+  ['Independent historical screen',(()=>{
+   const screen=window.ScalpHistoricalScreen?.pupils?.find(p=>p.symbol===current);
+   return !screen?'Independent historical report unavailable':
+    screen.verdict==='PASS'?'Historical screen passed for MANUAL review only; PAPER admission still locked':
+    'Historical screen blocked: '+(screen.reasons[0]||'Independent criteria not met');
+  })()],
   ['Signed independent admission',pending?'Exam record available (independent server)':'No independent admission publication'],
   ['Forward-paper orders',pending?.closedTrades?pending.closedTrades+' documented closed trades':'No authenticated completed trade count'],
   ['Fees and broker evidence',data.confirmed?'Reconciled and verified':'Unverified or pending settlement'],
@@ -274,8 +280,9 @@ byId('mockRun').onclick=()=>{
  if(simCount>=30){clearInterval(examTimer);examTimer=null;byId('mockRun').disabled=false;
  byId('mockText').textContent='DEMO COMPLETE · grade 8, 24/30 wins (FICTIONAL). Official grade remains '+(grades.get(current)?.grade??'UNCONFIRMED')+'.';}},70);
 };
+window.addEventListener('scalp-historical-screen',()=>render());
 byId('mockClear').onclick=()=>{if(examTimer)clearInterval(examTimer);examTimer=null;simCount=0;byId('mockRun').disabled=false;byId('mockBar').style.width='0%';byId('mockText').textContent='Mock cleared. No changes to actual evidence.';};
 render();reload();
 })();
 </script><script src="./journey-nav.js" defer></script>
-</body></html>
+<script type="module" src="./teacher/qualification-bridge.js"></script></body></html>

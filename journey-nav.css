@@ -61,3 +61,17 @@ body:has(.sc-workflow-rail) .sc-journey-quick{display:none}
 body:has(.sc-workflow-rail) .sc-journey-panel{bottom:57px}
 @media(max-width:680px){.sc-workflow-rail{padding:11px;margin:12px 0 18px}.sc-workflow-heading{display:block}.sc-workflow-heading span{display:block;margin-top:3px}.sc-workflow-track{display:flex;overflow:auto;scroll-snap-type:x proximity;padding-bottom:3px}.sc-workflow-track li{flex:0 0 min(172px,67vw);scroll-snap-align:start}.sc-workflow-step{min-height:69px}.sc-workflow-labels small{font-size:10px}body > .sc-workflow-rail{margin:11px 13px 17px}}
 @media(prefers-reduced-motion:reduce){.sc-workflow-step{transition:none}}
+
+/* iPhone layout: preserve the new contextual journey inside the menu, but stop
+   its persistent large buttons obscuring forms and evidence panels. */
+@media(max-width:680px){
+ .sc-journey-dock{right:8px;bottom:calc(82px + env(safe-area-inset-bottom,0px))}
+ .sc-journey-quick{display:none!important}
+ .sc-journey-trigger{width:48px!important;height:48px!important;min-width:48px!important;
+  min-height:48px!important;padding:0!important;display:grid!important;
+  place-items:center!important;font-size:0!important;border-radius:50%!important}
+ .sc-journey-trigger .sc-dot{display:none!important}
+ .sc-journey-trigger::after{content:'☰';font:900 22px/1 system-ui,sans-serif;color:#0d1c2b}
+ .sc-journey-panel{bottom:57px;right:0;max-height:calc(100dvh - 166px)}
+ body:not(:has(#agentCityCanvas)){padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))}
+}

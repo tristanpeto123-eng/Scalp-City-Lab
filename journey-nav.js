@@ -69,6 +69,7 @@
   const toggle=document.createElement('button');
   toggle.type='button';toggle.className='sc-journey-trigger';
   toggle.setAttribute('aria-controls','sc-journey-panel');toggle.setAttribute('aria-expanded','false');
+  toggle.setAttribute('aria-label','Open Scalp City journey navigation');
   const dot=document.createElement('span');dot.className='sc-dot';dot.setAttribute('aria-hidden','true');
   toggle.append(dot,document.createTextNode(active?'STEP '+(idx+1)+'/4 · '+active.name:'Explore Scalp City'));
   const panel=document.createElement('nav');panel.className='sc-journey-panel';

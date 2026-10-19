@@ -47,6 +47,7 @@ table{border-collapse:collapse;width:100%;text-align:left;min-width:660px}th,td{
 </section>
 <section class="panel"><h2>Scheduler and health</h2>
 <p id="schedule">Scheduled research: every 5 minutes (best effort). Market snapshots: every 6 hours. These are configured intervals, not proof of successful execution.</p>
+<p id="observed-cadence">Actual scheduled executions: awaiting GitHub Actions evidence.</p>
 <p id="runstate">Recent workflow status unavailable. <a href="https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/robot-research-training.yml" target="_blank" rel="noopener noreferrer">View GitHub training runs ↗</a></p><p id="snapshotdate">Last feed snapshot: not reported.</p><p id="publisheddate">Last measured batch: not reported.</p>
 </section>
 <section class="panel"><h2>Chronological out-of-sample development</h2>
@@ -62,7 +63,7 @@ table{border-collapse:collapse;width:100%;text-align:left;min-width:660px}th,td{
 </main>
 <script type="module">
 const $=id=>document.getElementById(id),money=n=>Number.isFinite(n)?(n<0?'−':'')+'£'+Math.abs(n).toFixed(2):'—';
-let lastMonitor=null,lastRoster=null,lastActions=null;
+let lastMonitor=null,lastRoster=null,lastActions=null,lastScheduledAt=null;
 const actionsUrl='https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/robot-research-training.yml';
 const ago=d=>{const t=Date.parse(d||'');if(!Number.isFinite(t))return 'Unknown';const m=Math.max(0,Math.round((Date.now()-t)/60000));return m<1?'Just now':m+'m ago';};
 const stamp=d=>{const n=Date.parse(d||'');return Number.isFinite(n)?new Date(n).toLocaleString():'Not reported';};
@@ -151,6 +152,15 @@ async function loadActions(){
   const x=await r.json(),runs=x.workflow_runs;
   if(!Array.isArray(runs))throw Error('Malformed workflow evidence');
   lastActions=runs;
+  const scheduled=runs.filter(x=>x.event==='schedule'&&x.status==='completed'&&Number.isFinite(Date.parse(x.created_at)));
+  lastScheduledAt=scheduled[0]?.created_at||null;
+  const recent=scheduled.filter(x=>Date.now()-Date.parse(x.created_at)<86400000).length;
+  const elapsed=lastScheduledAt?Math.max(0,Math.round((Date.now()-Date.parse(lastScheduledAt))/60000)):null;
+  $('observed-cadence').textContent=scheduled.length?
+    'Observed GitHub schedule: '+recent+' completed scheduled runs in the past 24 hours; last '+ago(lastScheduledAt)+
+    '. Requested cron is 5 minutes, but GitHub does not guarantee that frequency.'+
+    (elapsed>30?' Last scheduled execution is over 30 minutes old — investigate the trigger.':''):
+    'No completed scheduled research run visible among these recent workflow results. Cron configuration is not evidence of active training.';
   const failed=runs.filter(x=>x.conclusion==='failure').length;
   $('failures').textContent=String(failed);
   const latest=runs[0];
@@ -159,7 +169,8 @@ async function loadActions(){
   $('runstate').append('Most recent scheduled/manual workflow: '+detail+' · '+(latest?stamp(latest.created_at):'—')+' · ');
   const a=document.createElement('a');a.href=latest?.html_url||actionsUrl;a.textContent=latest?.html_url?'Inspect GitHub run ↗':'Open training workflow ↗';a.rel='noopener noreferrer';a.target='_blank';$('runstate').append(a);
  }catch(err){
-  lastActions=null;$('failures').textContent='Unknown';
+  lastActions=null;lastScheduledAt=null;$('failures').textContent='Unknown';
+  $('observed-cadence').textContent='Could not verify actual scheduled-run cadence. GitHub Actions may be unavailable or rate limited.';
   $('runstate').replaceChildren();$('runstate').append('Workflow status unavailable: '+err.message+' · ');
   const a=document.createElement('a');a.href=actionsUrl;a.textContent='Open GitHub Actions ↗';a.target='_blank';a.rel='noopener noreferrer';$('runstate').append(a);
  }
@@ -170,6 +181,10 @@ function updateHealth(){
  const latest=lastActions?.[0],age=Date.now()-Date.parse(lastMonitor?.publishedAt||'');
  let status='UNVERIFIED',cls='status warn';
  if(latest?.conclusion==='failure'){status='WORKFLOW FAILURE';cls='status bad';}
+ else if(lastScheduledAt&&Date.now()-Date.parse(lastScheduledAt)>30*60000){
+   status=lastMonitor?'SCHEDULE DELAY · MEASURED REPORT MAY BE STALE':'SCHEDULE DELAY · NO NEW MEASURED REPORT';
+   cls='status warn';
+ }
  else if(!lastMonitor){status=lastRoster?'AWAITING FIRST MEASURED RUN':'NO VERIFIED RESEARCH DATA';cls='status warn';}
  else if(Number.isFinite(age)&&age>45*60000){status='STALE MEASURED REPORT';cls='status warn';}
  else if(latest?.conclusion==='success'){status='LAST RUN OK · RESEARCH ONLY';cls='status good';}
