@@ -14017,6 +14017,1309 @@
       },
       "researchPolicy": "BOUNDED_PARENT_MUTATION_V1",
       "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "e1226bd69d68ac59940cfb440a26c664a69e37b26b191f6454753cbac3c85664",
+      "symbol": "BTC/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "adf0973ec9937ade3dc7fc5fb846a8110a20a22e7d69e232a72eac760a87fb4d",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 37,
+            "sellAbove": 60
+          },
+          "closedTrades": 14,
+          "netProfitGbp": -1.06,
+          "stressNetProfitGbp": -2.03,
+          "maxDrawdownPct": 2.65,
+          "winRatePct": 28.57,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 38,
+          "netProfitGbp": -4.5,
+          "stressNetProfitGbp": -6.64,
+          "maxDrawdownPct": 9.01,
+          "winRatePct": 2.63,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 30,
+          "netProfitGbp": -3.76,
+          "stressNetProfitGbp": -5.45,
+          "maxDrawdownPct": 7.64,
+          "winRatePct": 3.33,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 12,
+            "slow": 48
+          },
+          "closedTrades": 21,
+          "netProfitGbp": -2.77,
+          "stressNetProfitGbp": -3.97,
+          "maxDrawdownPct": 5.62,
+          "winRatePct": 4.76,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 76554.75,
+        "observedPriceChangePct": 6.88160333,
+        "dailyRealizedVolatilityPct": 2.10048362,
+        "averageCandleRangePct": 0.26197135,
+        "upCandleFractionPct": 48.93617021,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 32,
+          "sellAbove": 65
+        },
+        "previousNetGbp": -0.76,
+        "sourceExperimentId": "f9ef6df406357ba76758a452c9c6b6e50444448c6464e1aeddba55731d61acd6",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_V1",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "4d3fab013147fa05599685a97559092bc24d668357cda0792091c3e8b0f0c02e",
+      "symbol": "ETH/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "2c5d4c43940d992bba87ccb91469a76ac883545fbf83bee6f34aaac962857749",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 60,
+            "exitLookback": 30
+          },
+          "closedTrades": 8,
+          "netProfitGbp": -1.06,
+          "stressNetProfitGbp": -1.54,
+          "maxDrawdownPct": 3.47,
+          "winRatePct": 37.5,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 40,
+            "exitLookback": 15
+          },
+          "closedTrades": 13,
+          "netProfitGbp": -1.18,
+          "stressNetProfitGbp": -2.04,
+          "maxDrawdownPct": 3.56,
+          "winRatePct": 30.77,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 40,
+            "exitLookback": 25
+          },
+          "closedTrades": 11,
+          "netProfitGbp": -1.74,
+          "stressNetProfitGbp": -2.34,
+          "maxDrawdownPct": 4.32,
+          "winRatePct": 27.27,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 55,
+            "exitLookback": 17
+          },
+          "closedTrades": 10,
+          "netProfitGbp": -0.5,
+          "stressNetProfitGbp": -1.25,
+          "maxDrawdownPct": 2.12,
+          "winRatePct": 40,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 38,
+          "netProfitGbp": -4.48,
+          "stressNetProfitGbp": -6.61,
+          "maxDrawdownPct": 9.56,
+          "winRatePct": 10.53,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 29,
+          "netProfitGbp": -3.63,
+          "stressNetProfitGbp": -5.28,
+          "maxDrawdownPct": 8.2,
+          "winRatePct": 17.24,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 2466.415,
+        "observedPriceChangePct": 8.46152155,
+        "dailyRealizedVolatilityPct": 2.82157478,
+        "averageCandleRangePct": 0.35485453,
+        "upCandleFractionPct": 50.28224056,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "DIRECTIONAL",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "channel_breakout",
+          "lookback": 40,
+          "exitLookback": 20
+        },
+        "previousNetGbp": -4.04032665,
+        "sourceExperimentId": "05c32a6c2da3dbf349e155049264440494e915fb6999d659747d2b52de411802",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_V1",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "27aa1d3ba96319ef0f53222c6ed7b4a55877de5d5dbf6e14381abf43d2eda5c7",
+      "symbol": "SOL/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "97363cefca733e13d864bd8153d01d65c2850c8849a44c6dd46ac81d8bbc976c",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 35,
+            "sellAbove": 50
+          },
+          "closedTrades": 18,
+          "netProfitGbp": -1.35,
+          "stressNetProfitGbp": -2.58,
+          "maxDrawdownPct": 3.55,
+          "winRatePct": 55.56,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 35,
+          "netProfitGbp": -4.37,
+          "stressNetProfitGbp": -6.31,
+          "maxDrawdownPct": 8.9,
+          "winRatePct": 14.29,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 31,
+          "netProfitGbp": -4.19,
+          "stressNetProfitGbp": -5.87,
+          "maxDrawdownPct": 8.53,
+          "winRatePct": 19.35,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 12,
+            "slow": 48
+          },
+          "closedTrades": 25,
+          "netProfitGbp": -3.73,
+          "stressNetProfitGbp": -5.05,
+          "maxDrawdownPct": 7.45,
+          "winRatePct": 12,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 99.525,
+        "observedPriceChangePct": 15.07775915,
+        "dailyRealizedVolatilityPct": 3.81445187,
+        "averageCandleRangePct": 0.49421522,
+        "upCandleFractionPct": 50.06513244,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "DIRECTIONAL",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 30,
+          "sellAbove": 55
+        },
+        "previousNetGbp": -0.79,
+        "sourceExperimentId": "b8b5c45e4dcc82ed3ffa4a5a8e947706d94ff14f9efcbd310011fb3a6d97aae0",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_V1",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "dd7023706334609b45e3559b473bcf7340f00c8c25e2c086464ea9f7e09bb519",
+      "symbol": "XRP/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "394f758c2ea83a118c149946f9edead40edceaa4fce31ab25957f4277e1231e0",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 37,
+            "sellAbove": 55
+          },
+          "closedTrades": 24,
+          "netProfitGbp": -2.09,
+          "stressNetProfitGbp": -3.65,
+          "maxDrawdownPct": 4.34,
+          "winRatePct": 58.33,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 37,
+          "netProfitGbp": -4.83,
+          "stressNetProfitGbp": -6.82,
+          "maxDrawdownPct": 9.93,
+          "winRatePct": 10.81,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 34,
+          "netProfitGbp": -4.65,
+          "stressNetProfitGbp": -6.46,
+          "maxDrawdownPct": 9.53,
+          "winRatePct": 8.82,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 12,
+            "slow": 48
+          },
+          "closedTrades": 21,
+          "netProfitGbp": -2.78,
+          "stressNetProfitGbp": -3.98,
+          "maxDrawdownPct": 6.7,
+          "winRatePct": 14.29,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 1.33352,
+        "observedPriceChangePct": 9.37753755,
+        "dailyRealizedVolatilityPct": 4.96185471,
+        "averageCandleRangePct": 0.61769985,
+        "upCandleFractionPct": 50.32566218,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "DIRECTIONAL",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 32,
+          "sellAbove": 60
+        },
+        "previousNetGbp": -1.32,
+        "sourceExperimentId": "0ccc6792087f06498204a8062499235c77a692d55d5e5d771a55fd71cdc1fd8a",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_V1",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "5bb922e3fb24a9d5a8d28172bfa4d0a5c30ade0e63809cb4186572ef7fc4f079",
+      "symbol": "ADA/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "0e0308566ad2d1c3fb318ab24d3053235ec804ea3c89ae360810bc55c596b759",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 35,
+            "sellAbove": 55
+          },
+          "closedTrades": 15,
+          "netProfitGbp": -0.76,
+          "stressNetProfitGbp": -1.86,
+          "maxDrawdownPct": 3.61,
+          "winRatePct": 66.67,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 39,
+          "netProfitGbp": -4.85,
+          "stressNetProfitGbp": -6.98,
+          "maxDrawdownPct": 11.8,
+          "winRatePct": 17.95,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 33,
+          "netProfitGbp": -4.81,
+          "stressNetProfitGbp": -6.51,
+          "maxDrawdownPct": 11.27,
+          "winRatePct": 6.06,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 12,
+            "slow": 48
+          },
+          "closedTrades": 27,
+          "netProfitGbp": -4.33,
+          "stressNetProfitGbp": -5.68,
+          "maxDrawdownPct": 10.53,
+          "winRatePct": 11.11,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 0.2039905,
+        "observedPriceChangePct": 4.55716186,
+        "dailyRealizedVolatilityPct": 5.1651567,
+        "averageCandleRangePct": 0.67820706,
+        "upCandleFractionPct": 50.7164568,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "HIGH_VOLATILITY",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 30,
+          "sellAbove": 60
+        },
+        "previousNetGbp": -0.34,
+        "sourceExperimentId": "00e923208f27dae1d3046a8358b1257f634d0cb02c118d278b8849779fa04920",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_V1",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "2b841d54cf25c7ce956a526aefc761214c9b9204b8209633887b5456fa8b5bff",
+      "symbol": "AVAX/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "b7fef60c5f41d78b59c9872264e8235bdbcfdddfee12a22232bd8567a99739a1",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 19,
+            "buyBelow": 28,
+            "sellAbove": 56
+          },
+          "closedTrades": 6,
+          "netProfitGbp": 0.91,
+          "stressNetProfitGbp": 0.25,
+          "maxDrawdownPct": 1.19,
+          "winRatePct": 83.33,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 9,
+            "buyBelow": 23,
+            "sellAbove": 61
+          },
+          "closedTrades": 10,
+          "netProfitGbp": 0.95,
+          "stressNetProfitGbp": -0.05,
+          "maxDrawdownPct": 1.45,
+          "winRatePct": 90,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 19,
+            "buyBelow": 33,
+            "sellAbove": 51
+          },
+          "closedTrades": 8,
+          "netProfitGbp": 0.72,
+          "stressNetProfitGbp": -0.07,
+          "maxDrawdownPct": 1.45,
+          "winRatePct": 87.5,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 33,
+          "netProfitGbp": -3.72,
+          "stressNetProfitGbp": -5.65,
+          "maxDrawdownPct": 8.05,
+          "winRatePct": 18.18,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 23,
+          "netProfitGbp": -2.47,
+          "stressNetProfitGbp": -3.88,
+          "maxDrawdownPct": 5.43,
+          "winRatePct": 17.39,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 7.2975,
+        "observedPriceChangePct": 5.63839027,
+        "dailyRealizedVolatilityPct": 3.71182027,
+        "averageCandleRangePct": 0.47890692,
+        "upCandleFractionPct": 50.7164568,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 28,
+          "sellAbove": 56
+        },
+        "previousNetGbp": -3.67825444,
+        "sourceExperimentId": "16450d2b2b9ba92ff2fd6900ec8a16e0466fe6d9f5e02163e8bfa0f02b12fd69",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_V1",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "a2a7b47876999e0bdda0237a50ae1a31a709e258d32b9f096e0cda49d767a696",
+      "symbol": "LINK/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "181124e0c2e668ceb38aa966edec44840de14f4f6af46dfc9411e01608598e16",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 37,
+            "sellAbove": 60
+          },
+          "closedTrades": 21,
+          "netProfitGbp": -2.68,
+          "stressNetProfitGbp": -3.9,
+          "maxDrawdownPct": 6.27,
+          "winRatePct": 42.86,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 34,
+          "netProfitGbp": -2.71,
+          "stressNetProfitGbp": -4.91,
+          "maxDrawdownPct": 6.09,
+          "winRatePct": 11.76,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 27,
+          "netProfitGbp": -2.38,
+          "stressNetProfitGbp": -4.11,
+          "maxDrawdownPct": 6.02,
+          "winRatePct": 11.11,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 12,
+            "slow": 48
+          },
+          "closedTrades": 22,
+          "netProfitGbp": -1.16,
+          "stressNetProfitGbp": -2.75,
+          "maxDrawdownPct": 5.25,
+          "winRatePct": 13.64,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 11.205305,
+        "observedPriceChangePct": 5.77858186,
+        "dailyRealizedVolatilityPct": 4.22590769,
+        "averageCandleRangePct": 0.55752566,
+        "upCandleFractionPct": 49.41380808,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 32,
+          "sellAbove": 65
+        },
+        "previousNetGbp": -2.05,
+        "sourceExperimentId": "a6aa649a596ef1d181bd38a2fed553a80d00e41aa3d43796208ab80d11d1abb9",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_V1",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "83a4696df37a624262bc4541ca7a03893ba5d080f98495da099fe2100c6f38bc",
+      "symbol": "DOGE/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "d839bd2743d2b00c90b21d020e954f21a67e6cef29320bf3550af7463d10ad2f",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 27,
+          "netProfitGbp": -3.44,
+          "stressNetProfitGbp": -4.96,
+          "maxDrawdownPct": 8.69,
+          "winRatePct": 7.41,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 12,
+            "slow": 48
+          },
+          "closedTrades": 23,
+          "netProfitGbp": -3.56,
+          "stressNetProfitGbp": -4.76,
+          "maxDrawdownPct": 8.49,
+          "winRatePct": 8.7,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 4,
+            "slow": 16
+          },
+          "closedTrades": 56,
+          "netProfitGbp": -5.74,
+          "stressNetProfitGbp": -8.88,
+          "maxDrawdownPct": 11.47,
+          "winRatePct": 12.5,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 28,
+            "sellAbove": 56
+          },
+          "closedTrades": 8,
+          "netProfitGbp": -1.82,
+          "stressNetProfitGbp": -2.17,
+          "maxDrawdownPct": 4.41,
+          "winRatePct": 37.5,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 0.08289325,
+        "observedPriceChangePct": 7.10372594,
+        "dailyRealizedVolatilityPct": 4.6293282,
+        "averageCandleRangePct": 0.56452242,
+        "upCandleFractionPct": 51.06382979,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 37,
+          "sellAbove": 65
+        },
+        "previousNetGbp": -1.05,
+        "sourceExperimentId": "686230968e6600c12c8cb90ab454e92a794aece56e4b8b9e06afbe3c5616110c",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_V1",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "dca76d32063732931b5d10f564f12af60f7424f0a9f5ec59d2975724fe1988b7",
+      "symbol": "LTC/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "572fbd5d4b4dfa2c207580723461873d161faa4994a32ade9467e9a1c46677f3",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 31,
+          "netProfitGbp": -3.14,
+          "stressNetProfitGbp": -5.03,
+          "maxDrawdownPct": 8.08,
+          "winRatePct": 16.13,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 12,
+            "slow": 48
+          },
+          "closedTrades": 24,
+          "netProfitGbp": -2.89,
+          "stressNetProfitGbp": -4.29,
+          "maxDrawdownPct": 7.61,
+          "winRatePct": 12.5,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 4,
+            "slow": 16
+          },
+          "closedTrades": 56,
+          "netProfitGbp": -5.06,
+          "stressNetProfitGbp": -8.36,
+          "maxDrawdownPct": 10.29,
+          "winRatePct": 14.29,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 28,
+            "sellAbove": 56
+          },
+          "closedTrades": 4,
+          "netProfitGbp": 0.22,
+          "stressNetProfitGbp": -0.15,
+          "maxDrawdownPct": 1.17,
+          "winRatePct": 75,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 53.31,
+        "observedPriceChangePct": 12.52770449,
+        "dailyRealizedVolatilityPct": 3.56108341,
+        "averageCandleRangePct": 0.47911298,
+        "upCandleFractionPct": 50.97698654,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "DIRECTIONAL",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 37,
+          "sellAbove": 65
+        },
+        "previousNetGbp": 0.07,
+        "sourceExperimentId": "0749ea30a7de9f1e7f1214d27e9b44a5e7b6bbb78fdd9c92b74fb7fbedbe7f22",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_V1",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "83f24818bc4c85b3b1e17c372739405480188a8815e7063f98fb1f1042e362a5",
+      "symbol": "BCH/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "aeb5d001ee82ae165db3d1abd4a21c3ef5942b98512fc963a13bf608999f504a",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 14,
+            "buyBelow": 37,
+            "sellAbove": 50
+          },
+          "closedTrades": 33,
+          "netProfitGbp": -2.32,
+          "stressNetProfitGbp": -4.52,
+          "maxDrawdownPct": 6.58,
+          "winRatePct": 63.64,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 6,
+            "slow": 26
+          },
+          "closedTrades": 37,
+          "netProfitGbp": -4.8,
+          "stressNetProfitGbp": -6.8,
+          "maxDrawdownPct": 10.73,
+          "winRatePct": 13.51,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 34
+          },
+          "closedTrades": 27,
+          "netProfitGbp": -3.87,
+          "stressNetProfitGbp": -5.31,
+          "maxDrawdownPct": 9.01,
+          "winRatePct": 11.11,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 12,
+            "slow": 48
+          },
+          "closedTrades": 27,
+          "netProfitGbp": -5.07,
+          "stressNetProfitGbp": -6.29,
+          "maxDrawdownPct": 11.13,
+          "winRatePct": 11.11,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 222.695,
+        "observedPriceChangePct": 1.91058027,
+        "dailyRealizedVolatilityPct": 4.69800473,
+        "averageCandleRangePct": 0.58971898,
+        "upCandleFractionPct": 50.06513244,
+        "zeroVolumeFractionPct": 0.95527573,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 32,
+          "sellAbove": 55
+        },
+        "previousNetGbp": -2.18,
+        "sourceExperimentId": "9adc44ace795dcc59bcc9dadc56a469ccb6159bb3b57bf0822d5e9e219c8317e",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_V1",
+      "trulyIndependentForwardValidated": false
     }
   ]
 }
