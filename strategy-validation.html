@@ -221,6 +221,12 @@ $('run').addEventListener('click',()=>{
   p.textContent='Validation blocked: '+e.message;$('result').append(p);
  }
 });
+// Opening research from a pupil report preselects that chart and mode, never runs orders.
+const requested=new URLSearchParams(location.search);
+const requestedPair=requested.get('pair');
+const requestedMode=requested.get('strategy');
+if([...$('pair').options].some(o=>o.value===requestedPair))$('pair').value=requestedPair;
+if(['auto','invent','ema','rsi','breakout'].includes(requestedMode))$('strategy').value=requestedMode;
 loadPair();
 </script><script src="./journey-nav.js" defer></script>
 </body></html>
