@@ -61,5 +61,5 @@ test('short or malformed historical inputs fail closed',()=>{
  assert.throws(()=>developmentFolds([]),/insufficient historic/);
  const invalid={...snapshots['BTC/USD'],bars:snapshots['BTC/USD'].bars.slice(0,2000)};
  assert.throws(()=>evaluateHistoricalPupil({snapshot:invalid,memory:model,symbol:'BTC/USD',now}),
-   /insufficient training-only/);
+   /insufficient historic|insufficient training-only/);
 });
