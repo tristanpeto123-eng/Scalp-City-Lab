@@ -55,6 +55,25 @@ jobs:
         run: python -m pip install numpy 'torch>=2.3,<3'
       - name: G1 — genuine gradient update and recurrent checkpoint tests
         run: python -m unittest rl.test_dqn_experiment rl.test_rapid_replay -v
+      - name: G1 — benchmark one real BTC historical chart without saving to shared model memory
+        run: |
+          python -m rl.rapid_replay --data-dir validation-data --root /tmp/scalp-rl-pr-smoke --episodes 1 --symbol BTC/USD
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report=json.loads(Path('/tmp/scalp-rl-pr-smoke/rl-rapid/latest.json').read_text())
+          if (report['decisionCount']<1 or report['gradientUpdates']<1 or
+              report['paperOrders']!=0 or report['sealedHoldoutAccessed'] or
+              report['marketBarTimeframe']!='15Min'):
+              raise SystemExit('BTC pilot failed real source validation')
+          print('RL_ACTUAL_BTC_BENCHMARK '+json.dumps({
+              'decisions':report['decisionCount'],
+              'decisions_per_second':report['decisionsPerSecond'],
+              'virtual_closed_trades_per_second':report['simulatedClosesPerSecond'],
+              'gradient_updates':report['gradientUpdates'],
+              'market_bar_timeframe':report['marketBarTimeframe']
+          }))
+          PY
       - name: G1 — no mutated Grades, fabricated 1-second candles or payment endpoints
         run: |
           python - <<'PY'
