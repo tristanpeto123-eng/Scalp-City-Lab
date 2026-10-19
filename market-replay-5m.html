@@ -305,6 +305,19 @@ function draw(){
   const top=Math.min(y(b.o),y(b.c)),bottom=Math.max(y(b.o),y(b.c));
   ctx.fillRect(x-body/2,top,body,Math.max(1,bottom-top));
  });
+ if(trace.tradeJournalSchema==='SCALP_VIRTUAL_TRADE_JOURNAL_V1'){
+  const first=visible[0].t,last=visible.at(-1).t;
+  for(const fill of trace.virtualFills){
+   if(fill.candleTime<first||fill.candleTime>last)continue;
+   const i=(fill.candleTime-first)/300000;
+   const x=44+(i+.5)*step;
+   const yy=y(fill.marketOpenPriceUsd);
+   ctx.fillStyle=fill.side==='BUY'?'#8ef9d1':'#ffa4ae';
+   ctx.font='16px system-ui';
+   ctx.fillText(fill.side==='BUY'?'▲':'▼',x-6,
+     fill.side==='BUY'?yy+26:yy-11);
+  }
+ }
  ctx.fillStyle='#b2d0e2';ctx.font='11px system-ui';
  ctx.fillText('Only completed candles revealed · historical 5m replay',15,h-9);
 }
@@ -312,43 +325,75 @@ function render(){
  if(!trace)return;
  const b=trace.candles[index],warmup=trace.warmupCandleCount;
  const d=index>=warmup?trace.decisions[index-warmup]:null;
+ const previous=index>warmup?trace.decisions[index-warmup-1]:null;
+ const transition=d&&d.openPosition!==(previous?.openPosition||false);
+ const exact=trace.tradeJournalSchema==='SCALP_VIRTUAL_TRADE_JOURNAL_V1';
+ const side=d&&transition?(d.openPosition?'BUY':'SELL'):null;
  $('time').textContent=time(b.t);
  $('decision').textContent=d?d.action+' at previous close':'Feature warm-up';
- $('fill').textContent=d?money(d.nextOpenPrice):'—';
- $('equity').textContent=d?money(d.equityGbp):'£50.00 initial';
+ $('fill').textContent=d&&d.executionSide?
+   d.executionSide+' '+priceUsd(d.executionPriceUsd):
+   (!exact&&side?side+' · older trace':'No order');
+ $('equity').textContent=d?virtualMoney(d.equityGbp):
+    virtualMoney(exact?trace.startingVirtualBalance:50);
  $('reward').textContent=d?d.reward.toFixed(4):'—';
  $('closes').textContent=d?String(d.simulatedClosedTrades):'0';
+ $('position').textContent=d?(d.openPosition?'LONG open':'FLAT / no position'):'No position';
  $('progress').textContent=(index+1)+' / '+trace.candles.length;
  $('status').textContent=d?
-   'Historical '+trace.symbol+' · the pupil decided after '+time(d.observedCandleTime)+
-   ', with virtual execution at '+time(d.nextCandleTime)+'.':
-   'Causal warm-up: no pupil action shown before the required observation history.';
+   ('Historical '+trace.symbol+' · '+d.action+' decided after '+time(d.observedCandleTime)+
+    (d.executionSide?' · virtual '+d.executionSide+' at '+time(d.nextCandleTime):
+     (!exact&&side?' · legacy position change; exact fill absent':
+      ' · no order was executed at the next open'))):
+   'Causal warm-up: the pupil needs completed history before it can act.';
+ renderJournal(b.t);
+ $('saved').textContent=persistProgress()?'This device':'Source replay';
  draw();
 }
-function step(){if(!trace)return;index=Math.min(index+1,trace.candles.length-1);
- render();if(index===trace.candles.length-1)stop();}
-function play(){if(!trace)return;
+function step(){
+ if(!trace)return;
+ index=Math.min(index+1,trace.candles.length-1);
+ render();if(index===trace.candles.length-1)stop();
+}
+function play(){
+ if(!trace)return;
  if(timer!==null){stop();return;}
- if(index>=trace.candles.length-1){index=trace.warmupCandleCount-1;render();}
+ if(index>=trace.candles.length-1){
+  index=trace.warmupCandleCount-1;render();
+ }
  timer=setInterval(step,Number($('speed').value));$('play').textContent='Pause';
 }
 async function load(){
- stop();trace=null;$('step').disabled=$('play').disabled=$('reset').disabled=true;
- $('status').textContent='Checking source, timeframe and causal action lineage…';draw();
+ stop();trace=null;$('step').disabled=$('play').disabled=$('reset').disabled=$('export').disabled=true;
+ $('status').textContent='Checking 5-minute source, executed fills and causal journal…';draw();
  const symbol=$('symbol').value;
  try{
   const response=await fetch(base+symbol.replace('/','-')+'-5m.json?ts='+Date.now(),{cache:'no-store'});
   if(!response.ok)throw Error('No verified five-minute DQN replay has been published (HTTP '+response.status+')');
   const value=await response.json();trace=validate(value,symbol);
-  index=trace.warmupCandleCount-1;
+  index=trace.warmupCandleCount-1;restoreProgress();
   $('step').disabled=$('play').disabled=$('reset').disabled=false;
   render();
- }catch(e){$('status').textContent=String(e.message||e)+'. No demo or fabricated candles substituted.';}
+ }catch(e){
+  trace=null;
+  $('status').textContent=String(e.message||e)+'. No fictional trade history substituted.';
+  $('journalStatus').textContent='No validated replay source available.';
+  $('tradeRows').replaceChildren();$('eventRows').replaceChildren();
+  $('journalEmpty').hidden=false;$('journalEmpty').textContent='No verified trades available.';
+ }
 }
 $('load').onclick=load;$('step').onclick=step;$('play').onclick=play;
+$('export').onclick=exportJournal;
 $('reset').onclick=()=>{stop();if(trace){index=trace.warmupCandleCount-1;render();}};
 $('speed').onchange=()=>{if(timer!==null){stop();play();}};
-$('symbol').onchange=()=>{stop();trace=null;draw();$('status').textContent='Select Load verified replay for this pupil.';};
+$('symbol').onchange=()=>{
+ stop();trace=null;index=0;draw();
+ $('step').disabled=$('play').disabled=$('reset').disabled=$('export').disabled=true;
+ $('status').textContent='Choose Load verified replay for this pupil.';
+ $('journalStatus').textContent='Select a pupil to read its source journal.';
+ $('tradeRows').replaceChildren();$('eventRows').replaceChildren();
+ $('journalEmpty').hidden=false;$('journalEmpty').textContent='No replay loaded.';
+};
 window.addEventListener('resize',draw);
 draw();
 </script></body></html>
