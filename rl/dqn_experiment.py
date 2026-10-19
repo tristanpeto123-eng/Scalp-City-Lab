@@ -376,6 +376,7 @@ def run(snapshot,*,episodes=5,seed=7,outdir=None,prior_checkpoint=None,trace_out
         if snapshot['timeframe']!='5Min':
             raise ValueError('Visual replay requires genuine 5Min bars')
         trace=build_causal_trace(policy,validation,symbol=symbol,max_visible=420)
+        trace['policySha256']=report['policySha256']
         location=Path(trace_out)
         location.parent.mkdir(parents=True,exist_ok=True)
         location.write_text(json.dumps(trace,separators=(',',':'))+'\n')
