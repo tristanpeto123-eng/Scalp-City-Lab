@@ -74,7 +74,7 @@ input[type=number]{background:#0d2135;border:1px solid #436785;border-radius:8px
 @media(max-width:920px){.school-layout{grid-template-columns:1fr}.rooms{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:540px){.rooms{grid-template-columns:repeat(2,minmax(0,1fr))}.room{min-height:114px}.shell{padding:14px}.panel{padding:12px}.pupils{grid-template-columns:1fr 1fr}.school-sign{flex-wrap:wrap}}
 </style></head><body><div class="shell">
-<header class="head"><div><div class="brand">SCALP CITY / THE FOUNDRY</div><h1>ROBOT <span>ACADEMY</span></h1></div><nav style="display:flex;gap:9px;flex-wrap:wrap"><a class="back" href="./mission-control.html">Mission Control ↗</a><a class="back" href="./teacher-console.html">Teacher’s Office ↗</a><a class="back" href="./strategy-validation.html">← Strategy Validation</a></nav></header>
+<header class="head"><div><div class="brand">SCALP CITY / THE FOUNDRY</div><h1>ROBOT <span>ACADEMY</span></h1></div><nav style="display:flex;gap:9px;flex-wrap:wrap"><a class="back" href="./mission-control.html">Mission Control ↗</a><a class="back" href="./training-monitor.html">Live Training Monitor ↗</a><a class="back" href="./teacher-console.html">Teacher’s Office ↗</a><a class="back" href="./strategy-validation.html">← Strategy Validation</a></nav></header>
 <p class="subtitle">Every crypto chart has its own little robot pupil. Every 10 percentage points of <em>observed</em> winning trades unlocks the next classroom. Learning must be measured, not imagined.</p>
 <section class="hero"><div><strong>THE SCHOOL OF MARKET INTELLIGENCE</strong><h2>Train. Test. Graduate.</h2><p>Grades describe win rates only—not real profit, intelligence, or trading readiness. A robot can get a high grade and still lose money.</p>
 <div class="controls"><button class="btn primary" id="demo">Explore simulated classroom</button><button class="btn" id="lesson" disabled>Simulate a training lesson</button><button class="btn" id="reset">Show actual status</button><button class="btn" id="refreshHistory">Reload research history</button><button class="btn" id="refreshTeacher">Check signed Teacher results</button><a class="btn" style="text-decoration:none" href="./teacher-console.html">Visit Teacher’s Office ↗</a><span class="status" id="status">TRAINING RESEARCH · UNVERIFIED</span></div>
@@ -193,12 +193,18 @@ function render(){
     p.distinctStrategiesTried+' configurations tested. Last training: '+(p.latestTrainingEnd||'unknown')+
     '. Regime observed: '+(p.trainingBehavior||'unknown')+'.';
   report.append(method);
+  const reward=document.createElement('p');reward.className='note';
+  reward.textContent='⭐ Positive reinforcement: '+(p.learningCredits?.points??0)+
+    ' research XP across '+(p.learningCredits?.creditedLessons??0)+
+    ' independently nonoverlapping lessons. Credits require 30+ historical closes, positive net after doubled fees and drawdown ≤8%. No paper grade or trading permission.';
+  report.append(reward);
   const h4=document.createElement('h3');h4.textContent='Training lessons';report.append(h4);
   for(const g of p.generations||[]){
    const lesson=document.createElement('p');lesson.className='note';
    lesson.textContent='Lesson '+g.run+' · '+(g.grade===null?'Ungraded':'Grade '+g.grade)+
     ' · best training net '+money(g.leaderTrainingNetGbp)+
     ' · '+g.testedConfigurations+' configurations'+
+    (g.rewardCreditsAwarded?' · ⭐ +'+g.rewardCreditsAwarded+' research XP':' · +0 research XP')+
     (g.parentStrategy?' · seeded from '+g.parentStrategy+
       ' (older research '+money(g.parentHistoricalNetGbp)+')':' · initial exploration')+
     ' · '+(g.independentWindow?'Non-overlapping with saved training':'Reused/overlapping history: NOT independent evidence');
@@ -243,7 +249,10 @@ function checkResearchSummary(data){
     row.independentTrainingWindows>row.experiments||
     !Number.isInteger(row.distinctStrategiesTried)||row.distinctStrategiesTried<0||
     !Array.isArray(row.generations)||row.generations.length!==row.experiments||
-    row.generations.length>150)
+    row.generations.length>150||
+    (row.learningCredits&&(row.learningCredits.scope!=='TRAINING_ONLY'||
+     row.learningCredits.independentlyForwardVerified!==false||
+     !Number.isInteger(row.learningCredits.points)||row.learningCredits.points<0)))
     throw Error('Invalid or falsely verified research pupil');
   seen.add(row.symbol);
   if(row.researchLeader){
@@ -261,6 +270,8 @@ function checkResearchSummary(data){
       typeof lesson.independentWindow!=='boolean'||
       !Number.isInteger(lesson.testedConfigurations)||lesson.testedConfigurations<1||
       lesson.testedConfigurations>16||
+      (lesson.rewardCreditsAwarded!==undefined&&
+       (!Number.isInteger(lesson.rewardCreditsAwarded)||lesson.rewardCreditsAwarded<0))||
       (lesson.grade!==null&&(!Number.isInteger(lesson.grade)||lesson.grade<0||lesson.grade>10)))
      throw Error('Malformed historical training lesson');
   }
@@ -285,6 +296,7 @@ function historicalPupils(){
    experiments:item.experiments,
    independentTrainingWindows:item.independentTrainingWindows,
    distinctStrategiesTried:item.distinctStrategiesTried,
+   learningCredits:item.learningCredits,
    latestTrainingEnd:item.latestTrainingEnd,
    trainingBehavior:item.trainingBehavior,
    generations:item.generations
