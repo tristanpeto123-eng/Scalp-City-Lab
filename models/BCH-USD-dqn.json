@@ -1,0 +1,77 @@
+{
+  "schema": "SCALP_DQN_DEVELOPMENT_V1",
+  "symbol": "BCH/USD",
+  "modelType": "DEEP_Q_NETWORK",
+  "policySha256": "78132b8f32919d519c9edbc1bbacd0efbb9eca9260f24a3170c494db1c5bae6a",
+  "trainingDataSha256": "3d06b40d989c769b88b417e515711f6d2d110bd9d5d27b496d25a34929a1d232",
+  "seed": 7,
+  "training": {
+    "steps": 5150,
+    "gradientUpdates": 1272,
+    "episodes": 1,
+    "simulatedClosedTrades": 511,
+    "simulatedOpens": 511,
+    "trainingElapsedSeconds": 2.065,
+    "decisionsPerSecond": 2493.9,
+    "virtualClosesPerSecond": 247.45,
+    "gradientUpdatesPerSecond": 615.97,
+    "marketTimeframe": "5Min",
+    "cadenceType": "ACCELERATED_HISTORICAL_REPLAY_NOT_REALTIME_1S"
+  },
+  "marketTimeframe": "5Min",
+  "splits": {
+    "totalCandles": 8639,
+    "trainCandles": 5183,
+    "validationCandles": 1728,
+    "sealedHoldoutCandles": 1728,
+    "holdoutStart": 1791923400000,
+    "sealedHoldoutTouched": false
+  },
+  "previousCheckpointSha256": null,
+  "cumulativeGradientUpdatesVerified": false,
+  "validation": {
+    "equityGbp": 50.0,
+    "netProfitGbp": 0.0,
+    "maxDrawdownPct": 0.0,
+    "closedTrades": 0,
+    "wins": 0,
+    "openedPositions": 0,
+    "openPosition": false
+  },
+  "validationDoubleCostStress": {
+    "equityGbp": 50.0,
+    "netProfitGbp": 0.0,
+    "maxDrawdownPct": 0.0,
+    "closedTrades": 0,
+    "wins": 0,
+    "openedPositions": 0,
+    "openPosition": false
+  },
+  "benchmarks": {
+    "cash": {
+      "equityGbp": 50.0,
+      "netProfitGbp": 0.0,
+      "maxDrawdownPct": 0.0,
+      "closedTrades": 0,
+      "wins": 0,
+      "openedPositions": 0,
+      "openPosition": false
+    },
+    "buy_hold": {
+      "equityGbp": 47.6288,
+      "netProfitGbp": -2.3712,
+      "maxDrawdownPct": 7.1606,
+      "closedTrades": 0,
+      "wins": 0,
+      "openedPositions": 1,
+      "openPosition": true
+    }
+  },
+  "status": "EXPERIMENTAL_HISTORICAL_RESEARCH_ONLY",
+  "paperOrders": 0,
+  "liveOrders": 0,
+  "officialGrade": null,
+  "champion": false,
+  "admissions": 0,
+  "warning": "Untouched final holdout and independent paper fills NOT tested."
+}
