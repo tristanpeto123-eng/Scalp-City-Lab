@@ -126,7 +126,7 @@ async function loadPublished(){
    const tr=document.createElement('tr'),vals=[
     p.symbol,p.learningCredits?'⭐ '+String(p.learningCredits.points):'Not scored',
     money(row?.netGbp),money(row?.stressNetGbp),
-    Number.isFinite(row?.improvementGbp)?money(row.improvementGbp):'No comparable evidence',
+    Number.isFinite(row?.improvementGbp)?money(row.improvementGbp):'No new comparable evidence',
     row?.status==='OBSERVED_DEVELOPMENT_OOS'?'Development only':'Awaiting measurement'];
    for(const value of vals){const td=document.createElement('td');td.textContent=value;tr.append(td);}
    tbody.append(tr);
