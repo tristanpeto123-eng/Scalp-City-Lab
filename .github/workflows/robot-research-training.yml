@@ -31,6 +31,7 @@ jobs:
           node --test scripts/run-robot-training-tests.mjs
           node --test scripts/robot-rewards-tests.mjs
           node --test scripts/build-training-monitor-tests.mjs
+          node --test scripts/training-monitor-tests.mjs
           node --test scripts/refresh-alpaca-snapshots-tests.mjs
           node --test scripts/export-robot-academy-tests.mjs
           node --test strategy-adaptive-model-tests.mjs
