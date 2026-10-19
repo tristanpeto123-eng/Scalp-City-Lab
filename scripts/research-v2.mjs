@@ -37,7 +37,6 @@ export function makeFolds(snapshot) {
   return {folds,cut,holdoutStart:source.bars[cut].t,holdoutEnd:source.bars.at(-1).t+900000,
     developmentEnd:source.bars[cut-1].t+900000,
     snapshotHash:hash(source.bars.map(b=>[b.t,b.o,b.h,b.l,b.c,b.v])),
-    developmentHash:hash(source.bars.slice(0,cut).map(b=>[b.t,b.o,b.h,b.l,b.c,b.v])),
     totalCandles:total};
 }
 function neighbours(p){
@@ -62,11 +61,12 @@ function sample(r,family) {
   const lookback=integer(r,10,96);
   return {family,lookback,exitLookback:integer(r,5,lookback)};
 }
-export function proposeV2Candidates({symbol,memory,snapshotHash,developmentEnd,limit=V2_POLICY.candidatesPerSymbol}){
+export function proposeV2Candidates({symbol,memory,developmentEnd,limit=V2_POLICY.candidatesPerSymbol}){
   checkMemory(memory);
   if(!PAIRS.includes(symbol)||!Number.isInteger(limit)||limit<3||limit>240)
     throw Error('V2: invalid symbol or candidate budget');
-  const r=rng([symbol,snapshotHash,'RESEARCH_V2_FIXED_SEED']);
+  // Candidate RNG is independent of price bars, including all evaluation folds.
+  const r=rng([symbol,memory.experiments.length,'RESEARCH_V2_FIXED_SEED']);
   const byFamily={ema_trend:[],rsi_reversion:[],channel_breakout:[]};
   const seen=new Set(),familyNames=Object.keys(byFamily);
   const push=p=>{if(!p||!admissible(p))return;const id=canonical(p);
@@ -102,8 +102,7 @@ function runFold(snapshot,symbol,config,fold,fee,now){
 export function evaluateV2Symbol({snapshot,symbol,memory,now=Date.now(),limit=V2_POLICY.candidatesPerSymbol}){
   if(snapshot?.symbol!==symbol)throw Error('V2: symbol mismatch');
   const layout=makeFolds(snapshot),developmentEnd=layout.developmentEnd;
-  const proposal=proposeV2Candidates({symbol,memory,snapshotHash:layout.developmentHash,
-    developmentEnd,limit});
+  const proposal=proposeV2Candidates({symbol,memory,developmentEnd,limit});
   const ranked=proposal.candidates.map(params=>{
     const config=toSimulator(params);
     // Each scored fold is disjoint. Existing canonical simulator retains its
