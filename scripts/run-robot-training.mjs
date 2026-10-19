@@ -45,6 +45,8 @@ export function checkMemory(memory){
     typeof e.acceptedForLearning!=='boolean'||
     !Array.isArray(e.trainingOptions)||e.trainingOptions.length>16||
     e.trainingOptions.length<1)throw Error('Corrupted or duplicate stored training experiments');
+  if(e.researchedAt!==undefined&&!date(e.researchedAt))
+    throw Error('Invalid research execution timestamp');
   ids.add(e.id);
   for(const o of e.trainingOptions){
    checkParams(o.params);
@@ -269,8 +271,13 @@ export function runResearchLesson(memory,{snapshot,symbol,now=Date.now()}={}){
  const plan=proposeResearchLesson(memory,{symbol,feed:'us-1',fingerprint});
  const start=new Date(training[0].t).toISOString(),
  end=new Date(training.at(-1).t+PERIOD).toISOString();
+ // A daily compute budget is scoped to the UTC research execution day,
+ // not the historical period's candle date. Old history lacking researchedAt
+ // is not retroactively counted as an experiment executed today.
+ if(!Number.isFinite(now))throw Error('RESEARCH: valid execution time required');
+ const researchAt=new Date(now).toISOString();
  const sameDay=memory.experiments.filter(e=>e.symbol===symbol&&e.feed==='us-1'&&
-  e.trainingEnd.slice(0,10)===end.slice(0,10));
+   e.researchedAt?.slice(0,10)===researchAt.slice(0,10));
  if(!plan.candidates.length||sameDay.length>=RESEARCH_LIMITS.maxExperimentsPerSymbolDay){
   return {memory,changed:false,status:plan.candidates.length?'DAILY_EXPERIMENT_CAP':'NO_NEW_PARAMETERS_ON_SAME_CANDLES',
    symbol,seed:plan.seed,holdoutUsedForSelection:false,brokerOrders:0};
@@ -305,6 +312,7 @@ export function runResearchLesson(memory,{snapshot,symbol,now=Date.now()}={}){
  if(memory.experiments.length>=2000)throw Error('Model memory capacity reached, manual archive policy required');
  const record={
   id:recordId,symbol,feed:'us-1',trainingStart:start,trainingEnd:end,
+  researchedAt:researchAt,
   trainFingerprint:fingerprint,acceptedForLearning,
   trainingOptions:outcomes,behavior:profile(training),
   reason:acceptedForLearning?'INDEPENDENT_RELATIVE_TO_SAVED_MEMORY':'OVERLAPPING_TRAINING_WINDOW',
