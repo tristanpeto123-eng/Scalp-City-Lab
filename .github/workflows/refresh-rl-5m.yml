@@ -1,0 +1,49 @@
+name: Robot Academy - native five-minute crypto history (read-only)
+on:
+  schedule:
+    - cron: '23 */6 * * *' # completed 5-minute bars; no broker calls
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: academy-five-minute-history
+  cancel-in-progress: false
+jobs:
+  refresh-historical-5min:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: rl-5m-data
+          path: rl-5m-data
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Checker - no synthetic/incomplete bars or insecure provider calls
+        run: |
+          node --check scripts/refresh-rl-5m.mjs
+          node --test scripts/refresh-rl-5m-tests.mjs
+          node --test scripts/refresh-alpaca-snapshots-tests.mjs
+      - name: GET-only completed 5-minute Alpaca Kraken US history for ten pupils
+        env:
+          ALPACA_PAPER_KEY: ${{ secrets.ALPACA_PAPER_KEY }}
+          ALPACA_PAPER_SECRET: ${{ secrets.ALPACA_PAPER_SECRET }}
+        run: node scripts/refresh-rl-5m.mjs
+      - name: Version strictly validated source history on isolated branch
+        run: |
+          git -C rl-5m-data config user.name 'github-actions[bot]'
+          git -C rl-5m-data config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C rl-5m-data add -- snapshots/
+          if git -C rl-5m-data diff --cached --quiet; then
+            echo 'No new five-minute history'
+          else
+            git -C rl-5m-data commit -m 'data: completed real 5-minute crypto candles; GET only'
+            git -C rl-5m-data push origin HEAD:rl-5m-data
+          fi
