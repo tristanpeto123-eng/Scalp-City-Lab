@@ -251,3 +251,26 @@ test('research continues exploring new bounded models after original neighbourho
  assert.ok([...prior].some(v=>v.includes('rsi_reversion')));
  assert.equal(checkMemory(saved),saved);
 });
+
+test('daily compute cap keys to UTC research time, never a historical candle date',()=>{
+ const symbol='BTC/USD',snapshot=snapshots.get(symbol);
+ const first=runResearchLesson(memory,{snapshot,symbol,now});
+ assert.equal(first.changed,true);
+ const record=first.memory.experiments.at(-1);
+ assert.equal(record.researchedAt,new Date(now).toISOString());
+ assert.ok(record.trainingEnd.slice(0,10)!==record.researchedAt.slice(0,10));
+ // Eight genuine executions TODAY block only further today's attempts.
+ const todayExperiments=Array.from({length:8},(_,i)=>({
+   ...oldRecord,id:(i+100).toString(16).padStart(64,'0'),
+   researchedAt:new Date(now).toISOString()
+ }));
+ const capped={...empty,experiments:todayExperiments};
+ const blocked=runResearchLesson(capped,{snapshot,symbol,now});
+ assert.equal(blocked.changed,false);
+ assert.equal(blocked.status,'DAILY_EXPERIMENT_CAP');
+ const nextDay=runResearchLesson(capped,{snapshot,symbol,now:now+86400000});
+ assert.equal(nextDay.changed,true);
+ assert.equal(nextDay.memory.experiments.at(-1).researchedAt,
+   new Date(now+86400000).toISOString());
+ assert.equal(nextDay.brokerOrders,0);
+});
