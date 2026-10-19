@@ -30,6 +30,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: rl-5m-data
+          path: rl-5m-data
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -61,6 +66,26 @@ jobs:
         run: |
           python -m unittest neo.test_pattern_memory rl.test_model_registry paper_sandbox.test_paper_executor -v
           python -m unittest rl.test_dqn_experiment rl.test_rapid_replay rl.test_five_min_replay -v
+      - name: Checker G1 — ingest ten authentic archived five-minute markets twice
+        run: |
+          python -m neo.pattern_memory --data-dir rl-5m-data/snapshots --root /tmp/neo-review/patterns
+          python - <<'PY'
+          import json,pathlib
+          path=pathlib.Path('/tmp/neo-review/patterns/latest.json')
+          state=json.loads(path.read_text())
+          if (state['symbols']!=10 or state['memorizedLabeledPatterns']<1000 or
+              state['finalHoldoutTouched'] or state['paperOrders'] or
+              len(state['predictionsOnEligibleTrainingHistory'])!=10):
+              raise SystemExit('NEO REAL DATA CHECK FAILED')
+          print('NEO_REAL_TEN_CHART_MEMORY '+str(state['memorizedLabeledPatterns']))
+          PY
+          python -m neo.pattern_memory --data-dir rl-5m-data/snapshots --root /tmp/neo-review/patterns
+          python - <<'PY'
+          import json,pathlib
+          state=json.loads(pathlib.Path('/tmp/neo-review/patterns/latest.json').read_text())
+          if state['newPatternsThisRun']!=0:raise SystemExit('NEO duplicate memory ingestion')
+          print('NEO_DEDUP_OK')
+          PY
       - name: Checker G1 — NEO production module cannot access PAPER secrets or order API
         run: |
           python - <<'PY'
@@ -70,7 +95,7 @@ jobs:
           pin=Path('.github/workflows/pin-demo-candidate.yml').read_text()
           registry=Path('rl/model_registry.py').read_text()
           assert 'futureLogReturn' in neo and 'initialDevelopmentStart' in neo
-          assert "finalHoldoutObserved':False" in neo
+          assert "original['finalHoldoutObserved']=False" in neo
           assert 'rl-5m-data' in memory and 'neo-learning-memory' in memory
           for blob in (neo,memory,registry,pin):
               assert 'paper-api.alpaca.markets' not in blob
