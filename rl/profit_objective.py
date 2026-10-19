@@ -22,7 +22,7 @@ def assess_profit_objective(validation, stress, benchmarks, *,
         raise ValueError('Invalid sample adequacy gate')
     if not math.isfinite(max_drawdown_pct) or not 0<max_drawdown_pct<=100:
         raise ValueError('Invalid drawdown gate')
-    if not isinstance(benchmarks,dict) or set(benchmarks)<{'cash','buy_hold'}:
+    if not isinstance(benchmarks,dict) or not {'cash','buy_hold'}.issubset(benchmarks):
         raise ValueError('Missing passive benchmarks')
     def number(obj,key):
         value=obj.get(key) if isinstance(obj,dict) else None
