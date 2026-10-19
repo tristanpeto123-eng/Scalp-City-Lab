@@ -6,6 +6,12 @@ on:
       - 'teacher/qualification-runner.mjs'
       - 'research-data/robot-academy.json'
       - '.github/workflows/teacher-qualification.yml'
+  # Workflow-run events fire after the research job completes, including when
+  # its GITHUB_TOKEN wrote new Academy files (push workflows do not self-trigger).
+  workflow_run:
+    workflows: ["Scalp City — repeated parent-seeded chart research lessons"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
   schedule:
     - cron: '47 14 * * *'
@@ -13,7 +19,9 @@ permissions:
   contents: read
 jobs:
   research-admission-screen:
-    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    if: >-
+      github.repository == 'tristanpeto123-eng/Scalp-City-Lab' &&
+      (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
