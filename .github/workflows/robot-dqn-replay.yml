@@ -30,6 +30,12 @@ jobs:
         with:
           ref: main
           persist-credentials: false
+      - name: Fetch independently authenticated native 5m history
+        uses: actions/checkout@v4
+        with:
+          ref: rl-5m-data
+          path: rl-5m-data
+          persist-credentials: false
       - name: Fetch isolated append-versioned RL learning checkpoint branch
         uses: actions/checkout@v4
         with:
@@ -51,11 +57,13 @@ jobs:
           import json,datetime,pathlib
           from rl.dqn_experiment import SYMBOLS,validate_snapshot
           for symbol in SYMBOLS:
-              p=pathlib.Path('validation-data')/(symbol.replace('/','-')+'.json')
+              p=pathlib.Path('rl-5m-data/snapshots')/(symbol.replace('/','-')+'.json')
               data=json.loads(p.read_text())
+              if data.get('timeframe')!='5Min':
+                  raise SystemExit('Only genuine completed 5-minute bars permitted')
               validate_snapshot(data)
               stamped=datetime.datetime.fromisoformat(data['generatedAt'].replace('Z','+00:00'))
-              if datetime.datetime.now(datetime.timezone.utc)-stamped>datetime.timedelta(days=14):
+              if datetime.datetime.now(datetime.timezone.utc)-stamped>datetime.timedelta(hours=36):
                   raise SystemExit('Snapshot too stale for autonomous RL replay: '+symbol)
           print('CHECKER: ten historical validated completed 15-minute datasets, no broker')
           PY
@@ -63,7 +71,7 @@ jobs:
         env:
           EPISODES: ${{ inputs.episodes || '1' }}
         run: |
-          python -m rl.rapid_replay --data-dir validation-data --root rl-history --episodes "$EPISODES" --symbol ALL
+          python -m rl.rapid_replay --data-dir rl-5m-data/snapshots --root rl-history --episodes "$EPISODES" --symbol ALL
       - name: Checker — no signed grades, invented seconds data or broker orders
         run: |
           python - <<'PY'
@@ -72,7 +80,7 @@ jobs:
           if (r['schema']!='SCALP_RAPID_RL_REPLAY_V1' or len(r['pupils'])!=10 or
               r['paperOrders'] or r['liveOrders'] or r['automaticAdmissions'] or
               r['verifiedForwardGrades'] or r['sealedHoldoutAccessed'] or
-              r['marketBarTimeframe']!='15Min' or r['decisionsAreNotBrokerTrades'] is not True or
+              r['marketBarTimeframe']!='5Min' or r['decisionsAreNotBrokerTrades'] is not True or
               r['decisionCount']<=0 or r['gradientUpdates']<=0):
               raise SystemExit('CHECKER: RL policy evidence failed')
           print('CHECKER: '+str(r['decisionCount'])+
@@ -83,6 +91,6 @@ jobs:
         run: |
           git -C rl-history config user.name 'github-actions[bot]'
           git -C rl-history config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git -C rl-history add -- models/ rl-rapid/latest.json
+          git -C rl-history add -- models/ rl-rapid/latest.json rl-rapid/replays/
           git -C rl-history commit -m 'research: measured 10-pupil accelerated DQN training; no orders'
           git -C rl-history push origin HEAD:rl-learning-memory
