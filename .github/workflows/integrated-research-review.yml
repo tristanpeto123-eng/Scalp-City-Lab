@@ -1,0 +1,66 @@
+name: Integrated Scalp Research — review only
+on:
+  pull_request:
+    paths:
+      - 'scripts/integrated-research-review.mjs'
+      - 'scripts/integrated-research-review-tests.mjs'
+      - '.github/workflows/integrated-research-review.yml'
+      - 'docs/INTEGRATED_RESEARCH_REVIEW.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  combined-research-review:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      TEACHER_ENABLE_EXAMINER: 'false'
+      TEACHER_PAPER_ENABLED: 'false'
+      SCALP_PAPER_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Static review and synthetic integration regression
+        run: |
+          node --check scripts/integrated-research-review.mjs
+          node --test scripts/integrated-research-review-tests.mjs
+      - name: Check out archived learning memory (read only)
+        uses: actions/checkout@v4
+        with:
+          ref: scalp-learning-memory
+          path: research-memory
+          persist-credentials: false
+      - name: Real archived-history integration (no trading, no publishing)
+        run: |
+          node scripts/integrated-research-review.mjs \
+            research-memory/scalp-learning/history.json \
+            validation-data \
+            integration-review-output
+      - name: Assert zero broker activity, no auto-admission, complete lineage
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const root='integration-review-output/';
+          const r=JSON.parse(fs.readFileSync(root+'research-integration-review.json','utf8'));
+          const a=JSON.parse(fs.readFileSync(root+'academy-candidate.json','utf8'));
+          const q=JSON.parse(fs.readFileSync(root+'independent-qualification.json','utf8'));
+          if(r.researchSymbols!==10||r.pupils.length!==10||
+             r.controls.paperOrders||r.controls.liveOrders||
+             r.controls.admissions||r.controls.verifiedForwardGrades||
+             a.actualBrokerOrders||a.verifiedForwardGrades||
+             q.admissionsIssued||q.brokerOrdersSubmitted||
+             r.academyCandidateSha256!==r.independentQualificationAcademySha256)
+            throw Error('Integration gating or Academy lineage violated');
+          console.log('REVIEW_ONLY',r.status,'research added:',r.researchExperimentsAdded,
+            'historical-screen passes:',r.historicalScreenPasses,'broker orders: 0');
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: integrated-research-review-evidence
+          path: integration-review-output
+          retention-days: 14
