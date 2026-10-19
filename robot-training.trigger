@@ -18,3 +18,5 @@ Scheduled cycles may produce no new experiment when saved history overlaps or da
 2026-10-19: acceptance — verify successful three-fold research workflow triggers independent Teacher workflow_run; no orders.
 
 2026-10-19: owner-authorised post-merge verification of 3 bounded historical passes per pupil from pre-published candles; research only, PAPER OFF.
+
+2026-10-19: source-backed bounded diverse search post-merge smoke; no broker calls, HOLDOUT sealed, PAPER OFF.
