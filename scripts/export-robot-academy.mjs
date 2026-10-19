@@ -5,6 +5,7 @@ import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
+import {researchCredits,checkTrainingReward} from './robot-rewards.mjs';
 export const PAIRS=Object.freeze([
  'BTC/USD','ETH/USD','SOL/USD','XRP/USD','ADA/USD',
  'AVAX/USD','LINK/USD','DOGE/USD','LTC/USD','BCH/USD'
@@ -24,6 +25,7 @@ const paramsLabel=p=>{
  }
 };
 function validateOption(o){
+ checkTrainingReward(o?.researchReward);
  if(!o||!o.params||typeof o.params!=='object'||
   !Number.isInteger(o.closedTrades)||o.closedTrades<0||o.closedTrades>1000000||
   !isNumber(o.netProfitGbp)||Math.abs(o.netProfitGbp)>1e9||
@@ -48,7 +50,8 @@ function validateOption(o){
    trainingClosedTrades:o.closedTrades,
    trainingWinRatePct:round(o.winRatePct,2),
    trainingNetGbp:round(o.netProfitGbp,4),
-   meetsMinimumSample:o.closedTrades>=20};
+   meetsMinimumSample:o.closedTrades>=20,
+   researchReward:o.researchReward??null};
 }
 const idOf=x=>JSON.stringify(x.parameters);
 function better(a,b){
@@ -102,6 +105,8 @@ export function buildAcademySnapshot(memory){
     parentStrategy:e.parentResearchModel?.params?paramsLabel(e.parentResearchModel.params):null,
     parentHistoricalNetGbp:e.parentResearchModel?.previousNetGbp??null,
     testedConfigurations:e.candidates.length,
+    rewardCreditsAwarded:e.independent?e.candidates.reduce((sum,c)=>sum+(c.researchReward?.eligible?c.researchReward.points:0),0):0,
+    rewardedConfigurations:e.independent?e.candidates.filter(c=>c.researchReward?.eligible).length:0,
     // Re-used historical candles add experiments but NOT independent outcomes.
     grade:leader?Math.min(10,Math.floor((leader.trainingWinRatePct+1e-8)/10)):null,
     leaderTrainingNetGbp:leader?.trainingNetGbp??null,
@@ -113,6 +118,7 @@ export function buildAcademySnapshot(memory){
    confirmedForward:false,verifiedForwardTrades:0,
    experiments:history.length,independentTrainingWindows:history.filter(e=>e.independent).length,
    distinctStrategiesTried:seen.size,
+   learningCredits:researchCredits(memory.experiments,symbol),
    latestTrainingEnd:last?.trainingEnd??null,
    trainingBehavior:memory.experiments.find(e=>e.id===last?.id)?.behavior?.descriptiveRegime??null,
    championModel:null,
