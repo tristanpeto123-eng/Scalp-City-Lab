@@ -123,7 +123,7 @@ async function loadPair({force=false}={}){
   let record=force?null:cache.get(pair);
   if(!record){
    const base='./validation-data/'+pair.replace('/','-')+'.json';
-   const url=base+'?research-desk-v2='+Date.now()+(force?'&refresh=1':'');
+   const url=base+'?refresh='+Date.now()+(force?'&forced=1':'');
    const controller=new AbortController();
    const deadline=setTimeout(()=>controller.abort(),18000);
    let response;
