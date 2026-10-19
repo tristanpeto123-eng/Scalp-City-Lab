@@ -53,6 +53,7 @@ jobs:
           node --check teacher/hosted-preflight.mjs
           node --check teacher/hosted-preflight-tests.mjs
           node --check teacher/admit.mjs
+          node --check teacher/qualification-workflow-tests.mjs
       - name: Unit and adversarial mock-only tests
         env:
           TEACHER_PAPER_ENABLED: 'false'
