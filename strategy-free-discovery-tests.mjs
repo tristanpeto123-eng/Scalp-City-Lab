@@ -82,6 +82,11 @@ test('browser UI exposes both strategies and reports invented rule provenance',a
  assert.match(html,/value="invent"/);
  assert.match(html,/strategyMode:choice==='invent'\?'invent':'preset'/);
  assert.match(html,/Rules frozen before the holdout replay/);
+ assert.match(html,/new URLSearchParams\(location\.search\)/);
+ const academy=await readFile(new URL('./robot-academy.html',import.meta.url),'utf8');
+ assert.match(academy,/Invent strategy/);
+ assert.match(academy,/strategy=invent/);
+ assert.match(academy,/strategy=auto/);
  assert.doesNotMatch(html,/APCA-API-SECRET-KEY/);
  assert.doesNotMatch(html,/submitOrder\(/);
 });
