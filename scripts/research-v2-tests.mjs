@@ -72,3 +72,20 @@ test('budget and missing markets fail closed',async()=>{
  await assert.rejects(evaluateV2All({memory:source,snapshots:{},now}),/ten charts/);
  assert.equal(V2_POLICY.reservedHoldout,0.20);
 });
+
+import {mergeVerifiedHistory} from './research-v2-archive.mjs';
+test('archive preserves older bars and rejects altered overlapping OHLCV',()=>{
+  const src=snapshots['BTC/USD'];
+  const a={...src,bars:src.bars.slice(0,3600)};
+  const b={...src,bars:src.bars.slice(1800)};
+  const merged=mergeVerifiedHistory(a,b,now);
+  assert.equal(merged.bars.length,len);
+  const corruption={...b,bars:b.bars.map((x,i)=>i===100?{...x,v:x.v+1}:x)};
+  assert.throws(()=>mergeVerifiedHistory(a,corruption,now),/mutation detected/);
+});
+test('historical gaps block archive ingestion',()=>{
+  const s=snapshots['BTC/USD'];
+  const old={...s,bars:s.bars.slice(0,1800)};
+  const newer={...s,bars:s.bars.slice(2000)};
+  assert.throws(()=>mergeVerifiedHistory(old,newer,now),/no common candles/);
+});
