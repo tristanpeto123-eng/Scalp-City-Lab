@@ -52,7 +52,7 @@ jobs:
               ('ref: rl-5m-data','ref: rl-learning-memory',
                'rl-5m-data/snapshots','rl-rapid/replays/')) or
               "ALPACA_PAPER_SECRET" in workflow or
-              'timeframe:\'5Min\'' not in refresh and "5Min" not in refresh or
+              'scripts/refresh-rl-5m.mjs' not in refresh or
               "validation-data" in workflow or
               "paper-api.alpaca.markets" in engine or
               "/v2/orders" in viewer):
