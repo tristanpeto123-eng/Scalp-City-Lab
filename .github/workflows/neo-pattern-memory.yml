@@ -1,0 +1,82 @@
+name: NEO — audited ten-chart historical pattern memory
+on:
+  schedule:
+    - cron: '29 */6 * * *' # after authenticated 5-minute feed refresh, best effort
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'neo/**'
+      - '.github/workflows/neo-pattern-memory.yml'
+permissions:
+  contents: write
+concurrency:
+  group: scalp-neo-pattern-memory
+  cancel-in-progress: false
+jobs:
+  neo-learn:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 23
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: rl-5m-data
+          path: rl-5m-data
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: neo-learning-memory
+          path: neo-history
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install research-only numerical dependencies
+        run: python -m pip install numpy 'torch>=2.3,<3'
+      - name: Checker — no memory fabrication, validation leakage or broker imports
+        run: |
+          python -m unittest neo.test_pattern_memory -v
+          python -m compileall -q neo
+      - name: Verify genuine completed five-minute feeds and freshness
+        run: |
+          python - <<'PY'
+          import json,datetime,pathlib
+          from rl.dqn_experiment import SYMBOLS,validate_snapshot
+          for sym in SYMBOLS:
+              d=json.loads((pathlib.Path('rl-5m-data/snapshots')/(sym.replace('/','-')+'.json')).read_text())
+              if d.get('timeframe')!='5Min':raise SystemExit('NEO invalid timeframe')
+              validate_snapshot(d)
+              when=datetime.datetime.fromisoformat(d['generatedAt'].replace('Z','+00:00'))
+              if datetime.datetime.now(datetime.timezone.utc)-when>datetime.timedelta(hours=36):
+                  raise SystemExit('NEO stale five-minute evidence')
+          print('NEO: ten authentic source files, verified without broker writes')
+          PY
+      - name: NEO — source-digested historical pattern ingestion
+        run: python -m neo.pattern_memory --data-dir rl-5m-data/snapshots --root neo-history/patterns
+      - name: Checker — memory holds training-only inputs and zero broker orders
+        run: |
+          python - <<'PY'
+          import json,pathlib
+          r=json.loads(pathlib.Path('neo-history/patterns/latest.json').read_text())
+          if (r['schema']!='SCALP_NEO_STATUS_V1' or r['symbols']!=10 or
+              r['finalHoldoutTouched'] or r['paperOrders'] or r['liveOrders'] or
+              r['teacherGrades'] or not r['trainingOnly']):
+              raise SystemExit('NEO: source or safety invariant blocked')
+          print('NEO: '+str(r['memorizedLabeledPatterns'])+' retained source patterns')
+          PY
+      - name: Persist NEO data on separate memory branch (only when changed)
+        run: |
+          git -C neo-history config user.name 'github-actions[bot]'
+          git -C neo-history config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C neo-history add -- patterns/
+          if git -C neo-history diff --cached --quiet; then
+            echo 'NEO unchanged; no memory commit'
+          else
+            git -C neo-history commit -m 'research: NEO ten-chart pattern memory; no broker permissions'
+            git -C neo-history push origin HEAD:neo-learning-memory
+          fi
