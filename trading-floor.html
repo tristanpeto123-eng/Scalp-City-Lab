@@ -90,7 +90,7 @@ function renderRoster(){
   btn.append(bar);btn.style.borderTop='3px solid '+colors[i];
   btn.addEventListener('click',()=>{if(acct?.status==='RUNNING'){
     $('notice').textContent='Stop the synthetic sandbox before selecting a different pupil.';return;}
-    selected=symbol;render();});
+    selected=symbol;document.dispatchEvent(new CustomEvent('scalp:pupil-selected',{detail:{pupil:symbol.replace('/','')}}));render();});
   node.append(btn);
  }
 }

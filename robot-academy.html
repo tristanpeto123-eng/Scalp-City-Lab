@@ -95,7 +95,7 @@ const base=[
  ['LINK/USD','Link','#f3ae82'],['DOGE/USD','Doge','#e3d78f'],['LTC/USD','Lite','#abc4f4'],
  ['BCH/USD','Cash','#ddafef']
 ].map(([symbol,name,color],id)=>({id,symbol,name,color,trades:null,wins:null,source:'UNVERIFIED',net:null,drawdown:null,champion:null}));
-let pupils=base.map(x=>({...x})),demo=false,selected=0,lessonNo=0,research=null,researchError=null,liveGrades=new Map(),teacherError=null;
+let pupils=base.map(x=>({...x})),demo=false,selected=(()=>{const id=String(new URLSearchParams(location.search).get('pupil')||'').toUpperCase();const n=base.findIndex(p=>p.symbol.replace('/','')===id);return n<0?0:n;})(),lessonNo=0,research=null,researchError=null,liveGrades=new Map(),teacherError=null;
 const $=id=>document.getElementById(id);
 const grade=p=>p.trades===null||p.trades<1?null:Math.min(10,Math.floor(((p.source==='HISTORICAL_TRAINING_RESEARCH'?p.trainingWinRatePct:p.wins/p.trades*100)+1e-8)/10));
 const percent=p=>p.trades===null||p.trades<1?null:p.source==='HISTORICAL_TRAINING_RESEARCH'?p.trainingWinRatePct:100*p.wins/p.trades;
@@ -109,6 +109,14 @@ function robot(p){const node=document.createElement('div');
  node.style.setProperty('--bot',p.color);node.title=p.symbol+' · '+gradeText(p);
  node.innerHTML='<span class="antenna"></span><span class="hat"></span><span class="face"></span><span class="eyes"></span><span class="mouth"></span><span class="body"></span><span class="feet"></span><span class="name"></span>';
  node.querySelector('.name').textContent=p.symbol.split('/')[0];return node;}
+function selectPupil(id){
+ if(!Number.isInteger(id)||!pupils[id])return;
+ selected=id;
+ document.dispatchEvent(new CustomEvent('scalp:pupil-selected',{
+  detail:{pupil:pupils[id].symbol.replace('/','')}
+ }));
+ render();
+}
 function render(){
  const overall=pupils.filter(p=>confirmed(p)).length;
  const provisional=pupils.filter(p=>p.source==='HISTORICAL_TRAINING_RESEARCH'&&grade(p)!==null).length;
@@ -135,7 +143,7 @@ function render(){
   const body=document.createElement('div');body.className='room-body';
   const members=pupils.filter(p=>grade(p)===g);
   if(members.length)for(const member of members){const r=robot(member);r.setAttribute('role','button');r.setAttribute('tabindex','0');
-    const choose=()=>{selected=member.id;render();};
+    const choose=()=>selectPupil(member.id);
     r.onclick=choose;r.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choose();}};body.append(r);}
   else{const empty=document.createElement('div');empty.className='empty';empty.textContent='Empty classroom';body.append(empty);}
   room.append(body);rooms.append(room);
@@ -143,7 +151,7 @@ function render(){
  const ungraded=pupils.filter(p=>grade(p)===null);
  if(ungraded.length){const room=document.createElement('div');room.className='room prep';room.innerHTML='<div class="room-head"><span>🔧 Orientation</span><small>Not graded</small></div>';
   const body=document.createElement('div');body.className='room-body';
-  for(const member of ungraded){const r=robot(member);r.setAttribute('role','button');r.setAttribute('tabindex','0');r.onclick=()=>{selected=member.id;render();};r.onkeydown=e=>{if(e.key==='Enter'){selected=member.id;render();}};body.append(r);}
+  for(const member of ungraded){const r=robot(member);r.setAttribute('role','button');r.setAttribute('tabindex','0');r.onclick=()=>selectPupil(member.id);r.onkeydown=e=>{if(e.key==='Enter'){selectPupil(member.id);}};body.append(r);}
   room.append(body);rooms.prepend(room);}
  const roster=$('pupils');roster.replaceChildren();
  for(const p of pupils){const item=document.createElement('button');item.type='button';
@@ -151,7 +159,7 @@ function render(){
   const avatar=document.createElement('span');avatar.className='dot';avatar.textContent='•';
   const span=document.createElement('span');const name=document.createElement('strong');name.textContent=p.symbol.split('/')[0];
   const info=document.createElement('small');info.textContent=gradeText(p)+(demo?' · DEMO':p.source==='HISTORICAL_TRAINING_RESEARCH'?' · HISTORICAL':'');span.append(name,info);
-  item.append(avatar,span);item.onclick=()=>{selected=p.id;render();};roster.append(item);}
+  item.append(avatar,span);item.onclick=()=>selectPupil(p.id);roster.append(item);}
  const p=pupils[selected],v=percent(p),g=grade(p);
  const report=$('report');report.replaceChildren();
  const h=document.createElement('h3');h.textContent=p.name+' — '+p.symbol;report.append(h);
