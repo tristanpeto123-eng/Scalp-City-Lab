@@ -10,6 +10,7 @@ import {checkMemory,evaluateAll} from './run-robot-training.mjs';
 import {historicalLab} from './historical-lab.mjs';
 import {buildAcademySnapshot} from './export-robot-academy.mjs';
 import {assess} from '../teacher/qualification-runner.mjs';
+import {screen} from '../teacher/admit.mjs';
 import {DailyGBPReference} from '../teacher/fx-reference.mjs';
 
 const digest=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
@@ -71,8 +72,39 @@ export async function integratedResearchReview({
    pairsMatch(academy.pupils)&&academy.pupils.every(p=>
      p.confirmedForward===false&&p.championModel===null),
    'unverified grade or pupil substituted');
- const qualification=await assess({memory:research.memory,research:academy,
+ // The existing full-cohort Teacher CLI assumes every chart already has
+ // >=20 research closes. For a younger chart, screen separately with the same
+ // independent auditor and mark its missing leader as BLOCKED, never invent it.
+ let qualification;
+ const cohortComplete=academy.pupils.every(p=>p.researchLeader!==null);
+ if(cohortComplete){
+  qualification=await assess({memory:research.memory,research:academy,
    snapshotsDir:'validation-data',read,fx,now});
+ }else{
+  const screened=await screen({memory:research.memory,research:academy,
+   dataDir:'validation-data',read,fx,now,admit:false});
+  assert(screened.signed.length===0&&pairsMatch(screened.reports),
+    'auditor failed to review incomplete pupil cohort');
+  const pupils=academy.pupils.map(p=>{
+   const r=screened.reports.find(q=>q.symbol===p.symbol);
+   const leader=p.researchLeader;
+   const reasons=[...(leader?[]:['NO_RESEARCH_LEADER_MINIMUM_20_CLOSES']),
+     ...r.reasons.map(x=>'AUDIT: '+String(x).slice(0,150))];
+   return {symbol:p.symbol,trainingTrades:leader?.trainingClosedTrades??0,
+    trainingNetGbp:leader?.trainingNetGbp??null,
+    trainingWinRatePct:leader?.trainingWinRatePct??null,
+    holdoutNetGbp:r.holdoutNetGbp??null,
+    doubleCostNetGbp:r.doubledCostNetGbp??null,
+    verdict:r.ready&&leader?'PASS':'BLOCKED',
+    reasons};
+  });
+  qualification={schema:'TEACHER_INDEPENDENT_QUALIFICATION_V1',
+   status:'INCOMPLETE_RESEARCH_COHORT',
+   academyDigest:digest(academy),
+   eligibleCount:pupils.filter(x=>x.verdict==='PASS').length,
+   availablePaperSlots:3,admissionsIssued:0,brokerOrdersSubmitted:0,
+   verifiedForwardGrades:0,pupils};
+ }
  assert(qualification.academyDigest===digest(academy)&&
    qualification.admissionsIssued===0&&qualification.brokerOrdersSubmitted===0&&
    qualification.verifiedForwardGrades===0&&pairsMatch(qualification.pupils),
@@ -82,7 +114,7 @@ export async function integratedResearchReview({
   const q=qualification.pupils.find(x=>x.symbol===symbol);
   const historical=lab.pupils.find(x=>x.symbol===symbol);
   assert(q.trainingTrades===pupil.researchLeader?.trainingClosedTrades&&
-    q.trainingNetGbp===pupil.researchLeader?.trainingNetGbp,
+    q.trainingNetGbp===(pupil.researchLeader?.trainingNetGbp??null),
     'research/Teacher candidate mismatch: '+symbol);
   assert(historical.heldOutQuarantine.usedForModelSelection===false&&
     historical.orders===0&&historical.modelPromotion===false,
