@@ -1,14 +1,20 @@
 name: Robot Academy — accelerated Deep RL historical replay
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'rl/dqn_experiment.py'
+      - 'rl/rapid_replay.py'
+      - '.github/workflows/robot-dqn-replay.yml'
   schedule:
-    - cron: '11,41 * * * *' # twice hourly, best effort; NOT a continuous 1Hz broker worker
+    - cron: '7 * * * *' # three full episodes per pupil hourly, best effort
   workflow_dispatch:
     inputs:
       episodes:
-        description: Replay episodes per pupil (1–3)
-        default: '1'
+        description: Replay episodes per pupil (1–5, bounded by runner timeout)
+        default: '3'
         type: choice
-        options: ['1', '2', '3']
+        options: ['1', '2', '3', '4', '5']
 permissions:
   contents: write
 concurrency:
@@ -65,11 +71,11 @@ jobs:
               stamped=datetime.datetime.fromisoformat(data['generatedAt'].replace('Z','+00:00'))
               if datetime.datetime.now(datetime.timezone.utc)-stamped>datetime.timedelta(hours=36):
                   raise SystemExit('Snapshot too stale for autonomous RL replay: '+symbol)
-          print('CHECKER: ten historical validated completed 15-minute datasets, no broker')
+          print('CHECKER: ten native completed 5-minute datasets, no broker')
           PY
       - name: Train 10 individual Deep Q Networks from prior audited model weights
         env:
-          EPISODES: ${{ inputs.episodes || '1' }}
+          EPISODES: ${{ inputs.episodes || '3' }}
         run: |
           python -m rl.rapid_replay --data-dir rl-5m-data/snapshots --root rl-history --episodes "$EPISODES" --symbol ALL
       - name: Checker — no signed grades, invented seconds data or broker orders
