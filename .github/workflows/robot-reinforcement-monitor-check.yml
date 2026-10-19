@@ -1,0 +1,68 @@
+name: Robot reinforcement and telemetry — independent Checker
+on:
+  pull_request:
+    paths:
+      - 'scripts/run-robot-training.mjs'
+      - 'scripts/run-robot-training-tests.mjs'
+      - 'scripts/robot-rewards.mjs'
+      - 'scripts/robot-rewards-tests.mjs'
+      - 'scripts/build-training-monitor.mjs'
+      - 'scripts/build-training-monitor-tests.mjs'
+      - 'scripts/export-robot-academy.mjs'
+      - 'scripts/export-robot-academy-tests.mjs'
+      - '.github/workflows/robot-research-training.yml'
+      - '.github/workflows/robot-reinforcement-monitor-check.yml'
+      - 'robot-academy.html'
+      - 'robot-academy-tests.mjs'
+      - 'training-monitor.html'
+      - 'mission-control.html'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  checker-g0-g1:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TEACHER_ENABLE_EXAMINER: 'false'
+      TEACHER_PAPER_ENABLED: 'false'
+      SCALP_PAPER_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Checker G0 — parse and forbid broker actions
+        run: |
+          node --check scripts/robot-rewards.mjs
+          node --check scripts/run-robot-training.mjs
+          node --check scripts/build-training-monitor.mjs
+          node --check scripts/export-robot-academy.mjs
+          if grep -E 'submitOrder\(|placeOrder\(|paperOrder\(|/v2/orders' scripts/robot-rewards.mjs scripts/build-training-monitor.mjs; then
+            echo 'Broker command in research code'; exit 1
+          fi
+      - name: Checker G1 — historical integrity and reward limits
+        run: |
+          node --test scripts/robot-rewards-tests.mjs
+          node --test scripts/run-robot-training-tests.mjs
+          node --test scripts/export-robot-academy-tests.mjs
+          node --test scripts/build-training-monitor-tests.mjs
+          node --test robot-academy-tests.mjs
+          node --test scripts/historical-lab-tests.mjs
+      - name: Checker G1 — no signed grades or external actions
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const workflow=fs.readFileSync('.github/workflows/robot-research-training.yml','utf8');
+          const page=fs.readFileSync('training-monitor.html','utf8');
+          if(!workflow.includes("cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *'")||
+            !workflow.includes('build-training-monitor.mjs')||
+            !page.includes('TRAINING_MONITOR_V1')||
+            !page.includes('No new comparable evidence')||
+            !page.includes('Last successful new lesson'))
+            throw Error('Checker: incomplete scheduler or monitoring UI');
+          console.log('REVIEW_ONLY: historical XP + measured telemetry, no Paper orders');
+          NODE
