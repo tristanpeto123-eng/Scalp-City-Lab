@@ -41,6 +41,21 @@ function strategyConfig(strategy,p={}){
   if(!Number.isInteger(lookback)||lookback<10||lookback>96||
    !Number.isInteger(exitLookback)||exitLookback<5||exitLookback>lookback)throw Error('Invalid channel parameters');
   return {lookback,exitLookback};}
+ if(strategy==='synth'){
+  // A bounded declarative rule tree. Never evaluate dynamic user code.
+  const ints=[['fast',3,24],['slow',7,96],['period',7,30],['buyBelow',10,45],
+   ['sellAbove',50,85],['lookback',10,80],['exitLookback',5,80]];
+  if(ints.some(([k,min,max])=>!Number.isInteger(p[k])||p[k]<min||p[k]>max)||
+    p.fast>=p.slow||p.sellAbove<=p.buyBelow||p.exitLookback>p.lookback||
+    !valid(p.volumeMultiplier)||p.volumeMultiplier<1||p.volumeMultiplier>3||
+    !Array.isArray(p.entrySignals)||p.entrySignals.length!==2||
+    new Set(p.entrySignals).size!==2||
+    p.entrySignals.some(x=>!['ema_up','rsi_dip','channel_break','volume_surge'].includes(x))||
+    !['all','any'].includes(p.entryJoin)||
+    !['ema_down','rsi_recovered','channel_down'].includes(p.exitSignal))
+   throw Error('Invalid invented strategy rules');
+  return {...p,entrySignals:[...p.entrySignals]};
+ }
  throw Error('Unknown strategy');
 }
 export function simulateValidation({snapshot,symbol,startingBalanceGbp=50,mode='duration',limit=14,
@@ -58,24 +73,39 @@ export function simulateValidation({snapshot,symbol,startingBalanceGbp=50,mode='
  const fee=feePerSideFraction;
  const bars=checked.bars,calibrationEnd=Math.floor(bars.length*.4),test=bars.slice(calibrationEnd);
  // Feature warmup uses only first 40%; no tuning/selecting on held-out bars.
- let fast=null,slow=null,prev=null,avgGain=0,avgLoss=0,ready=0;
+ let fast=null,slow=null,prev=null,avgGain=0,avgLoss=0,ready=0,volumeEma=null;
  const high=[],low=[];let rsi=50;
- const warmup=Math.max(35,strategy==='ema'?params.slow:0,
-  strategy==='breakout'?params.lookback:0);
+ const warmup=Math.max(35,strategy==='ema'||strategy==='synth'?params.slow:0,
+  strategy==='breakout'||strategy==='synth'?params.lookback:0);
  function observe(b){
   const earlierHigh=high.length>=params.lookback?Math.max(...high.slice(-params.lookback)):Infinity;
   const earlierLow=low.length>=params.exitLookback?Math.min(...low.slice(-params.exitLookback)):-Infinity;
-  const fastN=strategy==='ema'?params.fast:9,slowN=strategy==='ema'?params.slow:34;
+  const fastN=strategy==='ema'||strategy==='synth'?params.fast:9;
+  const slowN=strategy==='ema'||strategy==='synth'?params.slow:34;
+  const previousVolumeEma=volumeEma===null?b.v:volumeEma;
+  volumeEma=volumeEma===null?b.v:volumeEma*.95+b.v*.05;
   fast=fast===null?b.c:fast+2/(fastN+1)*(b.c-fast);
   slow=slow===null?b.c:slow+2/(slowN+1)*(b.c-slow);
   if(prev!==null){const gain=Math.max(0,b.c-prev),loss=Math.max(0,prev-b.c);
-   const n=strategy==='rsi'?params.period:14;
+   const n=strategy==='rsi'||strategy==='synth'?params.period:14;
    avgGain=(avgGain*(n-1)+gain)/n;avgLoss=(avgLoss*(n-1)+loss)/n;
    rsi=avgLoss===0?(avgGain===0?50:100):100-100/(1+avgGain/avgLoss);}
   prev=b.c;high.push(b.h);low.push(b.l);ready++;
   if(high.length>96){high.shift();low.shift();}
   if(strategy==='ema')return {entry:ready>=warmup&&fast>slow,exit:fast<=slow};
   if(strategy==='rsi')return {entry:ready>=warmup&&rsi<params.buyBelow,exit:rsi>=params.sellAbove};
+  if(strategy==='synth'){
+   const values={
+    ema_up:fast>slow,rsi_dip:rsi<params.buyBelow,
+    channel_break:b.c>earlierHigh,volume_surge:b.v>previousVolumeEma*params.volumeMultiplier
+   };
+   const entry=params.entryJoin==='all'?
+    params.entrySignals.every(rule=>values[rule]):
+    params.entrySignals.some(rule=>values[rule]);
+   const exit=params.exitSignal==='ema_down'?fast<=slow:
+    params.exitSignal==='rsi_recovered'?rsi>=params.sellAbove:b.c<earlierLow;
+   return {entry:ready>=warmup&&entry,exit};
+  }
   return {entry:ready>=warmup&&b.c>earlierHigh,exit:b.c<earlierLow};
  }
  bars.slice(0,calibrationEnd).forEach(observe);

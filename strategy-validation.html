@@ -29,11 +29,11 @@ footer{color:#acc1cd;font-size:13px;margin:20px 0}a{color:#79d7f6}
 <label>Crypto market<select id="pair"><option>BTC/USD</option><option>ETH/USD</option><option>SOL/USD</option><option>XRP/USD</option><option>ADA/USD</option><option>AVAX/USD</option><option>LINK/USD</option><option>DOGE/USD</option><option>LTC/USD</option><option>BCH/USD</option></select></label>
 <label>Stop condition<select id="mode"><option value="duration">Elapsed duration</option><option value="profit">Cumulative net profit target</option></select></label>
 <label id="limitLabel">Duration (days)<input id="limit" type="number" min="1" step="1" value="14"></label>
-<label>Strategy rules<select id="strategy"><option value="auto">Adaptive chart model (experimental)</option><option value="ema">Manual · EMA trend (9/34)</option><option value="rsi">Manual · RSI mean-reversion (14, 30/60)</option><option value="breakout">Manual · 20-bar breakout / 10-bar exit</option></select></label>
-</div><p class="secondary">Adaptive mode tests eight rule sets on the first 40% of this pair's history, including independent discovery and confirmation slices, and then freezes a qualified strategy for the remaining 60%. If none pass after costs, the model will **abstain**. Manual modes remain available for comparison. The run stops on your duration or on realised net profits after completed trades, whichever mode you choose. If history runs out first, the test reports that rather than guessing.</p>
+<label>Agent strategy mode<select id="strategy"><option value="auto">Use / optimise preset strategies</option><option value="invent">Invent my own strategy (experimental)</option><option value="ema">Manual · EMA trend (9/34)</option><option value="rsi">Manual · RSI mean-reversion (14, 30/60)</option><option value="breakout">Manual · 20-bar breakout / 10-bar exit</option></select></label>
+</div><p class="secondary">Preset mode compares eight predefined rules. Invent mode generates its own bounded entry/exit combinations from the earliest 20% of this chart, tests each against a separate 20% confirmation period, then freezes any qualifying hypothesis before the untouched final 60%. Invention is a deterministic rules engine, not an unconstrained AI; it can abstain. Neither mode can approve paper or live broker orders. Manual rules remain available for comparison. The run stops on your duration or on realised net profits after completed trades, whichever mode you choose. If history runs out first, the test reports that rather than guessing.</p>
 <button id="run" type="button" disabled>Run historical validation</button></section>
 <section id="result" aria-live="polite"><h2>Validation results</h2><p class="secondary">Results will appear here once market data has loaded and you run a test.</p></section>
-<footer>Data is an archived historical snapshot, not a live trading feed. Manual tests use 0.5% modelled fees per side; adaptive mode tests Alpaca's published entry-tier taker fee of 0.25% per side and stresses it at 0.5%. GBP outcomes use USD price-change ratios without FX, spreads, liquidity or real slippage. The 80% win-rate goal is measured, never presumed.</footer>
+<footer>Data is an archived historical snapshot, not a live trading feed. Manual tests use 0.5% modelled fees per side; automated research modes test Alpaca's published entry-tier taker fee of 0.25% per side and stresses it at 0.5%. GBP outcomes use USD price-change ratios without FX, spreads, liquidity or real slippage. The 80% win-rate goal is measured, never presumed.</footer>
 </main>
 <script type="module">
 import {checkSnapshot,simulateValidation} from './strategy-validation-core.mjs';
@@ -136,7 +136,7 @@ function recordResearch(model){
 function modelExplanation(model){
  const panel=document.createElement('section');
  panel.style.margin='12px 0';panel.style.border='1px solid #5a7892';
- const h=document.createElement('h2');h.textContent='Chart model · '+model.modelId;
+ const h=document.createElement('h2');h.textContent=(model.strategyMode==='invent'?'Invented chart model':'Preset chart model')+' · '+model.modelId;
  panel.append(h);
  const status=document.createElement('p');
  status.className=model.selected?'good':'warn';
@@ -149,6 +149,16 @@ function modelExplanation(model){
    ' · '+model.behavior.dailyVolatilityPct+'% annualisation-free daily volatility'+
    ' · '+model.behavior.observedPeriodMovePct+'% observed period move.':'Insufficient valid training candles';
  panel.append(profile);
+ if(model.selected?.strategy==='synth'){
+  const rule=document.createElement('p');rule.className='secondary';
+  const p=model.selected.params;
+  rule.textContent='Invented hypothesis: enter when '+p.entrySignals.join(p.entryJoin==='all'?' AND ':' OR ')+
+   '; exit on '+p.exitSignal+'. EMA '+p.fast+'/'+p.slow+
+   ', RSI '+p.period+' ('+p.buyBelow+'/'+p.sellAbove+
+   '), channel '+p.lookback+'/'+p.exitLookback+
+   ', volume threshold '+p.volumeMultiplier+'×. Rules frozen before the holdout replay.';
+  panel.append(rule);
+ }
  const why=document.createElement('p');why.className='secondary';
  const best=model.candidates?.[0];
  why.textContent=best?
@@ -185,14 +195,14 @@ $('run').addEventListener('click',()=>{
    startingBalanceGbp:Number($('balance').value),mode:$('mode').value,
    limit:Number($('limit').value)};
   const choice=$('strategy').value;
-  if(choice==='auto'){
-   const result=validateAdaptive(input);
+  if(choice==='auto'||choice==='invent'){
+   const result=validateAdaptive({...input,strategyMode:choice==='invent'?'invent':'preset'});
    if(result.replay)display(result.replay);
    else {
     $('result').replaceChildren();
-    const title=document.createElement('h2');title.textContent='Adaptive strategy validation';
+    const title=document.createElement('h2');title.textContent=choice==='invent'?'Invented strategy research':'Preset strategy research';
     const info=document.createElement('p');info.className='warn';
-    info.textContent='Historical replay was withheld because no training strategy passed the risk/cost gates. Choose a manual rule to investigate, not to imply actual profitability.';
+    info.textContent='No training hypothesis passed both independent training windows and cost/risk gates. The agent abstained rather than inventing a profitable result.';
     $('result').append(title,info);
    }
    if(result.checker){
@@ -211,6 +221,12 @@ $('run').addEventListener('click',()=>{
   p.textContent='Validation blocked: '+e.message;$('result').append(p);
  }
 });
+// Opening research from a pupil report preselects that chart and mode, never runs orders.
+const requested=new URLSearchParams(location.search);
+const requestedPair=requested.get('pair');
+const requestedMode=requested.get('strategy');
+if([...$('pair').options].some(o=>o.value===requestedPair))$('pair').value=requestedPair;
+if(['auto','invent','ema','rsi','breakout'].includes(requestedMode))$('strategy').value=requestedMode;
 loadPair();
 </script><script src="./journey-nav.js" defer></script>
 </body></html>
