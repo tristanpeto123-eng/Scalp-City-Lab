@@ -80,7 +80,7 @@ test('browser UI exposes both strategies and reports invented rule provenance',a
  const html=await readFile(new URL('./strategy-validation.html',import.meta.url),'utf8');
  assert.match(html,/value="auto"/);
  assert.match(html,/value="invent"/);
- assert.match(html,/strategy-research-session\\.mjs/);
+ assert.match(html,/strategy-research-session\.mjs/);
  assert.match(html,/No independent later-history replay was run/);
  assert.match(html,/Discovery, independent confirmation, and later historical evaluation/);
  assert.match(html,/new URLSearchParams\(location\.search\)/);
