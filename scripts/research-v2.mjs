@@ -5,6 +5,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {Worker,isMainThread,parentPort,workerData} from 'node:worker_threads';
 import {performance} from 'node:perf_hooks';
+import {availableParallelism} from 'node:os';
 import {PAIRS,checkSnapshot,simulateValidation} from '../strategy-validation-core.mjs';
 import {checkMemory,checkParams,selectHistoricalParent,toSimulator} from './run-robot-training.mjs';
 
@@ -153,26 +154,30 @@ function parallel(workerPayload){
     worker.once('exit',code=>{if(!finished)reject(Error('V2 worker exited '+code));});
   });
 }
-export async function evaluateV2All({memory,snapshots,now=Date.now(),workers=V2_POLICY.maxWorkers,
+export async function evaluateV2All({memory,snapshots,now=Date.now(),workers='auto',
  limit=V2_POLICY.candidatesPerSymbol}={}){
   checkMemory(memory);
   if(!snapshots||PAIRS.some(x=>!snapshots[x]))throw Error('V2: all ten charts required');
-  if(!Number.isInteger(workers)||workers<1||workers>8)throw Error('V2: worker limit invalid');
+  if(workers!=='auto'&&(!Number.isInteger(workers)||workers<1||workers>8))
+    throw Error('V2: worker limit invalid');
+  // Short jobs run faster without thread bootstrap/structured clone overhead.
+  const chosen=workers==='auto'?
+    (limit>=96&&availableParallelism()>=4?Math.min(4,availableParallelism()):1):workers;
   const pending=[...PAIRS],reports=[],started=performance.now();
   async function consume(){
     while(pending.length){
       const symbol=pending.shift();
       const args={snapshot:snapshots[symbol],symbol,memory,now,limit};
-      const report=workers===1?evaluateV2Symbol(args):
+      const report=chosen===1?evaluateV2Symbol(args):
         await parallel({args,kind:'research-v2-symbol'});
       reports.push(report);
     }
   }
-  await Promise.all(Array.from({length:Math.min(workers,PAIRS.length)},consume));
+  await Promise.all(Array.from({length:Math.min(chosen,PAIRS.length)},consume));
   reports.sort((a,b)=>PAIRS.indexOf(a.symbol)-PAIRS.indexOf(b.symbol));
   return {schema:V2_POLICY.schema,policy:V2_POLICY,
     generatedAt:new Date(now).toISOString(),elapsedMilliseconds:Math.round(performance.now()-started),
-    workerCount:Math.min(workers,PAIRS.length),symbols:reports,
+    workerCount:Math.min(chosen,PAIRS.length),requestedWorkers:workers,symbols:reports,
     evaluatedCandidates:reports.reduce((n,x)=>n+x.candidateCount,0),
     shortlistedSymbols:reports.filter(x=>x.shortlisted.length>0).map(x=>x.symbol),
     holdoutAccessedForSelection:false,admissionsIssued:0,verifiedForwardGrades:0,
@@ -182,7 +187,8 @@ async function main(){
   const [memoryFile,dataDir,outputFile]=process.argv.slice(2);
   if(!memoryFile||!dataDir||!outputFile)throw Error(
     'USAGE: node scripts/research-v2.mjs <memory.json> <dataDir> <output.json> [workers] [budget]');
-  const workers=Number(process.argv[5]||4),limit=Number(process.argv[6]||36);
+  const workers=!process.argv[5]||process.argv[5]==='auto'?'auto':Number(process.argv[5]);
+  const limit=Number(process.argv[6]||36);
   const memory=JSON.parse(await readFile(memoryFile,'utf8'));
   const snapshots={};
   await Promise.all(PAIRS.map(async symbol=>{
