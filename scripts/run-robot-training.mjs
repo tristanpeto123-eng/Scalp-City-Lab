@@ -358,17 +358,24 @@ async function main(){
  const saved=await persistMemory({token,expectedSha:blobSha,previous:before,next:result.memory});
  const {writeFile,mkdir}=await import('node:fs/promises');
  await mkdir('research-data',{recursive:true});
- const evaluated=result.reports.reduce((sum,r)=>sum+(r.testedParams||0),0);
+ // Measure *executed* historical simulations: normal + stress for every
+ // candidate, separately over each nonoverlapping training fold.
+ const candidates=result.reports.reduce((sum,r)=>sum+(r.testedParams||0),0);
+ const evaluated=result.reports.reduce((sum,r)=>
+   sum+(r.testedParams||0)*(r.chronologicalTrainingWindows||0)*2,0);
  const telemetry={schema:'SCALP_TRAINING_CYCLE_V1',startedAt,completedAt:new Date().toISOString(),
   evaluationDurationMs:Number(elapsedMs.toFixed(3)),
-  candidateEvaluations:evaluated,
+  candidateEvaluations:evaluated,uniqueCandidateConfigurations:candidates,
+  researchFolds:'PRE_HOLDOUT_NONOVERLAPPING_V1',
   evaluationsPerSecond:Number((1000*evaluated/elapsedMs).toFixed(2)),
   newlySavedLessons:result.addedExperiments,
   newTrainingCandles:result.reports.reduce((sum,r)=>sum+(r.newTrainingCandles||0),0),
   totalRewardCredits:result.reports.reduce((sum,r)=>sum+(r.rewardCreditsAwarded||0),0),
   persistence:saved.status,brokerOrders:0,verifiedForwardGrades:0,
   charts:result.reports.map(r=>({symbol:r.symbol,status:r.status,
-   evaluations:r.testedParams||0,newTrainingCandles:r.newTrainingCandles||0,
+   evaluations:(r.testedParams||0)*(r.chronologicalTrainingWindows||0)*2,
+   configurations:r.testedParams||0,folds:r.chronologicalTrainingWindows||0,
+   newTrainingCandles:r.newTrainingCandles||0,
    rewardCredits:r.rewardCreditsAwarded||0,trainingEnd:r.trainingEnd||null,
    snapshotAt:r.snapshotAt||null}))};
  await writeFile('research-data/training-cycle-latest.json',JSON.stringify(telemetry,null,2)+'\n');
