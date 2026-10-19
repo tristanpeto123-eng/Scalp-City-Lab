@@ -98,6 +98,7 @@ class MarketEnv:
         if action not in (0,1):
             raise ValueError('Invalid trading action')
         previous=self.equity(self.bars[self.i]['c'])
+        previous_dd=100*(self.peak-previous)/max(self.peak,1e-9)
         bar=self.bars[self.i+1]
         if action==0 and self.units>0:
             proceeds=self.units*bar['o']*(1-self.slippage)*(1-self.fee)
@@ -114,7 +115,10 @@ class MarketEnv:
         equity=self.equity(bar['c'])
         self.peak=max(self.peak,equity)
         self.max_dd=max(self.max_dd,100*(self.peak-equity)/self.peak)
-        reward=100*math.log(max(equity,1e-9)/max(previous,1e-9))
+        # Net-equity reward plus a small penalty for incremental drawdown.
+        current_dd=100*(self.peak-equity)/self.peak
+        reward=(100*math.log(max(equity,1e-9)/max(previous,1e-9))
+                -.02*max(0.0,current_dd-previous_dd))
         done=self.i>=len(self.bars)-1
         info={'equityGbp':round(equity,4),
               'netProfitGbp':round(equity-self.capital,4),
