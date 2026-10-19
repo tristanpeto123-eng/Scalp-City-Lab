@@ -75,7 +75,7 @@ export function evaluateHistoricalPupil({snapshot,memory,symbol,now=Date.now()}=
    return {parameters:params,normalNetAcrossOverlappingFolds:n(normalNet),
      stressedNetAcrossOverlappingFolds:n(stressedNet),
      profitableFolds,foldsEvaluated,
-     researchRankScore:n(stressedNet-profitableFolds*-0.01),
+     researchRankScore:n(stressedNet+profitableFolds*0.01),
      note:'Overlapping folds are not independent trading samples or admissible paper evidence'};
  });
  tests.sort((a,b)=>b.researchRankScore-a.researchRankScore||
@@ -87,7 +87,7 @@ export function evaluateHistoricalPupil({snapshot,memory,symbol,now=Date.now()}=
    developmentWindow:{start:source.sampleStart,end:new Date(Date.parse(trainingEnd)+900000).toISOString()},
    heldOutQuarantine:{start:new Date(source.bars[sealedHoldoutStart].t).toISOString(),
      end:source.sampleEnd,candles:reservedCandles,
-     inspectedByResearch:false,admissionsAllowed:false},
+     usedForModelSelection:false,admissionsAllowed:false},
    candidatesEvaluated:tests.length,
    bestResearchCandidate:tests[0]?{...tests[0],foldsEvaluated:undefined}:null,
    // All outcomes are based on *development* slices; do not attach grades.
@@ -102,7 +102,7 @@ export function historicalLab({memory,snapshots,now=Date.now()}={}){
    mode:'OFFLINE_HISTORICAL_DEVELOPMENT',source:LAB_POLICY.source,
    researchSnapshotDate:pupils.map(p=>p.snapshotAt).sort().at(-1),
    tenPupils:pupils.length,policy:LAB_POLICY,
-   quarantinedHoldoutNeverRead:true,
+   quarantinedHoldoutNotScored:true,
    admissionCount:0,verifiedForwardGrades:0,brokerOrders:0,
    pupils};
 }
@@ -119,7 +119,7 @@ async function main(){
  await writeFile(outputPath,JSON.stringify(report,null,2)+'\n');
  console.log('HISTORICAL_LAB_COMPLETE '+JSON.stringify({
    pupils:report.tenPupils,folds:report.pupils[0].developmentFoldCount,
-   holdoutNeverRead:report.quarantinedHoldoutNeverRead,
+   holdoutNotScored:report.quarantinedHoldoutNotScored,
    candidates:report.pupils.map(p=>({symbol:p.symbol,tested:p.candidatesEvaluated,
     folds:p.developmentFoldCount,topScore:p.bestResearchCandidate?.researchRankScore??null})),
    admissions:0,orders:0}));
