@@ -11,6 +11,15 @@
     {path:'trading-floor.html',name:'Trading Floor',description:'Monitor admitted traders or run synthetic demo'}
   ];
   const current=location.pathname.split('/').pop()||'index.html';
+  const supportedPupil=/^(BTC|ETH|SOL|XRP|ADA|AVAX|LINK|DOGE|LTC|BCH)USD$/;
+  const rawPupil=new URLSearchParams(location.search).get('pupil');
+  let selectedPupil=supportedPupil.test(String(rawPupil||'').toUpperCase())?rawPupil.toUpperCase():null;
+  const pupilRoutes=new Set(['robot-academy.html','teacher-console.html','trading-floor.html']);
+  const pupilUrl=route=>{
+    const url=new URL('./'+route,location.href);
+    if(selectedPupil&&pupilRoutes.has(route))url.searchParams.set('pupil',selectedPupil);
+    return url.href;
+  };
   // Training Monitor is a subroom of the Academy, not a fifth stage.
   const idx=current==='training-monitor.html'?1:stages.findIndex(s=>s.path===current);
   const active=idx>=0?stages[idx]:null;
@@ -41,15 +50,12 @@
     const track=document.createElement('ol');track.className='sc-workflow-track';
     const shortNames=['Historical Lab','Robot Academy',"Teacher's Office",'Trading Floor'];
     const hints=['Explore past data','Train and compare pupils','Review independent evidence','Watch approved PAPER trials'];
-    const rawPupil=new URLSearchParams(location.search).get('pupil');
-    const pupil=/^(BTC|ETH|SOL|XRP|ADA|AVAX|LINK|DOGE|LTC|BCH)USD$/.test(rawPupil||'')?rawPupil:null;
     for(const [i,stage] of stages.entries()){
       const li=document.createElement('li');
       const a=document.createElement('a');
       const url=new URL(stage.path,location.href);
-      if(pupil&&(stage.path==='teacher-console.html'||stage.path==='trading-floor.html'))
-        url.searchParams.set('pupil',pupil);
-      a.href=url.href;
+      a.href=pupilUrl(stage.path);
+      a.dataset.scPupilTarget=stage.path;
       a.className='sc-workflow-step';
       if(i===idx)a.setAttribute('aria-current','page');
       const num=document.createElement('span');num.className='sc-workflow-num';num.textContent=String(i+1).padStart(2,'0');
@@ -65,7 +71,7 @@
   const dock=document.createElement('aside');dock.className='sc-journey-dock';
   dock.setAttribute('aria-label','Scalp City journey navigation');
   const forward=document.createElement('a');forward.className='sc-journey-quick';
-  forward.href='./'+quick.path;forward.textContent=quick.label+' →';
+  forward.href=pupilUrl(quick.path);forward.textContent=quick.label+' →';
   const toggle=document.createElement('button');
   toggle.type='button';toggle.className='sc-journey-trigger';
   toggle.setAttribute('aria-controls','sc-journey-panel');toggle.setAttribute('aria-expanded','false');
@@ -96,7 +102,7 @@
   const list=document.createElement('ol');list.className='sc-journey-stages';
   for(const [index,stage] of stages.entries()){
     const li=document.createElement('li');
-    const a=document.createElement('a');a.href='./'+stage.path;a.className='sc-journey-stage';
+    const a=document.createElement('a');a.href=pupilUrl(stage.path);a.dataset.scPupilTarget=stage.path;a.className='sc-journey-stage';
     if(current===stage.path)a.setAttribute('aria-current','page');
     const numeral=document.createElement('span');numeral.className='sc-stage-number';numeral.textContent=String(index+1);
     const labels=document.createElement('span');
@@ -113,11 +119,32 @@
   ]){const a=document.createElement('a');a.href=url;a.textContent=label;
     if(current===url.slice(2))a.setAttribute('aria-current','page');extras.append(a);}
   const back=previous?document.createElement('a'):null;
-  if(back){back.href='./'+previous.path;back.className='sc-journey-back';back.textContent='← Previous · '+previous.name;}
+  if(back){back.href=pupilUrl(previous.path);back.className='sc-journey-back';back.textContent='← Previous · '+previous.name;}
   panel.append(top,copy,context,list,advance);
   if(back)panel.append(back);
   panel.append(extras);
   dock.append(forward,toggle,panel);document.body.append(dock);
+  // Keep the selected pupil when moving from a classroom to the examination
+  // and trading dossiers. No local storage, credentials or backend mutation.
+  const syncPupilLinks=()=>{
+    for(const a of document.querySelectorAll('[data-sc-pupil-target]'))
+      a.href=pupilUrl(a.dataset.scPupilTarget);
+    forward.href=pupilUrl(quick.path);
+    advance.href=pupilUrl(quick.path);
+    if(back)back.href=pupilUrl(previous.path);
+  };
+  document.addEventListener('scalp:pupil-selected',event=>{
+    const requested=String(event.detail?.pupil||'').replace('/','').toUpperCase();
+    if(!supportedPupil.test(requested))return;
+    selectedPupil=requested;
+    if(pupilRoutes.has(current)){
+      const url=new URL(location.href);
+      url.searchParams.set('pupil',selectedPupil);
+      history.replaceState(history.state,'',url.pathname+url.search+url.hash);
+    }
+    syncPupilLinks();
+  });
+  syncPupilLinks();
   const setOpen=open=>{
     panel.hidden=!open;toggle.setAttribute('aria-expanded',String(open));
     if(open)close.focus();else toggle.focus();
