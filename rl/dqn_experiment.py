@@ -198,7 +198,7 @@ def train_dqn(bars,*,episodes=5,seed=7,initial_state_dict=None):
       'decisionsPerSecond':round(steps/elapsed,2),
       'virtualClosesPerSecond':round(closed_trades/elapsed,2),
       'gradientUpdatesPerSecond':round(updates/elapsed,2),
-      'marketTimeframe':'15Min',
+      'marketTimeframe':'5Min' if bars[1]['t']-bars[0]['t']==FIVE_MIN_MS else '15Min',
       'cadenceType':'ACCELERATED_HISTORICAL_REPLAY_NOT_REALTIME_1S'}
 
 def evaluate(policy,bars,*,fee=.0025,slippage=.001,strategy='dqn'):
