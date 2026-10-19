@@ -154,7 +154,8 @@ export function validateAdaptive({snapshot,symbol,startingBalanceGbp=50,mode='du
  // First freeze a strategy based only on the earliest 40%; if none
  // passes, abstain rather than manufacturing an 80% win-rate.
  const model=screenChart({snapshot,symbol,startingBalanceGbp,now,strategyMode});
- if(!model.selected)return {status:model.status,model,replay:null,brokerOrders:0};
+ if(!model.selected)return {status:model.status,model,replay:null,brokerOrders:0,
+  predictedGuaranteedProfit:false};
  const replay=simulateValidation({snapshot,symbol,startingBalanceGbp,
   mode,limit,strategy:model.selected.strategy,
   strategyParams:model.selected.params,feePerSideFraction:.0025,now});
