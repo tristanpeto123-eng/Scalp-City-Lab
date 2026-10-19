@@ -7,6 +7,7 @@ on:
       - 'scripts/research-v2.mjs'
       - 'scripts/research-v2-tests.mjs'
       - 'scripts/research-v2-archive.mjs'
+      - 'scripts/research-v2-handoff.mjs'
       - '.github/workflows/research-v2-check.yml'
       - 'docs/SCALP-RESEARCH-V2.md'
 permissions:
@@ -26,6 +27,7 @@ jobs:
         run: |
           node --check scripts/research-v2.mjs
           node --check scripts/research-v2-tests.mjs
+          node --check scripts/research-v2-handoff.mjs
           node --test scripts/research-v2-tests.mjs
           node --test scripts/historical-lab-tests.mjs
           node --test strategy-validation-tests.mjs
@@ -67,9 +69,21 @@ jobs:
             ratio:Number((serial.elapsedMilliseconds/parallel.elapsedMilliseconds).toFixed(3)),
             noOrders:true,identicalResults:true}));
           NODE
+      - name: Checker — export read-only Teacher review queue, never signed admissions
+        run: |
+          node scripts/research-v2-handoff.mjs qualification-results/scalp-research-v2.json qualification-results/scalp-teacher-review-v2.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('qualification-results/scalp-teacher-review-v2.json','utf8'));
+          if(q.paperOrders||q.liveOrders||q.verifiedForwardGrades||q.teacherAutomaticAdmit||
+             q.requiresIndependentAudit!==true)throw Error('Teacher review queue not fail closed');
+          console.log('V2_REVIEW_QUEUE '+q.requestedTotal+' historical candidates, zero admissions');
+          NODE
       - name: Upload development-only candidate evidence (never admissions)
         uses: actions/upload-artifact@v4
         with:
           name: scalp-research-v2-development-only
-          path: qualification-results/scalp-research-v2.json
+          path: |
+            qualification-results/scalp-research-v2.json
+            qualification-results/scalp-teacher-review-v2.json
           retention-days: 30
