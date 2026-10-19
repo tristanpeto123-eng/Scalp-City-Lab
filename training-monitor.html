@@ -35,9 +35,18 @@ table{border-collapse:collapse;width:100%;text-align:left;min-width:660px}th,td{
 <div class="stat"><small>Recent failed workflow runs</small><strong id="failures">—</strong><small>Among last 10 GitHub Actions runs</small></div>
 <div class="stat"><small>Verified forward graduates</small><strong>0 <span class="caption">in research telemetry</span></strong><small>Only separate signed Teacher proof counts</small></div>
 </section>
+<section class="panel" aria-label="Previously recorded research">
+<h2>Saved historical research</h2>
+<p id="archive-note">Checking the archived research ledger…</p>
+<div class="scroller"><table>
+<thead><tr><th>Pupil</th><th>Historical lessons</th><th>Best training net</th><th>Training win rate</th><th>Research XP</th><th>Evidence</th></tr></thead>
+<tbody id="archive-body"><tr><td colspan="6">Loading archived research…</td></tr></tbody>
+</table></div>
+<p class="caption">This separate table uses existing historical training records. These values are not live evaluations, independently validated performance, or account balances.</p>
+</section>
 <section class="panel"><h2>Scheduler and health</h2>
 <p id="schedule">Scheduled research: every 5 minutes (best effort). Market snapshots: every 6 hours. These are configured intervals, not proof of successful execution.</p>
-<p id="runstate">Recent workflow status unavailable.</p><p id="snapshotdate">Last feed snapshot: not reported.</p><p id="publisheddate">Last measured batch: not reported.</p>
+<p id="runstate">Recent workflow status unavailable. <a href="https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/robot-research-training.yml" target="_blank" rel="noopener noreferrer">View GitHub training runs ↗</a></p><p id="snapshotdate">Last feed snapshot: not reported.</p><p id="publisheddate">Last measured batch: not reported.</p>
 </section>
 <section class="panel"><h2>Chronological out-of-sample development</h2>
 <p>The robots train on early historical data. This monitor checks their frozen training selections against a later 40%–80% development period, without feeding those results back into the reward loop. The final 20% remains sealed for independent Teacher assessment.</p>
@@ -53,46 +62,83 @@ table{border-collapse:collapse;width:100%;text-align:left;min-width:660px}th,td{
 <script type="module">
 const $=id=>document.getElementById(id),money=n=>Number.isFinite(n)?(n<0?'−':'')+'£'+Math.abs(n).toFixed(2):'—';
 let lastMonitor=null,lastRoster=null,lastActions=null;
+const actionsUrl='https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/robot-research-training.yml';
 const ago=d=>{const t=Date.parse(d||'');if(!Number.isFinite(t))return 'Unknown';const m=Math.max(0,Math.round((Date.now()-t)/60000));return m<1?'Just now':m+'m ago';};
 const stamp=d=>{const n=Date.parse(d||'');return Number.isFinite(n)?new Date(n).toLocaleString():'Not reported';};
+function fillArchivedResearch(school){
+ const tbody=$('archive-body');tbody.replaceChildren();
+ for(const p of school.pupils){
+  const tr=document.createElement('tr'),leader=p.researchLeader;
+  const labels=[p.symbol,String(p.experiments),money(leader?.trainingNetGbp),
+   Number.isFinite(leader?.trainingWinRatePct)?leader.trainingWinRatePct.toFixed(1)+'%':'—',
+   p.learningCredits?'⭐ '+String(p.learningCredits.points):'Not scored (legacy)',
+   'Historical training only'];
+  for(const label of labels){const td=document.createElement('td');td.textContent=label;tr.append(td);}
+  tbody.append(tr);
+ }
+ $('archive-note').textContent='Verified source: '+school.pupils.length+' chart pupils; last historical TRAINING candle: '+
+   stamp(school.latestTrainingEnd)+'. The following results are saved historical research, not live trading.';
+}
 async function loadPublished(){
  try{
-  const [raw,pupils]=await Promise.all([
-    fetch('./research-data/training-monitor.json?ts='+Date.now(),{cache:'no-store'}),
-    fetch('./research-data/robot-academy.json?ts='+Date.now(),{cache:'no-store'})]);
-  if(!raw.ok||!pupils.ok)throw Error('Published research files unavailable');
-  const data=await raw.json(),school=await pupils.json();
-  if(data.schema!=='SCALP_TRAINING_MONITOR_V1'||data.brokerOrders!==0||data.verifiedForwardGrades!==0||
-    data.trainingOnly!==true||data.outOfSample?.charts?.length!==10||
-    school.schema!=='ROBOT_ACADEMY_RESEARCH_V1'||school.pupils?.length!==10||
-    school.actualBrokerOrders!==0)throw Error('Provenance or research safety check failed');
-  lastMonitor=data;lastRoster=school;
-  const c=data.lastMeasuredCycle;
-  $('eps').textContent=Number.isFinite(c?.evaluationsPerSecond)?c.evaluationsPerSecond.toFixed(2):'—';
-  $('evaluations').textContent=Number.isInteger(c?.candidateEvaluations)?String(c.candidateEvaluations):'—';
-  $('lesson').textContent=data.lastSuccessfulLessonAt?ago(data.lastSuccessfulLessonAt):'None recorded';
-  $('newdata').textContent=Number.isInteger(c?.newTrainingCandles)?String(c.newTrainingCandles):'—';
-  $('ooscount').textContent=data.outOfSample.evaluatedPupils;
-  $('positive').textContent=data.outOfSample.positivePupils;
-  $('deltaCount').textContent=data.outOfSample.improvementMeasuredPupils;
-  $('publisheddate').textContent='Last published measured batch: '+stamp(data.publishedAt)+' ('+ago(data.publishedAt)+')';
+  // The Academy research ledger predates the new monitor. Load it even when
+  // the first Actions telemetry report has not yet been published.
+  const pupils=await fetch('./research-data/robot-academy.json?ts='+Date.now(),{cache:'no-store'});
+  if(!pupils.ok)throw Error('Academy research ledger HTTP '+pupils.status);
+  const school=await pupils.json();
+  if(school.schema!=='ROBOT_ACADEMY_RESEARCH_V1'||school.source!=='GITHUB_PERSISTED_HISTORICAL_TRAINING'||
+     school.actualBrokerOrders!==0||school.verifiedForwardGrades!==0||
+     school.pupils?.length!==10||new Set(school.pupils.map(p=>p.symbol)).size!==10)
+    throw Error('Untrusted Academy research source');
+  lastRoster=school;
+  fillArchivedResearch(school);
+  let data=null,monitorReason='First measured training report has not been published';
+  try{
+    const raw=await fetch('./research-data/training-monitor.json?ts='+Date.now(),{cache:'no-store'});
+    if(!raw.ok)throw Error('monitor HTTP '+raw.status);
+    data=await raw.json();
+    if(data.schema!=='SCALP_TRAINING_MONITOR_V1'||data.brokerOrders!==0||
+      data.verifiedForwardGrades!==0||data.trainingOnly!==true||
+      data.outOfSample?.charts?.length!==10)
+      throw Error('Monitor provenance rejected');
+    if(!data.lastMeasuredCycle)monitorReason='Waiting for the first measured GitHub Actions training run';
+  }catch(err){data=null;monitorReason=String(err.message||err);}
+  lastMonitor=data?.lastMeasuredCycle?data:null;
+  const c=lastMonitor?.lastMeasuredCycle;
+  $('eps').textContent=Number.isFinite(c?.evaluationsPerSecond)?c.evaluationsPerSecond.toFixed(2):'Not yet measured';
+  $('evaluations').textContent=Number.isInteger(c?.candidateEvaluations)?String(c.candidateEvaluations):'Not yet measured';
+  $('lesson').textContent=data?.lastSuccessfulLessonAt?ago(data.lastSuccessfulLessonAt):'No new lesson yet';
+  $('newdata').textContent=Number.isInteger(c?.newTrainingCandles)?String(c.newTrainingCandles):'Not yet measured';
+  const verified=lastMonitor?.outOfSample;
+  $('ooscount').textContent=verified?verified.evaluatedPupils:'Not measured';
+  $('positive').textContent=verified?verified.positivePupils:'Not measured';
+  $('deltaCount').textContent=verified?verified.improvementMeasuredPupils:'Not measured';
+  $('publisheddate').textContent=lastMonitor?
+    'Last published measured batch: '+stamp(lastMonitor.publishedAt)+' ('+ago(lastMonitor.publishedAt)+')':
+    'Research ledger loaded. Training monitor: '+monitorReason+'.';
   const dates=c?.charts?.map(x=>x.snapshotAt).filter(Boolean)||[];
-  $('snapshotdate').textContent='Most recent source snapshot in evaluated run: '+(dates.length?stamp(dates.sort().at(-1)):'Not reported');
+  $('snapshotdate').textContent='Most recent source snapshot in evaluated run: '+
+    (dates.length?stamp(dates.sort().at(-1)):'Not yet measured');
   const tbody=$('pupils');tbody.replaceChildren();
-  for(const row of data.outOfSample.charts){
-   const p=school.pupils.find(x=>x.symbol===row.symbol),tr=document.createElement('tr');
-   const vals=[row.symbol,String(p?.learningCredits?.points??0),
-      money(row.netGbp),money(row.stressNetGbp),
-      row.improvementGbp===null?'No new comparable evidence':money(row.improvementGbp),
-      row.status==='OBSERVED_DEVELOPMENT_OOS'?'Development only':'Not evaluated'];
+  const map=new Map((verified?.charts||[]).map(row=>[row.symbol,row]));
+  for(const p of school.pupils){
+   const row=map.get(p.symbol);
+   const tr=document.createElement('tr'),vals=[
+    p.symbol,p.learningCredits?'⭐ '+String(p.learningCredits.points):'Not scored',
+    money(row?.netGbp),money(row?.stressNetGbp),
+    Number.isFinite(row?.improvementGbp)?money(row.improvementGbp):'No comparable evidence',
+    row?.status==='OBSERVED_DEVELOPMENT_OOS'?'Development only':'Awaiting measurement'];
    for(const value of vals){const td=document.createElement('td');td.textContent=value;tr.append(td);}
    tbody.append(tr);
   }
  }catch(err){
-  lastMonitor=null;$('eps').textContent=$('evaluations').textContent=$('lesson').textContent=$('newdata').textContent='Unavailable';
+  lastMonitor=null;lastRoster=null;
+  $('eps').textContent=$('evaluations').textContent=$('lesson').textContent=$('newdata').textContent='Unavailable';
   $('ooscount').textContent=$('positive').textContent=$('deltaCount').textContent='—';
-  $('publisheddate').textContent='Monitor evidence unavailable: '+err.message;
-  $('pupils').textContent='No valid published measurements. No results are assumed.';
+  $('publisheddate').textContent='Research ledger unavailable: '+String(err.message||err);
+  $('archive-note').textContent='Cannot verify saved historical data.';
+  $('archive-body').replaceChildren();
+  $('pupils').replaceChildren();
  }
  updateHealth();
 }
@@ -109,10 +155,11 @@ async function loadActions(){
   const detail=latest?(latest.status==='completed'?(latest.conclusion||'unknown'):latest.status):'No recent runs';
   $('runstate').replaceChildren();
   $('runstate').append('Most recent scheduled/manual workflow: '+detail+' · '+(latest?stamp(latest.created_at):'—')+' · ');
-  if(latest?.html_url){const a=document.createElement('a');a.href=latest.html_url;a.textContent='Inspect GitHub run ↗';a.rel='noopener noreferrer';a.target='_blank';$('runstate').append(a);}
+  const a=document.createElement('a');a.href=latest?.html_url||actionsUrl;a.textContent=latest?.html_url?'Inspect GitHub run ↗':'Open training workflow ↗';a.rel='noopener noreferrer';a.target='_blank';$('runstate').append(a);
  }catch(err){
   lastActions=null;$('failures').textContent='Unknown';
-  $('runstate').textContent='Workflow status unavailable: '+err.message;
+  $('runstate').replaceChildren();$('runstate').append('Workflow status unavailable: '+err.message+' · ');
+  const a=document.createElement('a');a.href=actionsUrl;a.textContent='Open GitHub Actions ↗';a.target='_blank';a.rel='noopener noreferrer';$('runstate').append(a);
  }
  updateHealth();
 }
@@ -121,7 +168,7 @@ function updateHealth(){
  const latest=lastActions?.[0],age=Date.now()-Date.parse(lastMonitor?.publishedAt||'');
  let status='UNVERIFIED',cls='status warn';
  if(latest?.conclusion==='failure'){status='WORKFLOW FAILURE';cls='status bad';}
- else if(!lastMonitor){status='NO MEASURED REPORT';cls='status warn';}
+ else if(!lastMonitor){status=lastRoster?'AWAITING FIRST MEASURED RUN':'NO VERIFIED RESEARCH DATA';cls='status warn';}
  else if(Number.isFinite(age)&&age>45*60000){status='STALE MEASURED REPORT';cls='status warn';}
  else if(latest?.conclusion==='success'){status='LAST RUN OK · RESEARCH ONLY';cls='status good';}
  $('health').className=cls;$('health').textContent=status;
