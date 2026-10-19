@@ -136,10 +136,12 @@ test('page exposes adaptive option and reports rejection without placing orders'
  const page=await readFile(new URL('./strategy-validation.html',import.meta.url),'utf8');
  assert.match(page,/value="auto"/);
  assert.match(page,/validateAdaptive/);
- assert.match(page,/modelExplanation/);
- assert.match(page,/NO QUALIFYING STRATEGY/);
- assert.match(page,/localStorage/);
- assert.match(page,/same historical window not double-counted/);
+ assert.match(page,/renderCandidates/);
+ assert.match(page,/No candidate passed all historical training/);
+ assert.match(page,/No later-history replay was selected/);
+ assert.match(page,/fetch\('\.\/research-data\/robot-academy\.json'/);
+ assert.match(page,/researchOnly:true/);
+ assert.doesNotMatch(page,/localStorage/);
  assert.doesNotMatch(page,/paperOrder\s*\(/);
  assert.doesNotMatch(page,/APCA-API-SECRET-KEY/);
 });
