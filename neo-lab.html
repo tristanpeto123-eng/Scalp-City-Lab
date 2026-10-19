@@ -1,0 +1,76 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEO · Scalp City Pattern Memory</title>
+<style>
+:root{font:15px/1.5 system-ui,sans-serif;background:#081321;color:#edf8ff;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#24405d,#081321 65%)}
+main{max-width:1130px;margin:auto;padding:25px clamp(15px,4vw,38px)}
+a{color:#84ded1}h1{font-size:clamp(2.3rem,5vw,4rem);line-height:1.06;letter-spacing:-.05em;margin:13px 0}
+h1 em{color:#83dfd2;font-style:normal}p{color:#bdd1e0;max-width:840px}
+.card{background:#172c45;border:1px solid #365978;border-radius:16px;padding:20px;margin:15px 0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat{background:#0e2239;padding:15px;border-radius:11px}
+.stat small{display:block;color:#a7c1d0}.stat strong{font-size:1.55rem}
+table{border-collapse:collapse;width:100%;text-align:left}
+th,td{border-bottom:1px solid #3a5467;padding:10px}
+th{font-size:.81rem;color:#a4becf}td{font-variant-numeric:tabular-nums}
+.scroll{overflow:auto}button{background:#82e0d2;color:#102b36;border:0;padding:10px 16px;border-radius:9px;font-weight:800}
+.warning{color:#efd195}
+@media(max-width:650px){.stats{grid-template-columns:1fr 1fr}}
+</style></head><body><main>
+<nav><a href="./robot-academy.html">← Robot Academy</a> · <a href="./market-replay-5m.html">5m Replay</a> · <a href="./training-monitor.html">Training Monitor</a></nav>
+<h1>Meet <em>NEO</em></h1>
+<p>One separate pattern-memory research agent for ten authentic five-minute crypto charts. NEO retains timestamped, normalised OHLCV pattern signatures and searches similar earlier examples. It is not a visual neural network that remembers every pixel.</p>
+<div class="stats">
+<div class="stat"><small>Charts recognised</small><strong id="charts">—</strong></div>
+<div class="stat"><small>Historic patterns retained</small><strong id="patterns">—</strong></div>
+<div class="stat"><small>New valid patterns this run</small><strong id="fresh">—</strong></div></div>
+<section class="card"><h2>Research memory and analogue recognition</h2>
+<div class="scroll"><table><thead><tr><th>Chart</th><th>Retained patterns</th><th>Latest historical analogue</th><th>Nearest matches</th><th>Pattern agreement</th></tr></thead>
+<tbody id="rows"><tr><td colspan="5">No published NEO evidence yet.</td></tr></tbody></table></div></section>
+<div class="card"><h2>Learning and graduation</h2>
+<p>NEO's past-labelled patterns are restricted to the original training boundary. Previously reserved validation or sealed holdout candles cannot silently become training labels when the source window moves.</p>
+<p>Each pupil continues learning from its research checkpoint. A candidate can be archived as an immutable version for external paper evaluation; the learner remains free to improve. NEO cannot grade pupils, authorize trading-floor promotions or send orders.</p>
+<button id="refresh">Refresh published evidence</button>
+<p id="status" class="warning" role="status">Checking independent memory branch…</p></div>
+<p><small>Historical pattern agreement is not a calibrated probability, prediction, trade instruction or demonstrated trading profitability. This page is read-only.</small></p>
+</main><script>
+const $=id=>document.getElementById(id);
+const uri='https://raw.githubusercontent.com/tristanpeto123-eng/Scalp-City-Lab/neo-learning-memory/patterns/latest.json';
+async function refresh(){
+ $('status').textContent='Checking audited NEO memory…';
+ try{
+  const response=await fetch(uri+'?t='+Date.now(),{cache:'no-store',credentials:'omit'});
+  if(!response.ok)throw Error('No published NEO memory yet (HTTP '+response.status+')');
+  const d=await response.json();
+  if(d.schema!=='SCALP_NEO_STATUS_V1'||d.name!=='NEO'||d.trainingOnly!==true||
+     d.finalHoldoutTouched!==false||d.paperOrders!==0||d.liveOrders!==0||d.teacherGrades!==0||
+     d.symbols!==10||!Array.isArray(d.memory)||d.memory.length!==10||
+     !Array.isArray(d.predictionsOnEligibleTrainingHistory)||d.predictionsOnEligibleTrainingHistory.length!==10||
+     !Number.isSafeInteger(d.memorizedLabeledPatterns)||d.memorizedLabeledPatterns<0)
+     throw Error('NEO source lineage rejected');
+  $('charts').textContent=String(d.symbols);
+  $('patterns').textContent=d.memorizedLabeledPatterns.toLocaleString();
+  $('fresh').textContent=d.newPatternsThisRun.toLocaleString();
+  const rows=$('rows');rows.replaceChildren();
+  for(const state of d.memory){
+   const p=d.predictionsOnEligibleTrainingHistory.find(x=>x.symbol===state.symbol);
+   const tr=document.createElement('tr');
+   const values=[state.symbol,String(state.patterns),
+     p?.status==='HISTORICAL_ANALOGUE_ONLY'?p.analogueSignal+' · training only':'Insufficient historical matches',
+     String(p?.matched??0),
+     Number.isFinite(p?.patternAgreement)?Math.round(p.patternAgreement*100)+'%':'—'];
+   for(const val of values){let td=document.createElement('td');td.textContent=val;tr.append(td);}
+   rows.append(tr);
+  }
+  $('status').textContent='NEO memory last published '+new Date(d.generatedAt).toLocaleString()+
+    '. These observations come from eligible historical training periods, not live PAPER fills.';
+ }catch(err){
+  $('status').textContent='NEO has no verified published result: '+String(err.message||err);
+  for(const k of ['charts','patterns','fresh'])$(k).textContent='Not measured';
+  $('rows').textContent='No trusted pattern memory available. No results are assumed.';
+ }
+}
+$('refresh').onclick=refresh;
+refresh();setInterval(refresh,60000);
+</script></body></html>
