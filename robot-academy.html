@@ -158,7 +158,9 @@ function render(){
  const actionLinks=document.createElement('p');actionLinks.className='note';
  for(const [name,route] of [
   ['Teacher examination','./teacher-console.html?pupil='+encodeURIComponent(p.symbol.replace('/',''))],
-  ['Trading-floor dossier','./trading-floor.html?pupil='+encodeURIComponent(p.symbol.replace('/',''))]
+  ['Trading-floor dossier','./trading-floor.html?pupil='+encodeURIComponent(p.symbol.replace('/',''))],
+  ['Invent strategy','./strategy-validation.html?pair='+encodeURIComponent(p.symbol)+'&strategy=invent'],
+  ['Preset research','./strategy-validation.html?pair='+encodeURIComponent(p.symbol)+'&strategy=auto']
  ]){
    const link=document.createElement('a');link.href=route;link.textContent=name+' ↗';
    link.style.marginRight='14px';actionLinks.append(link);

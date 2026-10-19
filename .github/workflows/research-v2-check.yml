@@ -1,0 +1,90 @@
+name: Scalp Research V2 — Checker and offline evaluation
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/research-v2.mjs'
+      - 'scripts/research-v2-tests.mjs'
+      - 'scripts/research-v2-archive.mjs'
+      - 'scripts/research-v2-handoff.mjs'
+      - '.github/workflows/research-v2-check.yml'
+      - 'docs/SCALP-RESEARCH-V2.md'
+permissions:
+  contents: read
+jobs:
+  v2-checker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Checker G0 — ensure parsable, deterministic and broker-free
+        run: |
+          node --check scripts/research-v2.mjs
+          node --check scripts/research-v2-tests.mjs
+          node --check scripts/research-v2-handoff.mjs
+          node --test scripts/research-v2-tests.mjs
+          node --test scripts/historical-lab-tests.mjs
+          node --test strategy-validation-tests.mjs
+      - name: Load independently archived training-only memory
+        uses: actions/checkout@v4
+        with:
+          ref: scalp-learning-memory
+          path: research-memory
+          persist-credentials: false
+      - name: Checker G1 — run offline 10-market research, NO secrets or broker orders
+        run: |
+          mkdir -p qualification-results
+          node scripts/research-v2.mjs research-memory/scalp-learning/history.json validation-data qualification-results/scalp-research-v2.json auto 36
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r=JSON.parse(fs.readFileSync('qualification-results/scalp-research-v2.json','utf8'));
+          if(r.schema!=='SCALP_RESEARCH_V2_CANDIDATES'||r.symbols.length!==10||
+             r.evaluatedCandidates!==360||r.paperOrders!==0||r.liveOrders!==0||
+             r.admissionsIssued!==0||r.verifiedForwardGrades!==0||
+             r.holdoutAccessedForSelection!==false||
+             r.symbols.some(s=>s.sealedHoldout.usedForSelection||s.brokerOrders||s.teacherAdmission)){
+            throw Error('SCALP V2 fail-closed research check failed');
+          }
+          console.log('CHECKER_V2: '+r.evaluatedCandidates+' offline candidate evaluations; no broker orders; holdouts quarantined');
+          NODE
+      - name: Checker benchmark — compare identical serial and parallel candidate results
+        run: |
+          node scripts/research-v2.mjs research-memory/scalp-learning/history.json validation-data qualification-results/scalp-research-v2-serial.json 4 36
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const serial=JSON.parse(fs.readFileSync('qualification-results/scalp-research-v2.json','utf8'));
+          const parallel=JSON.parse(fs.readFileSync('qualification-results/scalp-research-v2-serial.json','utf8'));
+          if(serial.workerCount!==1)throw Error('Auto workload mode should avoid thread overhead');
+          if(JSON.stringify(parallel.symbols)!==JSON.stringify(serial.symbols))
+            throw Error('Serial vs parallel candidate result mismatch');
+          console.log('V2_BENCHMARK '+JSON.stringify({
+            candidateCount:serial.evaluatedCandidates,
+            serialMs:serial.elapsedMilliseconds,
+            parallelMs:parallel.elapsedMilliseconds,
+            ratio:Number((serial.elapsedMilliseconds/parallel.elapsedMilliseconds).toFixed(3)),
+            noOrders:true,identicalResults:true}));
+          NODE
+      - name: Checker — export read-only Teacher review queue, never signed admissions
+        run: |
+          node scripts/research-v2-handoff.mjs qualification-results/scalp-research-v2.json qualification-results/scalp-teacher-review-v2.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('qualification-results/scalp-teacher-review-v2.json','utf8'));
+          if(q.paperOrders||q.liveOrders||q.verifiedForwardGrades||q.teacherAutomaticAdmit||
+             q.requiresIndependentAudit!==true)throw Error('Teacher review queue not fail closed');
+          console.log('V2_REVIEW_QUEUE '+q.requestedTotal+' historical candidates, zero admissions');
+          NODE
+      - name: Upload development-only candidate evidence (never admissions)
+        uses: actions/upload-artifact@v4
+        with:
+          name: scalp-research-v2-development-only
+          path: |
+            qualification-results/scalp-research-v2.json
+            qualification-results/scalp-teacher-review-v2.json
+          retention-days: 30

@@ -4,6 +4,7 @@
 // doubled modelled fees, last 60% remains untouched until one strategy is frozen.
 // Never promote validation-period returns into the candidate selector.
 import {PAIRS,checkSnapshot,simulateValidation} from './strategy-validation-core.mjs';
+import {inventCandidates,INVENT_VERSION} from './strategy-free-discovery.mjs';
 export const AUTO_MODEL_VERSION='CHART_AUTO_RESEARCH_V1';
 export const AUTO_CANDIDATES=Object.freeze([
  {strategy:'ema',params:{fast:5,slow:21},label:'EMA short 5/21'},
@@ -66,6 +67,7 @@ function describeCandidate(candidate,first,second,stress){
   strategy:candidate.strategy,params:{...candidate.params},label:candidate.label,
   method:candidate.strategy==='ema'?'Trend-following moving-average momentum':
     candidate.strategy==='rsi'?'Countertrend RSI pullback/recovery':
+    candidate.strategy==='synth'?'Invented, auditable composite entry/exit rules':
     'Prior-bar price channel momentum with trailing exit',
   discovery:{closedTrades:first.closedTrades,netGbp:first.realizedNetProfitGbp,
     winRatePct:first.winRatePct,maxDrawdownPct:first.maxDrawdownPct},
@@ -77,8 +79,9 @@ function describeCandidate(candidate,first,second,stress){
  };
 }
 export function screenChart({
- snapshot,symbol,startingBalanceGbp=50,now=Date.now()
+ snapshot,symbol,startingBalanceGbp=50,now=Date.now(),strategyMode='preset'
 }={}){
+ if(!['preset','invent'].includes(strategyMode))throw Error('Unknown strategy creation mode');
  if(!PAIRS.includes(symbol))throw Error('Unknown crypto chart');
  // Uses the same independent baseline/data vetting as every manual replay.
  const source=checkSnapshot(snapshot,symbol,now);
@@ -88,13 +91,15 @@ export function screenChart({
  const behavior=chartBehavior(snapshot.bars.slice(0,confirmationEnd));
  const modelId='CHART_'+symbol.replace('/','');
  if(firstEnd<480||confirmationEnd-firstEnd<480){
-  return {status:'INSUFFICIENT_INDEPENDENT_TRAINING',modelId,symbol,
+  return {status:'INSUFFICIENT_INDEPENDENT_TRAINING',modelId,symbol,strategyMode,
    behavior,selected:null,candidates:[],evidence:'No strategy may be selected from a short history',
    outerHoldoutIntact:true};
  }
  const discovery=limitedSnapshot(snapshot,snapshot.bars.slice(0,firstEnd));
  const confirmation=limitedSnapshot(snapshot,snapshot.bars.slice(firstEnd,confirmationEnd));
- const results=AUTO_CANDIDATES.map(candidate=>{
+ // Invention sees only the earliest discovery slice, never confirmation or holdout.
+ const hypotheses=strategyMode==='invent'?inventCandidates(discovery.bars):AUTO_CANDIDATES;
+ const results=hypotheses.map(candidate=>{
   const first=windowRun(discovery,symbol,startingBalanceGbp,candidate,.0025,now);
   const second=windowRun(confirmation,symbol,startingBalanceGbp,candidate,.0025,now);
   const stress=windowRun(confirmation,symbol,startingBalanceGbp,candidate,.005,now);
@@ -113,8 +118,11 @@ export function screenChart({
   {agent:'Researcher',method:'Profile trend, volatility and range on the first 40% ONLY',
     evidence:behavior.regime+'; '+behavior.observedPeriodMovePct+'% period move; '+behavior.dailyVolatilityPct+'% daily volatility',
     decision:'Descriptive observations, not a price forecast'},
-  {agent:'Strategy Designer',method:'Try eight fixed rule sets independently on this exact pair',
-    evidence:results.length+' candidates across EMA, RSI and Donchian breakout',
+  {agent:'Strategy Designer',method:strategyMode==='invent'?
+    'Compose original bounded entry/exit rule hypotheses from early chart data':
+    'Try eight fixed rule sets independently on this exact pair',
+    evidence:results.length+(strategyMode==='invent'?
+      ' independently generated composite candidates':' candidates across EMA, RSI and Donchian breakout'),
     decision:selected?selected.label+' passed both internal windows':'No strategy demonstrated sufficiently positive after-cost results'},
   {agent:'Checker',method:'Two disjoint training windows, plus doubled-cost confirmation stress',
     evidence:stats?stats.closedTrades+' confirmation closes; net £'+stats.netGbp:'No confirmation data',
@@ -124,8 +132,8 @@ export function screenChart({
     decision:selected?'Allow unseen historical replay only':'ABSTAIN; no live or paper broker orders'}
  ];
  return {
-  modelId,symbol,version:AUTO_MODEL_VERSION,status,selected,
-  behavior,candidates:ranked,
+  modelId,symbol,version:strategyMode==='invent'?INVENT_VERSION:AUTO_MODEL_VERSION,
+  strategyMode,status,selected,behavior,candidates:ranked,
   trainingWindows:{
    discovery:{start:discovery.bars[0].t,end:discovery.bars.at(-1).t,count:discovery.bars.length},
    confirmation:{start:confirmation.bars[0].t,end:confirmation.bars.at(-1).t,count:confirmation.bars.length},
@@ -134,17 +142,20 @@ export function screenChart({
   outerHoldoutIntact:true,
   usesOtherPairsTraining:false,
   scoreDerivedFromOuterEvaluation:false,
-  learningType:'TRAINING_ONLY_RULE_SEARCH_NOT_NEURAL_AI',
+  learningType:strategyMode==='invent'?
+   'TRAINING_ONLY_COMPOSITE_RULE_INVENTION_NOT_NEURAL_AI':
+   'TRAINING_ONLY_RULE_SEARCH_NOT_NEURAL_AI',
   evidence:'Same historical dataset tested once per candidate; repeated/overlapping windows are not independent forward proof',
   explanations
  };
 }
 export function validateAdaptive({snapshot,symbol,startingBalanceGbp=50,mode='duration',
- limit=14,now=Date.now()}={}){
+ limit=14,now=Date.now(),strategyMode='preset'}={}){
  // First freeze a strategy based only on the earliest 40%; if none
  // passes, abstain rather than manufacturing an 80% win-rate.
- const model=screenChart({snapshot,symbol,startingBalanceGbp,now});
- if(!model.selected)return {status:model.status,model,replay:null,brokerOrders:0};
+ const model=screenChart({snapshot,symbol,startingBalanceGbp,now,strategyMode});
+ if(!model.selected)return {status:model.status,model,replay:null,brokerOrders:0,
+  predictedGuaranteedProfit:false};
  const replay=simulateValidation({snapshot,symbol,startingBalanceGbp,
   mode,limit,strategy:model.selected.strategy,
   strategyParams:model.selected.params,feePerSideFraction:.0025,now});

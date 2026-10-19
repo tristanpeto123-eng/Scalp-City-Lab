@@ -1,0 +1,246 @@
+"""Offline DQN historical experiment; no orders, admissions or grades."""
+from __future__ import annotations
+import argparse
+import hashlib
+import io
+import json
+import math
+import random
+import time
+from collections import deque
+from datetime import datetime
+from pathlib import Path
+import numpy as np
+import torch
+from torch import nn
+
+SYMBOLS = ('BTC/USD','ETH/USD','SOL/USD','XRP/USD','ADA/USD',
+           'AVAX/USD','LINK/USD','DOGE/USD','LTC/USD','BCH/USD')
+PERIOD_MS = 900_000
+WARMUP = 32
+
+def validate_snapshot(data, now_ms=None):
+    if (data.get('symbol') not in SYMBOLS or data.get('timeframe') != '15Min'
+            or data.get('source') != 'ALPACA_KRAKEN_US_US-1'):
+        raise ValueError('Untrusted 15-minute historical source')
+    rows=data.get('bars')
+    if not isinstance(rows,list) or not 2400<=len(rows)<=20000:
+        raise ValueError('Require 2400-20000 completed candles')
+    now_ms=now_ms if now_ms is not None else int(time.time()*1000)
+    prior=None
+    clean=[]
+    for row in rows:
+        try:
+            stamp=datetime.fromisoformat(row['t'].replace('Z','+00:00'))
+            if stamp.tzinfo is None:
+                raise ValueError('Unzoned timestamp')
+            t=int(stamp.timestamp()*1000)
+            o,h,l,c,v=(float(row[k]) for k in ('o','h','l','c','v'))
+        except (KeyError,TypeError,ValueError,OverflowError) as exc:
+            raise ValueError('Malformed candle') from exc
+        if (not all(map(math.isfinite,(o,h,l,c,v))) or
+            min(o,h,l,c)<=0 or v<0 or h<max(o,c,l) or l>min(o,c,h) or
+                (prior is not None and t-prior!=PERIOD_MS)):
+            raise ValueError('Invalid or noncontiguous candle')
+        prior=t
+        clean.append({'t':t,'o':o,'h':h,'l':l,'c':c,'v':v})
+    if clean[-1]['t']+PERIOD_MS>now_ms-30000:
+        raise ValueError('Incomplete or future bar')
+    if sum(x['v']==0 for x in clean)/len(clean)>.4:
+        raise ValueError('Insufficient volume coverage')
+    return clean
+
+def split_development(bars):
+    """Train first 60%, validate next 20%; never pass sealed final 20% to model."""
+    n=len(bars)
+    train_end,dev_end=int(.6*n),int(.8*n)
+    if train_end<300 or dev_end-train_end<=WARMUP+2:
+        raise ValueError('Insufficient development candles')
+    return bars[:train_end],bars[train_end:dev_end],{
+        'totalCandles':n,'trainCandles':train_end,
+        'validationCandles':dev_end-train_end,'sealedHoldoutCandles':n-dev_end,
+        'holdoutStart':bars[dev_end]['t'],'sealedHoldoutTouched':False}
+
+class MarketEnv:
+    """Gymnasium-style API, action 0=FLAT, 1=LONG; maximum half cash exposure.
+
+    Observation uses only completed candle t. Trading happens at t+1 open,
+    reward is marked-to-market equity at t+1 close.
+    """
+    def __init__(self,bars,fee=.0025,slippage=.001,capital=50.0):
+        if len(bars)<=WARMUP+2 or not 0<=fee<=.02 or not 0<=slippage<=.02:
+            raise ValueError('Invalid trading environment')
+        self.bars,self.fee,self.slippage=bars,fee,slippage
+        self.capital=capital
+        self.reset()
+    def reset(self,*,seed=None,options=None):
+        self.i,self.cash,self.units=WARMUP,self.capital,0.0
+        self.entry_cost,self.peak,self.max_dd=0.0,self.capital,0.0
+        self.trades,self.wins=0,0
+        return self.observation(),{}
+    def equity(self,price):
+        return self.cash+self.units*price*(1-self.slippage)*(1-self.fee)
+    def observation(self):
+        b=self.bars[self.i]
+        segment=self.bars[self.i-24:self.i+1]
+        prices=np.array([x['c'] for x in segment],dtype=np.float64)
+        returns=np.diff(np.log(prices))
+        volumes=np.array([x['v'] for x in segment],dtype=np.float64)
+        features=[
+            returns[-1]*100,returns[-4:].mean()*100,
+            returns[-16:].mean()*100,returns[-16:].std()*100,
+            (b['c']-b['o'])/b['o']*100,(b['h']-b['l'])/b['c']*100,
+            math.log1p(b['v'])-np.log1p(volumes).mean(),
+            1.0 if self.units>0 else 0.0,
+            (self.peak-self.equity(b['c']))/max(self.peak,1e-9)]
+        return np.clip(np.array(features,dtype=np.float32),-10,10)
+    def step(self,action):
+        if action not in (0,1):
+            raise ValueError('Invalid trading action')
+        previous=self.equity(self.bars[self.i]['c'])
+        previous_dd=100*(self.peak-previous)/max(self.peak,1e-9)
+        bar=self.bars[self.i+1]
+        if action==0 and self.units>0:
+            proceeds=self.units*bar['o']*(1-self.slippage)*(1-self.fee)
+            self.cash+=proceeds
+            self.trades+=1
+            self.wins+=proceeds>self.entry_cost
+            self.units,self.entry_cost=0.0,0.0
+        elif action==1 and self.units==0:
+            notional=(self.cash*.5)/(1+self.fee)
+            self.units=notional/(bar['o']*(1+self.slippage))
+            self.entry_cost=notional*(1+self.fee)
+            self.cash-=self.entry_cost
+        self.i+=1
+        equity=self.equity(bar['c'])
+        self.peak=max(self.peak,equity)
+        self.max_dd=max(self.max_dd,100*(self.peak-equity)/self.peak)
+        # Net-equity reward plus a small penalty for incremental drawdown.
+        current_dd=100*(self.peak-equity)/self.peak
+        reward=(100*math.log(max(equity,1e-9)/max(previous,1e-9))
+                -.02*max(0.0,current_dd-previous_dd))
+        done=self.i>=len(self.bars)-1
+        info={'equityGbp':round(equity,4),
+              'netProfitGbp':round(equity-self.capital,4),
+              'maxDrawdownPct':round(self.max_dd,4),
+              'closedTrades':self.trades,'wins':self.wins,
+              'openPosition':self.units>0}
+        return self.observation(),float(reward),done,False,info
+
+class QNetwork(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.net=nn.Sequential(nn.Linear(9,64),nn.ReLU(),
+                               nn.Linear(64,64),nn.ReLU(),nn.Linear(64,2))
+    def forward(self,x):
+        return self.net(x)
+
+def train_dqn(bars,*,episodes=5,seed=7):
+    if not 1<=episodes<=50:
+        raise ValueError('Episodes must be 1-50')
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.set_num_threads(1)
+    env=MarketEnv(bars)
+    policy,target=QNetwork(),QNetwork()
+    target.load_state_dict(policy.state_dict())
+    optimizer=torch.optim.Adam(policy.parameters(),lr=.0005)
+    replay=deque(maxlen=20000)
+    steps,updates=0,0
+    epsilon_span=max(1,(len(bars)-WARMUP-1)*episodes*.75)
+    for _ in range(episodes):
+        obs,_=env.reset()
+        done=False
+        while not done:
+            epsilon=.05+.95*max(0.0,1.0-steps/epsilon_span)
+            if random.random()<epsilon:
+                action=random.randrange(2)
+            else:
+                with torch.no_grad():
+                    action=int(policy(torch.from_numpy(obs)).argmax().item())
+            next_obs,reward,done,_,_=env.step(action)
+            replay.append((obs,action,reward,next_obs,done))
+            obs=next_obs
+            steps+=1
+            if len(replay)>=64 and steps%4==0:
+                batch=random.sample(replay,64)
+                states=torch.from_numpy(np.stack([x[0] for x in batch]))
+                acts=torch.tensor([x[1] for x in batch]).long().unsqueeze(1)
+                rewards=torch.tensor([x[2] for x in batch],dtype=torch.float32)
+                next_states=torch.from_numpy(np.stack([x[3] for x in batch]))
+                dones=torch.tensor([x[4] for x in batch],dtype=torch.float32)
+                chosen=policy(states).gather(1,acts).squeeze(1)
+                with torch.no_grad():
+                    target_q=rewards+.99*(1-dones)*target(next_states).max(1).values
+                loss=nn.functional.smooth_l1_loss(chosen,target_q)
+                optimizer.zero_grad()
+                loss.backward()
+                nn.utils.clip_grad_norm_(policy.parameters(),1.0)
+                optimizer.step()
+                updates+=1
+            if steps%250==0:
+                target.load_state_dict(policy.state_dict())
+    return policy,{'steps':steps,'gradientUpdates':updates,'episodes':episodes}
+
+def evaluate(policy,bars,*,fee=.0025,slippage=.001,strategy='dqn'):
+    env=MarketEnv(bars,fee=fee,slippage=slippage)
+    obs,_=env.reset()
+    done=False
+    while not done:
+        if strategy=='cash':
+            action=0
+        elif strategy=='buy_hold':
+            action=1
+        else:
+            with torch.no_grad():
+                action=int(policy(torch.from_numpy(obs)).argmax().item())
+        obs,_,done,_,info=env.step(action)
+    return info
+
+def run(snapshot,*,episodes=5,seed=7,outdir=None):
+    symbol=snapshot.get('symbol')
+    bars=validate_snapshot(snapshot)
+    training,validation,split=split_development(bars)
+    policy,train_stats=train_dqn(training,episodes=episodes,seed=seed)
+    baseline=evaluate(policy,validation)
+    stress=evaluate(policy,validation,fee=.005,slippage=.002)
+    comparisons={name:evaluate(policy,validation,strategy=name)
+                 for name in ('cash','buy_hold')}
+    buffer=io.BytesIO()
+    torch.save(policy.state_dict(),buffer)
+    report={
+        'schema':'SCALP_DQN_DEVELOPMENT_V1','symbol':symbol,
+        'modelType':'DEEP_Q_NETWORK',
+        'policySha256':hashlib.sha256(buffer.getvalue()).hexdigest(),
+        'trainingDataSha256':hashlib.sha256(
+            json.dumps(training,sort_keys=True).encode()).hexdigest(),
+        'seed':seed,'training':train_stats,'splits':split,
+        'validation':baseline,'validationDoubleCostStress':stress,
+        'benchmarks':comparisons,
+        'status':'EXPERIMENTAL_HISTORICAL_RESEARCH_ONLY',
+        'paperOrders':0,'liveOrders':0,'officialGrade':None,
+        'champion':False,'admissions':0,
+        'warning':'Untouched final holdout and independent paper fills NOT tested.'}
+    if outdir:
+        target=Path(outdir)
+        target.mkdir(parents=True,exist_ok=True)
+        stem=symbol.replace('/','-')
+        (target/(stem+'-dqn.pt')).write_bytes(buffer.getvalue())
+        (target/(stem+'-dqn.json')).write_text(json.dumps(report,indent=2)+'\n')
+    return report
+
+def main():
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--symbol',choices=SYMBOLS,required=True)
+    parser.add_argument('--data-dir',default='validation-data')
+    parser.add_argument('--outdir',default='dqn-artifacts')
+    parser.add_argument('--episodes',type=int,default=5)
+    parser.add_argument('--seed',type=int,default=7)
+    args=parser.parse_args()
+    file=Path(args.data_dir)/(args.symbol.replace('/','-')+'.json')
+    print(json.dumps(run(json.loads(file.read_text()),episodes=args.episodes,
+                         seed=args.seed,outdir=args.outdir),indent=2))
+
+if __name__=='__main__':
+    main()
