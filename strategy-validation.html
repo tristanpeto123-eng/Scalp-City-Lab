@@ -65,6 +65,11 @@ details{border-top:1px solid #345768;padding-top:14px;margin-top:14px}summary{cu
   <div class="actions"><button type="button" id="reload">Load newest published Alpaca data</button></div>
   <p class="muted tiny">This reloads the newest saved dataset, not an immediate broker fetch. If loading fails, retry or inspect the <a href="https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/refresh-alpaca-validation.yml">snapshot refresh workflow</a>. Synthetic data is never substituted.</p>
   <dl><div><dt>Data input</dt><dd>Completed 15-minute Alpaca/Kraken US candles</dd></div><div><dt>Separation</dt><dd>Discovery, independent confirmation, and later historical evaluation</dd></div><div><dt>Permissions</dt><dd>No PAPER orders · No live orders · No automatic Teacher admission</dd></div></dl>
+ <div style="margin-top:20px;border-top:1px solid #355364;padding-top:18px" id="academy-evidence">
+  <span class="number">CHART / EARLIER ACADEMY EVIDENCE</span><h3>What has this pupil learned?</h3>
+  <div id="pupil-context" class="muted tiny" aria-live="polite">Checking published Academy research record…</div>
+  <p class="muted tiny">Read-only research history, never automatic seeding of this session, forward proof or an official grade. <a href="./robot-academy.html">Open Academy ↗</a></p>
+ </div>
  </aside>
 </div>
 <div class="results">
@@ -103,6 +108,36 @@ import {runResearchSession,compactSessionRecord} from './strategy-research-sessi
 const $=id=>document.getElementById(id);
 const HISTORY_KEY='scalp.research.desk.v2.local.sessions';
 const cache=new Map();let selected=null,serial=0,session=null,chosenCandidate=-1;
+let academy=null;
+function renderPupil(){
+ const el=$('pupil-context');el.replaceChildren();
+ if(!academy){el.append(text('p','No verified Academy snapshot available. This does not prevent isolated historical research.','muted tiny'));return}
+ const pupil=academy.pupils.find(p=>p.symbol===$('pair').value);
+ if(!pupil){el.append(text('p','This chart has no published Academy research entry.','muted tiny'));return}
+ const leader=pupil.researchLeader;
+ const data=[['Recorded historical lessons',String(pupil.experiments||0)],
+   ['Prior research leader',leader?.name||'None'],
+   ['Prior training NET GBP',leader?money(leader.trainingNetGbp):'Unavailable'],
+   ['Earlier historical trades',leader?String(leader.trainingClosedTrades):'Unavailable'],
+   ['Last training sample',pupil.latestTrainingEnd||'Not recorded']];
+ const dl=document.createElement('dl');
+ for(const [name,val] of data){const line=document.createElement('div');line.append(text('dt',name),text('dd',val));dl.append(line)}
+ el.append(dl);
+ el.append(text('p','PROVISIONAL ONLY · previous experiments are not a validated profitable champion and do not change this experiment’s candidate rules.','muted tiny'));
+}
+async function loadAcademy(){
+ try{
+  const url='./research-data/robot-academy.json?research-desk='+Date.now();
+  const response=await fetch(url,{cache:'no-store',credentials:'omit'});
+  if(!response.ok)throw Error('Published Academy research index is unavailable');
+  const data=await response.json();
+  if(!Array.isArray(data.pupils)||data.pupils.length!==10||data.actualBrokerOrders!==0)
+   throw Error('Academy source did not pass read-only checks');
+  academy=data;
+ }catch{academy=null}
+ renderPupil();
+}
+
 const money=n=>n===null||!Number.isFinite(Number(n))?'—':'£'+Number(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
 const pct=n=>n===null||!Number.isFinite(Number(n))?'—':Number(n).toFixed(1)+'%';
 const text=(tag,value,className)=>{const e=document.createElement(tag);e.textContent=String(value);if(className)e.className=className;return e};
@@ -302,7 +337,7 @@ function exportReport(){
  const a=document.createElement('a');a.href=url;a.download='scalp-research-'+session.symbol.replace('/','-')+'-'+Date.now()+'.json';document.body.append(a);a.click();a.remove();
  setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-$('pair').addEventListener('change',()=>loadPair());
+$('pair').addEventListener('change',()=>{renderPupil();loadPair();});
 $('reload').addEventListener('click',()=>loadPair({force:true}));
 $('mode').addEventListener('change',goalChanged);
 $('strategy').addEventListener('change',()=>$('method-note').textContent=noteByMethod[$('strategy').value]);
@@ -318,5 +353,5 @@ const requested=new URLSearchParams(location.search);
 if([...$('pair').options].some(o=>o.value===requested.get('pair')))$('pair').value=requested.get('pair');
 if(Object.hasOwn(noteByMethod,requested.get('strategy')))$('strategy').value=requested.get('strategy');
 $('method-note').textContent=noteByMethod[$('strategy').value];
-showHistory();loadPair();
+showHistory();loadPair();loadAcademy();
 </script><script src="./journey-nav.js" defer></script></body></html>
