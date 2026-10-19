@@ -199,14 +199,14 @@
       "bestResearchCandidate": {
         "parameters": {
           "family": "rsi_reversion",
-          "period": 9,
-          "buyBelow": 25,
-          "sellAbove": 60
+          "period": 14,
+          "buyBelow": 28,
+          "sellAbove": 45
         },
-        "normalNetAcrossDisjointFolds": -1.04,
-        "stressedNetAcrossDisjointFolds": -2.7,
+        "normalNetAcrossDisjointFolds": 0.06,
+        "stressedNetAcrossDisjointFolds": -0.96,
         "profitableFolds": 0,
-        "researchRankScore": -2.7,
+        "researchRankScore": -0.96,
         "note": "Disjoint development folds are historical research, not broker fills or untouched admission evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
