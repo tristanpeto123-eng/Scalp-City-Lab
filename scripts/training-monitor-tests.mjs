@@ -20,7 +20,7 @@ test('old archived training is never falsely presented as measured live speed',(
  assert.match(page,/Number\.isFinite\(c\?\.evaluationsPerSecond\)/);
  assert.match(page,/AWAITING FIRST MEASURED RUN/);
  assert.match(page,/No new lesson yet/);
- assert.match(page,/No comparable evidence/);
+ assert.match(page,/No new comparable evidence/);
  assert.doesNotMatch(page,/Math\.random\(\)/);
 });
 test('GitHub run failure state and direct workflow link survive API outage',()=>{
