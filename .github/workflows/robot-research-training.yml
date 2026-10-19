@@ -33,26 +33,31 @@ jobs:
           node --test scripts/export-robot-academy-tests.mjs
           node --test strategy-adaptive-model-tests.mjs
           node --test robot-academy-tests.mjs
-      - name: Fetch new, completed Alpaca candles for all 10 charts (GET only)
-        env:
-          ALPACA_PAPER_KEY: ${{ secrets.ALPACA_PAPER_KEY }}
-          ALPACA_PAPER_SECRET: ${{ secrets.ALPACA_PAPER_SECRET }}
+          node --check scripts/historical-lab.mjs
+          node --test scripts/historical-lab-tests.mjs
+      # Historical lab is decoupled from the six-hour GET-only snapshot refresh.
+      # Never contact a broker or use PAPER account keys in routine development.
+      - name: Validate ten locally versioned historical datasets (no broker network)
         run: |
           node --input-type=module <<'NODE'
-          import {refreshAll} from './scripts/refresh-alpaca-snapshots.mjs';
-          const {updated,requestMethods,paperOrders,generatedAt}=await refreshAll({
-            key:process.env.ALPACA_PAPER_KEY,
-            secret:process.env.ALPACA_PAPER_SECRET,
-            outputDir:'research-inputs'
-          });
-          if(updated!==10||requestMethods.length!==1||requestMethods[0]!=='GET'||paperOrders!==0)
-            throw Error('Read-only research data preflight failed');
-          console.log('10 chart datasets captured at '+generatedAt+'; no orders');
+          import {readFile} from 'node:fs/promises';
+          import {PAIRS,checkSnapshot} from './strategy-validation-core.mjs';
+          let oldest=Infinity;
+          for(const symbol of PAIRS){
+            const d=JSON.parse(await readFile('validation-data/'+symbol.replace('/','-')+'.json','utf8'));
+            const checked=checkSnapshot(d,symbol);
+            if(checked.bars.length<2400)throw Error('Insufficient historical research window for '+symbol);
+            oldest=Math.min(oldest,Date.parse(d.generatedAt||0));
+            console.log('HISTORICAL_VALIDATED '+symbol+' '+checked.bars.length+' candles');
+          }
+          if(Date.now()-oldest>14*86400_000)
+            throw Error('Archived datasets over 14 days old; refresh from provider before reuse');
+          console.log('PUBLISHED_HISTORY_ONLY=true; PAPER_ORDERS=0');
           NODE
       - name: Run one research generation per crypto chart (NO orders)
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          SCALP_RESEARCH_INPUT_DIR: research-inputs
+          SCALP_RESEARCH_INPUT_DIR: validation-data
         run: node scripts/run-robot-training.mjs
       - name: Checkout updated standalone research memory after successful write
         uses: actions/checkout@v4
@@ -60,6 +65,13 @@ jobs:
           ref: scalp-learning-memory
           path: research-memory
           persist-credentials: false
+      - name: Run offline historical rolling-fold development lab (holdout untouched)
+        run: |
+          node scripts/historical-lab.mjs \
+            research-memory/scalp-learning/history.json \
+            validation-data \
+            research-data/historical-lab-latest.json
+          node -e 'const r=require("./research-data/historical-lab-latest.json");if(r.tenPupils!==10||r.admissionCount||r.brokerOrders||r.verifiedForwardGrades||!r.quarantinedHoldoutNotScored)process.exit(1)'
       - name: Convert stored training results to safe Academy pupil snapshot
         run: |
           node scripts/export-robot-academy.mjs \
@@ -70,7 +82,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- research-data/robot-academy.json
+          git add -- research-data/robot-academy.json research-data/historical-lab-latest.json
           if git diff --cached --quiet; then
             echo 'No new model-memory experiments, no Academy publication necessary'
           else
