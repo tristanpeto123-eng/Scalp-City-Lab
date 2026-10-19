@@ -89,3 +89,27 @@ test('historical gaps block archive ingestion',()=>{
   const newer={...s,bars:s.bars.slice(2000)};
   assert.throws(()=>mergeVerifiedHistory(old,newer,now),/no common candles/);
 });
+
+
+import {makeTeacherReviewQueue} from './research-v2-handoff.mjs';
+test('Teacher handoff is a read-only review request, never an admission',()=>{
+ const report={schema:'SCALP_RESEARCH_V2_CANDIDATES',generatedAt:new Date(now).toISOString(),
+   admissionsIssued:0,verifiedForwardGrades:0,paperOrders:0,liveOrders:0,
+   holdoutAccessedForSelection:false,symbols:PAIRS.map(symbol=>({
+     symbol,researchSnapshotHash:'d'.repeat(64),
+     sealedHoldout:{usedForSelection:false},shortlisted:[],
+     brokerOrders:0,teacherAdmission:false
+   }))};
+ const queue=makeTeacherReviewQueue(report);
+ assert.equal(queue.requestedTotal,0);
+ assert.equal(queue.teacherAutomaticAdmit,false);
+ assert.equal(queue.paperOrders,0);
+ assert.throws(()=>makeTeacherReviewQueue({...report,paperOrders:1}),/unexpected broker authority/);
+ const params={family:'ema_trend',fast:9,slow:34};
+ const withCandidate=structuredClone(report);
+ withCandidate.symbols[0].shortlisted=[{parameters:params,netStressGbp:1,researchScore:0.5}];
+ const pending=makeTeacherReviewQueue(withCandidate);
+ assert.equal(pending.requests.length,1);
+ assert.equal(pending.requests[0].paperAdmissionIssued,false);
+ assert.equal(pending.requests[0].independentForwardTrades,0);
+});
