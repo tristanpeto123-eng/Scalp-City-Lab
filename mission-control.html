@@ -90,7 +90,7 @@ footer{border-top:1px solid #335067;margin-top:45px;padding-top:18px;color:#a4bd
 <section class="stats" aria-label="Verified Scalp City status">
  <div class="stat"><span>Academy pupils</span><strong id="pupil-count">—</strong><small>Published historical research roster</small></div>
  <div class="stat"><span>Historical experiments</span><strong id="experiment-count">—</strong><small>Recorded research lessons</small></div>
- <div class="stat"><span>Qualified pupils</span><strong id="qualified-count">—</strong><small>Independently admitted: not inferred</small></div>
+ <div class="stat"><span>Verified PAPER graduates</span><strong id="qualified-count">—</strong><small>Only signed, independently verified exam grades</small></div>
  <div class="stat"><span>PAPER connections</span><strong id="paper-count">—</strong><small>Verified accounts, not placed trades</small></div>
 </section>
 <section aria-labelledby="route-title">
@@ -126,18 +126,24 @@ footer{border-top:1px solid #335067;margin-top:45px;padding-top:18px;color:#a4bd
 <footer>Scalp City Lab · Historical simulations and PAPER-only infrastructure. All metrics require source verification; no simulated performance predicts future returns. <a href="./index.html">Legacy Research Floor</a></footer>
 </div>
 <script type="module">
-import {readResearch,readHostingConnection} from './teacher/public-client.mjs';
+import {readResearch,readHostingConnection,readSignedPaperFeed} from './teacher/public-client.mjs';
 const $=id=>document.getElementById(id);
 (async()=>{
  try{
   const research=await readResearch({baseUrl:location.href});
   $('pupil-count').textContent=String(research.pupils.length);
   $('experiment-count').textContent=String(research.pupils.reduce((sum,p)=>sum+(p.experiments||0),0));
-  $('qualified-count').textContent='0 verified';
+  $('qualified-count').textContent='Checking signed feed…';
   $('training-end').textContent=research.latestTrainingEnd?
     new Date(research.latestTrainingEnd).toLocaleString():'Not reported';
  }catch{$('pupil-count').textContent='Unavailable';$('experiment-count').textContent='Unavailable';
-   $('qualified-count').textContent='Unverified';$('training-end').textContent='Unavailable';}
+   $('qualified-count').textContent='Checking signed feed…';$('training-end').textContent='Unavailable';}
+ try{
+  const evidence=await readSignedPaperFeed({baseUrl:location.href});
+  $('qualified-count').textContent=String(evidence.grades.size)+' verified';
+ }catch{
+  $('qualified-count').textContent='No signed proof';
+ }
  try{
   const host=await readHostingConnection({baseUrl:location.href});
   const a=host.paperAccounts;
