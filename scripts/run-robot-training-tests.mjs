@@ -156,21 +156,21 @@ test('training process contains no broker order or real deposit actions',async()
  assert.match(code,/observedHoldoutUsedToSelect:false/);
 });
 
-test('five-minute scheduled research fetches 10 fresh Alpaca feeds before every lesson and never falls back to stale data',async()=>{
+test('half-hourly historical research uses versioned local data, never live broker during training',async()=>{
  const workflow=await readFile(new URL('../.github/workflows/robot-research-training.yml',import.meta.url),'utf8');
+ const refresh=await readFile(new URL('../.github/workflows/refresh-alpaca-validation.yml',import.meta.url),'utf8');
  const worker=await readFile(new URL('./run-robot-training.mjs',import.meta.url),'utf8');
- assert.match(workflow,/cron: '2,7,12,17,22,27,32,37,42,47,52,57/);
+ assert.match(workflow,/cron: '7,37 \* \* \* \*'/);
  assert.match(workflow,/concurrency:/);
  assert.match(workflow,/cancel-in-progress: false/);
- assert.match(workflow,/refreshAll/);
- assert.match(workflow,/outputDir:'research-inputs'/);
- assert.match(workflow,/updated!==10/);
- assert.match(workflow,/requestMethods\[0\]!=='GET'/);
- assert.match(workflow,/paperOrders!==0/);
- assert.match(workflow,/SCALP_RESEARCH_INPUT_DIR: research-inputs/);
+ assert.match(workflow,/SCALP_RESEARCH_INPUT_DIR: validation-data/);
+ assert.match(workflow,/historical-lab\.mjs/);
+ assert.match(workflow,/quarantinedHoldoutNotScored/);
+ assert.doesNotMatch(workflow,/ALPACA_PAPER_KEY|ALPACA_PAPER_SECRET|refreshAll\(/);
+ assert.match(refresh,/cron: '17 \*\/6 \* \* \*'/);
+ assert.match(refresh,/ALPACA_PAPER_KEY/);
  assert.match(worker,/process\.env\.SCALP_RESEARCH_INPUT_DIR\|\|'validation-data'/);
  assert.match(worker,/dataDir:selectedDir/);
- assert.doesNotMatch(workflow,/ref:\s*feat\/crypto-paper-agents/);
  assert.doesNotMatch(workflow,/\/v2\/orders|submitOrder\s*\(/);
 });
 
