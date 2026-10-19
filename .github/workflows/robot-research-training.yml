@@ -1,7 +1,7 @@
 name: Scalp City — repeated parent-seeded chart research lessons
 on:
   schedule:
-    - cron: '7,37 * * * *' # offline historical training every 30 minutes UTC; scheduling best-effort
+    - cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *' # best-effort every 5 minutes UTC
   workflow_dispatch:
   push:
     branches: [main]
@@ -29,6 +29,8 @@ jobs:
         run: |
           node --check scripts/run-robot-training.mjs
           node --test scripts/run-robot-training-tests.mjs
+          node --test scripts/robot-rewards-tests.mjs
+          node --test scripts/build-training-monitor-tests.mjs
           node --test scripts/refresh-alpaca-snapshots-tests.mjs
           node --test scripts/export-robot-academy-tests.mjs
           node --test strategy-adaptive-model-tests.mjs
@@ -78,11 +80,13 @@ jobs:
             research-memory/scalp-learning/history.json \
             research-data/robot-academy.json
           node -e 'const r=require("./research-data/robot-academy.json");if(r.pupils.length!==10||r.actualBrokerOrders!==0||r.verifiedForwardGrades!==0||r.pupils.some(x=>x.confirmedForward||x.championModel!==null))process.exit(1);console.log("CHECKER: 10 chart pupils; zero live orders, independently verified grades or deployed champions")'
+      - name: Generate read-only measured training and development OOS monitor
+        run: node scripts/build-training-monitor.mjs
       - name: Publish a new Academy school snapshot only when research has changed
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- research-data/robot-academy.json research-data/historical-lab-latest.json
+          git add -- research-data/robot-academy.json research-data/historical-lab-latest.json research-data/training-monitor.json
           if git diff --cached --quiet; then
             echo 'No new model-memory experiments, no Academy publication necessary'
           else
