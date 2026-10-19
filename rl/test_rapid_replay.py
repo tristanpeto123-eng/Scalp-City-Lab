@@ -6,9 +6,18 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 from rl.rapid_replay import train_replay_batch, new_training_tail, REPORT_SCHEMA
-from rl.test_dqn_experiment import snapshot
+from rl.test_dqn_experiment import snapshot as fifteen_min_snapshot
+from datetime import datetime, timedelta, timezone
 from rl.dqn_experiment import validate_snapshot, split_development, MarketEnv, train_dqn
 
+
+def snapshot():
+    result=fifteen_min_snapshot()
+    result['timeframe']='5Min'
+    start=datetime(2024,1,1,tzinfo=timezone.utc)
+    for i,b in enumerate(result['bars']):
+        b['t']=(start+timedelta(minutes=5*i)).isoformat()
+    return result
 
 class RapidReplayContract(unittest.TestCase):
     def test_throughput_is_real_timings_and_never_a_broker_fill(self):
@@ -33,15 +42,19 @@ class RapidReplayContract(unittest.TestCase):
             (root/'data').mkdir()
             data=snapshot()
             (root/'data'/'BTC-USD.json').write_text(json.dumps(data))
-            def fake_train(_,*,episodes,seed,outdir,prior_checkpoint=None):
+            def fake_train(_,*,episodes,seed,outdir,prior_checkpoint=None,trace_out=None):
                 out=Path(outdir)
                 out.mkdir(parents=True,exist_ok=True)
                 data_bytes=b'model'+bytes([episodes])
                 (out/'BTC-USD-dqn.pt').write_bytes(data_bytes)
+                if trace_out:
+                    p=Path(trace_out);p.parent.mkdir(parents=True,exist_ok=True)
+                    p.write_text('REPLAY_PROVENANCE_MOCK')
                 training,validation,layout=split_development(validate_snapshot(data))
                 return {
                     'schema':'SCALP_DQN_DEVELOPMENT_V1',
-                    'symbol':'BTC/USD','paperOrders':0,'liveOrders':0,
+                    'symbol':'BTC/USD','marketTimeframe':'5Min',
+                    'paperOrders':0,'liveOrders':0,
                     'officialGrade':None,'champion':False,
                     'policySha256':hashlib.sha256(data_bytes).hexdigest(),
                     'previousCheckpointSha256':(
