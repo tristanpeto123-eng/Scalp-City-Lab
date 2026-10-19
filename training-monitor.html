@@ -22,7 +22,7 @@ table{border-collapse:collapse;width:100%;text-align:left;min-width:660px}th,td{
 @media(max-width:690px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat:last-child{grid-column:span 2}}
 </style></head>
 <body><main>
-<nav><a href="./mission-control.html">← Mission Control</a><a href="./robot-academy.html">Robot Academy</a><a href="./teacher-console.html">Teacher's Office</a></nav>
+<nav aria-label="Training monitor routes"><a href="./mission-control.html">← Mission Control</a><a href="./robot-academy.html">← Robot Academy</a><a href="./teacher-console.html">Next: Independent Qualification →</a></nav>
 <div class="kicker">The Foundry / Audited research telemetry</div>
 <h1>Training <em>Monitor</em></h1>
 <p>The pupils earn research-only learning credits when independent historical training windows survive trade-count, profit, fee-stress and drawdown checks. These are not verified trading grades. Monitoring comes from published GitHub Actions results, not an always-connected worker stream.</p>
@@ -177,4 +177,5 @@ $('refresh').onclick=()=>{loadPublished();loadActions();};
 loadPublished();loadActions();
 setInterval(loadPublished,30000);
 setInterval(loadActions,120000);
-</script></body></html>
+</script><script src="./journey-nav.js" defer></script>
+</body></html>

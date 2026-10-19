@@ -40,6 +40,7 @@ jobs:
         run: |
           node --check scripts/robot-rewards.mjs
           node --check scripts/run-robot-training.mjs
+          node --check scripts/historical-training-folds.mjs
           node --check scripts/build-training-monitor.mjs
           node --check scripts/export-robot-academy.mjs
           if grep -E 'submitOrder\(|placeOrder\(|paperOrder\(|/v2/orders' scripts/robot-rewards.mjs scripts/build-training-monitor.mjs; then
@@ -49,6 +50,7 @@ jobs:
         run: |
           node --test scripts/robot-rewards-tests.mjs
           node --test scripts/run-robot-training-tests.mjs
+          node --test scripts/historical-training-folds-tests.mjs
           node --test scripts/export-robot-academy-tests.mjs
           node --test scripts/build-training-monitor-tests.mjs
           node --test scripts/training-monitor-tests.mjs

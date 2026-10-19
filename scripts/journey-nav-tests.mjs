@@ -25,3 +25,19 @@ test('Mission Control has all four canonical entry links and evidence-only data 
  assert.match(html,/historical-lab-latest\.json/);
  assert.doesNotMatch(html,/APCA-API-SECRET-KEY|paperOrder\(|\/v2\/orders/);
 });
+
+test('current-stage handoff is visible and routes all steps without exposing trading authority',async()=>{
+ const js=await readFile(new URL('journey-nav.js',root),'utf8');
+ const css=await readFile(new URL('journey-nav.css',root),'utf8');
+ const monitor=await readFile(new URL('training-monitor.html',root),'utf8');
+ assert.match(js,/Continue to /);
+ assert.match(js,/sc-journey-quick/);
+ assert.match(js,/sc-journey-context/);
+ assert.match(js,/training-monitor\.html/);
+ assert.match(js,/if\(back\)panel\.append\(back\)/);
+ assert.match(css,/\.sc-journey-quick/);
+ assert.match(css,/\.sc-journey-next/);
+ assert.match(monitor,/journey-nav\.js/);
+ assert.match(monitor,/Next: Independent Qualification/);
+ assert.doesNotMatch(js,/\/v2\/orders|APCA-API-SECRET-KEY/);
+});
