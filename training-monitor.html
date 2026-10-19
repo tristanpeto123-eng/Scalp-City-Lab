@@ -242,8 +242,8 @@ function updateHealth(){
  else if(latest?.conclusion==='success'){status='LAST RUN OK · RESEARCH ONLY';cls='status good';}
  $('health').className=cls;$('health').textContent=status;
 }
-$('refresh').onclick=()=>{loadPublished();loadActions();loadProfitGoal();loadProfitGoal();};
-loadPublished();loadActions();
+$('refresh').onclick=()=>{loadPublished();loadActions();loadProfitGoal();};
+loadPublished();loadActions();loadProfitGoal();
 setInterval(loadPublished,30000);
 setInterval(loadActions,120000);
 setInterval(loadProfitGoal,60000);
