@@ -113,7 +113,7 @@ export async function integratedResearchReview({
   const pupil=academy.pupils.find(x=>x.symbol===symbol);
   const q=qualification.pupils.find(x=>x.symbol===symbol);
   const historical=lab.pupils.find(x=>x.symbol===symbol);
-  assert(q.trainingTrades===pupil.researchLeader?.trainingClosedTrades&&
+  assert(q.trainingTrades===(pupil.researchLeader?.trainingClosedTrades??0)&&
     q.trainingNetGbp===(pupil.researchLeader?.trainingNetGbp??null),
     'research/Teacher candidate mismatch: '+symbol);
   assert(historical.heldOutQuarantine.usedForModelSelection===false&&
