@@ -14,3 +14,5 @@ Scheduled cycles may produce no new experiment when saved history overlaps or da
 2026-10-19: request new authorized read-only Robot Academy research cycle after monitor bootstrap fix PR #32. Generate measured telemetry when true evaluations run, and publish ten pupil historical evidence without fabricating progress. No broker orders.
 
 2026-10-19: launch safe three-fold historical training post-PR34; ten pupils, only pre-holdout bars, PAPER orders disabled.
+
+2026-10-19: acceptance — verify successful three-fold research workflow triggers independent Teacher workflow_run; no orders.
