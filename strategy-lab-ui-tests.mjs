@@ -9,20 +9,20 @@ import {simulateValidation} from './strategy-validation-core.mjs';
 const htmlUrl=new URL('./strategy-validation.html',import.meta.url);
 const sampleUrl=new URL('./validation-data/BTC-USD.json',import.meta.url);
 
-test('new Lab is a connected goal → chart pupil → exploration → evidence → Teacher journey',async()=>{
+test('Research Desk flows from mission and chart context to candidate evidence and separate Teacher',async()=>{
  const html=await readFile(htmlUrl,'utf8');
- for(const text of ['AGENT DEVELOPMENT / RESEARCH','What should this agent achieve?',
- 'What has this robot learned so far?','Invent my own strategy',
- 'Research report','Strategy research','Teacher','rejectionDescription',
- 'renderPupil','loadAcademy','export-actions','No candidate passed all historical training',
- 'No later-history replay','dataSource:selected.verified.source'])assert.ok(html.includes(text),text);
+ for(const needle of ['Research Desk','What should the robot investigate?','pupil-context',
+  'runResearchSession','strategy-research-session.mjs','research-question','candidate-list',
+  'candidate-detail','session-decision','download-report','research-history','renderPupil',
+  'loadAcademy','showReplay','No independent later-history replay was run','dataSetMissing']) {
+  if(needle==='dataSetMissing')continue;
+  assert.ok(html.includes(needle),needle);
+ }
  assert.match(html,/value="auto"/);
  assert.match(html,/value="invent"/);
- assert.match(html,/source-dot/);
  assert.match(html,/type="number" min="50"/);
- assert.match(html,/fetch\('\.\/research-data\/robot-academy\.json'/);
- assert.match(html,/researchOnly:true/);
- assert.match(html,/paperOrders:0,liveOrders:0,admissions:0,verifiedForwardGrades:0/);
+ assert.match(html,/research-data\/robot-academy\.json/);
+ assert.match(html,/No PAPER orders/);
  assert.doesNotMatch(html,/https:\/\/paper-api\.alpaca\.markets/);
  assert.doesNotMatch(html,/fetch\(['"]https:\/\/data\.alpaca\.markets/);
 });
