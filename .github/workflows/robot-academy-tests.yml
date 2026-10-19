@@ -9,6 +9,8 @@ on:
       - scripts/export-robot-academy-tests.mjs
       - scripts/run-robot-training.mjs
       - scripts/run-robot-training-tests.mjs
+      - scripts/historical-lab.mjs
+      - scripts/historical-lab-tests.mjs
       - scripts/refresh-alpaca-snapshots.mjs
       - scripts/refresh-alpaca-snapshots-tests.mjs
       - robot-training.trigger
@@ -55,4 +57,5 @@ jobs:
           node --test scripts/export-robot-academy-tests.mjs
           node --check scripts/run-robot-training.mjs
           node --test scripts/run-robot-training-tests.mjs
+          node --test scripts/historical-lab-tests.mjs
           node --test scripts/refresh-alpaca-snapshots-tests.mjs
