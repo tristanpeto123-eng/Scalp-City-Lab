@@ -31,3 +31,20 @@ The agent sees *numerical OHLCV and position-state features*; the human watches 
 - `python -m unittest rl.test_dqn_experiment rl.test_rapid_replay rl.test_five_min_replay -v` (requires numpy and torch)
 - `.github/workflows/robot-rapid-rl-check.yml`: independent G0/G1 source/timestamp/holdout safety tests and no-order guard.
 - The page must display a clear first-run unavailable state until genuine snapshots, DQN weights and replay trace have been published. Do not substitute demo candles into this production route.
+
+## Accurate virtual execution history (replay UI correction)
+
+A pupil decision (LONG/FLAT) is not an executed virtual trade if its position does not change. A previously published 5-minute trace recorded only the next candle's **market opening price**, not fill-level execution. The earlier UI incorrectly displayed that opening price as a £-denominated "virtual fill" even when the pupil stayed FLAT.
+
+The corrected DQN environment now records each actual virtual BUY and SELL transition at the following genuine 5-minute opening candle:
+- Raw market open and simulated execution price **in USD**, accounting for slippage.
+- Simulated crypto units, fee and initial allocated virtual account cost.
+- Exact exit proceeds, closed trade realised virtual-unit P&L, and net percentage after both fees and slippage.
+- Linked entry/exit timestamps, source decision timestamps, and all position transitions.
+- A strictly source-produced trade journal inside `rl-learning-memory/rl-rapid/replays/<SYMBOL>-5m.json`, never inferred by browser graphics.
+
+The Trade History table retains all completed trades revealed up to the user's current replay step; the Event History shows actual source-recorded orders, not each FLAT or LONG decision. The viewer can export **only already revealed** completed trades to CSV and saves its playback cursor on the user's device keyed to a model SHA and source date.
+
+The source data's legacy `equityGbp` field means **virtual accounting units**, not a properly converted GBP balance. The UI no longer displays the account value as an actual GBP amount. Market prices are always USD because all ten crypto symbols are /USD. These are simulated exchanges, **not actual paper broker orders or verified returns**.
+
+Previously published traces without `tradeJournalSchema` still load, but the page does not invent absent fills, fees or profit. It clearly labels inferred position changes as legacy and waits for the next successful training publication to show audited simulator fills. No-live/no-paper-order and untouched-final-holdout safeguards remain in force.
