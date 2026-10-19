@@ -27,7 +27,7 @@ def later_bars():
 
 class VirtualTradeJournalTests(unittest.TestCase):
     def test_fills_and_trade_journal_reconcile_to_true_simulated_executions(self):
-        trace=build_causal_trace(RotateAction(),later_bars(),symbol='BTC/USD',max_visible=91)
+        trace=build_causal_trace(RotateAction(),later_bars(),symbol='BTC/USD',max_visible=92)
         self.assertEqual(trace['schema'],'SCALP_CAUSAL_REPLAY_5MIN_V1')
         self.assertEqual(trace['tradeJournalSchema'],'SCALP_VIRTUAL_TRADE_JOURNAL_V1')
         self.assertEqual(trace['marketPriceCurrency'],'USD')
@@ -79,7 +79,7 @@ class VirtualTradeJournalTests(unittest.TestCase):
         self.assertEqual(trace['decisions'][-1]['simulatedClosedTrades'],0)
 
     def test_fees_and_slippage_count_against_profits(self):
-        trace=build_causal_trace(RotateAction(),later_bars(),symbol='BTC/USD',max_visible=91)
+        trace=build_causal_trace(RotateAction(),later_bars(),symbol='BTC/USD',max_visible=92)
         trades=trace['closedTrades']
         for t in trades:
             self.assertGreater(t['entryFeeVirtual'],0)
