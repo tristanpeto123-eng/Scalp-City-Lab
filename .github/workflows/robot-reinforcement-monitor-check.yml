@@ -15,6 +15,7 @@ on:
       - 'robot-academy.html'
       - 'robot-academy-tests.mjs'
       - 'training-monitor.html'
+      - 'scripts/training-monitor-tests.mjs'
       - 'mission-control.html'
   workflow_dispatch:
 permissions:
@@ -50,6 +51,7 @@ jobs:
           node --test scripts/run-robot-training-tests.mjs
           node --test scripts/export-robot-academy-tests.mjs
           node --test scripts/build-training-monitor-tests.mjs
+          node --test scripts/training-monitor-tests.mjs
           node --test robot-academy-tests.mjs
           node --test scripts/historical-lab-tests.mjs
       - name: Checker G1 — no signed grades or external actions
