@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 from rl.rapid_replay import train_replay_batch, new_training_tail, REPORT_SCHEMA
+from rl.profit_objective import assess_profit_objective, OBJECTIVE_ID
 from rl.test_dqn_experiment import snapshot as fifteen_min_snapshot
 from datetime import datetime, timedelta, timezone
 from rl.dqn_experiment import validate_snapshot, split_development, MarketEnv, train_dqn
@@ -51,6 +52,10 @@ class RapidReplayContract(unittest.TestCase):
                     p=Path(trace_out);p.parent.mkdir(parents=True,exist_ok=True)
                     p.write_text('REPLAY_PROVENANCE_MOCK')
                 training,validation,layout=split_development(validate_snapshot(data))
+                objective=assess_profit_objective(
+                    {'netProfitGbp':-2.5,'maxDrawdownPct':6,'closedTrades':12},
+                    {'netProfitGbp':-5.0,'maxDrawdownPct':6,'closedTrades':12},
+                    {'cash':{'netProfitGbp':0},'buy_hold':{'netProfitGbp':-1}})
                 return {
                     'schema':'SCALP_DQN_DEVELOPMENT_V1',
                     'symbol':'BTC/USD','marketTimeframe':'5Min',
@@ -61,12 +66,13 @@ class RapidReplayContract(unittest.TestCase):
                         hashlib.sha256(Path(prior_checkpoint).read_bytes()).hexdigest()
                         if prior_checkpoint else None),
                     'trainingDataSha256':'f'*64,
+                    'profitObjective':objective,
                     'splits':{'sealedHoldoutTouched':False},
                     'training':{'steps':150,'gradientUpdates':35,'simulatedClosedTrades':12,
                       'simulatedOpens':15,'decisionsPerSecond':123.4,
                       'virtualClosesPerSecond':9.8,'gradientUpdatesPerSecond':29.3,
                       'trainingElapsedSeconds':1.21},
-                    'validation':{'netProfitGbp':-2.5,'maxDrawdownPct':6},
+                    'validation':{'netProfitGbp':-2.5,'maxDrawdownPct':6,'closedTrades':12},
                     'validationDoubleCostStress':{'netProfitGbp':-5.0}
                 }
             first=train_replay_batch(data_dir=root/'data',root=root/'memory',symbols=('BTC/USD',),
@@ -83,6 +89,10 @@ class RapidReplayContract(unittest.TestCase):
             self.assertIsNotNone(second['pupils'][0]['initialCheckpointSha256'])
             self.assertFalse(second['pupils'][0]['positiveUnderStressedCosts'])
             self.assertEqual(second['marketBarTimeframe'],'5Min')
+            self.assertEqual(second['trainingGoal'],OBJECTIVE_ID)
+            self.assertEqual(second['profitGoalPassingPupils'],0)
+            self.assertFalse(second['pupils'][0]['developmentProfitGatePassed'])
+            self.assertEqual(second['pupils'][0]['excessVsBestPassiveGbp'],-2.5)
 
     def test_missing_checkpoint_is_not_replaced_by_fake_new_model(self):
         with tempfile.TemporaryDirectory() as d:
