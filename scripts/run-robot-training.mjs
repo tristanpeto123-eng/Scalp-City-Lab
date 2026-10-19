@@ -48,6 +48,15 @@ export function checkMemory(memory){
   for(const o of e.trainingOptions){
    checkParams(o.params);
    checkTrainingReward(o.researchReward);
+   if(o.researchReward){
+     const expected=scoreTrainingReward({
+       closedTrades:o.closedTrades,netProfitGbp:o.netProfitGbp,
+       stressNetProfitGbp:o.stressNetProfitGbp,
+       maxDrawdownPct:o.maxDrawdownPct
+     },{independent:e.acceptedForLearning});
+     if(JSON.stringify(expected)!==JSON.stringify(o.researchReward))
+       throw Error('Reward does not match audited historical metrics');
+   }
    if(!Number.isInteger(o.closedTrades)||o.closedTrades<0||
       !goodNumber(o.netProfitGbp)||!goodNumber(o.winRatePct)||
       o.winRatePct<0||o.winRatePct>100||
