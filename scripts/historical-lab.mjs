@@ -31,10 +31,10 @@ export function developmentFolds(bars){
      start+=LAB_POLICY.strideCandles){
    const end=start+length;
    folds.push({startIndex:start,endIndex:end,
-     firstBar:training[start].t,lastBar:training[end-1].t});
+     firstBar:new Date(training[start].t).toISOString(),lastBar:new Date(training[end-1].t).toISOString()});
  }
  if(folds.length<2)throw Error('HISTORICAL_LAB: needs multiple chronological folds');
- return {folds,sealedHoldoutStart,trainingEnd:training.at(-1).t,
+ return {folds,sealedHoldoutStart,trainingEnd:new Date(training.at(-1).t).toISOString(),
    reservedCandles:bars.length-sealedHoldoutStart};
 }
 function distinctCandidates(memory,symbol){
