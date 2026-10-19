@@ -177,12 +177,40 @@ function variantsAround(parent){
  ])add(p);
  return proposals;
 }
+// Deterministic, bounded research-only parameter universe. Its candidate
+// order depends on training fingerprint and symbol, never held-out results.
+function boundedDiverseCandidates(symbol,fingerprint){
+ const proposal=[],seen=new Set();
+ const add=p=>{
+   try{toSimulator(p)}catch{return}
+   const name=canonical(p);
+   if(seen.has(name))return;
+   seen.add(name);proposal.push(p);
+ };
+ for(const fast of [4,6,8,10,12,15,18,22,28])
+   for(const slow of [20,26,34,42,55,70,85])
+     if(fast<slow)add({family:'ema_trend',fast,slow});
+ for(const period of [7,9,11,14,17,21,28])
+   for(const buyBelow of [15,20,24,28,32,36,40])
+     for(const sellAbove of [50,55,60,65,70,75,80])
+       add({family:'rsi_reversion',period,buyBelow,sellAbove});
+ for(const lookback of [10,15,20,25,30,40,55,72,80])
+   for(const exitLookback of [5,8,12,18,25,36,48])
+     if(exitLookback<=lookback)
+       add({family:'channel_breakout',lookback,exitLookback});
+ const salt=hash(['BOUNDED_HISTORY_EXPLORATION_V2',symbol,fingerprint]);
+ proposal.sort((a,b)=>hash([salt,a]).localeCompare(hash([salt,b])));
+ return proposal;
+}
+
 export function proposeResearchLesson(memory,{symbol,feed='us-1',fingerprint}={}){
  const parent=selectHistoricalParent(memory,symbol,feed);
  const history=memory.experiments.filter(e=>e.symbol===symbol&&e.feed===feed);
  const onSameCandles=history.filter(e=>e.trainFingerprint===fingerprint);
  const triedOnSameCandles=new Set(onSameCandles.flatMap(e=>e.trainingOptions.map(o=>canonical(o.params))));
  const remaining=variantsAround(parent?.params||null).filter(p=>!triedOnSameCandles.has(canonical(p)));
+ const exploration=boundedDiverseCandidates(symbol,fingerprint)
+   .filter(p=>!triedOnSameCandles.has(canonical(p)));
  // Include parent for an honest comparison on NEW candles. If parent has
  // already been compared on the same ones, don't double-count it.
  const result=[];
@@ -194,6 +222,12 @@ export function proposeResearchLesson(memory,{symbol,feed='us-1',fingerprint}={}
  const coreLimit=RESEARCH_LIMITS.candidatesPerCycle-diversity.length;
  for(const candidate of remaining){if(result.length>=coreLimit)break;add(candidate);}
  for(const candidate of diversity)add(candidate);
+ // Continue bounded exploration after a fixed neighbourhood is exhausted.
+ // Results on the same candles remain provisional and non-independent.
+ for(const candidate of exploration){
+   if(result.length>=RESEARCH_LIMITS.candidatesPerCycle)break;
+   add(candidate);
+ }
  return {symbol,feed,seed:parent,candidates:result.slice(0,RESEARCH_LIMITS.candidatesPerCycle),
   alreadyTriedOnTheseCandles:triedOnSameCandles.size,
   selectionBasis:'PREVIOUS_CHART_BEST_NET_GBP_THEN_BOUNDED_NEIGHBOUR_MUTATIONS',
