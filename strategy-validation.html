@@ -1,232 +1,321 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Scalp City · Strategy Validation</title>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#081724">
+<meta name="description" content="Scalp City research lab: define a virtual goal, compare chart-specific strategies, audit failed experiments and independently screen historical evidence.">
+<title>Scalp City · Agent Research Laboratory</title>
 <style>
-:root{color-scheme:dark;font:15px system-ui,-apple-system,Segoe UI,sans-serif;background:#07131e;color:#eef9ff}
-*{box-sizing:border-box}body{margin:0;padding:20px}main{max-width:920px;margin:0 auto}
-header{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
-.eyebrow{font-size:12px;letter-spacing:.18em;color:#78b7cb;font-weight:800}
-h1{font-size:clamp(24px,5vw,35px);margin:7px 0}h2{font-size:19px;margin:0 0 14px}
-p{line-height:1.55}.secondary{color:#a9bece}.warn{color:#ffd18c}.good{color:#93ecd2}
-section{background:linear-gradient(145deg,#11293a,#0a1c2b);border:1px solid #36536a;border-radius:13px;margin:18px 0;padding:20px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:16px}
-label{display:flex;flex-direction:column;gap:9px;color:#c4d8e6;font-weight:650}
-input,select,button{border-radius:7px;border:1px solid #547c96;font:inherit;padding:11px;background:#071a29;color:#fff;max-width:100%}
-input,select{width:100%}button{background:#185d76;border-color:#3db9d9;font-weight:750;cursor:pointer}button:disabled{opacity:.5;cursor:wait}
-.badge{font:700 12px monospace;padding:8px 11px;border:1px solid #4e7290;border-radius:20px}
-.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
-.metric{padding:13px;border:1px solid #37546a;border-radius:9px;background:#0a1b2b}
-.metric span{display:block;font-size:12px;color:#b0c6d6}.metric strong{display:block;font-size:21px;margin-top:5px}
-table{width:100%;border-collapse:collapse}td,th{padding:9px;border-bottom:1px solid #2e4c61;text-align:left}
-footer{color:#acc1cd;font-size:13px;margin:20px 0}a{color:#79d7f6}
-</style></head><body>
-<main>
-<header><div><a href="./mission-control.html" style="color:#eacb91;font-size:12px;font-weight:850">← Mission Control</a><div class="eyebrow">SCALP CITY / RESEARCH LAB</div><h1>Strategy Validation</h1></div><span class="badge" id="state" aria-live="polite">Loading market data…</span><a href="./robot-academy.html" style="display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border:1px solid #547c96;border-radius:10px;text-decoration:none;font-weight:750" aria-label="Open Robot Academy">🎓 Robot Academy</a></header>
-<p class="warn">Virtual historical research only. Returns and win rates are not guaranteed. No deposits, broker orders or withdrawals are enabled.</p>
-<section><h2>Preloaded historical candles</h2><p id="dataset" role="status">Loading packaged real-market data for BTC/USD…</p><p class="secondary" id="coverage">Historical records were captured from the Kraken US venue through Alpaca's read-only market-data endpoint. The snapshot timestamp and period will be shown here.</p><button id="reload" type="button">Load newest published Alpaca data</button><p class="secondary">The data is preloaded for all ten pairs and automatically refreshed from Alpaca using server-side credentials, approximately every six hours. This button reloads the latest published data, not an instant live Alpaca query. Your browser never receives trading credentials.</p></section>
-<section><h2>Run a validation</h2><div class="grid">
-<label>Starting virtual balance (£)<input id="balance" type="number" min="50" max="1000000" step=".01" value="50"></label>
-<label>Crypto market<select id="pair"><option>BTC/USD</option><option>ETH/USD</option><option>SOL/USD</option><option>XRP/USD</option><option>ADA/USD</option><option>AVAX/USD</option><option>LINK/USD</option><option>DOGE/USD</option><option>LTC/USD</option><option>BCH/USD</option></select></label>
-<label>Stop condition<select id="mode"><option value="duration">Elapsed duration</option><option value="profit">Cumulative net profit target</option></select></label>
-<label id="limitLabel">Duration (days)<input id="limit" type="number" min="1" step="1" value="14"></label>
-<label>Agent strategy mode<select id="strategy"><option value="auto">Use / optimise preset strategies</option><option value="invent">Invent my own strategy (experimental)</option><option value="ema">Manual · EMA trend (9/34)</option><option value="rsi">Manual · RSI mean-reversion (14, 30/60)</option><option value="breakout">Manual · 20-bar breakout / 10-bar exit</option></select></label>
-</div><p class="secondary">Preset mode compares eight predefined rules. Invent mode generates its own bounded entry/exit combinations from the earliest 20% of this chart, tests each against a separate 20% confirmation period, then freezes any qualifying hypothesis before the untouched final 60%. Invention is a deterministic rules engine, not an unconstrained AI; it can abstain. Neither mode can approve paper or live broker orders. Manual rules remain available for comparison. The run stops on your duration or on realised net profits after completed trades, whichever mode you choose. If history runs out first, the test reports that rather than guessing.</p>
-<button id="run" type="button" disabled>Run historical validation</button></section>
-<section id="result" aria-live="polite"><h2>Validation results</h2><p class="secondary">Results will appear here once market data has loaded and you run a test.</p></section>
-<footer>Data is an archived historical snapshot, not a live trading feed. Manual tests use 0.5% modelled fees per side; automated research modes test Alpaca's published entry-tier taker fee of 0.25% per side and stresses it at 0.5%. GBP outcomes use USD price-change ratios without FX, spreads, liquidity or real slippage. The 80% win-rate goal is measured, never presumed.</footer>
-</main>
+:root{color-scheme:dark;--bg:#07131e;--card:#11283a;--deep:#0b1d2b;--line:#36566b;--text:#eaf6fa;--muted:#a5bdc9;--mint:#9cdecd;--amber:#efcf91;--red:#edabb0;font:15px/1.5 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+*{box-sizing:border-box}body{margin:0;min-width:310px;background:radial-gradient(ellipse 80% 35% at 75% 0,#1c4754bb,transparent),var(--bg)}
+button,input,select{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.55}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+a{color:#b4f0ec;text-decoration-thickness:1px;text-underline-offset:3px}
+.shell{max-width:1190px;padding:22px clamp(15px,4vw,38px) 90px;margin:auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:15px;border-bottom:1px solid var(--line)}
+.wordmark{font-size:12px;letter-spacing:.18em;font-weight:900;text-decoration:none;color:var(--amber)}
+header nav{display:flex;gap:13px;flex-wrap:wrap}header nav a{font-size:13px;font-weight:700}
+.kicker{font-size:11px;color:var(--mint);font-weight:900;letter-spacing:.18em}
+.hero{display:grid;grid-template-columns:1.5fr 0.9fr;gap:20px;align-items:center;padding:42px 0 24px}
+h1{font-size:clamp(31px,5vw,56px);line-height:1.07;letter-spacing:-.052em;max-width:710px;margin:10px 0 13px}
+h1 em{font-style:normal;color:var(--amber)}
+.lede{font-size:15px;color:#bdd2df;max-width:670px}.hero-side{border:1px solid #668382;background:#123440bb;border-radius:16px;padding:22px}
+.hero-side strong{display:block;font-size:16px;margin:8px 0}.muted,.hint{color:var(--muted)}.hint{font-size:12px}
+.workflow{display:flex;gap:5px;flex-wrap:wrap;padding:8px 0 20px;color:#b2cbd6;font-size:12px;font-weight:800}
+.workflow span{padding:7px 11px;background:#193648;border:1px solid #416070;border-radius:30px}
+.workflow span.active{border-color:#9bd8c2;color:#bcece0}
+.layout{display:grid;grid-template-columns:minmax(300px,415px) minmax(0,1fr);gap:17px;align-items:start}
+.panel{background:linear-gradient(155deg,#112b3d,#0b2030);border:1px solid var(--line);border-radius:17px;padding:20px;min-width:0}
+.panel+.panel{margin-top:16px}h2{font-size:20px;margin:2px 0 13px;letter-spacing:-.028em}h3{font-size:15px;margin:0 0 8px}
+.panel-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.step{font-size:11px;letter-spacing:.12em;color:var(--mint);font-weight:900}
+label{display:block;color:#d4e5ec;font-size:13px;font-weight:750;margin:13px 0 5px}
+input,select{display:block;width:100%;color:var(--text);background:#091b2a;padding:11px 12px;border-radius:9px;border:1px solid #638196;min-height:44px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.span-all{grid-column:1/-1}
+button,.button-link{border-radius:9px;min-height:42px;padding:10px 13px;color:#e7f5fa;background:#1b4655;border:1px solid #568e9a;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+button.primary{background:#ecc98b;border:1px solid #f4dbaa;color:#0a2632;width:100%;min-height:51px;font-size:15px}
+button.ghost{background:#0a2431}.actions{display:flex;flex-wrap:wrap;gap:10px}
+button.small{font-size:12px;padding:7px 11px;min-height:35px}
+.check{display:flex;gap:8px;align-items:center;font-size:12px}
+.data-status{display:flex;gap:10px;align-items:start;background:#0a2434;border:1px solid #3c586a;border-radius:12px;padding:13px;margin:10px 0}
+.dot{width:10px;height:10px;flex:none;margin-top:6px;background:var(--amber);border-radius:50%}
+.dot.ok{background:#8fe2c9}.dot.bad{background:#e9a1a7}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:15px 0}
+.stat{background:#091e2d;border:1px solid #345567;border-radius:12px;padding:13px;min-width:0}
+.stat small{display:block;color:var(--muted);font-size:11px}.stat strong{display:block;font-size:20px;line-height:1.25;margin:5px 0;overflow-wrap:anywhere}
+.pill{display:inline-block;font-size:11px;border:1px solid #64898e;color:#b9e9de;border-radius:30px;padding:4px 8px;font-weight:900;margin:4px 0}
+.pill.warn{border-color:#9b7958;color:#f0d1a3}.pill.bad{border-color:#975c63;color:#f1afb6}
+.notice{border-left:3px solid var(--amber);padding:8px 12px;background:#43332132;color:#f1d6ad;margin:12px 0;border-radius:0 9px 9px 0}
+.notice.ok{border-color:#93d8c8;color:#b9ebdc;background:#123f373c}
+.candidate{border:1px solid #3c6073;background:#0b2232;border-radius:12px;padding:14px;margin:10px 0}
+.candidate-head{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap}.candidate strong{display:block;font-size:14px;max-width:460px}
+.mini-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:11px 0}
+.mini-grid div{border-top:1px solid #345568;padding-top:7px}.mini-grid small{display:block;color:var(--muted);font-size:11px}.mini-grid b{font-size:14px;overflow-wrap:anywhere}
+.reasons{font-size:12px;color:#efd4a2;margin:7px 0 0}.empty{background:#102b39;border:1px dashed #5c7788;border-radius:12px;padding:28px 20px}
+details{border-top:1px solid #37566a;margin-top:11px;padding-top:9px}summary{cursor:pointer;color:#b6f0e3;font-weight:750;font-size:12px}
+details p,details li{color:#b3c9d6;font-size:12px}
+#results{scroll-margin-top:20px}#results h2{margin:0 0 8px}.resulthead{display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:10px}
+.foot{margin-top:25px;padding-top:15px;border-top:1px solid #325466;color:var(--muted);font-size:12px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.hero{grid-template-columns:1fr}.hero-side{display:none}}
+@media(max-width:520px){.shell{padding:16px 14px 90px}.panel{padding:15px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.mini-grid{grid-template-columns:1fr 1fr}.form-grid{gap:0 9px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header>
+ <a class="wordmark" href="./mission-control.html">SCALP CITY / THE FOUNDRY</a>
+ <nav aria-label="Navigation"><a href="./mission-control.html">Mission Control</a><a href="./robot-academy.html">Robot Academy</a><a href="./teacher-console.html">Teacher</a></nav>
+</header>
+<section class="hero">
+ <div><span class="kicker">AGENT DEVELOPMENT / RESEARCH</span><h1>Build a hypothesis. <em>Test the evidence.</em></h1><p class="lede">Define what you want a robot to achieve, examine which strategies were tried, and understand why they pass or fail. Every result is historical research—not a trading promise.</p></div>
+ <div class="hero-side"><span class="kicker">MISSION RULE</span><strong>A failed experiment is still a result.</strong><p class="muted">A weak model must never disappear behind an error. The lab always shows its tested candidates, limitations and next recommended research step.</p></div>
+</section>
+<div class="workflow" aria-label="Research lifecycle"><span class="active">01 Define goal</span><span>02 Explore strategies</span><span>03 Examine evidence</span><span>04 Teacher review</span></div>
+<div class="layout">
+<div>
+ <section class="panel" aria-labelledby="source-heading">
+  <div class="panel-heading"><span class="step">DATA / VERIFIED SOURCE</span><span class="pill warn" id="state" aria-live="polite">Loading</span></div>
+  <h2 id="source-heading">Market evidence</h2>
+  <div class="data-status" role="status"><span class="dot" id="source-dot"></span><div><strong id="dataset">Loading historical market candles…</strong><div class="hint" id="coverage">Checking original timestamps, provenance and candle continuity.</div></div></div>
+  <button id="reload" type="button" class="ghost small">↻ Load newest published Alpaca data</button>
+  <p class="hint">Reload checks the latest dataset published to this website, not live order-book data. Alpaca market-data keys stay on the server.</p>
+ </section>
+ <section class="panel" aria-labelledby="goal-heading">
+  <div class="panel-heading"><span class="step">STEP 1 / MISSION</span><span class="pill">Virtual only</span></div>
+  <h2 id="goal-heading">What should this agent achieve?</h2>
+  <div class="form-grid">
+   <div class="span-all"><label for="pair">Robot / crypto chart</label><select id="pair"><option>BTC/USD</option><option>ETH/USD</option><option>SOL/USD</option><option>XRP/USD</option><option>ADA/USD</option><option>AVAX/USD</option><option>LINK/USD</option><option>DOGE/USD</option><option>LTC/USD</option><option>BCH/USD</option></select></div>
+   <div><label for="balance">Virtual capital (£)</label><input id="balance" type="number" min="50" max="1000000" step=".01" value="50" inputmode="decimal"></div>
+   <div><label for="mode">Goal type</label><select id="mode"><option value="duration">Test over duration</option><option value="profit">Reach net profit</option></select></div>
+   <div class="span-all"><label id="limitLabel" for="limit">Duration (days)</label><input id="limit" type="number" min="1" max="3650" step="1" value="14" inputmode="decimal"></div>
+  </div>
+  <p class="hint" id="goal-note">Historical test duration is limited to available untouched candles. No future return or wait time is assumed.</p>
+ </section>
+ <section class="panel" aria-labelledby="method-heading">
+  <span class="step">STEP 2 / EXPERIMENT</span>
+  <h2 id="method-heading">How should it find a strategy?</h2>
+  <label for="strategy">Research approach</label>
+  <select id="strategy"><option value="auto">Discover best of the existing strategies</option><option value="invent">Invent my own strategy (experimental)</option><option value="ema">Manual comparison · EMA trend (9/34)</option><option value="rsi">Manual comparison · RSI (14, 30/60)</option><option value="breakout">Manual comparison · 20-bar breakout</option></select>
+  <p class="hint" id="method-note">This method compares eight defined EMA, RSI and breakout hypotheses on this chart's earlier data. It cannot train a neural network or send orders.</p>
+  <button class="primary" id="run" type="button" disabled>Run research experiment →</button>
+  <p class="hint">Training selection uses the first 40% of a snapshot; later history is examined only after qualifying rules are frozen. Invention is bounded rules research, not Deep RL.</p>
+ </section>
+</div>
+<div>
+ <section class="panel" id="results" aria-live="polite" aria-labelledby="results-heading">
+  <div class="resulthead"><div><span class="step">STEP 3 / EVIDENCE</span><h2 id="results-heading">Research report</h2></div><span class="pill" id="result-status">Not yet run</span></div>
+  <div id="result"><div class="empty"><h3>Your research starts here</h3><p class="muted">Choose the market, virtual objective and research method. Run once to receive candidate rankings, rejection reasons and an independently separated historical replay when eligible.</p><p class="hint">No profitable models, forward-paper grades or future returns are assumed.</p></div></div>
+  <div class="actions" id="export-actions" hidden><button class="ghost" id="download" type="button">↓ Export evidence JSON</button><a class="button-link" href="./robot-academy.html">View Academy ↗</a></div>
+ </section>
+ <section class="panel" aria-label="Research lifecycle and safety">
+  <span class="step">STEP 4 / QUALIFICATION</span><h2>What happens after the lab?</h2>
+  <p class="muted">A strategy can progress only if its parameters and historical data are frozen, independently rechecked by Teacher, and subsequently proven with broker-reconciled PAPER results under separate approval. No browser backtest can grant permission.</p>
+  <div class="actions"><a class="button-link" href="./teacher-console.html">Open Teacher's Office ↗</a><a class="button-link" href="./trading-floor.html">View Trading Floor ↗</a></div>
+ </section>
+</div>
+</div>
+<footer class="foot">Historical virtual research using read-only Alpaca/Kraken US snapshots. Simulated P&L excludes independently verified GBP exchange rates, spreads and real liquidity/slippage. No deposits, paper orders, live trading or withdrawals are enabled on this page.</footer>
+</div>
 <script type="module">
 import {checkSnapshot,simulateValidation} from './strategy-validation-core.mjs';
 import {validateAdaptive} from './strategy-adaptive-model.mjs';
 const $=id=>document.getElementById(id),cache=new Map();
-let selected=null,serial=0;
+let selected=null,serial=0,lastPacket=null,active=false;
 const money=n=>'£'+Number(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
-const state=(s,ok=false)=>{$('state').textContent=s;$('state').style.color=ok?'#9cf0ce':'#ffd18c'};
+const el=(tag,content='',klass='')=>{const n=document.createElement(tag);n.textContent=content;if(klass)n.className=klass;return n;};
+const add=(parent,tag,content='',klass='')=>{const n=el(tag,content,klass);parent.append(n);return n;};
+const setStatus=(textValue,kind='warn')=>{
+ const p=$('state');p.textContent=textValue;p.className='pill '+(kind==='ok'?'':kind==='bad'?'bad':'warn');
+ $('source-dot').className='dot '+(kind==='ok'?'ok':kind==='bad'?'bad':'');
+};
+const rejectionDescription={
+ DISCOVERY_UNDER_2_CLOSED_TRADES:'Too few training trades',
+ CONFIRMATION_UNDER_2_CLOSED_TRADES:'Too few confirmation trades',
+ DISCOVERY_NET_NEGATIVE_OR_FLAT:'No positive training net return after fees',
+ CONFIRMATION_NET_NEGATIVE_OR_FLAT:'No positive confirmation net return after fees',
+ DOUBLE_FEE_STRESS_FAILED:'Failed when transaction fees were doubled',
+ CONFIRMATION_DRAWDOWN_GT_10_PERCENT:'Confirmation drawdown exceeded 10%'
+};
+function goalNote(){
+ const capital=Number($('balance').value),target=Number($('limit').value);
+ if($('mode').value==='profit'){
+  const rate=Number.isFinite(capital)&&capital>0&&Number.isFinite(target)?(100*target/capital):null;
+  $('goal-note').textContent='Profit targets are research objectives, not predictions.'+(rate===null?'':' This target requires '+rate.toFixed(1)+'% net growth relative to starting capital.')+' No estimated payout date can be derived from a short backtest.';
+ }else $('goal-note').textContent='The test uses the selected number of days from previously unseen historical data; it stops if recorded history ends.';
+}
+function methodNote(){
+ const desc={
+ auto:'Compare eight predefined EMA, RSI and breakout candidates. We show all attempts, including failed ones.',
+ invent:'Construct sixteen auditable, bounded entry/exit rule combinations using only early chart data. Not a neural AI.',
+ ema:'Replay a fixed EMA 9/34 rule without optimisation, for an honest historical comparison.',
+ rsi:'Replay a fixed RSI 14 (30/60) rule without optimisation.',
+ breakout:'Replay a fixed 20-bar breakout/10-bar exit rule without optimisation.'
+ };
+ $('method-note').textContent=desc[$('strategy').value];
+}
+function renderLoadingNote(textValue){$('result').replaceChildren(el('div',textValue,'empty'));$('result-status').textContent='In progress';}
 async function loadPair({force=false}={}){
- const pair=$('pair').value,request=++serial;
- selected=null;$('run').disabled=true;$('reload').disabled=true;
- state(force?'Reloading published Alpaca snapshot…':'Loading '+pair+'…');
- $('dataset').textContent='Loading published Alpaca candles for '+pair+'…';
+ const pair=$('pair').value,request=++serial;selected=null;lastPacket=null;
+ $('run').disabled=true;$('reload').disabled=true;
+ setStatus('Loading');
+ $('dataset').textContent='Loading '+pair+' historical candles…';
+ $('coverage').textContent='Checking source continuity and completed candles.';
  try{
   let record=force?null:cache.get(pair);
   if(!record){
-   // Bypass stale iOS/browser and CDN cache when explicitly refreshed.
    const base='./validation-data/'+pair.replace('/','-')+'.json';
    const url=force?base+'?refresh='+Date.now():base;
    const response=await fetch(url,{cache:force?'no-store':'default',credentials:'omit'});
-   if(!response.ok)throw Error('Published Alpaca snapshot unavailable (HTTP '+response.status+')');
+   if(!response.ok)throw Error('Snapshot HTTP '+response.status+'. Try reloading the published dataset.');
    const source=await response.json();
    const verified=checkSnapshot(source,pair);
-   record={source,verified,retrieval:'PUBLISHED_ALPACA_KRAKEN_SNAPSHOT'};
+   record={source,verified};
   }
   if(serial!==request)return;
   cache.set(pair,record);selected=record;
-  const v=record.verified,days=(v.bars.length/96).toFixed(1);
-  const age=Date.parse(v.snapshotAt),hours=Number.isFinite(age)?Math.max(0,(Date.now()-age)/3600000):Infinity;
+  const v=record.verified,age=Date.parse(v.snapshotAt),hours=Number.isFinite(age)?Math.max(0,(Date.now()-age)/3600000):Infinity;
   const stale=hours>8;
-  $('dataset').textContent='Ready · '+pair+' · '+v.bars.length.toLocaleString()+
-    ' completed 15-minute candles · '+days+' days'+(stale?' · Archived snapshot':' · Recently published');
-  $('coverage').textContent='Read-only Alpaca Kraken US · '+v.sampleStart+' → '+v.sampleEnd+
-    ' · Snapshot generated '+(v.snapshotAt||'unknown')+
-    (stale?'. This data is more than 8 hours old; scheduled refresh may be delayed.':
-      '. Freshly published historical snapshot.')+
-    ' No broker fills, deposits or withdrawals.';
-  $('run').disabled=false;state(stale?'Archived data ready':'Alpaca historical data ready',!stale);
+  $('dataset').textContent=pair+' ready · '+v.bars.length.toLocaleString()+' candles · '+(v.bars.length/96).toFixed(1)+' recorded days';
+  $('coverage').textContent='Source: '+v.source+' · '+v.sampleStart+' → '+v.sampleEnd+'. Published: '+(v.snapshotAt||'unknown')+(stale?' · Archived snapshot (older than 8 hours).':' · Recently published.')+' No live prices or broker fills.';
+  setStatus(stale?'Archived data':'Data ready',stale?'warn':'ok');
+  $('run').disabled=false;
  }catch(e){
   if(serial!==request)return;
-  $('dataset').textContent='Data unavailable: '+e.message;
-  $('coverage').textContent='No synthetic candles. Check the Alpaca snapshot refresh Action if the published data is missing or invalid.';
-  state('Data unavailable');
- }finally{
-  if(serial===request)$('reload').disabled=false;
+  $('dataset').textContent='Data unavailable for '+pair;
+  $('coverage').textContent=String(e.message||e)+'. Use the reload button, or check the Alpaca snapshot refresh workflow. No synthetic fallback will be invented.';
+  setStatus('Data unavailable','bad');
+ }finally{if(serial===request)$('reload').disabled=false;}
+}
+function formInput(){
+ const balance=Number($('balance').value),limit=Number($('limit').value);
+ if(!Number.isFinite(balance)||balance<50||balance>1000000)throw Error('Virtual capital must be between £50 and £1,000,000');
+ if(!Number.isFinite(limit)||limit<=0||($('mode').value==='duration'&&(!Number.isInteger(limit)||limit>3650))||
+   ($('mode').value==='profit'&&limit>100000000))throw Error('Enter a valid duration or positive net-profit target');
+ if(!selected)throw Error('Market snapshot has not loaded. Reload market evidence.');
+ return {snapshot:selected.source,symbol:$('pair').value,startingBalanceGbp:balance,mode:$('mode').value,limit};
+}
+function renderMetricGrid(parent,items){
+ const wrap=add(parent,'div','','stats');
+ for(const [label,value] of items){const card=add(wrap,'div','','stat');add(card,'small',label);add(card,'strong',value);}
+}
+function renderReplay(parent,replay){
+ add(parent,'h3','Frozen historical replay · '+replay.symbol);
+ renderMetricGrid(parent,[
+  ['Realised net P&L',money(replay.realizedNetProfitGbp)],['Closed trades',String(replay.closedTrades)],
+  ['Observed win rate',replay.winRatePct===null?'No closes':replay.winRatePct+'%'],
+  ['Maximum drawdown',replay.maxDrawdownPct+'%'],['Marked equity',money(replay.markedEquityGbp)],
+  ['Tested duration',replay.elapsedDays+' days']
+ ]);
+ add(parent,'p','Stop: '+replay.status.replaceAll('_',' ')+'. Evaluated '+replay.heldOutCandles+' held-out bars. Trading fees '+(100*replay.feePerSideFraction).toFixed(2)+'% per side; real spread/slippage/FX not verified.','hint');
+ if(replay.trades?.length){
+  const detail=add(parent,'details');add(detail,'summary','Inspect '+replay.trades.length+' simulated closed trades');
+  const table=add(detail,'div','','mini-grid');
+  for(const t of replay.trades.slice(0,30)){const row=add(table,'div');add(row,'small',t.exit);add(row,'b',money(t.netGbp));}
+  if(replay.trades.length>30)add(detail,'p','First 30 trades shown; complete entries included in exported JSON.');
  }
 }
-function display(r){
- const metrics=[
-  ['Starting balance',money(r.startingBalanceGbp)],
-  ['Realised cumulative net P&L',money(r.realizedNetProfitGbp)],
-  ['Cash balance after closed trades',money(r.cashBalanceGbp)],
-  ['Virtual equity (open position marked)',money(r.markedEquityGbp)],
-  ['Closed trades',String(r.closedTrades)],
-  ['Modelled fee per side',(100*r.feePerSideFraction).toFixed(2)+'%'],
-  ['Observed historical win rate',r.winRatePct===null?'Not enough trades':r.winRatePct+'%'],
-  ['Maximum historical drawdown',r.maxDrawdownPct+'%'],
-  ['Simulated elapsed duration',r.elapsedDays+' days']
- ];
- const result=$('result');result.replaceChildren();
- const head=document.createElement('h2');head.textContent='Historical replay · '+r.symbol;result.append(head);
- const p=document.createElement('p');p.className=r.goalReached?'good':'warn';
- p.textContent='Stop reason: '+r.status.replaceAll('_',' ')+
-   (r.status==='HISTORY_EXHAUSTED'?' — data ended before the requested target/duration.':'');
- result.append(p);
- const grid=document.createElement('div');grid.className='metrics';result.append(grid);
- for(const [label,value] of metrics){
-  const box=document.createElement('div');box.className='metric';
-  const a=document.createElement('span'),b=document.createElement('strong');
-  a.textContent=label;b.textContent=value;box.append(a,b);grid.append(box);
+function renderCandidates(parent,model){
+ const n=model.candidates?.length??0;
+ add(parent,'h3','Strategy research · '+n+' historical candidates');
+ if(!n){add(parent,'p','Insufficient independent research history. No candidate generated.','notice');return;}
+ const intro=add(parent,'p',model.selected?
+  'One candidate satisfied the internal historical screening conditions. Its later replay is shown separately below.':
+  'No candidate passed all historical training and cost gates. All attempts remain inspectable; no candidate was promoted.','notice'+(model.selected?' ok':''));
+ const candidates=model.candidates||[];
+ const shown=candidates.slice(0,6);
+ for(let i=0;i<shown.length;i++){
+  const c=shown[i],card=add(parent,'div','','candidate'),head=add(card,'div','','candidate-head');
+  add(head,'strong',(i+1)+'. '+c.label);
+  add(head,'span',c.eligible?'Internal screen passed':'Screen rejected','pill '+(c.eligible?'':'bad'));
+  const mini=add(card,'div','','mini-grid');
+  for(const [lab,val] of [
+   ['Early training net',money(c.discovery.netGbp)],
+   ['Confirmation net',money(c.confirmation.netGbp)],
+   ['Double-fee stress',money(c.doubledFee.netGbp)],
+   ['Confirmed-window closes',String(c.confirmation.closedTrades)],
+   ['Observed confirmation win rate',c.confirmation.winRatePct===null?'No closes':c.confirmation.winRatePct+'%'],
+   ['Confirmation drawdown',c.confirmation.maxDrawdownPct+'%']
+  ]){const node=add(mini,'div');add(node,'small',lab);add(node,'b',val);}
+  if(c.rejection.length)add(card,'p',c.rejection.map(x=>rejectionDescription[x]||x).join(' · '),'reasons');
  }
- const detail=document.createElement('p');detail.className='secondary';
- detail.textContent='Source: '+r.actualSource+' · '+r.heldOutCandles+' held-out candles · '+r.validationPeriod.start+
- ' to '+r.validationPeriod.end+' · Open position at end: '+(r.openPosition?'Yes':'No')+
- '. 80% observed win-rate goal: '+(r.winRatePct===null?'unmeasured':r.winRatePct>=80?'observed on this sample':'not met')+'.';
- result.append(detail);
+ if(candidates.length>shown.length){
+  const more=add(parent,'details');add(more,'summary','Show all '+candidates.length+' candidate decisions');
+  for(const c of candidates.slice(shown.length)){
+   const item=add(more,'p',c.label+' · confirmation '+money(c.confirmation.netGbp)+' / '+c.confirmation.closedTrades+' closes · '+(c.rejection.map(x=>rejectionDescription[x]||x).join('; ')||'internal screen passed'));
+   item.style.borderBottom='1px solid #36566b';
+  }
+ }
+ const m=add(parent,'details');add(m,'summary','Read the independent windows and research method');
+ for(const e of model.explanations||[])add(m,'p',e.agent+': '+e.method+'. Evidence: '+e.evidence+'. Decision: '+e.decision+'.');
 }
-// Local browser record is a non-independent research log, NOT model training,
-// returns evidence, validated profits, or permission to trade.
-const MEMORY_KEY='scalp.chart.training.research.v1';
-function recordResearch(model){
+function showReport(packet){
+ lastPacket=packet;
+ const target=$('result');target.replaceChildren();
+ const badge=$('result-status');badge.textContent='Research recorded';badge.className='pill';
+ const {choice,input}=packet;
+ if(choice==='auto'||choice==='invent'){
+  const r=packet.result,model=r.model;
+  const positive=Boolean(model.selected);
+  add(target,'div',positive?'Historical screening produced a research candidate. This is not an approved trading model.':
+   'Research completed: no strategy qualified on the training evidence. Inspect the candidates and failure reasons below.','notice'+(positive?' ok':''));
+  renderMetricGrid(target,[['Chart',input.symbol],['Virtual starting capital',money(input.startingBalanceGbp)],['Candidates tested',String(model.candidates.length)],['Passed training screen',String(model.candidates.filter(x=>x.eligible).length)],['Strategy mode',choice==='invent'?'Invented rules':'Preset comparison'],['Qualification',model.selected?'Training only':'None']]);
+  renderCandidates(target,model);
+  if(r.replay){
+   add(target,'h3','Independent later-history check');
+   renderReplay(target,r.replay);
+   const reasons=r.checker?.reasons||[];
+   add(target,'p',reasons.length?'Independent historical screen rejected: '+reasons.join(', '):
+    'Later historical test positive under configured model assumptions. Still requires genuinely new samples and broker-reconciled forward testing.','notice'+(reasons.length?'':' ok'));
+  }else add(target,'p','No later-history replay was selected because the training screen rejected every candidate. The sealed later data was not used to pick a replacement winner.','hint');
+  const next=add(target,'details');add(next,'summary','What should the research agent do next?');
+  add(next,'p',model.selected?'Freeze candidate parameters, reconcile simulator/Teacher fill assumptions and request independent historical review. No automatic admission.':
+   'Gather genuinely new historical market periods, compare diversified hypotheses, review fees and the sparse trade counts. Do not re-rank using withheld future candles.');
+ }else{
+  add(target,'p','Manual rules are a diagnostic baseline. They have not passed strategy selection, independent screening or forward trade evaluation.','notice');
+  renderReplay(target,packet.result);
+ }
+ $('export-actions').hidden=false;
+ target.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function runLab(){
+ if(active)return;active=true;$('run').disabled=true;$('run').textContent='Evaluating historical evidence…';
  try{
-  const previous=JSON.parse(localStorage.getItem(MEMORY_KEY)||'[]');
-  const records=Array.isArray(previous)?previous.filter(x=>x&&typeof x==='object'):[];
-  const w=model.trainingWindows;
-  if(!w)return 'Not recorded: insufficient training history';
-  const identity=[model.version,model.symbol,w.discovery.start,w.confirmation.end].join('|');
-  const exists=records.some(x=>x.identity===identity);
-  if(!exists)records.push({identity,symbol:model.symbol,version:model.version,
-    discoveryStart:w.discovery.start,confirmationEnd:w.confirmation.end,
-    checkedAt:new Date().toISOString(),selectedLabel:model.selected?.label||null,
-    verdict:model.status,trainOnly:true});
-  const recent=records.slice(-100);
-  localStorage.setItem(MEMORY_KEY,JSON.stringify(recent));
-  const count=recent.filter(x=>x.symbol===model.symbol).length;
-  return count+' locally recorded research window'+(count===1?'':'s')+
-   (exists?' (same historical window not double-counted)':'');
- }catch{return 'Local record unavailable: browser storage disabled';}
+  const input=formInput(),choice=$('strategy').value;
+  const result=(choice==='auto'||choice==='invent')?
+   validateAdaptive({...input,strategyMode:choice==='invent'?'invent':'preset'}):
+   simulateValidation({...input,strategy:choice});
+  showReport({schema:'SCALP_LAB_RESEARCH_REPORT_V2',researchOnly:true,
+   paperOrders:0,liveOrders:0,admissions:0,verifiedForwardGrades:0,
+   generatedAt:new Date().toISOString(),dataSource:selected.verified.source,
+   dataPeriod:{start:selected.verified.sampleStart,end:selected.verified.sampleEnd},
+   objective:{virtualCapitalGbp:input.startingBalanceGbp,mode:input.mode,limit:input.limit},
+   choice,input:{symbol:input.symbol,startingBalanceGbp:input.startingBalanceGbp,mode:input.mode,limit:input.limit},result});
+ }catch(e){
+  $('result').replaceChildren(el('div','Experiment blocked: '+String(e.message||e)+'. Input or evidence must be corrected; no performance claim was made.','notice'));
+  $('result-status').textContent='Blocked';$('export-actions').hidden=true;lastPacket=null;
+ }finally{active=false;$('run').disabled=!selected;$('run').textContent='Run research experiment →';}
 }
-function modelExplanation(model){
- const panel=document.createElement('section');
- panel.style.margin='12px 0';panel.style.border='1px solid #5a7892';
- const h=document.createElement('h2');h.textContent=(model.strategyMode==='invent'?'Invented chart model':'Preset chart model')+' · '+model.modelId;
- panel.append(h);
- const status=document.createElement('p');
- status.className=model.selected?'good':'warn';
- status.textContent=model.selected?'Training-screened strategy: '+model.selected.label:
-  'NO QUALIFYING STRATEGY — ABSTAIN. This is a valid risk-control decision, not a passing 80% strategy.';
- panel.append(status);
- const profile=document.createElement('p');profile.className='secondary';
- profile.textContent=model.behavior?
-   'Training-only market behaviour: '+model.behavior.regime+
-   ' · '+model.behavior.dailyVolatilityPct+'% annualisation-free daily volatility'+
-   ' · '+model.behavior.observedPeriodMovePct+'% observed period move.':'Insufficient valid training candles';
- panel.append(profile);
- if(model.selected?.strategy==='synth'){
-  const rule=document.createElement('p');rule.className='secondary';
-  const p=model.selected.params;
-  rule.textContent='Invented hypothesis: enter when '+p.entrySignals.join(p.entryJoin==='all'?' AND ':' OR ')+
-   '; exit on '+p.exitSignal+'. EMA '+p.fast+'/'+p.slow+
-   ', RSI '+p.period+' ('+p.buyBelow+'/'+p.sellAbove+
-   '), channel '+p.lookback+'/'+p.exitLookback+
-   ', volume threshold '+p.volumeMultiplier+'×. Rules frozen before the holdout replay.';
-  panel.append(rule);
- }
- const why=document.createElement('p');why.className='secondary';
- const best=model.candidates?.[0];
- why.textContent=best?
-   'Most promising training candidate: '+best.label+
-   ' · discovery '+money(best.discovery.netGbp)+' net / '+best.discovery.closedTrades+' closes'+
-   ' · confirmation '+money(best.confirmation.netGbp)+' net / '+best.confirmation.closedTrades+' closes'+
-   ' · double-fee 0.5%/side stress '+money(best.doubledFee.netGbp)+' net'+
-   ' · Checker: '+(best.rejection.join('; ')||'internal gates passed')+'.':
-   'No candidates were evaluated.';
- panel.append(why);
- const audit=document.createElement('details');const summary=document.createElement('summary');
- summary.textContent='Show method, evidence and decisions';audit.append(summary);
- for(const step of model.explanations||[]){
-  const p=document.createElement('p');p.className='secondary';
-  p.textContent=step.agent+' — '+step.method+'. Evidence: '+step.evidence+'. Decision: '+step.decision;
-  audit.append(p);
- }panel.append(audit);
- const note=document.createElement('p');note.className='secondary';
- note.textContent=recordResearch(model)+'. Browser records never retrain on historical holdout performance. No brokerage orders were made.';
- panel.append(note);return panel;
-}
-
-$('pair').addEventListener('change',()=>loadPair());
+$('pair').addEventListener('change',()=>{lastPacket=null;$('export-actions').hidden=true;loadPair();});
 $('reload').addEventListener('click',()=>loadPair({force:true}));
 $('mode').addEventListener('change',()=>{
  const duration=$('mode').value==='duration';
- $('limitLabel').firstChild.textContent=duration?'Duration (days)':'Cumulative net profit target (£)';
- $('limit').value=duration?'14':'2000';$('limit').step=duration?'1':'.01';
+ $('limitLabel').textContent=duration?'Duration (days)':'Cumulative net profit target (£)';
+ $('limit').value=duration?'14':'2000';$('limit').step=duration?'1':'.01';goalNote();
 });
-$('run').addEventListener('click',()=>{
- try{
-  if(!selected)throw Error('Published Alpaca candles are not ready');
-  const input={snapshot:selected.source,symbol:$('pair').value,
-   startingBalanceGbp:Number($('balance').value),mode:$('mode').value,
-   limit:Number($('limit').value)};
-  const choice=$('strategy').value;
-  if(choice==='auto'||choice==='invent'){
-   const result=validateAdaptive({...input,strategyMode:choice==='invent'?'invent':'preset'});
-   if(result.replay)display(result.replay);
-   else {
-    $('result').replaceChildren();
-    const title=document.createElement('h2');title.textContent=choice==='invent'?'Invented strategy research':'Preset strategy research';
-    const info=document.createElement('p');info.className='warn';
-    info.textContent='No training hypothesis passed both independent training windows and cost/risk gates. The agent abstained rather than inventing a profitable result.';
-    $('result').append(title,info);
-   }
-   if(result.checker){
-    const audit=document.createElement('p');audit.className=result.checker.reasons.length?'warn':'secondary';
-    audit.textContent=result.checker.reasons.length?
-     'CHECKER — OUTER HOLDOUT FAILED: '+result.checker.reasons.join('; ')+
-     '. Selected during training, NOT validated for real trading.':
-     'Checker: historical results are research-only, NOT verified live-forward evidence.';
-    $('result').prepend(audit);
-   }
-   $('result').prepend(modelExplanation(result.model));
-  }else display(simulateValidation({...input,strategy:choice}));
- }catch(e){
-  $('result').replaceChildren();
-  const p=document.createElement('p');p.className='warn';
-  p.textContent='Validation blocked: '+e.message;$('result').append(p);
- }
+$('balance').addEventListener('input',goalNote);
+$('limit').addEventListener('input',goalNote);
+$('strategy').addEventListener('change',methodNote);
+$('run').addEventListener('click',runLab);
+$('download').addEventListener('click',()=>{
+ if(!lastPacket)return;
+ const data=JSON.stringify(lastPacket,null,2),blob=new Blob([data],{type:'application/json'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='scalp-research-'+lastPacket.input.symbol.replace('/','-')+'-'+Date.now()+'.json';
+ document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),6000);
 });
-// Opening research from a pupil report preselects that chart and mode, never runs orders.
 const requested=new URLSearchParams(location.search);
-const requestedPair=requested.get('pair');
-const requestedMode=requested.get('strategy');
+const requestedPair=requested.get('pair'),requestedMode=requested.get('strategy');
 if([...$('pair').options].some(o=>o.value===requestedPair))$('pair').value=requestedPair;
 if(['auto','invent','ema','rsi','breakout'].includes(requestedMode))$('strategy').value=requestedMode;
-loadPair();
-</script><script src="./journey-nav.js" defer></script>
+goalNote();methodNote();loadPair();
+</script>
+<script src="./journey-nav.js" defer></script>
 </body></html>
