@@ -22,6 +22,16 @@ button:disabled{cursor:not-allowed;opacity:.48}
 .metric small{font-size:.75rem;color:#9fbdcc}.metric strong{display:block;margin-top:5px;font-size:1.15rem;overflow-wrap:anywhere}
 #status{padding:12px 0;color:#f0ce91;min-height:45px}
 #footnote{font-size:.78rem;color:#a8bdca}
+.ledger-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.ledger-title h2{font-size:1.22rem;margin:0}
+.ledger-scroll{overflow-x:auto}
+.ledger{width:100%;min-width:650px;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.ledger th,.ledger td{padding:10px;border-bottom:1px solid #334c64;text-align:left}
+.ledger th{font-size:.74rem;color:#acccdd;text-transform:uppercase}
+.ledger td{font-size:.86rem}.win{color:#87e6cd}.loss{color:#f6a2ab}
+.info{font-size:.83rem;color:#abc6d8;line-height:1.6}
+#journalStatus{color:#bad1dd}
+#journalEmpty{color:#c3d0df;padding:16px 6px}
 @media(max-width:720px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}#chart{height:290px}}
 </style></head>
 <body><main>
@@ -44,14 +54,33 @@ button:disabled{cursor:not-allowed;opacity:.48}
 <div class="metrics" style="margin-top:12px">
 <div class="metric"><small>Completed market candle</small><strong id="time">—</strong></div>
 <div class="metric"><small>Frozen pupil decision</small><strong id="decision">—</strong></div>
-<div class="metric"><small>Next-open virtual fill</small><strong id="fill">—</strong></div>
+<div class="metric"><small>Virtual execution · USD</small><strong id="fill">No order</strong></div>
 <div class="metric"><small>Simulated account equity</small><strong id="equity">—</strong></div>
 <div class="metric"><small>Net simulated reward</small><strong id="reward">—</strong></div>
 <div class="metric"><small>Virtual closed trades</small><strong id="closes">—</strong></div>
 <div class="metric"><small>Candles revealed</small><strong id="progress">—</strong></div>
 <div class="metric"><small>Market interval</small><strong>5 minutes</strong></div>
+<div class="metric"><small>Position state</small><strong id="position">—</strong></div>
+<div class="metric"><small>Realised P&amp;L · virtual units</small><strong id="realized">—</strong></div>
+<div class="metric"><small>Most recent closed trade</small><strong id="lasttrade">—</strong></div>
+<div class="metric"><small>Saved replay position</small><strong id="saved">—</strong></div>
 </div></section>
-<p id="footnote">Source: Alpaca/Kraken US authentic completed 5-minute bars. Playback is an **offline development replay** of a frozen policy using a 60% training / 20% later-development / 20% untouched-holdout split. Browser visualization is not the agent's vision input: the DQN observes causal numerical price, volume, position and drawdown features. All fills, fees and equity are simulated; this website cannot place paper or real-money orders.</p>
+<section class="card" aria-labelledby="journalHeading">
+<div class="ledger-title"><h2 id="journalHeading">Trade history</h2>
+<button type="button" id="export" disabled>Export trades CSV</button></div>
+<p class="info">These are simulated orders made by the frozen model, not every LONG/FLAT signal. Market prices are in USD; account profit is expressed in virtual units, with no GBP conversion. Closed trades remain in this journal as the chart advances.</p>
+<p id="journalStatus">Load verified replay to view trade history.</p>
+<div class="ledger-scroll"><table class="ledger"><thead><tr>
+<th>#</th><th>Entry time</th><th>Exit time</th><th>Entry USD</th><th>Exit USD</th>
+<th>Net P&amp;L</th><th>Net %</th><th>Outcome</th></tr></thead><tbody id="tradeRows"></tbody></table></div>
+<div id="journalEmpty">No closed trades recorded yet.</div>
+<h3>Virtual order events</h3>
+<div class="ledger-scroll"><table class="ledger"><thead><tr>
+<th>Time</th><th>Side</th><th>Execution USD</th><th>Fee</th><th>Result</th></tr></thead>
+<tbody id="eventRows"></tbody></table></div>
+<p class="info" id="legacyNotice" hidden>This is an older trace containing position changes without exact simulated execution prices, fees or individual trade P&amp;L. Those numbers are not invented. The source journal will be populated on the next verified training export.</p>
+</section>
+<p id="footnote">Source: Alpaca/Kraken US authentic completed 5-minute bars. Playback is an offline development replay of a frozen policy using a 60% training / 20% later-development / 20% untouched-holdout split. Browser visualization is not the agent's vision input: the DQN observes causal numerical price, volume, position and drawdown features. All fills, fees and equity are simulated; this website cannot place paper or real-money orders.</p>
 </main>
 <script>
 'use strict';
@@ -60,7 +89,26 @@ const base='https://raw.githubusercontent.com/tristanpeto123-eng/Scalp-City-Lab/
 let trace=null,index=0,timer=null;
 function stop(){if(timer!==null){clearInterval(timer);timer=null;}$('play').textContent='Play';}
 function time(t){return new Date(t).toLocaleString('en-GB',{timeZone:'UTC',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})+' UTC';}
-function money(n){return Number.isFinite(n)?'£'+n.toFixed(2):'—';}
+function priceUsd(n){return Number.isFinite(n)?'$'+n.toLocaleString('en-US',{maximumFractionDigits:8}):'—';}
+function virtualMoney(n){return Number.isFinite(n)?n.toFixed(2)+' units':'—';}
+function signedVirtual(n){return Number.isFinite(n)?(n>0?'+':'')+n.toFixed(2)+' units':'—';}
+function pct(n){return Number.isFinite(n)?(n>0?'+':'')+n.toFixed(2)+'%':'—';}
+function progressKey(){return trace&&/^[a-f0-9]{64}$/.test(trace.policySha256||'')?
+ 'scalp-city:5m:cursor:'+trace.symbol+':'+trace.policySha256+':'+trace.candles.at(-1).t:null;}
+function persistProgress(){
+ const key=progressKey();if(!key)return false;
+ try{localStorage.setItem(key,String(index));return true;}catch{return false;}
+}
+function restoreProgress(){
+ const key=progressKey();if(!key)return false;
+ try{
+  const stored=localStorage.getItem(key);
+  if(stored===null)return false;
+  const saved=Number(stored);
+  if(!Number.isInteger(saved)||saved<trace.warmupCandleCount-1||saved>=trace.candles.length)return false;
+  index=saved;return true;
+ }catch{return false;}
+}
 function validate(data,symbol){
  if(data?.schema!=='SCALP_CAUSAL_REPLAY_5MIN_V1'||data.symbol!==symbol||
    data.timeframe!=='5Min'||data.source!=='ALPACA_KRAKEN_US_US-1'||
@@ -88,7 +136,149 @@ function validate(data,symbol){
     !Number.isInteger(d.simulatedClosedTrades))
       throw Error('Out-of-order or untrusted model action');
  }
+ if(data.tradeJournalSchema!==undefined){
+  if(data.tradeJournalSchema!=='SCALP_VIRTUAL_TRADE_JOURNAL_V1'||
+     data.marketPriceCurrency!=='USD'||data.accountingCurrency!=='VIRTUAL_UNITS'||
+     !Number.isFinite(data.startingVirtualBalance)||
+     !Number.isFinite(data.simulatedFeeRate)||!Number.isFinite(data.simulatedSlippageRate)||
+     !Array.isArray(data.virtualFills)||!Array.isArray(data.closedTrades))
+     throw Error('Untrusted virtual journal provenance');
+  const fillsByTime=new Map(),closedByExit=new Map();
+  for(const fill of data.virtualFills){
+   if(!['BUY','SELL'].includes(fill.side)||
+      ![fill.candleTime,fill.sourceDecisionTime,fill.marketOpenPriceUsd,
+         fill.executionPriceUsd,fill.quantityCrypto,fill.feeVirtual].every(Number.isFinite)||
+      fill.quantityCrypto<=0||fill.feeVirtual<0||fillsByTime.has(fill.candleTime)||
+      fill.marketCurrency!=='USD'||fill.accountingCurrency!=='VIRTUAL_UNITS'||
+      fill.marketOpenPriceUsd<=0||fill.sourceDecisionTime+300000!==fill.candleTime)
+      throw Error('Untrusted or duplicated source virtual fill');
+   const target=fill.marketOpenPriceUsd*
+     (1+(fill.side==='BUY'?1:-1)*data.simulatedSlippageRate);
+   if(Math.abs(fill.executionPriceUsd-target)>1e-7*Math.max(1,Math.abs(target)))
+      throw Error('Impossible simulated execution price');
+   fillsByTime.set(fill.candleTime,fill);
+  }
+  let held=false,closes=0;
+  for(const d of data.decisions){
+   const fill=fillsByTime.get(d.nextCandleTime);
+   const requiredSide=d.openPosition===held?null:(d.openPosition?'BUY':'SELL');
+   if(d.executionSide!==requiredSide || (fill?.side||null)!==requiredSide)
+     throw Error('Fill side does not reconcile with position transitions');
+   if(fill && (Math.abs(d.executionPriceUsd-fill.executionPriceUsd)>1e-8||
+      Math.abs(fill.marketOpenPriceUsd-d.nextOpenPrice)>1e-8))
+      throw Error('Fill execution does not reconcile with source candle');
+   held=d.openPosition;if(fill?.side==='SELL')closes++;
+   if(closes!==d.simulatedClosedTrades)
+      throw Error('Virtual trade count does not reconcile with decisions');
+  }
+  for(const trade of data.closedTrades){
+   if(![trade.entryTime,trade.exitTime,trade.netProfitVirtual,trade.entryCostVirtual,
+      trade.exitProceedsVirtual,trade.entryExecutionPriceUsd,
+      trade.exitExecutionPriceUsd,trade.netReturnPct].every(Number.isFinite)||
+      trade.exitTime<=trade.entryTime||trade.entryCostVirtual<=0||
+      closedByExit.has(trade.exitTime)||trade.marketCurrency!=='USD'||
+      trade.accountingCurrency!=='VIRTUAL_UNITS'||
+      !fillsByTime.has(trade.entryTime)||!fillsByTime.has(trade.exitTime))
+      throw Error('Untrusted closed trade record');
+   const entry=fillsByTime.get(trade.entryTime),exit=fillsByTime.get(trade.exitTime);
+   const pnl=trade.exitProceedsVirtual-trade.entryCostVirtual;
+   if(entry.side!=='BUY'||exit.side!=='SELL'||
+      Math.abs(pnl-trade.netProfitVirtual)>1e-6||
+      Math.abs(100*pnl/trade.entryCostVirtual-trade.netReturnPct)>1e-5||
+      Math.abs(entry.executionPriceUsd-trade.entryExecutionPriceUsd)>1e-8||
+      Math.abs(exit.executionPriceUsd-trade.exitExecutionPriceUsd)>1e-8)
+      throw Error('Closed trade P&L/fill mismatch');
+   closedByExit.set(trade.exitTime,trade);
+  }
+  if(closes!==data.closedTrades.length||
+      fillsByTime.size!==data.closedTrades.length*2+(held?1:0)||
+      (held&&!data.openVirtualEntry)||(!held&&data.openVirtualEntry))
+      throw Error('Virtual journal and simulator positions diverge');
+ }
  return data;
+}
+function appendCell(row,value,className){
+ const td=document.createElement('td');td.textContent=String(value);
+ if(className)td.className=className;
+ row.append(td);
+}
+function visibleLegacyEvents(through){
+ const output=[];let held=false;
+ for(const d of trace.decisions){
+  if(d.nextCandleTime>through)break;
+  if(d.openPosition!==held){
+   output.push({side:d.openPosition?'BUY':'SELL',candleTime:d.nextCandleTime,
+     executionPriceUsd:null,marketOpenPriceUsd:d.nextOpenPrice,
+     feeVirtual:null,realizedProfitVirtual:null,legacy:true});
+  }
+  held=d.openPosition;
+ }
+ return output;
+}
+function journalUntil(through){
+ const exact=trace.tradeJournalSchema==='SCALP_VIRTUAL_TRADE_JOURNAL_V1';
+ return {
+  exact,
+  fills:exact?trace.virtualFills.filter(f=>f.candleTime<=through):visibleLegacyEvents(through),
+  trades:exact?trace.closedTrades.filter(t=>t.exitTime<=through):[]
+ };
+}
+function renderJournal(through){
+ const j=journalUntil(through),rows=$('tradeRows'),events=$('eventRows');
+ rows.replaceChildren();events.replaceChildren();
+ for(const t of j.trades){
+  const row=document.createElement('tr');
+  appendCell(row,'#'+t.tradeOrdinal);appendCell(row,time(t.entryTime));
+  appendCell(row,time(t.exitTime));
+  appendCell(row,priceUsd(t.entryExecutionPriceUsd));
+  appendCell(row,priceUsd(t.exitExecutionPriceUsd));
+  appendCell(row,signedVirtual(t.netProfitVirtual),t.netProfitVirtual>0?'win':'loss');
+  appendCell(row,pct(t.netReturnPct));
+  appendCell(row,t.outcome,t.outcome==='WIN'?'win':'loss');
+  rows.append(row);
+ }
+ for(const f of j.fills.slice(-25).reverse()){
+  const row=document.createElement('tr');
+  appendCell(row,time(f.candleTime));
+  appendCell(row,f.legacy?f.side+' (legacy position change)':f.side);
+  appendCell(row,f.legacy?'Not recorded':priceUsd(f.executionPriceUsd));
+  appendCell(row,f.legacy?'Not recorded':virtualMoney(f.feeVirtual));
+  appendCell(row,f.legacy?'No exact fill data':
+    f.side==='SELL'?signedVirtual(f.realizedProfitVirtual):'Position opened');
+  events.append(row);
+ }
+ const pnl=j.trades.reduce((sum,t)=>sum+t.netProfitVirtual,0);
+ $('realized').textContent=j.exact?signedVirtual(pnl):'Not in older trace';
+ $('lasttrade').textContent=j.trades.length?
+  j.trades.at(-1).outcome+' · '+signedVirtual(j.trades.at(-1).netProfitVirtual):
+  'No closed trades';
+ $('journalEmpty').hidden=j.trades.length>0;
+ $('journalEmpty').textContent=j.exact?
+   (j.fills.length?'Position open or no completed trades yet.':'No trades placed in this replay so far.'):
+   (j.fills.length?'Legacy position changes shown below; individual P&L not recorded.':
+      'No entries or exits in this historical replay so far.');
+ $('legacyNotice').hidden=j.exact;
+ $('journalStatus').textContent=j.trades.length+' completed virtual trades · '+
+   j.fills.length+' order events through '+time(through)+
+   (j.exact?' · source-recorded fills and net results':' · earlier trace, unverified execution details');
+ $('export').disabled=!j.exact||j.trades.length===0;
+}
+function exportJournal(){
+ if(!trace)return;
+ const j=journalUntil(trace.candles[index].t);
+ if(!j.exact||!j.trades.length)return;
+ const fields=['tradeOrdinal','symbol','entryTime','exitTime','entryExecutionPriceUsd',
+   'exitExecutionPriceUsd','quantityCrypto','entryFeeVirtual','exitFeeVirtual',
+   'entryCostVirtual','exitProceedsVirtual','netProfitVirtual','netReturnPct','outcome'];
+ const header=fields.join(',');
+ const values=j.trades.map(t=>fields.map(k=>
+   k==='entryTime'||k==='exitTime'?new Date(t[k]).toISOString():
+   String(t[k]??'').replaceAll(',', ';')).join(','));
+ const blob=new Blob([[header,...values].join('\\n')+'\\n'],{type:'text/csv;charset=utf-8'});
+ const link=document.createElement('a'),url=URL.createObjectURL(blob);
+ link.href=url;link.download='scalp-'+trace.symbol.replace('/','-')+'-closed-trades.csv';
+ document.body.append(link);link.click();link.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 function draw(){
  const canvas=$('chart'),ctx=canvas.getContext('2d'),dpi=Math.min(window.devicePixelRatio||1,2);
@@ -115,6 +305,19 @@ function draw(){
   const top=Math.min(y(b.o),y(b.c)),bottom=Math.max(y(b.o),y(b.c));
   ctx.fillRect(x-body/2,top,body,Math.max(1,bottom-top));
  });
+ if(trace.tradeJournalSchema==='SCALP_VIRTUAL_TRADE_JOURNAL_V1'){
+  const first=visible[0].t,last=visible.at(-1).t;
+  for(const fill of trace.virtualFills){
+   if(fill.candleTime<first||fill.candleTime>last)continue;
+   const i=(fill.candleTime-first)/300000;
+   const x=44+(i+.5)*step;
+   const yy=y(fill.marketOpenPriceUsd);
+   ctx.fillStyle=fill.side==='BUY'?'#8ef9d1':'#ffa4ae';
+   ctx.font='16px system-ui';
+   ctx.fillText(fill.side==='BUY'?'▲':'▼',x-6,
+     fill.side==='BUY'?yy+26:yy-11);
+  }
+ }
  ctx.fillStyle='#b2d0e2';ctx.font='11px system-ui';
  ctx.fillText('Only completed candles revealed · historical 5m replay',15,h-9);
 }
@@ -122,43 +325,75 @@ function render(){
  if(!trace)return;
  const b=trace.candles[index],warmup=trace.warmupCandleCount;
  const d=index>=warmup?trace.decisions[index-warmup]:null;
+ const previous=index>warmup?trace.decisions[index-warmup-1]:null;
+ const transition=d&&d.openPosition!==(previous?.openPosition||false);
+ const exact=trace.tradeJournalSchema==='SCALP_VIRTUAL_TRADE_JOURNAL_V1';
+ const side=d&&transition?(d.openPosition?'BUY':'SELL'):null;
  $('time').textContent=time(b.t);
  $('decision').textContent=d?d.action+' at previous close':'Feature warm-up';
- $('fill').textContent=d?money(d.nextOpenPrice):'—';
- $('equity').textContent=d?money(d.equityGbp):'£50.00 initial';
+ $('fill').textContent=d&&d.executionSide?
+   d.executionSide+' '+priceUsd(d.executionPriceUsd):
+   (!exact&&side?side+' · older trace':'No order');
+ $('equity').textContent=d?virtualMoney(d.equityGbp):
+    virtualMoney(exact?trace.startingVirtualBalance:50);
  $('reward').textContent=d?d.reward.toFixed(4):'—';
  $('closes').textContent=d?String(d.simulatedClosedTrades):'0';
+ $('position').textContent=d?(d.openPosition?'LONG open':'FLAT / no position'):'No position';
  $('progress').textContent=(index+1)+' / '+trace.candles.length;
  $('status').textContent=d?
-   'Historical '+trace.symbol+' · the pupil decided after '+time(d.observedCandleTime)+
-   ', with virtual execution at '+time(d.nextCandleTime)+'.':
-   'Causal warm-up: no pupil action shown before the required observation history.';
+   ('Historical '+trace.symbol+' · '+d.action+' decided after '+time(d.observedCandleTime)+
+    (d.executionSide?' · virtual '+d.executionSide+' at '+time(d.nextCandleTime):
+     (!exact&&side?' · legacy position change; exact fill absent':
+      ' · no order was executed at the next open'))):
+   'Causal warm-up: the pupil needs completed history before it can act.';
+ renderJournal(b.t);
+ $('saved').textContent=persistProgress()?'This device':'Source replay';
  draw();
 }
-function step(){if(!trace)return;index=Math.min(index+1,trace.candles.length-1);
- render();if(index===trace.candles.length-1)stop();}
-function play(){if(!trace)return;
+function step(){
+ if(!trace)return;
+ index=Math.min(index+1,trace.candles.length-1);
+ render();if(index===trace.candles.length-1)stop();
+}
+function play(){
+ if(!trace)return;
  if(timer!==null){stop();return;}
- if(index>=trace.candles.length-1){index=trace.warmupCandleCount-1;render();}
+ if(index>=trace.candles.length-1){
+  index=trace.warmupCandleCount-1;render();
+ }
  timer=setInterval(step,Number($('speed').value));$('play').textContent='Pause';
 }
 async function load(){
- stop();trace=null;$('step').disabled=$('play').disabled=$('reset').disabled=true;
- $('status').textContent='Checking source, timeframe and causal action lineage…';draw();
+ stop();trace=null;$('step').disabled=$('play').disabled=$('reset').disabled=$('export').disabled=true;
+ $('status').textContent='Checking 5-minute source, executed fills and causal journal…';draw();
  const symbol=$('symbol').value;
  try{
   const response=await fetch(base+symbol.replace('/','-')+'-5m.json?ts='+Date.now(),{cache:'no-store'});
   if(!response.ok)throw Error('No verified five-minute DQN replay has been published (HTTP '+response.status+')');
   const value=await response.json();trace=validate(value,symbol);
-  index=trace.warmupCandleCount-1;
+  index=trace.warmupCandleCount-1;restoreProgress();
   $('step').disabled=$('play').disabled=$('reset').disabled=false;
   render();
- }catch(e){$('status').textContent=String(e.message||e)+'. No demo or fabricated candles substituted.';}
+ }catch(e){
+  trace=null;
+  $('status').textContent=String(e.message||e)+'. No demo or fabricated candles substituted. No fictional trade history is added.';
+  $('journalStatus').textContent='No validated replay source available.';
+  $('tradeRows').replaceChildren();$('eventRows').replaceChildren();
+  $('journalEmpty').hidden=false;$('journalEmpty').textContent='No verified trades available.';
+ }
 }
 $('load').onclick=load;$('step').onclick=step;$('play').onclick=play;
+$('export').onclick=exportJournal;
 $('reset').onclick=()=>{stop();if(trace){index=trace.warmupCandleCount-1;render();}};
 $('speed').onchange=()=>{if(timer!==null){stop();play();}};
-$('symbol').onchange=()=>{stop();trace=null;draw();$('status').textContent='Select Load verified replay for this pupil.';};
+$('symbol').onchange=()=>{
+ stop();trace=null;index=0;draw();
+ $('step').disabled=$('play').disabled=$('reset').disabled=$('export').disabled=true;
+ $('status').textContent='Choose Load verified replay for this pupil.';
+ $('journalStatus').textContent='Select a pupil to read its source journal.';
+ $('tradeRows').replaceChildren();$('eventRows').replaceChildren();
+ $('journalEmpty').hidden=false;$('journalEmpty').textContent='No replay loaded.';
+};
 window.addEventListener('resize',draw);
 draw();
 </script></body></html>

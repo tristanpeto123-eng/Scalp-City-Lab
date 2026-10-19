@@ -80,6 +80,8 @@ class MarketEnv:
         self.i,self.cash,self.units=WARMUP,self.capital,0.0
         self.entry_cost,self.peak,self.max_dd=0.0,self.capital,0.0
         self.trades,self.wins,self.opens=0,0,0
+        self.last_virtual_fill=None
+        self.realized_profit_virtual=0.0
         return self.observation(),{}
     def equity(self,price):
         return self.cash+self.units*price*(1-self.slippage)*(1-self.fee)
@@ -103,18 +105,41 @@ class MarketEnv:
         previous=self.equity(self.bars[self.i]['c'])
         previous_dd=100*(self.peak-previous)/max(self.peak,1e-9)
         bar=self.bars[self.i+1]
+        self.last_virtual_fill=None
         if action==0 and self.units>0:
-            proceeds=self.units*bar['o']*(1-self.slippage)*(1-self.fee)
+            execution_price=bar['o']*(1-self.slippage)
+            gross=self.units*execution_price
+            fee_paid=gross*self.fee
+            proceeds=gross-fee_paid
+            realized=proceeds-self.entry_cost
+            self.last_virtual_fill={
+                'side':'SELL','candleTime':bar['t'],
+                'marketOpenPriceUsd':bar['o'],
+                'executionPriceUsd':execution_price,
+                'quantityCrypto':self.units,
+                'feeVirtual':fee_paid,'proceedsVirtual':proceeds,
+                'entryCostVirtual':self.entry_cost,
+                'realizedProfitVirtual':realized}
             self.cash+=proceeds
             self.trades+=1
-            self.wins+=proceeds>self.entry_cost
+            self.wins+=realized>0
+            self.realized_profit_virtual+=realized
             self.units,self.entry_cost=0.0,0.0
         elif action==1 and self.units==0:
             notional=(self.cash*.5)/(1+self.fee)
-            self.units=notional/(bar['o']*(1+self.slippage))
+            execution_price=bar['o']*(1+self.slippage)
+            self.units=notional/execution_price
+            fee_paid=notional*self.fee
             self.opens+=1
-            self.entry_cost=notional*(1+self.fee)
+            self.entry_cost=notional+fee_paid
             self.cash-=self.entry_cost
+            self.last_virtual_fill={
+                'side':'BUY','candleTime':bar['t'],
+                'marketOpenPriceUsd':bar['o'],
+                'executionPriceUsd':execution_price,
+                'quantityCrypto':self.units,
+                'feeVirtual':fee_paid,'costVirtual':self.entry_cost,
+                'realizedProfitVirtual':None}
         self.i+=1
         equity=self.equity(bar['c'])
         self.peak=max(self.peak,equity)
@@ -128,7 +153,9 @@ class MarketEnv:
               'netProfitGbp':round(equity-self.capital,4),
               'maxDrawdownPct':round(self.max_dd,4),
               'closedTrades':self.trades,'wins':self.wins,
-              'openedPositions':self.opens,'openPosition':self.units>0}
+              'openedPositions':self.opens,'openPosition':self.units>0,
+              'lastVirtualFill':self.last_virtual_fill,
+              'realizedProfitVirtual':round(self.realized_profit_virtual,6)}
         return self.observation(),float(reward),done,False,info
 
 class QNetwork(nn.Module):
@@ -232,6 +259,9 @@ def build_causal_trace(policy,development_bars,*,symbol,max_visible=420):
     candles=[{'t':b['t'],'o':b['o'],'h':b['h'],'l':b['l'],
               'c':b['c'],'v':b['v']} for b in subset[:WARMUP+1]]
     decisions=[]
+    fills=[]
+    closed_trades=[]
+    active_entry=None
     done=False
     while not done:
         observed_t=subset[env.i]['t']
@@ -239,20 +269,73 @@ def build_causal_trace(policy,development_bars,*,symbol,max_visible=420):
             action=int(policy(torch.from_numpy(obs)).argmax().item())
         obs,reward,done,_,info=env.step(action)
         b=subset[env.i]
+        execution=info['lastVirtualFill']
+        if execution:
+            event=dict(execution)
+            event['sourceDecisionTime']=observed_t
+            event['closedCandleTime']=b['t']
+            event['marketCurrency']='USD'
+            event['accountingCurrency']='VIRTUAL_UNITS'
+            if event['side']=='BUY':
+                if active_entry is not None:
+                    raise ValueError('A position cannot be opened twice')
+                active_entry=event
+                event['tradeOrdinal']=len(closed_trades)+1
+            else:
+                if active_entry is None:
+                    raise ValueError('An unpaired close cannot be recorded')
+                units=active_entry['quantityCrypto']
+                if not math.isclose(units,event['quantityCrypto'],rel_tol=1e-9):
+                    raise ValueError('Entry/exit quantities differ')
+                pnl=event['realizedProfitVirtual']
+                trade={
+                    'tradeOrdinal':len(closed_trades)+1,'symbol':symbol,
+                    'entryDecisionTime':active_entry['sourceDecisionTime'],
+                    'entryTime':active_entry['candleTime'],
+                    'exitDecisionTime':observed_t,'exitTime':event['candleTime'],
+                    'entryMarketOpenUsd':active_entry['marketOpenPriceUsd'],
+                    'exitMarketOpenUsd':event['marketOpenPriceUsd'],
+                    'entryExecutionPriceUsd':active_entry['executionPriceUsd'],
+                    'exitExecutionPriceUsd':event['executionPriceUsd'],
+                    'quantityCrypto':units,
+                    'entryFeeVirtual':active_entry['feeVirtual'],
+                    'exitFeeVirtual':event['feeVirtual'],
+                    'entryCostVirtual':active_entry['costVirtual'],
+                    'exitProceedsVirtual':event['proceedsVirtual'],
+                    'netProfitVirtual':pnl,
+                    'netReturnPct':100*pnl/active_entry['costVirtual'],
+                    'outcome':'WIN' if pnl>0 else ('LOSS' if pnl<0 else 'BREAK_EVEN'),
+                    'accountingCurrency':'VIRTUAL_UNITS',
+                    'marketCurrency':'USD'}
+                closed_trades.append(trade)
+                event['tradeOrdinal']=len(closed_trades)
+                active_entry=None
+            fills.append(event)
         decisions.append({
             'observedCandleTime':observed_t,'action':'LONG' if action else 'FLAT',
             'nextCandleTime':b['t'],'nextOpenPrice':b['o'],
             'reward':round(reward,6),'equityGbp':info['equityGbp'],
             'simulatedClosedTrades':info['closedTrades'],
-            'openPosition':info['openPosition']
+            'openPosition':info['openPosition'],
+            'executionSide':execution['side'] if execution else None,
+            'executionPriceUsd':execution['executionPriceUsd'] if execution else None,
+            'realizedProfitVirtual':info['realizedProfitVirtual']
         })
         candles.append({'t':b['t'],'o':b['o'],'h':b['h'],'l':b['l'],
                         'c':b['c'],'v':b['v']})
+    if len(closed_trades)!=env.trades or len(fills)!=env.trades+env.opens:
+        raise ValueError('Simulator fills and trade journal must reconcile')
     return {'schema':'SCALP_CAUSAL_REPLAY_5MIN_V1','symbol':symbol,
         'timeframe':'5Min','source':'ALPACA_KRAKEN_US_US-1',
         'historicalOnly':True,'futureCandlesVisibleAtOnce':False,
         'fillsAreSimulated':True,'forwardPaperVerified':False,
         'paperOrders':0,'liveOrders':0,'heldOutQuarantineTouched':False,
+        'tradeJournalSchema':'SCALP_VIRTUAL_TRADE_JOURNAL_V1',
+        'marketPriceCurrency':'USD','accountingCurrency':'VIRTUAL_UNITS',
+        'simulatedFeeRate':env.fee,'simulatedSlippageRate':env.slippage,
+        'startingVirtualBalance':env.capital,
+        'closedTrades':closed_trades,'virtualFills':fills,
+        'openVirtualEntry':active_entry,
         'warmupCandleCount':WARMUP+1,'candles':candles,'decisions':decisions}
 
 def run(snapshot,*,episodes=5,seed=7,outdir=None,prior_checkpoint=None,trace_out=None):
@@ -293,6 +376,7 @@ def run(snapshot,*,episodes=5,seed=7,outdir=None,prior_checkpoint=None,trace_out
         if snapshot['timeframe']!='5Min':
             raise ValueError('Visual replay requires genuine 5Min bars')
         trace=build_causal_trace(policy,validation,symbol=symbol,max_visible=420)
+        trace['policySha256']=report['policySha256']
         location=Path(trace_out)
         location.parent.mkdir(parents=True,exist_ok=True)
         location.write_text(json.dumps(trace,separators=(',',':'))+'\n')
