@@ -1,40 +1,33 @@
-# Robot Academy — accelerated neural reinforcement learning
+# Robot Academy — authentic 5-minute Deep RL market replay
 
-Status: feature branch / independent Checker required. **No broker orders, no deployment, no validated profitability.**
+**Status:** review candidate (19 October 2026). Production workflow and website cannot be claimed active until merge and a successful authenticated five-minute source refresh. Historical training only. No broker orders, paper grades or financial advice.
 
-## Why one trade per second isn't the right training metric
+## Objective
 
-The available authenticated market source is **15-minute OHLCV candles**. There are no authenticated one-second ticks, order book events or true one-second fills in the repository. Inventing 900 one-second quotes from one historical candle is incorrect, leaks imaginary precision and cannot train a real 1 Hz scalper.
+Train ten independent neural Deep-Q Network pupils so each behaves as if observing a live crypto chart: a model only receives prior **completed 5-minute candles**, decides FLAT/LONG, and any virtual position change happens at the **following 5-minute bar open**. The simulator then observes the new closed bar, computes fee- and slippage-adjusted reward/equity/drawdown and updates weights from experience replay.
 
-The correct training mechanism is **accelerated historical replay**: each genuine completed 15-minute bar presents one sequential market decision, run as fast as CPU allows (possibly hundreds or more simulated decisions per wall-clock second). A decision to stay flat or stay long is NOT an executed virtual trade. Measured metrics therefore distinguish:
-- policy decisions per second, across all ten models;
-- simulated position closes per second;
-- real network gradient updates per second and total;
-- simulated virtual account P&L/drawdown after fees and slippage;
-- independent new source candles, which may be zero even when optimising the same data.
+The agent sees *numerical OHLCV and position-state features*; the human watches the corresponding visual candlesticks in `market-replay-5m.html`. It does not infer or inspect future candles. No intra-bar tick/trade data are available; none are invented.
 
-A literal paper order per second is not permitted by this design, nor is it an acceptable proxy for a profitable strategy.
+## New native data lane
 
-## Learning architecture
+- `scripts/refresh-rl-5m.mjs` performs GET-only Alpaca/Kraken US 5Min bars with credentials stored in GitHub Actions secrets; two pages or more if required. Strict bar provenance and contiguity (300,000 ms), complete timestamps, OHLC ordering, no synthetic filling of gaps, and up to 30 historical days.
+- `.github/workflows/refresh-rl-5m.yml` refreshes read-only history six-hourly and saves to isolated `rl-5m-data` GitHub branch `snapshots/<PAIR>.json`.
+- The existing legacy 15Min public strategy snapshots and their validation worker remain unchanged. New RL won't use them as training input.
+- `.github/workflows/robot-dqn-replay.yml` then trains 10 pupil neural models from this isolated `rl-5m-data` branch twice hourly (best effort), retaining each prior state-dict checkpoint on distinct `rl-learning-memory` branch.
+- Any missing or stale datasets, missing saved model weights, altered timeframe, invalid bar or failed provenance check blocks training rather than falling back to fake 5-minute prices.
 
-1. Ten isolated per-symbol DQN policies with their own neural weight checkpoint and model SHA. A non-spoofable manifest links model files and checks prior weights before updating; corrupted or missing weights block resumption.
-2. Observation: only completed historical returns, volume, ranges, position and drawdown. Actions: flat / long, with trades executed in the simulation at the *next* 15-minute candle's open.
-3. Shaped reward: log net equity return after fees and slippage minus incremental drawdown risk. Replay buffer, epsilon exploration, target network, Huber loss, gradient updates; policy weights are trained rather than assigning points for a high win rate.
-4. Chronological split: training earliest 60%, validation next 20%, quarantined last 20%. Only earlier training bars update weights. Validation is descriptive and repeated validation on overlapping datasets is not proof of independence.
-5. Existing experimental PyTorch DQN is extended, not replaced by a fake scalar reward engine. `rl/rapid_replay.py` runs ten model updates in a batch and writes `rl-rapid/latest.json` plus `models/<PAIR>-dqn.pt` on an isolated `rl-learning-memory` branch. Each successful batch resumes from the last checkpoint. Fingerprints/new training tail counts prevent calling the same bars new market evidence.
+## Training versus live trading
 
-## Runtime and interfaces
+- Real source interval **5 minutes**. Faster-than-realtime replay is a CPU convenience only. Policy decisions per wall-clock second are not broker orders, and position closes are counted separately.
+- Historical training: earliest 60%. Later development test: next 20%. Final 20% remains **untouched**, never enters training or the published playback.
+- DQN choices: 0/FLAT or 1/LONG, capped at 50% available cash notional, modeled 0.25% fees per side + 0.1% slippage; extra fee stress in validation.
+- Shaped reinforcement: log account equity changes after transaction costs, penalizing incremental drawdown. Real gradients/backprop, epsilon exploration, replay and target networks.
+- Held-out replay (`rl-rapid/replays/<PAIR>-5m.json`) contains up to 420 genuine later-development candles with warmup, frozen DQN actions, next-open virtual fills and simulated closing equity/reward. Future bars remain visually hidden until the user advances the viewer.
+- Replay starts at the earliest 33 warmup candles and shows no actions before features exist. One "Next 5m candle" reveals one actual five-minute bar; optional playback accelerates wall-clock display but never changes the source interval.
+- This establishes **readiness of the interface and offline decision structure**, not live-market deployment. Future live capability requires fresh 5m feed timing, latency and reconciliation monitoring, disjoint forward PAPER tests and separate human approval before any broker access. Current UI has none.
 
-- GitHub Actions research workflow schedules two batches hourly, best effort; a scheduled job is **not** a continuously running 1 Hz trading process.
-- Each job must pass independent tests, validate source freshness, then execute ten offline DQN runs and publish only research-model weights and a public-safe summary to the dedicated `rl-learning-memory` branch.
-- The existing `training-monitor.html` has a new "Neural reinforcement learning · rapid replay" section showing measured decisions/sec, actual virtual closes/sec, gradient updates, data novelty and each pupil's later-development simulated outcome. It reads only approved read-only summary JSON from the GitHub learning branch.
-- Always show "Not measured" and a workflow link until an actual first batch succeeds.
-- The Teacher, signed forward-paper grades, broker trade admission and real-money execution remain separate and OFF.
-
-## Required next infrastructure for real 1-second trading frequency
-
-Before even considering one *virtual market action* per second on real market time rather than accelerated 15-minute replay, obtain signed/authenticated time-series trades or order book at <=1 s resolution, enforce timestamp dedupe/latency/slippage/spread costs, use a persistent worker rather than GitHub cron, and independently benchmark against cash/buy-hold plus frozen out-of-sample then true segregated PAPER execution. Broker order frequency and any funded account access require distinct explicit approval and independent safeguards.
-
-## Acceptance
-
-Run `python -m unittest rl.test_dqn_experiment rl.test_rapid_replay -v`, `node --test scripts/training-monitor-tests.mjs`, and the new independent GitHub Checker. Verify 10 actual checkpoint hashes, real gradient updates, no access to final holdout, no credential calls or orders, new data counts and zero official admissions. Do not merge without exact-version owner approval.
+## Integrity checks
+- `node --test scripts/refresh-rl-5m-tests.mjs scripts/market-replay-5m-tests.mjs`
+- `python -m unittest rl.test_dqn_experiment rl.test_rapid_replay rl.test_five_min_replay -v` (requires numpy and torch)
+- `.github/workflows/robot-rapid-rl-check.yml`: independent G0/G1 source/timestamp/holdout safety tests and no-order guard.
+- The page must display a clear first-run unavailable state until genuine snapshots, DQN weights and replay trace have been published. Do not substitute demo candles into this production route.
