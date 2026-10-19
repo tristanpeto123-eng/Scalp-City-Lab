@@ -1,0 +1,65 @@
+name: Scalp City Unified Release — Checker gate
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/SCALP-CITY-UNIFIED-2026-10-19.md'
+      - 'mission-control.html'
+      - 'rl/**'
+      - 'strategy-free-discovery*'
+      - 'scripts/research-v2*'
+      - 'scripts/diversified-discovery*'
+      - 'scripts/research-evidence-index*'
+      - '.github/workflows/scalp-city-unified-gate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  g0-contract:
+    name: G0 — release scope, page links and independence
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Confirm integrated scope and no misleading page controls
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const contract=fs.readFileSync('docs/SCALP-CITY-UNIFIED-2026-10-19.md','utf8');
+          const page=fs.readFileSync('mission-control.html','utf8');
+          const req=['PR #25','PR #26','PR #27','PR #28','three','DQN','Teacher','sealed'];
+          for(const s of req)if(!contract.includes(s))throw Error('Missing source/authority contract: '+s);
+          for(const s of ['research-options-title','LANE A','LANE B','LANE C','LANE D','Every 5 minutes'])
+            if(!page.includes(s))throw Error('Missing Research lane / cadence: '+s);
+          for(const file of ['strategy-free-discovery.mjs','scripts/research-v2.mjs',
+             'scripts/diversified-discovery.mjs','scripts/research-evidence-index.mjs',
+             'rl/dqn_experiment.py'])if(!fs.existsSync(file))throw Error('Missing research implementation: '+file);
+          const files=['strategy-free-discovery.mjs','scripts/research-v2.mjs',
+             'scripts/diversified-discovery.mjs','scripts/research-evidence-index.mjs'];
+          for(const file of files)await import('./'+file);
+          console.log('UNIFIED_G0_PASS review-only implementations, four lanes, no release');
+          NODE
+  g1-dqn:
+    name: G1 — Deep RL unit tests, no broker
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TEACHER_ENABLE_EXAMINER: 'false'
+      TEACHER_PAPER_ENABLED: 'false'
+      SCALP_PAPER_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install local-only research prerequisites
+        run: python -m pip install numpy 'torch>=2.3,<3'
+      - name: Replay-train, verify chronology and forbid admissions
+        run: python -m unittest rl.test_dqn_experiment -v
