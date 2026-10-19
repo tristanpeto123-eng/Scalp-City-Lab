@@ -16,17 +16,20 @@ from torch import nn
 
 SYMBOLS = ('BTC/USD','ETH/USD','SOL/USD','XRP/USD','ADA/USD',
            'AVAX/USD','LINK/USD','DOGE/USD','LTC/USD','BCH/USD')
-PERIOD_MS = 900_000
+PERIOD_MS = 900_000 # legacy 15-minute experiments remain available
+FIVE_MIN_MS = 300_000
 WARMUP = 32
 
 def validate_snapshot(data, now_ms=None):
-    if (data.get('symbol') not in SYMBOLS or data.get('timeframe') != '15Min'
+    timeframe=data.get('timeframe')
+    if (data.get('symbol') not in SYMBOLS or timeframe not in ('15Min','5Min')
             or data.get('source') != 'ALPACA_KRAKEN_US_US-1'):
         raise ValueError('Untrusted 15-minute historical source')
     rows=data.get('bars')
     if not isinstance(rows,list) or not 2400<=len(rows)<=20000:
         raise ValueError('Require 2400-20000 completed candles')
     now_ms=now_ms if now_ms is not None else int(time.time()*1000)
+    interval=FIVE_MIN_MS if timeframe=='5Min' else PERIOD_MS
     prior=None
     clean=[]
     for row in rows:
@@ -40,11 +43,11 @@ def validate_snapshot(data, now_ms=None):
             raise ValueError('Malformed candle') from exc
         if (not all(map(math.isfinite,(o,h,l,c,v))) or
             min(o,h,l,c)<=0 or v<0 or h<max(o,c,l) or l>min(o,c,h) or
-                (prior is not None and t-prior!=PERIOD_MS)):
+                (prior is not None and t-prior!=interval)):
             raise ValueError('Invalid or noncontiguous candle')
         prior=t
         clean.append({'t':t,'o':o,'h':h,'l':l,'c':c,'v':v})
-    if clean[-1]['t']+PERIOD_MS>now_ms-30000:
+    if clean[-1]['t']+interval>now_ms-30000:
         raise ValueError('Incomplete or future bar')
     if sum(x['v']==0 for x in clean)/len(clean)>.4:
         raise ValueError('Insufficient volume coverage')
@@ -213,7 +216,46 @@ def evaluate(policy,bars,*,fee=.0025,slippage=.001,strategy='dqn'):
         obs,_,done,_,info=env.step(action)
     return info
 
-def run(snapshot,*,episodes=5,seed=7,outdir=None,prior_checkpoint=None):
+def build_causal_trace(policy,development_bars,*,symbol,max_visible=420):
+    """Frozen model acts after candle close; simulated fill at next 5m open."""
+    if symbol not in SYMBOLS or len(development_bars)<=WARMUP+2:
+        raise ValueError('Invalid replay development window')
+    period=development_bars[1]['t']-development_bars[0]['t']
+    if period!=FIVE_MIN_MS or any(b['t']-a['t']!=period for a,b in
+                                   zip(development_bars,development_bars[1:])):
+        raise ValueError('Five-minute contiguous bars required')
+    subset=development_bars[:max_visible] if max_visible else development_bars
+    if len(subset)<=WARMUP+2:
+        raise ValueError('Insufficient historical replay bars')
+    env=MarketEnv(subset)
+    obs,_=env.reset()
+    candles=[{'t':b['t'],'o':b['o'],'h':b['h'],'l':b['l'],
+              'c':b['c'],'v':b['v']} for b in subset[:WARMUP+1]]
+    decisions=[]
+    done=False
+    while not done:
+        observed_t=subset[env.i]['t']
+        with torch.no_grad():
+            action=int(policy(torch.from_numpy(obs)).argmax().item())
+        obs,reward,done,_,info=env.step(action)
+        b=subset[env.i]
+        decisions.append({
+            'observedCandleTime':observed_t,'action':'LONG' if action else 'FLAT',
+            'nextCandleTime':b['t'],'nextOpenPrice':b['o'],
+            'reward':round(reward,6),'equityGbp':info['equityGbp'],
+            'simulatedClosedTrades':info['closedTrades'],
+            'openPosition':info['openPosition']
+        })
+        candles.append({'t':b['t'],'o':b['o'],'h':b['h'],'l':b['l'],
+                        'c':b['c'],'v':b['v']})
+    return {'schema':'SCALP_CAUSAL_REPLAY_5MIN_V1','symbol':symbol,
+        'timeframe':'5Min','source':'ALPACA_KRAKEN_US_US-1',
+        'historicalOnly':True,'futureCandlesVisibleAtOnce':False,
+        'fillsAreSimulated':True,'forwardPaperVerified':False,
+        'paperOrders':0,'liveOrders':0,'heldOutQuarantineTouched':False,
+        'warmupCandleCount':WARMUP+1,'candles':candles,'decisions':decisions}
+
+def run(snapshot,*,episodes=5,seed=7,outdir=None,prior_checkpoint=None,trace_out=None):
     symbol=snapshot.get('symbol')
     bars=validate_snapshot(snapshot)
     training,validation,split=split_development(bars)
@@ -237,7 +279,8 @@ def run(snapshot,*,episodes=5,seed=7,outdir=None,prior_checkpoint=None):
         'policySha256':hashlib.sha256(buffer.getvalue()).hexdigest(),
         'trainingDataSha256':hashlib.sha256(
             json.dumps(training,sort_keys=True).encode()).hexdigest(),
-        'seed':seed,'training':train_stats,'splits':split,
+        'seed':seed,'training':train_stats,'marketTimeframe':snapshot['timeframe'],
+        'splits':split,
         'previousCheckpointSha256':previous_sha,
         'cumulativeGradientUpdatesVerified':False,
         'validation':baseline,'validationDoubleCostStress':stress,
@@ -246,6 +289,13 @@ def run(snapshot,*,episodes=5,seed=7,outdir=None,prior_checkpoint=None):
         'paperOrders':0,'liveOrders':0,'officialGrade':None,
         'champion':False,'admissions':0,
         'warning':'Untouched final holdout and independent paper fills NOT tested.'}
+    if trace_out:
+        if snapshot['timeframe']!='5Min':
+            raise ValueError('Visual replay requires genuine 5Min bars')
+        trace=build_causal_trace(policy,validation,symbol=symbol,max_visible=420)
+        location=Path(trace_out)
+        location.parent.mkdir(parents=True,exist_ok=True)
+        location.write_text(json.dumps(trace,separators=(',',':'))+'\n')
     if outdir:
         target=Path(outdir)
         target.mkdir(parents=True,exist_ok=True)
