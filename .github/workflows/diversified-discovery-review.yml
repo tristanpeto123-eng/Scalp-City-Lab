@@ -1,0 +1,93 @@
+name: Diversified discovery and cross-project evidence — review only
+on:
+  pull_request:
+    paths:
+      - 'scripts/diversified-discovery.mjs'
+      - 'scripts/diversified-discovery-tests.mjs'
+      - 'scripts/research-evidence-index.mjs'
+      - 'scripts/research-evidence-index-tests.mjs'
+      - '.github/workflows/diversified-discovery-review.yml'
+      - 'docs/DIVERSIFIED_DISCOVERY.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-source-diversity-and-evidence:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      TEACHER_ENABLE_EXAMINER: 'false'
+      TEACHER_PAPER_ENABLED: 'false'
+      SCALP_PAPER_ENABLED: 'false'
+    steps:
+      - name: Checkout Scalp City crypto research
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          path: crypto
+      - name: Checkout public Supply Scout evidence (read only)
+        uses: actions/checkout@v4
+        with:
+          repository: tristanpeto123-eng/supply-scout
+          ref: main
+          persist-credentials: false
+          path: supply
+      - name: Checkout public Strategy Lab evidence (read only)
+        uses: actions/checkout@v4
+        with:
+          repository: tristanpeto123-eng/strategy-lab-template
+          ref: main
+          persist-credentials: false
+          path: strategy
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test strict source isolation and sealed holdout
+        working-directory: crypto
+        run: |
+          node --check scripts/diversified-discovery.mjs
+          node --check scripts/research-evidence-index.mjs
+          node --test scripts/diversified-discovery-tests.mjs scripts/research-evidence-index-tests.mjs
+      - name: Generate real-source broader strategy research (NO ORDERS)
+        working-directory: crypto
+        run: |
+          node scripts/diversified-discovery.mjs validation-data ../artifacts/discovery.json
+      - name: Build read-only cross-project evidence index with exact source commits
+        working-directory: crypto
+        run: |
+          node scripts/research-evidence-index.mjs \
+            ../artifacts/discovery.json \
+            ../supply \
+            ../strategy \
+            "$(git rev-parse HEAD)" \
+            "$(git -C ../supply rev-parse HEAD)" \
+            "$(git -C ../strategy rev-parse HEAD)" \
+            ../artifacts/cross-project-evidence-index.json
+      - name: Checker — no forward-profit claims, no admissions or broker activity
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const d=JSON.parse(fs.readFileSync('artifacts/discovery.json','utf8'));
+          const e=JSON.parse(fs.readFileSync('artifacts/cross-project-evidence-index.json','utf8'));
+          if(d.sourceSnapshots!==10||d.researchCandidates!==120||
+             d.holdoutUsedForSelection!==false||d.paperOrders||
+             d.liveOrders||d.admissions||d.independentForwardValidations||
+             e.totalSystems!==3||e.crossDomainPricePredictionAllowed!==false||
+             e.automatedTraderAccess!==false||
+             e.systems.some(s=>s.brokerOrders||s.independentForwardEvidence))
+            throw Error('Checker: research authority / instrument isolation violated');
+          console.log('SOURCE_RESEARCH_COMPLETE',JSON.stringify({
+            experiments:d.researchCandidates,
+            developmentCandidates:d.developmentThresholdCandidates,
+            verifiedProfitable:0,
+            forwardTrades:0,
+            paperOrders:0,
+            distinctDomains:e.systems.map(s=>s.domain)
+          }));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: diversified-research-evidence-review
+          path: artifacts/
+          retention-days: 14
