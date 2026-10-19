@@ -24,7 +24,9 @@ test('historical development folds never overlap quarantined final 20 percent',(
  const bars=snapshots['BTC/USD'].bars;
  const layout=developmentFolds(bars);
  assert.ok(layout.folds.length>=3);
- for(const fold of layout.folds){
+ for(let i=0;i<layout.folds.length;i++){
+   const fold=layout.folds[i];
+   if(i)assert.ok(layout.folds[i-1].endIndex<=fold.startIndex,'Research folds must not overlap');
    assert.ok(fold.endIndex<=layout.sealedHoldoutStart);
    assert.ok(Date.parse(fold.lastBar)<Date.parse(bars[layout.sealedHoldoutStart].t));
  }
@@ -37,6 +39,7 @@ test('ten markets run offline, never place orders, and publish research only',()
  assert.equal(report.verifiedForwardGrades,0);
  assert.equal(report.brokerOrders,0);
  assert.equal(report.quarantinedHoldoutNotScored,true);
+ assert.ok(report.pupils.every(p=>p.disjointDevelopmentFolds===true));
  for(const pupil of report.pupils){
    assert.equal(pupil.officialGrade,null);
    assert.equal(pupil.orders,0);
