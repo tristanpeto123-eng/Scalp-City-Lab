@@ -81,7 +81,8 @@ test('browser UI exposes both strategies and reports invented rule provenance',a
  assert.match(html,/value="auto"/);
  assert.match(html,/value="invent"/);
  assert.match(html,/strategyMode:choice==='invent'\?'invent':'preset'/);
- assert.match(html,/Rules frozen before the holdout replay/);
+ assert.match(html,/No later-history replay was selected/);
+ assert.match(html,/Training selection uses the first 40%/);
  assert.match(html,/new URLSearchParams\(location\.search\)/);
  const academy=await readFile(new URL('./robot-academy.html',import.meta.url),'utf8');
  assert.match(academy,/Invent strategy/);
