@@ -76,7 +76,7 @@ class MarketEnv:
     def reset(self,*,seed=None,options=None):
         self.i,self.cash,self.units=WARMUP,self.capital,0.0
         self.entry_cost,self.peak,self.max_dd=0.0,self.capital,0.0
-        self.trades,self.wins=0,0
+        self.trades,self.wins,self.opens=0,0,0
         return self.observation(),{}
     def equity(self,price):
         return self.cash+self.units*price*(1-self.slippage)*(1-self.fee)
@@ -109,6 +109,7 @@ class MarketEnv:
         elif action==1 and self.units==0:
             notional=(self.cash*.5)/(1+self.fee)
             self.units=notional/(bar['o']*(1+self.slippage))
+            self.opens+=1
             self.entry_cost=notional*(1+self.fee)
             self.cash-=self.entry_cost
         self.i+=1
@@ -124,7 +125,7 @@ class MarketEnv:
               'netProfitGbp':round(equity-self.capital,4),
               'maxDrawdownPct':round(self.max_dd,4),
               'closedTrades':self.trades,'wins':self.wins,
-              'openPosition':self.units>0}
+              'openedPositions':self.opens,'openPosition':self.units>0}
         return self.observation(),float(reward),done,False,info
 
 class QNetwork(nn.Module):
@@ -135,7 +136,7 @@ class QNetwork(nn.Module):
     def forward(self,x):
         return self.net(x)
 
-def train_dqn(bars,*,episodes=5,seed=7):
+def train_dqn(bars,*,episodes=5,seed=7,initial_state_dict=None):
     if not 1<=episodes<=50:
         raise ValueError('Episodes must be 1-50')
     random.seed(seed)
@@ -144,10 +145,14 @@ def train_dqn(bars,*,episodes=5,seed=7):
     torch.set_num_threads(1)
     env=MarketEnv(bars)
     policy,target=QNetwork(),QNetwork()
+    if initial_state_dict is not None:
+        # Model state is an offline research checkpoint, not a verified champion.
+        policy.load_state_dict(initial_state_dict,strict=True)
     target.load_state_dict(policy.state_dict())
     optimizer=torch.optim.Adam(policy.parameters(),lr=.0005)
     replay=deque(maxlen=20000)
-    steps,updates=0,0
+    steps,updates,closed_trades,opened_positions=0,0,0,0
+    started=time.perf_counter()
     epsilon_span=max(1,(len(bars)-WARMUP-1)*episodes*.75)
     for _ in range(episodes):
         obs,_=env.reset()
@@ -181,7 +186,17 @@ def train_dqn(bars,*,episodes=5,seed=7):
                 updates+=1
             if steps%250==0:
                 target.load_state_dict(policy.state_dict())
-    return policy,{'steps':steps,'gradientUpdates':updates,'episodes':episodes}
+        closed_trades+=env.trades
+        opened_positions+=env.opens
+    elapsed=max(time.perf_counter()-started,0.000001)
+    return policy,{'steps':steps,'gradientUpdates':updates,'episodes':episodes,
+      'simulatedClosedTrades':closed_trades,'simulatedOpens':opened_positions,
+      'trainingElapsedSeconds':round(elapsed,4),
+      'decisionsPerSecond':round(steps/elapsed,2),
+      'virtualClosesPerSecond':round(closed_trades/elapsed,2),
+      'gradientUpdatesPerSecond':round(updates/elapsed,2),
+      'marketTimeframe':'15Min',
+      'cadenceType':'ACCELERATED_HISTORICAL_REPLAY_NOT_REALTIME_1S'}
 
 def evaluate(policy,bars,*,fee=.0025,slippage=.001,strategy='dqn'):
     env=MarketEnv(bars,fee=fee,slippage=slippage)
@@ -198,11 +213,18 @@ def evaluate(policy,bars,*,fee=.0025,slippage=.001,strategy='dqn'):
         obs,_,done,_,info=env.step(action)
     return info
 
-def run(snapshot,*,episodes=5,seed=7,outdir=None):
+def run(snapshot,*,episodes=5,seed=7,outdir=None,prior_checkpoint=None):
     symbol=snapshot.get('symbol')
     bars=validate_snapshot(snapshot)
     training,validation,split=split_development(bars)
-    policy,train_stats=train_dqn(training,episodes=episodes,seed=seed)
+    prior_state=None
+    previous_sha=None
+    if prior_checkpoint is not None:
+        previous_bytes=Path(prior_checkpoint).read_bytes()
+        previous_sha=hashlib.sha256(previous_bytes).hexdigest()
+        prior_state=torch.load(io.BytesIO(previous_bytes),map_location='cpu',weights_only=True)
+    policy,train_stats=train_dqn(training,episodes=episodes,seed=seed,
+                                  initial_state_dict=prior_state)
     baseline=evaluate(policy,validation)
     stress=evaluate(policy,validation,fee=.005,slippage=.002)
     comparisons={name:evaluate(policy,validation,strategy=name)
@@ -216,6 +238,8 @@ def run(snapshot,*,episodes=5,seed=7,outdir=None):
         'trainingDataSha256':hashlib.sha256(
             json.dumps(training,sort_keys=True).encode()).hexdigest(),
         'seed':seed,'training':train_stats,'splits':split,
+        'previousCheckpointSha256':previous_sha,
+        'cumulativeGradientUpdatesVerified':False,
         'validation':baseline,'validationDoubleCostStress':stress,
         'benchmarks':comparisons,
         'status':'EXPERIMENTAL_HISTORICAL_RESEARCH_ONLY',
