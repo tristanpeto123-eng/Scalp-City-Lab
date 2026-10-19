@@ -9,6 +9,7 @@ on:
       - 'scripts/run-robot-training-tests.mjs'
       - 'scripts/foundry-flow-tests.mjs'
       - 'journey-nav.js'
+      - 'scripts/journey-context-runtime-tests.mjs'
       - 'journey-nav.css'
       - 'mission-control.html'
       - 'training-monitor.html'
@@ -22,6 +23,7 @@ on:
       - 'scripts/run-robot-training-tests.mjs'
       - 'scripts/foundry-flow-tests.mjs'
       - 'journey-nav.js'
+      - 'scripts/journey-context-runtime-tests.mjs'
       - 'journey-nav.css'
       - 'mission-control.html'
       - 'training-monitor.html'
@@ -46,4 +48,5 @@ jobs:
           node --check scripts/historical-lab.mjs
           node --check scripts/foundry-flow-tests.mjs
           node --check journey-nav.js
+          node --test scripts/journey-context-runtime-tests.mjs scripts/journey-nav-tests.mjs
           node --test scripts/foundry-flow-tests.mjs scripts/run-robot-training-tests.mjs scripts/historical-lab-tests.mjs scripts/historical-training-folds-tests.mjs scripts/robot-rewards-tests.mjs scripts/training-monitor-tests.mjs
