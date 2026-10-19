@@ -26,7 +26,7 @@ class RapidReplayContract(unittest.TestCase):
         self.assertGreater(m['steps'],1)
         self.assertGreater(m['decisionsPerSecond'],0)
         self.assertGreater(m['gradientUpdates'],0)
-        self.assertEqual(m['marketTimeframe'],'15Min')
+        self.assertEqual(m['marketTimeframe'],'5Min')
         self.assertIn('NOT_REALTIME_1S',m['cadenceType'])
         self.assertGreaterEqual(m['simulatedOpens'],m['simulatedClosedTrades'])
 
@@ -82,7 +82,7 @@ class RapidReplayContract(unittest.TestCase):
             self.assertEqual(second['pupils'][0]['cumulativeDecisions'],300)
             self.assertIsNotNone(second['pupils'][0]['initialCheckpointSha256'])
             self.assertFalse(second['pupils'][0]['positiveUnderStressedCosts'])
-            self.assertEqual(second['marketBarTimeframe'],'15Min')
+            self.assertEqual(second['marketBarTimeframe'],'5Min')
 
     def test_missing_checkpoint_is_not_replaced_by_fake_new_model(self):
         with tempfile.TemporaryDirectory() as d:
