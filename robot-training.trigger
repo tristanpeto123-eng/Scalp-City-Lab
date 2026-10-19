@@ -16,3 +16,5 @@ Scheduled cycles may produce no new experiment when saved history overlaps or da
 2026-10-19: launch safe three-fold historical training post-PR34; ten pupils, only pre-holdout bars, PAPER orders disabled.
 
 2026-10-19: acceptance — verify successful three-fold research workflow triggers independent Teacher workflow_run; no orders.
+
+2026-10-19: owner-authorised post-merge verification of 3 bounded historical passes per pupil from pre-published candles; research only, PAPER OFF.
