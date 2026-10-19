@@ -9,8 +9,8 @@ const emptyMemory=()=>({schema:'SCALP_RESEARCH_MEMORY_V1',
 const snapshots=()=>Object.fromEntries(PAIRS.map((symbol,k)=>{
  const start=now-(N+2)*PERIOD;
  const bars=Array.from({length:N},(_,i)=>{
-  const c=100+k+1.6*Math.sin(i/25)+i*.0008;
-  const o=100+k+1.6*Math.sin((i-1)/25)+(i-1)*.0008;
+  const c=100+k+1.6*Math.sin(i/10)+i*.0008;
+  const o=100+k+1.6*Math.sin((i-1)/10)+(i-1)*.0008;
   return {t:new Date(start+i*PERIOD).toISOString(),o,c,
     h:Math.max(o,c)*1.002,l:Math.min(o,c)*.998,v:10+(i%5)};
  });
