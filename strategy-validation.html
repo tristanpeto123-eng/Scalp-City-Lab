@@ -55,7 +55,7 @@ details{border-top:1px solid #345768;padding-top:14px;margin-top:14px}summary{cu
    </select><span class="hint" id="method-note">The researcher will compare eight strategies on separate development windows, then abstain if nothing survives the checks.</span></label>
   </div>
   <div class="actions"><button class="primary" id="run" type="button" disabled>Run research session</button><button id="reset" type="button">Reset brief</button></div>
-  <p class="muted tiny">The historical simulator accounts for modelled fees and bounded exposure, but not verified spread, liquidity, GBP/USD conversion or actual broker fills.</p>
+  <p class="muted tiny">This button runs <strong>local historical research</strong>, not the persistent Robot Academy training job. For the separate scheduled learning pipeline, use the <a href="https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/robot-research-training.yml">Academy historical trainer</a>. Research from this page cannot automatically become a Teacher-approved model.</p><p class="muted tiny">The historical simulator accounts for modelled fees and bounded exposure, but not verified spread, liquidity, GBP/USD conversion or actual broker fills.</p>
  </section>
  <aside class="card" aria-labelledby="source-title">
   <span class="number">DATA / SOURCE VERIFICATION</span><h2 id="source-title">Historical dataset</h2>
@@ -322,6 +322,7 @@ async function run(){
   session=runResearchSession({snapshot:selected.source,symbol:$('pair').value,startingBalanceGbp:balance,mode,limit,strategyMode:choice});
   render();saveHistory();status('Research session completed · historical evidence only','good');
  }catch(err){
+  session=null;
   $('empty-state').hidden=false;$('outcome').hidden=true;
   $('empty-state').textContent='Research blocked: '+err.message+'. Adjust the settings or reload the historical dataset.';
   $('research-evidence').hidden=true;$('replay-section').hidden=true;
