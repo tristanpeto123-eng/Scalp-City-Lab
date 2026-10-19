@@ -97,6 +97,6 @@ async function main(){
    oosMeasured:report.outOfSample.evaluatedPupils,
    independentlyVerified:0,paperOrders:0}));
 }
-if(import.meta.url==='file://'+process.argv[1])main().catch(e=>{
+if(process.argv[1]&&path.resolve(process.argv[1])===new URL(import.meta.url).pathname)main().catch(e=>{
  console.error('TRAINING_MONITOR_BLOCKED '+String(e.message));process.exitCode=1;
 });
