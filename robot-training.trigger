@@ -8,3 +8,5 @@ Scheduled cycles may produce no new experiment when saved history overlaps or da
 2026-10-18: owner confirmed GitHub PAPER research secrets updated; recheck 10 completed Alpaca crypto feeds via GET only. No orders or admissions.
 
 2026-10-18: retry verified read-only research after RSI validator bound fix PR #20; ten charts, zero broker orders.
+
+2026-10-19: run owner-approved historical-first 30-minute research with offline archived candles and publish fold report; no broker orders.
