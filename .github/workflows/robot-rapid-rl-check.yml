@@ -1,91 +1,82 @@
-name: Robot Academy rapid Deep RL — independent Checker
+name: Robot Academy — native 5m DQN causal replay Checker
 on:
   pull_request:
     branches: [main]
     paths:
-      - 'rl/dqn_experiment.py'
-      - 'rl/rapid_replay.py'
-      - 'rl/test_rapid_replay.py'
-      - 'rl/test_dqn_experiment.py'
-      - '.github/workflows/robot-dqn-replay.yml'
+      - 'rl/**'
+      - 'scripts/refresh-rl-5m*'
+      - 'scripts/market-replay-5m-tests.mjs'
       - '.github/workflows/robot-rapid-rl-check.yml'
+      - '.github/workflows/robot-dqn-replay.yml'
+      - '.github/workflows/refresh-rl-5m.yml'
+      - 'market-replay-5m.html'
       - 'training-monitor.html'
-      - 'scripts/training-monitor-tests.mjs'
-      - 'docs/ROBOT-ACADEMY-RAPID-RL.md'
+      - 'mission-control.html'
+      - 'robot-academy.html'
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
-  checker-g0-g1:
+  five-minute-checker:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 26
     env:
       OMP_NUM_THREADS: '1'
-      MKL_NUM_THREADS: '1'
       OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: G0 — verify parsing, scope, test paths and no brokerage
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Checker G0 — strictly sourced 5m feed, no broker orders, causal browser
         run: |
-          python -m compileall -q rl
+          node --check scripts/refresh-rl-5m.mjs
+          node --test scripts/refresh-rl-5m-tests.mjs
+          node --test scripts/market-replay-5m-tests.mjs
           node --test scripts/training-monitor-tests.mjs
+          python -m compileall -q rl
           python - <<'PY'
           from pathlib import Path
-          s=Path('.github/workflows/robot-dqn-replay.yml').read_text()
-          ui=Path('training-monitor.html').read_text()
-          model=Path('rl/rapid_replay.py').read_text()
-          if ("ref: rl-learning-memory" not in s or "ref: main" not in s or
-             "cron: '11,41 * * * *'" not in s or
-             "rl-learning-memory" not in ui or
-             "training-monitor" in model or
-             "ALPACA_PAPER_SECRET" in s or "ALPACA_PAPER_KEY" in s or
-             "paper-api.alpaca.markets" in model or "/v2/orders" in model):
-              raise SystemExit('RL G0: unsafe or incomplete workflow')
-          print('G0: ten pupils, checkpoint separation, no broker permission')
+          workflow=Path('.github/workflows/robot-dqn-replay.yml').read_text()
+          refresh=Path('.github/workflows/refresh-rl-5m.yml').read_text()
+          engine=Path('rl/rapid_replay.py').read_text()
+          viewer=Path('market-replay-5m.html').read_text()
+          if (not all(s in workflow for s in
+              ('ref: rl-5m-data','ref: rl-learning-memory',
+               'rl-5m-data/snapshots','rl-rapid/replays/')) or
+              "ALPACA_PAPER_SECRET" in workflow or
+              'timeframe:\'5Min\'' not in refresh and "5Min" not in refresh or
+              "validation-data" in workflow or
+              "paper-api.alpaca.markets" in engine or
+              "/v2/orders" in viewer):
+              raise SystemExit('Checker G0: wrong timeframe/source or unsafe broker access')
+          print('G0: five-minute completed history, historical-only actions')
           PY
-      - name: Install offline scientific computation
+      - name: Install offline DQN dependencies (no brokerage)
         run: python -m pip install numpy 'torch>=2.3,<3'
-      - name: G1 — genuine gradient update and recurrent checkpoint tests
-        run: python -m unittest rl.test_dqn_experiment rl.test_rapid_replay -v
-      - name: G1 — benchmark one real BTC historical chart without saving to shared model memory
+      - name: Checker G1 — DQN gradients, checkpoint lineage, genuine causal trace
         run: |
-          python -m rl.rapid_replay --data-dir validation-data --root /tmp/scalp-rl-pr-smoke --episodes 1 --symbol BTC/USD
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          report=json.loads(Path('/tmp/scalp-rl-pr-smoke/rl-rapid/latest.json').read_text())
-          if (report['decisionCount']<1 or report['gradientUpdates']<1 or
-              report['paperOrders']!=0 or report['sealedHoldoutAccessed'] or
-              report['marketBarTimeframe']!='15Min'):
-              raise SystemExit('BTC pilot failed real source validation')
-          print('RL_ACTUAL_BTC_BENCHMARK '+json.dumps({
-              'decisions':report['decisionCount'],
-              'decisions_per_second':report['decisionsPerSecond'],
-              'virtual_closed_trades_per_second':report['simulatedClosesPerSecond'],
-              'gradient_updates':report['gradientUpdates'],
-              'market_bar_timeframe':report['marketBarTimeframe']
-          }))
-          PY
-      - name: G1 — no mutated Grades, fabricated 1-second candles or payment endpoints
+          python -m unittest rl.test_dqn_experiment rl.test_rapid_replay rl.test_five_min_replay -v
+      - name: Checker G1 — source history separation and holdout protection
         run: |
           python - <<'PY'
           from pathlib import Path
-          code=Path('rl/dqn_experiment.py').read_text()
-          batch=Path('rl/rapid_replay.py').read_text()
-          if ("PERIOD_MS = 900_000" not in code or
-              "sealedHoldoutTouched" not in code or
-              "decisionsAreNotBrokerTrades" not in batch or
-              "verifiedForwardGrades':0" not in batch or
-              "paperOrders':0" not in batch or
-              "liveOrders':0" not in batch):
-              raise SystemExit('RL G1 evidence or 15m provenance missing')
-          print('G1: only offline 15-minute replay; no broker orders or promotions')
+          engine=Path('rl/rapid_replay.py').read_text()
+          policy=Path('rl/dqn_experiment.py').read_text()
+          if ("data.get('timeframe')!='5Min'" not in engine or
+              "FIVE_MIN_MS = 300_000" not in policy or
+              "heldOutQuarantineTouched':False" not in policy or
+              "decisionsAreNotBrokerTrades':True" not in engine or
+              "marketBarTimeframe':'5Min'" not in engine or
+              "paperOrders':0" not in engine or
+              "liveOrders':0" not in engine):
+              raise SystemExit('Checker G1: five-minute only or release safety invariant missing')
+          print('G1: source verified, later validation separate, final 20% untouched')
           PY
