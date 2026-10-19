@@ -1,0 +1,66 @@
+name: Historical Lab and Mission Control integration
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/historical-lab*'
+      - 'scripts/journey-nav-tests.mjs'
+      - 'scripts/run-robot-training.mjs'
+      - '.github/workflows/robot-research-training.yml'
+      - '.github/workflows/historical-lab-acceptance.yml'
+      - 'journey-nav.*'
+      - 'mission-control.html'
+      - 'teacher/**'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/historical-lab*'
+      - 'mission-control.html'
+      - '.github/workflows/historical-lab-acceptance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  independent-historical-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read archived research memory (not broker credentials)
+        uses: actions/checkout@v4
+        with:
+          ref: scalp-learning-memory
+          path: research-memory
+          persist-credentials: false
+      - name: Static, isolated UI navigation and historical model checks
+        run: |
+          node --check journey-nav.js
+          node --check scripts/historical-lab.mjs
+          node --test scripts/journey-nav-tests.mjs scripts/historical-lab-tests.mjs
+      - name: Run historical lab on ten real archived candle snapshots
+        run: |
+          node scripts/historical-lab.mjs \
+            research-memory/scalp-learning/history.json \
+            validation-data \
+            /tmp/historical-lab-integration.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r=JSON.parse(fs.readFileSync('/tmp/historical-lab-integration.json','utf8'));
+          if(r.tenPupils!==10||r.brokerOrders!==0||r.admissionCount!==0||
+            r.verifiedForwardGrades!==0||r.quarantinedHoldoutNotScored!==true||
+            r.pupils.some(p=>p.heldOutQuarantine.usedForModelSelection!==false||
+               p.developmentFoldCount<2||p.orders!==0||p.officialGrade!==null))
+             throw Error('Historical lab violated research/forward separation');
+          console.log('REAL_ARCHIVED_HISTORICAL_ACCEPTANCE_PASSED=true');
+          console.log('MARKETS=10; FORWARD_ORDERS=0; BROKER_SECRET_ACCESS=0');
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: historical-lab-acceptance
+          path: /tmp/historical-lab-integration.json
+          retention-days: 14
