@@ -159,7 +159,7 @@ function methodNote(){
 }
 function renderLoadingNote(textValue){$('result').replaceChildren(el('div',textValue,'empty'));$('result-status').textContent='In progress';}
 async function loadPair({force=false}={}){
- const pair=$('pair').value,request=++serial;selected=null;lastPacket=null;
+ const pair=$('pair').value,request=++serial;invalidateReport();selected=null;lastPacket=null;
  $('run').disabled=true;$('reload').disabled=true;
  setStatus('Loading');
  $('dataset').textContent='Loading '+pair+' historical candles…';
@@ -229,6 +229,19 @@ function formInput(){
  if(!selected)throw Error('Market snapshot has not loaded. Reload market evidence.');
  return {snapshot:selected.source,symbol:$('pair').value,startingBalanceGbp:balance,mode:$('mode').value,limit};
 }
+function confidenceLowerBound(wins,n){
+ if(!n)return null;
+ const z=1.96,p=wins/n,d=1+z*z/n;
+ return Math.max(0,100*(p+z*z/(2*n)-z*Math.sqrt((p*(1-p)+z*z/(4*n))/n))/d);
+}
+function invalidateReport(){
+ if(!lastPacket)return;
+ lastPacket=null;$('export-actions').hidden=true;
+ $('result-status').textContent='Inputs changed · rerun';
+ $('result-status').className='pill warn';
+ const result=$('result');
+ result.prepend(el('p','Research settings changed since the report below. Run a new experiment before using or exporting this result.','notice'));
+}
 function renderMetricGrid(parent,items){
  const wrap=add(parent,'div','','stats');
  for(const [label,value] of items){const card=add(wrap,'div','','stat');add(card,'small',label);add(card,'strong',value);}
@@ -238,9 +251,11 @@ function renderReplay(parent,replay){
  renderMetricGrid(parent,[
   ['Realised net P&L',money(replay.realizedNetProfitGbp)],['Closed trades',String(replay.closedTrades)],
   ['Observed win rate',replay.winRatePct===null?'No closes':replay.winRatePct+'%'],
+  ['95% sample win-rate lower bound',replay.closedTrades?confidenceLowerBound(replay.wins,replay.closedTrades).toFixed(1)+'%':'Insufficient trades'],
   ['Maximum drawdown',replay.maxDrawdownPct+'%'],['Marked equity',money(replay.markedEquityGbp)],
   ['Tested duration',replay.elapsedDays+' days']
  ]);
+ add(parent,'p','The 95% Wilson lower bound describes uncertainty in the observed historical win proportion, not a confidence score for future profitability.','hint');
  add(parent,'p','Stop: '+replay.status.replaceAll('_',' ')+'. Evaluated '+replay.heldOutCandles+' held-out bars. Trading fees '+(100*replay.feePerSideFraction).toFixed(2)+'% per side; real spread/slippage/FX not verified.','hint');
  if(replay.trades?.length){
   const detail=add(parent,'details');add(detail,'summary','Inspect '+replay.trades.length+' simulated closed trades');
@@ -293,7 +308,7 @@ function showReport(packet){
   const positive=Boolean(model.selected);
   add(target,'div',positive?'Historical screening produced a research candidate. This is not an approved trading model.':
    'Research completed: no strategy qualified on the training evidence. Inspect the candidates and failure reasons below.','notice'+(positive?' ok':''));
-  renderMetricGrid(target,[['Chart',input.symbol],['Virtual starting capital',money(input.startingBalanceGbp)],['Candidates tested',String(model.candidates.length)],['Passed training screen',String(model.candidates.filter(x=>x.eligible).length)],['Strategy mode',choice==='invent'?'Invented rules':'Preset comparison'],['Qualification',model.selected?'Training only':'None']]);
+  renderMetricGrid(target,[['Chart',input.symbol],['Virtual starting capital',money(input.startingBalanceGbp)],['Research objective',input.mode==='profit'?money(input.limit)+' net profit':input.limit+' recorded days'],['Candidates tested',String(model.candidates.length)],['Passed training screen',String(model.candidates.filter(x=>x.eligible).length)],['Strategy mode',choice==='invent'?'Invented rules':'Preset comparison'],['Qualification',model.selected?'Training only':'None']]);
   renderCandidates(target,model);
   if(r.replay){
    add(target,'h3','Independent later-history check');
@@ -330,16 +345,16 @@ function runLab(){
   $('result-status').textContent='Blocked';$('export-actions').hidden=true;lastPacket=null;
  }finally{active=false;$('run').disabled=!selected;$('run').textContent='Run research experiment →';}
 }
-$('pair').addEventListener('change',()=>{lastPacket=null;$('export-actions').hidden=true;renderPupil();loadPair();});
+$('pair').addEventListener('change',()=>{invalidateReport();renderPupil();loadPair();});
 $('reload').addEventListener('click',()=>loadPair({force:true}));
 $('mode').addEventListener('change',()=>{
- const duration=$('mode').value==='duration';
+ const duration=$('mode').value==='duration';invalidateReport();
  $('limitLabel').textContent=duration?'Duration (days)':'Cumulative net profit target (£)';
  $('limit').value=duration?'14':'2000';$('limit').step=duration?'1':'.01';goalNote();
 });
-$('balance').addEventListener('input',goalNote);
-$('limit').addEventListener('input',goalNote);
-$('strategy').addEventListener('change',methodNote);
+$('balance').addEventListener('input',()=>{invalidateReport();goalNote();});
+$('limit').addEventListener('input',()=>{invalidateReport();goalNote();});
+$('strategy').addEventListener('change',()=>{invalidateReport();methodNote();});
 $('run').addEventListener('click',runLab);
 $('download').addEventListener('click',()=>{
  if(!lastPacket)return;
