@@ -1,0 +1,404 @@
+{
+  "schema": "SCALP_HISTORICAL_WALK_FORWARD_V1",
+  "mode": "OFFLINE_HISTORICAL_DEVELOPMENT",
+  "source": "PUBLISHED_HISTORICAL_15MIN_CANDLES",
+  "researchSnapshotDate": "2026-10-19T13:33:35.264Z",
+  "tenPupils": 10,
+  "policy": {
+    "source": "PUBLISHED_HISTORICAL_15MIN_CANDLES",
+    "reserveUntouchedFraction": 0.2,
+    "minFoldCandles": 1200,
+    "strideCandles": 600,
+    "maxFolds": 6,
+    "maxCandidates": 6,
+    "regularFeePerSide": 0.0025,
+    "stressedFeePerSide": 0.005,
+    "orderExecution": false,
+    "promotions": false
+  },
+  "quarantinedHoldoutNotScored": true,
+  "admissionCount": 0,
+  "verifiedForwardGrades": 0,
+  "brokerOrders": 0,
+  "pupils": [
+    {
+      "symbol": "BTC/USD",
+      "snapshotSource": "ALPACA_KRAKEN_US_US-1",
+      "snapshotAt": "2026-10-19T13:33:35.264Z",
+      "snapshotSha": "5dbb4174e4027ecad0f0ab74150c1f0307709c7d4a153ea86f66a6553972391e",
+      "historicalCandles": 5759,
+      "developmentFoldCount": 6,
+      "developmentWindow": {
+        "start": "2026-08-20T13:45:00.000Z",
+        "end": "2026-10-07T13:30:00.000Z"
+      },
+      "heldOutQuarantine": {
+        "start": "2026-10-07T13:30:00.000Z",
+        "end": "2026-10-19T13:30:00.000Z",
+        "candles": 1152,
+        "usedForModelSelection": false,
+        "admissionsAllowed": false
+      },
+      "candidatesEvaluated": 6,
+      "bestResearchCandidate": {
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 32,
+          "sellAbove": 65
+        },
+        "normalNetAcrossOverlappingFolds": -2.4,
+        "stressedNetAcrossOverlappingFolds": -4.24,
+        "profitableFolds": 0,
+        "researchRankScore": -4.24,
+        "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
+      },
+      "status": "DEVELOPMENT_RESEARCH_ONLY",
+      "officialGrade": null,
+      "brokerRoundTrips": 0,
+      "orders": 0,
+      "modelPromotion": false
+    },
+    {
+      "symbol": "ETH/USD",
+      "snapshotSource": "ALPACA_KRAKEN_US_US-1",
+      "snapshotAt": "2026-10-19T13:33:35.264Z",
+      "snapshotSha": "83835fb1d9fca285fe57d4ac6344d382e6237ceedd2ce052b6187238115154b4",
+      "historicalCandles": 5759,
+      "developmentFoldCount": 6,
+      "developmentWindow": {
+        "start": "2026-08-20T13:45:00.000Z",
+        "end": "2026-10-07T13:30:00.000Z"
+      },
+      "heldOutQuarantine": {
+        "start": "2026-10-07T13:30:00.000Z",
+        "end": "2026-10-19T13:30:00.000Z",
+        "candles": 1152,
+        "usedForModelSelection": false,
+        "admissionsAllowed": false
+      },
+      "candidatesEvaluated": 6,
+      "bestResearchCandidate": {
+        "parameters": {
+          "family": "channel_breakout",
+          "lookback": 50,
+          "exitLookback": 25
+        },
+        "normalNetAcrossOverlappingFolds": -3.26,
+        "stressedNetAcrossOverlappingFolds": -4.96,
+        "profitableFolds": 0,
+        "researchRankScore": -4.96,
+        "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
+      },
+      "status": "DEVELOPMENT_RESEARCH_ONLY",
+      "officialGrade": null,
+      "brokerRoundTrips": 0,
+      "orders": 0,
+      "modelPromotion": false
+    },
+    {
+      "symbol": "SOL/USD",
+      "snapshotSource": "ALPACA_KRAKEN_US_US-1",
+      "snapshotAt": "2026-10-19T13:33:35.264Z",
+      "snapshotSha": "3b306f2e8b75bb97f319898be981f7c2d4d5f11c836a254af04f8eb7b1c46e7a",
+      "historicalCandles": 5759,
+      "developmentFoldCount": 6,
+      "developmentWindow": {
+        "start": "2026-08-20T13:45:00.000Z",
+        "end": "2026-10-07T13:30:00.000Z"
+      },
+      "heldOutQuarantine": {
+        "start": "2026-10-07T13:30:00.000Z",
+        "end": "2026-10-19T13:30:00.000Z",
+        "candles": 1152,
+        "usedForModelSelection": false,
+        "admissionsAllowed": false
+      },
+      "candidatesEvaluated": 6,
+      "bestResearchCandidate": {
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 30,
+          "sellAbove": 55
+        },
+        "normalNetAcrossOverlappingFolds": -1.4,
+        "stressedNetAcrossOverlappingFolds": -3.43,
+        "profitableFolds": 0,
+        "researchRankScore": -3.43,
+        "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
+      },
+      "status": "DEVELOPMENT_RESEARCH_ONLY",
+      "officialGrade": null,
+      "brokerRoundTrips": 0,
+      "orders": 0,
+      "modelPromotion": false
+    },
+    {
+      "symbol": "XRP/USD",
+      "snapshotSource": "ALPACA_KRAKEN_US_US-1",
+      "snapshotAt": "2026-10-19T13:33:35.264Z",
+      "snapshotSha": "9aff6d994205d4454c9965d957022a6743c6c7eb26afd3428d5a276a0d2f86e2",
+      "historicalCandles": 5759,
+      "developmentFoldCount": 6,
+      "developmentWindow": {
+        "start": "2026-08-20T13:45:00.000Z",
+        "end": "2026-10-07T13:30:00.000Z"
+      },
+      "heldOutQuarantine": {
+        "start": "2026-10-07T13:30:00.000Z",
+        "end": "2026-10-19T13:30:00.000Z",
+        "candles": 1152,
+        "usedForModelSelection": false,
+        "admissionsAllowed": false
+      },
+      "candidatesEvaluated": 6,
+      "bestResearchCandidate": {
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 27,
+          "sellAbove": 60
+        },
+        "normalNetAcrossOverlappingFolds": -6.25,
+        "stressedNetAcrossOverlappingFolds": -9.96,
+        "profitableFolds": 0,
+        "researchRankScore": -9.96,
+        "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
+      },
+      "status": "DEVELOPMENT_RESEARCH_ONLY",
+      "officialGrade": null,
+      "brokerRoundTrips": 0,
+      "orders": 0,
+      "modelPromotion": false
+    },
+    {
+      "symbol": "ADA/USD",
+      "snapshotSource": "ALPACA_KRAKEN_US_US-1",
+      "snapshotAt": "2026-10-19T13:33:35.264Z",
+      "snapshotSha": "2a9697dc22debcbe07f5bb87716ebe25b0ad7e9a17a5c9e033f597bf283c42c5",
+      "historicalCandles": 5759,
+      "developmentFoldCount": 6,
+      "developmentWindow": {
+        "start": "2026-08-20T13:45:00.000Z",
+        "end": "2026-10-07T13:30:00.000Z"
+      },
+      "heldOutQuarantine": {
+        "start": "2026-10-07T13:30:00.000Z",
+        "end": "2026-10-19T13:30:00.000Z",
+        "candles": 1152,
+        "usedForModelSelection": false,
+        "admissionsAllowed": false
+      },
+      "candidatesEvaluated": 6,
+      "bestResearchCandidate": {
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 30,
+          "sellAbove": 60
+        },
+        "normalNetAcrossOverlappingFolds": -0.17,
+        "stressedNetAcrossOverlappingFolds": -2.64,
+        "profitableFolds": 1,
+        "researchRankScore": -2.63,
+        "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
+      },
+      "status": "DEVELOPMENT_RESEARCH_ONLY",
+      "officialGrade": null,
+      "brokerRoundTrips": 0,
+      "orders": 0,
+      "modelPromotion": false
+    },
+    {
+      "symbol": "AVAX/USD",
+      "snapshotSource": "ALPACA_KRAKEN_US_US-1",
+      "snapshotAt": "2026-10-19T13:33:35.264Z",
+      "snapshotSha": "ebc0aa614f0ff9ee53fe0971ac3191901e8c3b4c998330c2a802968a1d584f12",
+      "historicalCandles": 5759,
+      "developmentFoldCount": 6,
+      "developmentWindow": {
+        "start": "2026-08-20T13:45:00.000Z",
+        "end": "2026-10-07T13:30:00.000Z"
+      },
+      "heldOutQuarantine": {
+        "start": "2026-10-07T13:30:00.000Z",
+        "end": "2026-10-19T13:30:00.000Z",
+        "candles": 1152,
+        "usedForModelSelection": false,
+        "admissionsAllowed": false
+      },
+      "candidatesEvaluated": 6,
+      "bestResearchCandidate": {
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 23,
+          "sellAbove": 56
+        },
+        "normalNetAcrossOverlappingFolds": 2.72,
+        "stressedNetAcrossOverlappingFolds": 1.34,
+        "profitableFolds": 5,
+        "researchRankScore": 1.39,
+        "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
+      },
+      "status": "DEVELOPMENT_RESEARCH_ONLY",
+      "officialGrade": null,
+      "brokerRoundTrips": 0,
+      "orders": 0,
+      "modelPromotion": false
+    },
+    {
+      "symbol": "LINK/USD",
+      "snapshotSource": "ALPACA_KRAKEN_US_US-1",
+      "snapshotAt": "2026-10-19T13:33:35.264Z",
+      "snapshotSha": "d7c260b0e56c9d822cc418b24b6553e2898d196493292afba331408ca3b58365",
+      "historicalCandles": 5759,
+      "developmentFoldCount": 6,
+      "developmentWindow": {
+        "start": "2026-08-20T13:45:00.000Z",
+        "end": "2026-10-07T13:30:00.000Z"
+      },
+      "heldOutQuarantine": {
+        "start": "2026-10-07T13:30:00.000Z",
+        "end": "2026-10-19T13:30:00.000Z",
+        "candles": 1152,
+        "usedForModelSelection": false,
+        "admissionsAllowed": false
+      },
+      "candidatesEvaluated": 6,
+      "bestResearchCandidate": {
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 32,
+          "sellAbove": 65
+        },
+        "normalNetAcrossOverlappingFolds": -2.56,
+        "stressedNetAcrossOverlappingFolds": -5.45,
+        "profitableFolds": 1,
+        "researchRankScore": -5.44,
+        "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
+      },
+      "status": "DEVELOPMENT_RESEARCH_ONLY",
+      "officialGrade": null,
+      "brokerRoundTrips": 0,
+      "orders": 0,
+      "modelPromotion": false
+    },
+    {
+      "symbol": "DOGE/USD",
+      "snapshotSource": "ALPACA_KRAKEN_US_US-1",
+      "snapshotAt": "2026-10-19T13:33:35.264Z",
+      "snapshotSha": "fe021993ef6b5811b8d08a2af4568a4c7139bdef591f39391829df10e290a3e3",
+      "historicalCandles": 5759,
+      "developmentFoldCount": 6,
+      "developmentWindow": {
+        "start": "2026-08-20T13:45:00.000Z",
+        "end": "2026-10-07T13:30:00.000Z"
+      },
+      "heldOutQuarantine": {
+        "start": "2026-10-07T13:30:00.000Z",
+        "end": "2026-10-19T13:30:00.000Z",
+        "candles": 1152,
+        "usedForModelSelection": false,
+        "admissionsAllowed": false
+      },
+      "candidatesEvaluated": 6,
+      "bestResearchCandidate": {
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 37,
+          "sellAbove": 65
+        },
+        "normalNetAcrossOverlappingFolds": -6.08,
+        "stressedNetAcrossOverlappingFolds": -9.26,
+        "profitableFolds": 0,
+        "researchRankScore": -9.26,
+        "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
+      },
+      "status": "DEVELOPMENT_RESEARCH_ONLY",
+      "officialGrade": null,
+      "brokerRoundTrips": 0,
+      "orders": 0,
+      "modelPromotion": false
+    },
+    {
+      "symbol": "LTC/USD",
+      "snapshotSource": "ALPACA_KRAKEN_US_US-1",
+      "snapshotAt": "2026-10-19T13:33:35.264Z",
+      "snapshotSha": "27504c6ff2c2ec1af0330dd124b921ff0a07b43666a62bbb27867b8104e0350b",
+      "historicalCandles": 5759,
+      "developmentFoldCount": 6,
+      "developmentWindow": {
+        "start": "2026-08-20T13:45:00.000Z",
+        "end": "2026-10-07T13:30:00.000Z"
+      },
+      "heldOutQuarantine": {
+        "start": "2026-10-07T13:30:00.000Z",
+        "end": "2026-10-19T13:30:00.000Z",
+        "candles": 1152,
+        "usedForModelSelection": false,
+        "admissionsAllowed": false
+      },
+      "candidatesEvaluated": 6,
+      "bestResearchCandidate": {
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 37,
+          "sellAbove": 65
+        },
+        "normalNetAcrossOverlappingFolds": 0.93,
+        "stressedNetAcrossOverlappingFolds": -2.81,
+        "profitableFolds": 2,
+        "researchRankScore": -2.79,
+        "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
+      },
+      "status": "DEVELOPMENT_RESEARCH_ONLY",
+      "officialGrade": null,
+      "brokerRoundTrips": 0,
+      "orders": 0,
+      "modelPromotion": false
+    },
+    {
+      "symbol": "BCH/USD",
+      "snapshotSource": "ALPACA_KRAKEN_US_US-1",
+      "snapshotAt": "2026-10-19T13:33:35.264Z",
+      "snapshotSha": "539c0a970c99416807b1a8fd4efb7764a9de55922cc3ac6d698ffbff1996c195",
+      "historicalCandles": 5759,
+      "developmentFoldCount": 6,
+      "developmentWindow": {
+        "start": "2026-08-20T13:45:00.000Z",
+        "end": "2026-10-07T13:30:00.000Z"
+      },
+      "heldOutQuarantine": {
+        "start": "2026-10-07T13:30:00.000Z",
+        "end": "2026-10-19T13:30:00.000Z",
+        "candles": 1152,
+        "usedForModelSelection": false,
+        "admissionsAllowed": false
+      },
+      "candidatesEvaluated": 6,
+      "bestResearchCandidate": {
+        "parameters": {
+          "family": "rsi_reversion",
+          "period": 14,
+          "buyBelow": 32,
+          "sellAbove": 55
+        },
+        "normalNetAcrossOverlappingFolds": -1.22,
+        "stressedNetAcrossOverlappingFolds": -4.66,
+        "profitableFolds": 2,
+        "researchRankScore": -4.64,
+        "note": "Overlapping folds are not independent trading samples or admissible paper evidence"
+      },
+      "status": "DEVELOPMENT_RESEARCH_ONLY",
+      "officialGrade": null,
+      "brokerRoundTrips": 0,
+      "orders": 0,
+      "modelPromotion": false
+    }
+  ]
+}
