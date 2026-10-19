@@ -42,12 +42,12 @@ jobs:
           s=Path('.github/workflows/robot-dqn-replay.yml').read_text()
           ui=Path('training-monitor.html').read_text()
           model=Path('rl/rapid_replay.py').read_text()
-          if "ref: rl-learning-memory" not in s or "ref: main" not in s or
+          if ("ref: rl-learning-memory" not in s or "ref: main" not in s or
              "cron: '11,41 * * * *'" not in s or
              "rl-learning-memory" not in ui or
              "training-monitor" in model or
              "ALPACA_PAPER_SECRET" in s or "ALPACA_PAPER_KEY" in s or
-             "paper-api.alpaca.markets" in model or "/v2/orders" in model:
+             "paper-api.alpaca.markets" in model or "/v2/orders" in model):
               raise SystemExit('RL G0: unsafe or incomplete workflow')
           print('G0: ten pupils, checkpoint separation, no broker permission')
           PY
