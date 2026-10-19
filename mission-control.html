@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#081622">
+<meta name="description" content="Scalp City Mission Control: historical market research, Robot Academy, independent qualification and PAPER trading examination.">
+<title>Mission Control · Scalp City</title>
+<style>
+:root{color-scheme:dark;font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;--ink:#ecf4f7;--muted:#a0b4c0;--line:#355568;--gold:#e5c48d;--mint:#8ce0ca;background:#07131e;color:var(--ink)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;background:radial-gradient(ellipse 55% 35% at 74% 3%,#1a4a52a8,transparent),radial-gradient(ellipse 38% 30% at 1% 36%,#263551aa,transparent),#081522}
+a{color:inherit}button,a{touch-action:manipulation}a:focus-visible,button:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
+.shell{max-width:1200px;padding:22px clamp(18px,4vw,50px) 90px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-bottom:22px;border-bottom:1px solid #395368a6}
+.brand{display:flex;align-items:center;gap:13px;text-decoration:none;font-size:13px;font-weight:950;letter-spacing:.16em}
+.brandmark{width:43px;height:43px;display:grid;place-items:center;border:1px solid #759aa1;background:linear-gradient(135deg,#132e37,#25545a);border-radius:12px;color:#e8d49d;font:900 19px ui-monospace,monospace}
+.brand small{display:block;font-weight:600;color:#90b2b8;font-size:10px;letter-spacing:.13em;margin-top:1px}
+.toplinks{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.toplinks a{padding:8px 12px;border:1px solid #496578;border-radius:10px;text-decoration:none;color:#bdd3dc;font-size:12px;font-weight:700}
+.toplinks a:hover{border-color:var(--mint);color:#fff}
+.hero{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(250px,0.8fr);gap:28px;padding:60px 0 32px;align-items:center}
+.kicker{font-size:11px;letter-spacing:.19em;color:var(--mint);font-weight:950}
+h1{font-size:clamp(40px,6.5vw,74px);line-height:1.04;letter-spacing:-.068em;margin:16px 0 17px;max-width:780px}
+h1 em{color:var(--gold);font-style:normal}
+.hero p{color:#b7cbd5;max-width:630px;font-size:16px;margin:0 0 23px}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.actions a,.bottomlink{border:1px solid #6e9e97;border-radius:12px;text-decoration:none;font-size:13px;font-weight:850;padding:12px 16px;background:#123b41;color:#c2f5e8}
+.actions a.primary{background:var(--gold);border-color:#f1daa9;color:#122635}
+.hero-aside{border:1px solid #607b81;background:linear-gradient(145deg,#173541e8,#142334ed);padding:24px;border-radius:21px;box-shadow:0 14px 50px #0003}
+.hero-aside small{font-size:11px;color:var(--gold);font-weight:900;letter-spacing:.14em}
+.hero-aside strong{display:block;font-size:21px;line-height:1.22;margin:12px 0;letter-spacing:-.04em}
+.hero-aside p{font-size:13px;line-height:1.6;margin:0;color:#b6d1db}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 48px}
+.stat{padding:18px;border:1px solid #365769;background:#10283abf;border-radius:14px;min-width:0}
+.stat span{color:var(--muted);display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:800}
+.stat strong{display:block;font-size:29px;margin:8px 0 3px;letter-spacing:-.05em;font-variant-numeric:tabular-nums;line-height:1.1}
+.stat small{color:#a8bac8;font-size:11px}
+.section-header{display:flex;justify-content:space-between;gap:20px;align-items:end;margin:0 0 20px;flex-wrap:wrap}
+h2{font-size:clamp(24px,3vw,31px);line-height:1.2;letter-spacing:-.045em;margin:6px 0}
+.section-header p{max-width:470px;margin:0;color:#aebfca;font-size:13px}
+.journey{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:stretch}
+.journey article{border:1px solid #345267;border-radius:18px;background:linear-gradient(165deg,#152f40,#0d2132);padding:21px;display:flex;flex-direction:column;position:relative;min-height:300px}
+.journey article:before{content:'';height:2px;position:absolute;left:20px;right:20px;top:0;background:linear-gradient(90deg,#d9bd8a,#6dbdb1)}
+.journey .number{display:flex;gap:8px;align-items:center;color:var(--gold);font-size:11px;font-weight:950;letter-spacing:.15em}
+.journey h3{margin:17px 0 7px;font-size:20px;line-height:1.14;letter-spacing:-.035em}
+.journey p{font-size:13px;color:#aebfca;margin:0 0 16px}
+.journey .tag{margin-top:auto;margin-bottom:14px;align-self:start;font-size:10px;letter-spacing:.09em;font-weight:850;color:#abd7d9}
+.journey a{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid #607e86;border-radius:10px;text-decoration:none;padding:10px 12px;color:#e5f5f3;font-size:12px;font-weight:850}
+.journey a:hover{background:#28505b;border-color:#a6eddb}
+.data{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:52px}
+.panel{padding:24px;border:1px solid #385a6c;background:#0e2435;border-radius:18px}
+.panel p{color:#aabecb;font-size:13px}
+.panel h3{font-size:20px;letter-spacing:-.03em;margin:0 0 7px}
+.rule{display:flex;gap:14px;justify-content:space-between;padding:12px 0;border-bottom:1px solid #304e63;font-size:12px;line-height:1.45}
+.rule:last-child{border:0}.rule span:first-child{color:#a8becc}.rule strong{text-align:right;font-weight:850}
+.pending{color:#efd09b}.positive{color:#9ae5d1}
+.world{margin-top:22px;border:1px solid #456473;border-radius:18px;background:linear-gradient(110deg,#172d43,#173c43);padding:21px;display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap}
+.world strong{font-size:19px;letter-spacing:-.02em}
+.world p{margin:5px 0 0;color:#acc7d1;font-size:12px;max-width:550px}
+.world a{border:1px solid #759c9f;border-radius:10px;text-decoration:none;padding:11px 14px;font-size:12px;font-weight:850;white-space:nowrap}
+footer{border-top:1px solid #335067;margin-top:45px;padding-top:18px;color:#a4bdc9;font-size:11px;line-height:1.6}
+@media(max-width:990px){.journey{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{grid-template-columns:1fr}.hero-aside{max-width:620px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:610px){.journey,.data{grid-template-columns:1fr}.stats{gap:8px}.stat{padding:13px}.stat strong{font-size:23px}.hero{padding-top:34px}.journey article{min-height:auto}.shell{padding-bottom:120px}}
+</style></head>
+<body>
+<div class="shell">
+<header class="top">
+ <a class="brand" href="./mission-control.html" aria-current="page"><span class="brandmark">SC</span><span>SCALP CITY <small>MISSION CONTROL / THE FOUNDRY</small></span></a>
+ <nav class="toplinks" aria-label="Primary navigation">
+  <a href="./robot-academy.html">Academy</a>
+  <a href="./teacher-console.html">Teacher's Office</a>
+  <a href="./agent-city.html">Explore 3D City ↗</a>
+ </nav>
+</header>
+<main>
+<section class="hero">
+ <div>
+  <span class="kicker">ONE JOURNEY. FOUR CONNECTED STAGES.</span>
+  <h1>From raw market history to <em>verified ability.</em></h1>
+  <p>The Foundry trains trading agents in historical research, evaluates them on untouched data, and only then considers admission to separately controlled PAPER examinations.</p>
+  <div class="actions">
+   <a class="primary" href="./strategy-validation.html">Start in Research Lab ↗</a>
+   <a href="./robot-academy.html">Meet the ten pupils</a>
+  </div>
+ </div>
+ <aside class="hero-aside">
+  <small>OPERATING PRINCIPLE</small>
+  <strong>Train in the past. Prove it in the present.</strong>
+  <p>Historical wins aren't grades. PAPER account connectivity isn't a trading permission. A model graduates only when actual broker evidence and the independent Checker agree.</p>
+ </aside>
+</section>
+<section class="stats" aria-label="Verified Scalp City status">
+ <div class="stat"><span>Academy pupils</span><strong id="pupil-count">—</strong><small>Published historical research roster</small></div>
+ <div class="stat"><span>Historical experiments</span><strong id="experiment-count">—</strong><small>Recorded research lessons</small></div>
+ <div class="stat"><span>Qualified pupils</span><strong id="qualified-count">—</strong><small>Independently admitted: not inferred</small></div>
+ <div class="stat"><span>PAPER connections</span><strong id="paper-count">—</strong><small>Verified accounts, not placed trades</small></div>
+</section>
+<section aria-labelledby="route-title">
+ <div class="section-header">
+  <div><span class="kicker">FOLLOW THE JOURNEY</span><h2 id="route-title">The route to graduation</h2></div>
+  <p>Each stage has a clear purpose and its own evidence. Move through the programme from left to right.</p>
+ </div>
+ <div class="journey">
+  <article><div class="number">01 / RESEARCH</div><h3>Historical Lab</h3><p>Run repeated offline strategy experiments across rolling historical periods. Quarantine the final segment so research can't tune against it.</p><span class="tag" id="lab-tag">HISTORICAL ONLY · NO BROKER</span><a href="./strategy-validation.html">Enter Research Lab <span aria-hidden="true">↗</span></a></article>
+  <article><div class="number">02 / DEVELOPMENT</div><h3>Robot Academy</h3><p>Follow ten independent pupils as their recorded research develops. Historical training scores remain provisional, never promotion proof.</p><span class="tag">TEN PUPILS · AUDITED RECORDS</span><a href="./robot-academy.html">Visit Academy <span aria-hidden="true">↗</span></a></article>
+  <article><div class="number">03 / QUALIFICATION</div><h3>Teacher's Office</h3><p>Inspect source lineage, untouched historical holdout results, transaction-cost stress tests and genuine signed PAPER evidence.</p><span class="tag">CHECKER GATE · ADMISSIONS LOCKED</span><a href="./teacher-console.html">Review Examinations <span aria-hidden="true">↗</span></a></article>
+  <article><div class="number">04 / EXECUTION</div><h3>Trading Floor</h3><p>See which models have genuinely earned an exam seat. PAPER trading requires separate approval; synthetic demos never count as broker fills.</p><span class="tag">PAPER GATED · LIVE MONEY OFF</span><a href="./trading-floor.html">Explore Trading Floor <span aria-hidden="true">↗</span></a></article>
+ </div>
+</section>
+<section class="data" aria-label="System operation">
+ <div class="panel"><span class="kicker">LIVE SYSTEM CHECK</span><h3>What's happening in the Foundry</h3><p>Read-only indicators fetched from published GitHub research and the separately secured Railway examiner. Failed connections are never treated as verification.</p>
+  <div class="rule"><span>Historical research cadence</span><strong>Every 30 minutes, offline</strong></div>
+  <div class="rule"><span>Historical market snapshot refresh</span><strong>Every 6 hours, GET only</strong></div>
+  <div class="rule"><span>Historical walk-forward report</span><strong id="fold-status">Checking published report…</strong></div>
+  <div class="rule"><span>Last recorded research period</span><strong id="training-end">—</strong></div>
+  <div class="rule"><span>Examiner signing and private connection</span><strong id="exam-status">Checking…</strong></div>
+  <div class="rule"><span>Actual PAPER order execution</span><strong id="orders-status" class="pending">Unverified · assumed disabled</strong></div>
+ </div>
+ <div class="panel"><span class="kicker">WHY THESE GATES MATTER</span><h3>Results have different meanings</h3>
+  <p><strong>Development result:</strong> a repeatable historical observation. It can point to models worth examining; it cannot prove predictive success.</p>
+  <p><strong>Historical qualification:</strong> an independent examination of frozen parameters against later, previously untouched data.</p>
+  <p><strong>Verified PAPER grade:</strong> reconciled fills, fees, drawdown and at least 30 closed forward trades after admission.</p>
+  <p style="color:#efd09b">No real-money accounts or withdrawals are connected through this site.</p>
+ </div>
+</section>
+<section class="world"><div><strong>Explore the 3D world</strong><p>The city and its individual rooms remain available as a spatial view of the same programme—without replacing the step-by-step navigation.</p></div><a href="./agent-city.html">Enter Agent City ↗</a></section>
+</main>
+<footer>Scalp City Lab · Historical simulations and PAPER-only infrastructure. All metrics require source verification; no simulated performance predicts future returns. <a href="./index.html">Legacy Research Floor</a></footer>
+</div>
+<script type="module">
+import {readResearch,readHostingConnection} from './teacher/public-client.mjs';
+const $=id=>document.getElementById(id);
+(async()=>{
+ try{
+  const research=await readResearch({baseUrl:location.href});
+  $('pupil-count').textContent=String(research.pupils.length);
+  $('experiment-count').textContent=String(research.pupils.reduce((sum,p)=>sum+(p.experiments||0),0));
+  $('qualified-count').textContent='0 verified';
+  $('training-end').textContent=research.latestTrainingEnd?
+    new Date(research.latestTrainingEnd).toLocaleString():'Not reported';
+ }catch{$('pupil-count').textContent='Unavailable';$('experiment-count').textContent='Unavailable';
+   $('qualified-count').textContent='Unverified';$('training-end').textContent='Unavailable';}
+ try{
+  const host=await readHostingConnection({baseUrl:location.href});
+  const a=host.paperAccounts;
+  $('paper-count').textContent=a?a.passed+' / '+a.required:'Not reported';
+  $('exam-status').textContent=host.signerPinned&&host.privateExaminerLinked?
+    'Signed host connected':'Unverified';
+  $('orders-status').textContent=host.paperOrdersEnabled?'PAPER enabled — review required':'PAPER orders disabled';
+ }catch{$('paper-count').textContent='Unverified';$('exam-status').textContent='Connection unavailable';
+   $('orders-status').textContent='Not confirmed — do not assume trading';}
+ try{
+  const response=await fetch('./research-data/historical-lab-latest.json',{cache:'no-store'});
+  if(!response.ok)throw Error('Report unavailable');
+  const report=await response.json();
+  if(report.schema!=='SCALP_HISTORICAL_WALK_FORWARD_V1'||report.tenPupils!==10||
+    report.brokerOrders!==0||report.quarantinedHoldoutNotScored!==true)
+    throw Error('Untrusted report');
+  const count=report.pupils[0]?.developmentFoldCount;
+  $('fold-status').textContent=count+' rolling folds × '+report.tenPupils+' charts; final 20% quarantined';
+  $('lab-tag').textContent=count+' FOLDS · NO BROKER ORDERS';
+ }catch{$('fold-status').textContent='Report pending — no validation claimed';}
+})();
+</script>
+<script src="./journey-nav.js" defer></script>
+</body></html>
