@@ -13,6 +13,7 @@ from pathlib import Path
 import numpy as np
 import torch
 from torch import nn
+from .profit_objective import OBJECTIVE_ID, assess_profit_objective
 
 SYMBOLS = ('BTC/USD','ETH/USD','SOL/USD','XRP/USD','ADA/USD',
            'AVAX/USD','LINK/USD','DOGE/USD','LTC/USD','BCH/USD')
@@ -65,10 +66,10 @@ def split_development(bars):
         'holdoutStart':bars[dev_end]['t'],'sealedHoldoutTouched':False}
 
 class MarketEnv:
-    """Gymnasium-style API, action 0=FLAT, 1=LONG; maximum half cash exposure.
+    """Market reward is AFTER full liquidatable fees/slippage and drawdown.
 
-    Observation uses only completed candle t. Trading happens at t+1 open,
-    reward is marked-to-market equity at t+1 close.
+    No action bonus, trade quota, win-rate bonus or penalty for remaining flat.
+    Decisions use completed candle t; the next real candle opens the position.
     """
     def __init__(self,bars,fee=.0025,slippage=.001,capital=50.0):
         if len(bars)<=WARMUP+2 or not 0<=fee<=.02 or not 0<=slippage<=.02:
@@ -119,7 +120,9 @@ class MarketEnv:
         equity=self.equity(bar['c'])
         self.peak=max(self.peak,equity)
         self.max_dd=max(self.max_dd,100*(self.peak-equity)/self.peak)
-        # Net-equity reward plus a small penalty for incremental drawdown.
+        # Reward is log change in immediately liquidatable NET account value.
+        # Fees and adverse slippage are already deducted by equity().
+        # Never give XP, bonuses for order counts or a penalty for staying FLAT.
         current_dd=100*(self.peak-equity)/self.peak
         reward=(100*math.log(max(equity,1e-9)/max(previous,1e-9))
                 -.02*max(0.0,current_dd-previous_dd))
@@ -199,7 +202,10 @@ def train_dqn(bars,*,episodes=5,seed=7,initial_state_dict=None):
       'virtualClosesPerSecond':round(closed_trades/elapsed,2),
       'gradientUpdatesPerSecond':round(updates/elapsed,2),
       'marketTimeframe':'5Min' if bars[1]['t']-bars[0]['t']==FIVE_MIN_MS else '15Min',
-      'cadenceType':'ACCELERATED_HISTORICAL_REPLAY_NOT_REALTIME_1S'}
+      'cadenceType':'ACCELERATED_HISTORICAL_REPLAY_NOT_REALTIME_1S',
+      'optimisationObjective':OBJECTIVE_ID,
+      'rewardFormula':'NET_LOG_LIQUIDATION_EQUITY_CHANGE_MINUS_INCREMENTAL_DRAWDOWN',
+      'tradeCountReward':0,'winRateReward':0,'flatActionPenalty':0}
 
 def evaluate(policy,bars,*,fee=.0025,slippage=.001,strategy='dqn'):
     env=MarketEnv(bars,fee=fee,slippage=slippage)
@@ -271,6 +277,7 @@ def run(snapshot,*,episodes=5,seed=7,outdir=None,prior_checkpoint=None,trace_out
     stress=evaluate(policy,validation,fee=.005,slippage=.002)
     comparisons={name:evaluate(policy,validation,strategy=name)
                  for name in ('cash','buy_hold')}
+    profit_objective=assess_profit_objective(baseline,stress,comparisons)
     buffer=io.BytesIO()
     torch.save(policy.state_dict(),buffer)
     report={
@@ -284,8 +291,9 @@ def run(snapshot,*,episodes=5,seed=7,outdir=None,prior_checkpoint=None,trace_out
         'previousCheckpointSha256':previous_sha,
         'cumulativeGradientUpdatesVerified':False,
         'validation':baseline,'validationDoubleCostStress':stress,
-        'benchmarks':comparisons,
+        'benchmarks':comparisons,'profitObjective':profit_objective,
         'status':'EXPERIMENTAL_HISTORICAL_RESEARCH_ONLY',
+        'trainingGoal':OBJECTIVE_ID,
         'paperOrders':0,'liveOrders':0,'officialGrade':None,
         'champion':False,'admissions':0,
         'warning':'Untouched final holdout and independent paper fills NOT tested.'}

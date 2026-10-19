@@ -31,3 +31,52 @@ The agent sees *numerical OHLCV and position-state features*; the human watches 
 - `python -m unittest rl.test_dqn_experiment rl.test_rapid_replay rl.test_five_min_replay -v` (requires numpy and torch)
 - `.github/workflows/robot-rapid-rl-check.yml`: independent G0/G1 source/timestamp/holdout safety tests and no-order guard.
 - The page must display a clear first-run unavailable state until genuine snapshots, DQN weights and replay trace have been published. Do not substitute demo candles into this production route.
+
+## Primary mission — evidence-backed net profitability
+
+The DQN pupil's **ultimate objective is sustained positive, risk-controlled net
+GBP return after fees and adverse slippage** on authentic five-minute market
+observations. There is no reward for activity, unnecessary entries, win-rate
+alone, learning XP, or arbitrary daily trade frequency. Remaining FLAT and
+preserving capital is preferable to taking an unprofitable trade.
+
+Each simulated position is marked to its immediately **liquidatable value**
+(including the closing fee/slippage) while held. The per-step reinforcement
+reward is net log-equity improvement with an incremental drawdown penalty; the
+model receives a negative outcome when trading costs or falling prices lower
+net equity. DQN training learns from these rewards and updates neural weights.
+This is an approximation to eventual compound net profit, not a guarantee.
+
+The separate, **frozen-policy development audit** in
+`rl/profit_objective.py` requires all of:
+
+- net profit greater than £0 after normal simulated trading costs;
+- net profit greater than £0 after doubled fees and slippage stress;
+- more profit than both staying in cash and passive buy-and-hold over the same
+  development period, net of the same baseline execution costs;
+- simulated maximum drawdown no greater than 8%;
+- at least five fully closed simulated trades for an initial activity sample.
+
+These are **necessary research filters, not sufficient investment evidence**.
+For each pupil, `profitObjective` includes failed conditions, normal/stressed
+net GBP P&L, passive excess, drawdown and closure count, and explicit
+`automaticPromotion=false`, `brokerOrders=0` and
+`forwardVerified=false`. The browser Training Monitor exposes the same
+profit ledger, rather than ranking models by speed or success percentage.
+
+The development 20% segment is inspected repeatedly during autonomous research,
+so it can become subject to implicit selection/overfitting. It must never be
+represented as fully independent validation. The sealed final 20% is not read
+during development. Before any Teacher graduation, a truly independent,
+time-forward out-of-sample and actual segregated PAPER fill ledger are required,
+with explicit owner authorization for any later trading release.
+
+The goal does **not** require a trade every five minutes; real-world execution
+frequency will be set by the profitable policy and risk constraints, not the
+number of bars arriving. In falling or fee-dominated markets, staying in cash
+may be the optimal profit-seeking decision. Current DQN only supports LONG/FLAT,
+not short selling.
+
+Checker tests: `python -m unittest rl.test_profit_objective
+rl.test_dqn_experiment rl.test_rapid_replay -v` and
+`node --test scripts/rl-profit-monitor-tests.mjs`.

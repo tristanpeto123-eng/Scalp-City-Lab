@@ -36,6 +36,19 @@ table{border-collapse:collapse;width:100%;text-align:left;min-width:660px}th,td{
 <div class="stat"><small>Recent failed workflow runs</small><strong id="failures">—</strong><small>Among last 10 GitHub Actions runs</small></div>
 <div class="stat"><small>Verified forward graduates</small><strong>0 <span class="caption">in research telemetry</span></strong><small>Only separate signed Teacher proof counts</small></div>
 </section>
+<section class="panel" aria-label="Neural pupil profit objective">
+<h2>Neural Academy · Net Profit Objective</h2>
+<p>The DQN pupils must earn positive net profit after real transaction-cost assumptions, survive doubled-cost stress, outperform staying in cash and passive buy-and-hold, and keep simulated drawdown below 8%. Making more trades or winning often does not earn a passing score. Staying flat is allowed.</p>
+<div class="stats">
+<div class="stat"><small>Pupils passing historical profit criteria</small><strong id="profitpassing">Awaiting evidence</strong><small>Development only · not paper graduates</small></div>
+<div class="stat"><small>Actual pupil model updates</small><strong id="profitupdates">Awaiting evidence</strong><small>Neural weight gradient updates; not orders</small></div>
+<div class="stat"><small>New distinct training candles</small><strong id="profitnew">Awaiting evidence</strong><small>0 means the archived market was reused</small></div>
+</div>
+<p id="profitupdated" class="caption">Loading independently recorded Deep RL profitability evidence…</p>
+<div class="scroller"><table><thead><tr><th>Robot</th><th>Net result (£)</th><th>Double-cost stress (£)</th><th>Versus best passive (£)</th><th>Drawdown</th><th>Closed trades</th><th>Profit criteria</th></tr></thead>
+<tbody id="profitrows"><tr><td colspan="7">Waiting for a checkpoint-backed profit report</td></tr></tbody></table></div>
+<p class="caption">Historical results on isolated £50 reference balances, not earnings. A passing development check is not an independent test, paper grade, live-profit forecast or permission to trade. <a href="./market-replay-5m.html">Watch pupil decisions →</a></p>
+</section>
 <section class="panel" aria-label="Previously recorded research">
 <h2>Saved historical research</h2>
 <p id="archive-note">Checking the archived research ledger…</p>
@@ -144,6 +157,60 @@ async function loadPublished(){
  }
  updateHealth();
 }
+const profitFeed='https://raw.githubusercontent.com/tristanpeto123-eng/Scalp-City-Lab/rl-learning-memory/rl-rapid/latest.json';
+const profitGoal='MAXIMISE_NET_PROFIT_AFTER_FEES_AND_SLIPPAGE_V1';
+async function loadProfitGoal(){
+ try{
+  const response=await fetch(profitFeed+'?ts='+Date.now(),{cache:'no-store',credentials:'omit'});
+  if(!response.ok)throw Error('Deep RL report HTTP '+response.status);
+  const d=await response.json();
+  if(d.schema!=='SCALP_RAPID_RL_REPLAY_V1'||d.trainingGoal!==profitGoal||
+     d.marketBarTimeframe!=='5Min'||d.paperOrders!==0||d.liveOrders!==0||
+     d.verifiedForwardGrades!==0||d.automaticAdmissions!==0||
+     d.sealedHoldoutAccessed!==false||!Array.isArray(d.pupils)||
+     d.pupils.length!==10||new Set(d.pupils.map(p=>p.symbol)).size!==10||
+     !Number.isInteger(d.gradientUpdates)||d.gradientUpdates<0||
+     !Number.isInteger(d.newTrainingTailCandles)||d.newTrainingTailCandles<0)
+   throw Error('Missing or invalid research-only profit audit');
+  const tbody=$('profitrows');tbody.replaceChildren();
+  let passed=0;
+  for(const p of d.pupils){
+   const x=p.profitObjective;
+   if(p.trainingGoal!==profitGoal||!x||x.objectiveId!==profitGoal||
+      x.automaticPromotion!==false||x.forwardVerified!==false||
+      x.brokerOrders!==0||x.validationOnlyNotTrainingReward!==true||
+      !Number.isFinite(x.normalNetGbp)||!Number.isFinite(x.stressedNetGbp)||
+      !Number.isFinite(x.excessVsBestPassiveGbp)||!Number.isFinite(x.maxDrawdownPct)||
+      !Number.isInteger(x.closedTrades)||typeof x.developmentGatePassed!=='boolean'||
+      !Array.isArray(x.reasons)||
+      x.developmentGatePassed!==p.developmentProfitGatePassed)
+     throw Error('Untrusted pupil profit evidence');
+   if(x.developmentGatePassed)passed++;
+   const tr=document.createElement('tr');
+   const status=x.developmentGatePassed?'Passed development only':
+     x.reasons.join(' · ').replaceAll('_',' ').toLowerCase();
+   const values=[p.symbol,money(x.normalNetGbp),money(x.stressedNetGbp),
+     money(x.excessVsBestPassiveGbp),x.maxDrawdownPct.toFixed(2)+'%',
+     String(x.closedTrades),status];
+   for(const v of values){const td=document.createElement('td');td.textContent=v;tr.append(td);}
+   tbody.append(tr);
+  }
+  if(passed!==d.profitGoalPassingPupils)throw Error('Reported pass count mismatch');
+  $('profitpassing').textContent=passed+' / 10';
+  $('profitupdates').textContent=String(d.gradientUpdates);
+  $('profitnew').textContent=String(d.newTrainingTailCandles);
+  $('profitupdated').textContent='Latest five-minute neural profit audit: '+stamp(d.generatedAt)+
+    '. Research evidence only; repeated historical windows do not prove live profitability.';
+ }catch(err){
+  $('profitpassing').textContent='Not yet audited';
+  $('profitupdates').textContent='Not verified';
+  $('profitnew').textContent='Not verified';
+  $('profitupdated').textContent='Awaiting the new after-costs Deep RL profit report: '+err.message;
+  const tr=document.createElement('tr'),td=document.createElement('td');
+  td.colSpan=7;td.textContent='Historical profit objectives not yet audited by the new criteria.';
+  tr.append(td);$('profitrows').replaceChildren(tr);
+ }
+}
 async function loadActions(){
  try{
   const r=await fetch('https://api.github.com/repos/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/robot-research-training.yml/runs?per_page=10',{cache:'no-store'});
@@ -175,9 +242,10 @@ function updateHealth(){
  else if(latest?.conclusion==='success'){status='LAST RUN OK · RESEARCH ONLY';cls='status good';}
  $('health').className=cls;$('health').textContent=status;
 }
-$('refresh').onclick=()=>{loadPublished();loadActions();};
-loadPublished();loadActions();
+$('refresh').onclick=()=>{loadPublished();loadActions();loadProfitGoal();};
+loadPublished();loadActions();loadProfitGoal();
 setInterval(loadPublished,30000);
 setInterval(loadActions,120000);
+setInterval(loadProfitGoal,60000);
 </script><script src="./journey-nav.js" defer></script>
 </body></html>

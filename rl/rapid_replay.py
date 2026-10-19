@@ -12,6 +12,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from .dqn_experiment import SYMBOLS, FIVE_MIN_MS, run, split_development, validate_snapshot
+from .profit_objective import OBJECTIVE_ID
 
 REPORT_SCHEMA='SCALP_RAPID_RL_REPLAY_V1'
 def sha256(path):
@@ -68,6 +69,18 @@ def train_replay_batch(*,data_dir,root,episodes=1,seed=7,symbols=SYMBOLS,
         saved=models/(stem+'-dqn.pt')
         model_sha=sha256(saved)
         stats=current['training']
+        profit=current.get('profitObjective')
+        if (not isinstance(profit,dict) or profit.get('objectiveId')!=OBJECTIVE_ID or
+            not isinstance(profit.get('developmentGatePassed'),bool) or
+            profit.get('automaticPromotion') is not False or
+            profit.get('forwardVerified') is not False or
+            profit.get('brokerOrders')!=0 or
+            profit.get('validationOnlyNotTrainingReward') is not True or
+            not isinstance(profit.get('reasons'),list) or
+            not all(isinstance(r,str) for r in profit['reasons']) or
+            profit.get('normalNetGbp')!=current['validation']['netProfitGbp'] or
+            profit.get('stressedNetGbp')!=current['validationDoubleCostStress']['netProfitGbp']):
+            raise ValueError('Missing or contradictory audited profit objective for '+symbol)
         if (current.get('schema')!='SCALP_DQN_DEVELOPMENT_V1' or
             current.get('symbol')!=symbol or current.get('paperOrders')!=0 or
             current.get('liveOrders')!=0 or current.get('champion') is not False or
@@ -104,6 +117,10 @@ def train_replay_batch(*,data_dir,root,episodes=1,seed=7,symbols=SYMBOLS,
             'cumulativeDecisions':stats['steps']+(prior['cumulativeDecisions'] if prior else 0),
             'cumulativeGradientUpdates':stats['gradientUpdates']+
                 (prior['cumulativeGradientUpdates'] if prior else 0),
+            'trainingGoal':OBJECTIVE_ID,
+            'profitObjective':profit,
+            'developmentProfitGatePassed':profit['developmentGatePassed'],
+            'excessVsBestPassiveGbp':profit['excessVsBestPassiveGbp'],
             'laterDevelopmentNetGbp':current['validation']['netProfitGbp'],
             'laterDevelopmentStressedNetGbp':current['validationDoubleCostStress']['netProfitGbp'],
             'laterDevelopmentMaxDrawdownPct':current['validation']['maxDrawdownPct'],
@@ -126,9 +143,11 @@ def train_replay_batch(*,data_dir,root,episodes=1,seed=7,symbols=SYMBOLS,
         'simulatedClosesPerSecond':round(sum(p['simulatedClosedTradesThisRun'] for p in reports)/elapsed,2),
         'newTrainingTailCandles':sum(p['newTrainingTailCandles'] for p in reports),
         'positiveDevelopmentPupils':sum(p['positiveUnderStressedCosts'] for p in reports),
+        'profitGoalPassingPupils':sum(p['developmentProfitGatePassed'] for p in reports),
+        'trainingGoal':OBJECTIVE_ID,
         'pupils':reports,'sealedHoldoutAccessed':False,
         'verifiedForwardGrades':0,'paperOrders':0,'liveOrders':0,'automaticAdmissions':0,
-        'claim':'Native complete 5-minute candles replayed sequentially. No 1-second observations, broker trades or proven predictive returns.'
+        'claim':'Five-minute pupils optimise liquidation net profit after costs. Development profit gates are descriptive, not forward proof or admissions.'
     }
     latest.parent.mkdir(parents=True,exist_ok=True)
     latest.write_text(json.dumps(result,indent=2)+'\n')
