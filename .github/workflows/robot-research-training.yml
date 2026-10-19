@@ -58,10 +58,11 @@ jobs:
             throw Error('Archived datasets over 14 days old; refresh from provider before reuse');
           console.log('PUBLISHED_HISTORY_ONLY=true; PAPER_ORDERS=0');
           NODE
-      - name: Run one research generation per crypto chart (NO orders)
+      - name: Run bounded historical research batches for all ten pupils (NO orders)
         env:
           GITHUB_TOKEN: ${{ github.token }}
           SCALP_RESEARCH_INPUT_DIR: validation-data
+          SCALP_HISTORICAL_BATCH_PASSES: '3'
         run: node scripts/run-robot-training.mjs
       - name: Checkout updated standalone research memory after successful write
         uses: actions/checkout@v4
