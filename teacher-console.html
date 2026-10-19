@@ -94,7 +94,7 @@ const gradePercent=n=>Number.isFinite(n)?Math.min(10,Math.floor((n+1e-8)/10)):nu
 const winner=p=>grades.get(p.symbol);
 function record(p){const v=winner(p);const leader=research?.pupils?.find(x=>x.symbol===p.symbol)?.researchLeader;
 return {paper:v,leader,grade:v?v.grade:gradePercent(leader?.trainingWinRatePct),confirmed:!!v};}
-function choose(symbol){current=symbol;render();}
+function choose(symbol){current=symbol;document.dispatchEvent(new CustomEvent('scalp:pupil-selected',{detail:{pupil:symbol.replace('/','')}}));render();}
 function switchTab(t){for(const x of ['class','teacher','evidence'])byId(x).hidden=x!==t;for(const b of document.querySelectorAll('[data-tab]')){b.classList.toggle('selected',b.dataset.tab===t);b.setAttribute('aria-selected',String(b.dataset.tab===t));}render();}
 function render(){
  const count=grades.size;
