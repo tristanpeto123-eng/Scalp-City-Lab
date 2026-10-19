@@ -46,7 +46,7 @@ test('ten genuine research pupils validated; no historical champion is a paper g
  assert.equal(PAIRS.length,10);
  const data=checkResearch(source);
  assert.equal(data.pupils.length,10);
- assert.ok(data.pupils.every(p=>p.researchLeader?.trainingNetGbp<0));
+ assert.ok(data.pupils.every(p=>p.confirmedForward===false&&p.championModel===null&&p.verifiedForwardTrades===0));
  assert.throws(()=>checkResearch({...source,verifiedForwardGrades:1}),/provenance/);
 });
 test('read-only Academy research loads actual file with no order permissions',async()=>{
