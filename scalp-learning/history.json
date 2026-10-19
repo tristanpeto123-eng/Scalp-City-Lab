@@ -18866,6 +18866,2763 @@
       },
       "researchPolicy": "BOUNDED_PARENT_MUTATION_3FOLD_V2",
       "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "3c2569e6444a655f8910eec31b5139fb17013145087d45a0e6dd5ef6b212d890",
+      "symbol": "BTC/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "adf0973ec9937ade3dc7fc5fb846a8110a20a22e7d69e232a72eac760a87fb4d",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 20,
+            "exitLookback": 10
+          },
+          "closedTrades": 24,
+          "netProfitGbp": -3.41,
+          "stressNetProfitGbp": -4.81,
+          "maxDrawdownPct": 3.51,
+          "winRatePct": 12.5,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.51,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 8,
+                "wins": 2,
+                "netGbp": -0.93,
+                "stressNetGbp": -1.43,
+                "maxDrawdownPct": 2.12
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 10,
+                "wins": 1,
+                "netGbp": -1.59,
+                "stressNetGbp": -2.14,
+                "maxDrawdownPct": 3.51
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 6,
+                "wins": 0,
+                "netGbp": -0.89,
+                "stressNetGbp": -1.24,
+                "maxDrawdownPct": 1.78
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 30,
+            "exitLookback": 12
+          },
+          "closedTrades": 16,
+          "netProfitGbp": -1.81,
+          "stressNetProfitGbp": -2.83,
+          "maxDrawdownPct": 2.2,
+          "winRatePct": 18.75,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 2.2,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 5,
+                "wins": 2,
+                "netGbp": -0.31,
+                "stressNetGbp": -0.67,
+                "maxDrawdownPct": 1.12
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 7,
+                "wins": 1,
+                "netGbp": -0.93,
+                "stressNetGbp": -1.35,
+                "maxDrawdownPct": 2.2
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 4,
+                "wins": 0,
+                "netGbp": -0.57,
+                "stressNetGbp": -0.81,
+                "maxDrawdownPct": 1.35
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 40,
+            "exitLookback": 20
+          },
+          "closedTrades": 11,
+          "netProfitGbp": -1.08,
+          "stressNetProfitGbp": -1.82,
+          "maxDrawdownPct": 1.78,
+          "winRatePct": 27.27,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 1,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 1.78,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 3,
+                "wins": 2,
+                "netGbp": 0.13,
+                "stressNetGbp": -0.15,
+                "maxDrawdownPct": 1.08
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 4,
+                "wins": 1,
+                "netGbp": -0.35,
+                "stressNetGbp": -0.62,
+                "maxDrawdownPct": 1.55
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 4,
+                "wins": 0,
+                "netGbp": -0.86,
+                "stressNetGbp": -1.05,
+                "maxDrawdownPct": 1.78
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 76554.75,
+        "observedPriceChangePct": 6.88160333,
+        "dailyRealizedVolatilityPct": 2.10048362,
+        "averageCandleRangePct": 0.26197135,
+        "upCandleFractionPct": 48.93617021,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 32,
+          "sellAbove": 65
+        },
+        "previousNetGbp": -0.76,
+        "sourceExperimentId": "f9ef6df406357ba76758a452c9c6b6e50444448c6464e1aeddba55731d61acd6",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_3FOLD_V2",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "dc44859eff95ecbf137a5f8c7aa6124ff4cb354dd3ec1d784b5476597b7ec567",
+      "symbol": "ETH/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "2c5d4c43940d992bba87ccb91469a76ac883545fbf83bee6f34aaac962857749",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 9,
+            "slow": 38
+          },
+          "closedTrades": 24,
+          "netProfitGbp": -3.43,
+          "stressNetProfitGbp": -4.82,
+          "maxDrawdownPct": 3.4,
+          "winRatePct": 12.5,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.4,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 8,
+                "wins": 1,
+                "netGbp": -1.25,
+                "stressNetGbp": -1.69,
+                "maxDrawdownPct": 3.4
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 7,
+                "wins": 1,
+                "netGbp": -1.06,
+                "stressNetGbp": -1.46,
+                "maxDrawdownPct": 2.6
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 9,
+                "wins": 1,
+                "netGbp": -1.12,
+                "stressNetGbp": -1.67,
+                "maxDrawdownPct": 2.64
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 10,
+            "slow": 42
+          },
+          "closedTrades": 22,
+          "netProfitGbp": -3.14,
+          "stressNetProfitGbp": -4.42,
+          "maxDrawdownPct": 3.24,
+          "winRatePct": 18.18,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.24,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 8,
+                "wins": 2,
+                "netGbp": -1.2,
+                "stressNetGbp": -1.66,
+                "maxDrawdownPct": 3.24
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 6,
+                "wins": 1,
+                "netGbp": -0.82,
+                "stressNetGbp": -1.17,
+                "maxDrawdownPct": 2.13
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 8,
+                "wins": 1,
+                "netGbp": -1.12,
+                "stressNetGbp": -1.59,
+                "maxDrawdownPct": 2.33
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 12,
+            "slow": 46
+          },
+          "closedTrades": 23,
+          "netProfitGbp": -3.37,
+          "stressNetProfitGbp": -4.7,
+          "maxDrawdownPct": 3.38,
+          "winRatePct": 17.39,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.38,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 9,
+                "wins": 2,
+                "netGbp": -1.21,
+                "stressNetGbp": -1.75,
+                "maxDrawdownPct": 3.38
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 6,
+                "wins": 1,
+                "netGbp": -0.89,
+                "stressNetGbp": -1.24,
+                "maxDrawdownPct": 2.26
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 8,
+                "wins": 1,
+                "netGbp": -1.27,
+                "stressNetGbp": -1.71,
+                "maxDrawdownPct": 2.61
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 13,
+            "slow": 50
+          },
+          "closedTrades": 22,
+          "netProfitGbp": -2.98,
+          "stressNetProfitGbp": -4.29,
+          "maxDrawdownPct": 3.37,
+          "winRatePct": 18.18,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.37,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 9,
+                "wins": 2,
+                "netGbp": -1.22,
+                "stressNetGbp": -1.75,
+                "maxDrawdownPct": 3.37
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 6,
+                "wins": 1,
+                "netGbp": -0.75,
+                "stressNetGbp": -1.12,
+                "maxDrawdownPct": 2
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 7,
+                "wins": 1,
+                "netGbp": -1.01,
+                "stressNetGbp": -1.42,
+                "maxDrawdownPct": 2.52
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 9,
+            "buyBelow": 25,
+            "sellAbove": 55
+          },
+          "closedTrades": 10,
+          "netProfitGbp": -0.95,
+          "stressNetProfitGbp": -1.62,
+          "maxDrawdownPct": 1.34,
+          "winRatePct": 20,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 1,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 1.34,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 1,
+                "wins": 1,
+                "netGbp": 0.04,
+                "stressNetGbp": -0.05,
+                "maxDrawdownPct": 0.31
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 4,
+                "wins": 0,
+                "netGbp": -0.32,
+                "stressNetGbp": -0.6,
+                "maxDrawdownPct": 0.93
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 5,
+                "wins": 1,
+                "netGbp": -0.67,
+                "stressNetGbp": -0.97,
+                "maxDrawdownPct": 1.34
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 15,
+            "exitLookback": 8
+          },
+          "closedTrades": 24,
+          "netProfitGbp": -3.3,
+          "stressNetProfitGbp": -4.71,
+          "maxDrawdownPct": 3.1,
+          "winRatePct": 16.67,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.1,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 8,
+                "wins": 1,
+                "netGbp": -1.17,
+                "stressNetGbp": -1.63,
+                "maxDrawdownPct": 2.65
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 8,
+                "wins": 1,
+                "netGbp": -1.43,
+                "stressNetGbp": -1.84,
+                "maxDrawdownPct": 3.1
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 8,
+                "wins": 2,
+                "netGbp": -0.7,
+                "stressNetGbp": -1.24,
+                "maxDrawdownPct": 2.07
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 2466.415,
+        "observedPriceChangePct": 8.46152155,
+        "dailyRealizedVolatilityPct": 2.82157478,
+        "averageCandleRangePct": 0.35485453,
+        "upCandleFractionPct": 50.28224056,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "DIRECTIONAL",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "ema_trend",
+          "fast": 11,
+          "slow": 42
+        },
+        "previousNetGbp": -2.74,
+        "sourceExperimentId": "197591f96848def46c0ae2a92ccd0783a0f0e34c5fb393f768ba3b17cc869db4",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_3FOLD_V2",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "98d4e1cd5375791be7991b5db70053cadca14f142f12418698758144a71eb57d",
+      "symbol": "SOL/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "97363cefca733e13d864bd8153d01d65c2850c8849a44c6dd46ac81d8bbc976c",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 20,
+            "exitLookback": 10
+          },
+          "closedTrades": 20,
+          "netProfitGbp": -1.94,
+          "stressNetProfitGbp": -3.26,
+          "maxDrawdownPct": 4.62,
+          "winRatePct": 15,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 4.62,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 8,
+                "wins": 2,
+                "netGbp": -0.2,
+                "stressNetGbp": -0.82,
+                "maxDrawdownPct": 4.62
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 6,
+                "wins": 1,
+                "netGbp": -0.84,
+                "stressNetGbp": -1.2,
+                "maxDrawdownPct": 2.7
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 6,
+                "wins": 0,
+                "netGbp": -0.9,
+                "stressNetGbp": -1.24,
+                "maxDrawdownPct": 2.01
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 30,
+            "exitLookback": 12
+          },
+          "closedTrades": 15,
+          "netProfitGbp": -1.08,
+          "stressNetProfitGbp": -2.14,
+          "maxDrawdownPct": 3.39,
+          "winRatePct": 20,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 1,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.39,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 6,
+                "wins": 2,
+                "netGbp": 0.44,
+                "stressNetGbp": -0.13,
+                "maxDrawdownPct": 3.39
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 5,
+                "wins": 1,
+                "netGbp": -0.9,
+                "stressNetGbp": -1.16,
+                "maxDrawdownPct": 2.92
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 4,
+                "wins": 0,
+                "netGbp": -0.62,
+                "stressNetGbp": -0.85,
+                "maxDrawdownPct": 2.37
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 40,
+            "exitLookback": 20
+          },
+          "closedTrades": 12,
+          "netProfitGbp": -0.31,
+          "stressNetProfitGbp": -1.26,
+          "maxDrawdownPct": 2.97,
+          "winRatePct": 33.33,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 1,
+            "stressPositiveWindows": 1,
+            "worstDrawdownPct": 2.97,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 5,
+                "wins": 2,
+                "netGbp": 0.58,
+                "stressNetGbp": 0.07,
+                "maxDrawdownPct": 2.97
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 3,
+                "wins": 1,
+                "netGbp": -0.1,
+                "stressNetGbp": -0.34,
+                "maxDrawdownPct": 2.09
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 4,
+                "wins": 1,
+                "netGbp": -0.79,
+                "stressNetGbp": -0.99,
+                "maxDrawdownPct": 2.42
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 99.525,
+        "observedPriceChangePct": 15.07775915,
+        "dailyRealizedVolatilityPct": 3.81445187,
+        "averageCandleRangePct": 0.49421522,
+        "upCandleFractionPct": 50.06513244,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "DIRECTIONAL",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 30,
+          "sellAbove": 55
+        },
+        "previousNetGbp": -0.79,
+        "sourceExperimentId": "b8b5c45e4dcc82ed3ffa4a5a8e947706d94ff14f9efcbd310011fb3a6d97aae0",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_3FOLD_V2",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "741884b7c58a91a6e0261fea09b3cec0c274ad4f8ee6337faf01d177c9b22066",
+      "symbol": "XRP/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "394f758c2ea83a118c149946f9edead40edceaa4fce31ab25957f4277e1231e0",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 20,
+            "exitLookback": 10
+          },
+          "closedTrades": 18,
+          "netProfitGbp": -2.96,
+          "stressNetProfitGbp": -3.95,
+          "maxDrawdownPct": 3.86,
+          "winRatePct": 11.11,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.86,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 6,
+                "wins": 1,
+                "netGbp": -1.68,
+                "stressNetGbp": -1.89,
+                "maxDrawdownPct": 3.86
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 7,
+                "wins": 1,
+                "netGbp": -0.6,
+                "stressNetGbp": -1.08,
+                "maxDrawdownPct": 2.04
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 5,
+                "wins": 0,
+                "netGbp": -0.68,
+                "stressNetGbp": -0.98,
+                "maxDrawdownPct": 2.24
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 30,
+            "exitLookback": 12
+          },
+          "closedTrades": 14,
+          "netProfitGbp": -1.89,
+          "stressNetProfitGbp": -2.73,
+          "maxDrawdownPct": 2.29,
+          "winRatePct": 14.29,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 2.29,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 4,
+                "wins": 1,
+                "netGbp": -0.7,
+                "stressNetGbp": -0.91,
+                "maxDrawdownPct": 1.84
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 5,
+                "wins": 1,
+                "netGbp": -0.26,
+                "stressNetGbp": -0.63,
+                "maxDrawdownPct": 1.88
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 5,
+                "wins": 0,
+                "netGbp": -0.93,
+                "stressNetGbp": -1.19,
+                "maxDrawdownPct": 2.29
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 40,
+            "exitLookback": 20
+          },
+          "closedTrades": 9,
+          "netProfitGbp": -1.79,
+          "stressNetProfitGbp": -2.24,
+          "maxDrawdownPct": 4.66,
+          "winRatePct": 11.11,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 1,
+            "stressPositiveWindows": 1,
+            "worstDrawdownPct": 4.66,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 5,
+                "wins": 0,
+                "netGbp": -2.29,
+                "stressNetGbp": -2.32,
+                "maxDrawdownPct": 4.66
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 2,
+                "wins": 1,
+                "netGbp": 0.98,
+                "stressNetGbp": 0.65,
+                "maxDrawdownPct": 1.27
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 2,
+                "wins": 0,
+                "netGbp": -0.48,
+                "stressNetGbp": -0.57,
+                "maxDrawdownPct": 1.9
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 1.33352,
+        "observedPriceChangePct": 9.37753755,
+        "dailyRealizedVolatilityPct": 4.96185471,
+        "averageCandleRangePct": 0.61769985,
+        "upCandleFractionPct": 50.32566218,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "DIRECTIONAL",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 32,
+          "sellAbove": 60
+        },
+        "previousNetGbp": -1.32,
+        "sourceExperimentId": "0ccc6792087f06498204a8062499235c77a692d55d5e5d771a55fd71cdc1fd8a",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_3FOLD_V2",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "705f013028e457ab39ba2f9f9531bfe94978418d200f27f16e7bd0f5588fd295",
+      "symbol": "ADA/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "0e0308566ad2d1c3fb318ab24d3053235ec804ea3c89ae360810bc55c596b759",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 20,
+            "exitLookback": 10
+          },
+          "closedTrades": 19,
+          "netProfitGbp": -2.49,
+          "stressNetProfitGbp": -3.64,
+          "maxDrawdownPct": 3.42,
+          "winRatePct": 26.32,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 1,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.42,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 7,
+                "wins": 3,
+                "netGbp": -1.7,
+                "stressNetGbp": -1.99,
+                "maxDrawdownPct": 3.42
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 7,
+                "wins": 2,
+                "netGbp": 0.39,
+                "stressNetGbp": -0.26,
+                "maxDrawdownPct": 2.08
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 5,
+                "wins": 0,
+                "netGbp": -1.18,
+                "stressNetGbp": -1.39,
+                "maxDrawdownPct": 2.36
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 30,
+            "exitLookback": 12
+          },
+          "closedTrades": 16,
+          "netProfitGbp": -3.16,
+          "stressNetProfitGbp": -3.95,
+          "maxDrawdownPct": 3.57,
+          "winRatePct": 12.5,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 1,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.57,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 5,
+                "wins": 0,
+                "netGbp": -1.43,
+                "stressNetGbp": -1.6,
+                "maxDrawdownPct": 3.04
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 6,
+                "wins": 2,
+                "netGbp": 0.06,
+                "stressNetGbp": -0.45,
+                "maxDrawdownPct": 2.15
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 5,
+                "wins": 0,
+                "netGbp": -1.79,
+                "stressNetGbp": -1.9,
+                "maxDrawdownPct": 3.57
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 40,
+            "exitLookback": 20
+          },
+          "closedTrades": 12,
+          "netProfitGbp": -2.96,
+          "stressNetProfitGbp": -3.45,
+          "maxDrawdownPct": 3.77,
+          "winRatePct": 8.33,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 1,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.77,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 4,
+                "wins": 0,
+                "netGbp": -1.74,
+                "stressNetGbp": -1.78,
+                "maxDrawdownPct": 3.77
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 5,
+                "wins": 1,
+                "netGbp": 0.27,
+                "stressNetGbp": -0.18,
+                "maxDrawdownPct": 2.83
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 3,
+                "wins": 0,
+                "netGbp": -1.49,
+                "stressNetGbp": -1.49,
+                "maxDrawdownPct": 2.97
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 0.2039905,
+        "observedPriceChangePct": 4.55716186,
+        "dailyRealizedVolatilityPct": 5.1651567,
+        "averageCandleRangePct": 0.67820706,
+        "upCandleFractionPct": 50.7164568,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "HIGH_VOLATILITY",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 30,
+          "sellAbove": 60
+        },
+        "previousNetGbp": -0.34,
+        "sourceExperimentId": "00e923208f27dae1d3046a8358b1257f634d0cb02c118d278b8849779fa04920",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_3FOLD_V2",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "7c7a5607b9c750219559be3d96024540e8cf29eb97a571c42d27362b3f3ae5ed",
+      "symbol": "AVAX/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "b7fef60c5f41d78b59c9872264e8235bdbcfdddfee12a22232bd8567a99739a1",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 12,
+            "slow": 46
+          },
+          "closedTrades": 17,
+          "netProfitGbp": -3.15,
+          "stressNetProfitGbp": -4.03,
+          "maxDrawdownPct": 3.43,
+          "winRatePct": 11.76,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.43,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 6,
+                "wins": 1,
+                "netGbp": -0.84,
+                "stressNetGbp": -1.2,
+                "maxDrawdownPct": 2.38
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 5,
+                "wins": 1,
+                "netGbp": -0.6,
+                "stressNetGbp": -0.91,
+                "maxDrawdownPct": 2.29
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 6,
+                "wins": 0,
+                "netGbp": -1.71,
+                "stressNetGbp": -1.92,
+                "maxDrawdownPct": 3.43
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 7,
+            "slow": 42
+          },
+          "closedTrades": 20,
+          "netProfitGbp": -3.26,
+          "stressNetProfitGbp": -4.36,
+          "maxDrawdownPct": 3.12,
+          "winRatePct": 10,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.12,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 7,
+                "wins": 1,
+                "netGbp": -1.2,
+                "stressNetGbp": -1.58,
+                "maxDrawdownPct": 3.12
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 7,
+                "wins": 1,
+                "netGbp": -0.64,
+                "stressNetGbp": -1.11,
+                "maxDrawdownPct": 2.28
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 6,
+                "wins": 0,
+                "netGbp": -1.42,
+                "stressNetGbp": -1.67,
+                "maxDrawdownPct": 2.84
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 11,
+            "slow": 26
+          },
+          "closedTrades": 23,
+          "netProfitGbp": -4,
+          "stressNetProfitGbp": -5.22,
+          "maxDrawdownPct": 3.15,
+          "winRatePct": 13.04,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.15,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 7,
+                "wins": 1,
+                "netGbp": -1.16,
+                "stressNetGbp": -1.54,
+                "maxDrawdownPct": 3.05
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 10,
+                "wins": 2,
+                "netGbp": -1.28,
+                "stressNetGbp": -1.88,
+                "maxDrawdownPct": 3.15
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 6,
+                "wins": 0,
+                "netGbp": -1.56,
+                "stressNetGbp": -1.8,
+                "maxDrawdownPct": 3.13
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 5,
+            "slow": 24
+          },
+          "closedTrades": 44,
+          "netProfitGbp": -7.06,
+          "stressNetProfitGbp": -9.41,
+          "maxDrawdownPct": 6.33,
+          "winRatePct": 6.82,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 6.33,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 18,
+                "wins": 1,
+                "netGbp": -3.16,
+                "stressNetGbp": -4.06,
+                "maxDrawdownPct": 6.33
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 14,
+                "wins": 2,
+                "netGbp": -1.86,
+                "stressNetGbp": -2.68,
+                "maxDrawdownPct": 4.28
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 12,
+                "wins": 0,
+                "netGbp": -2.04,
+                "stressNetGbp": -2.67,
+                "maxDrawdownPct": 4.07
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 15,
+            "exitLookback": 8
+          },
+          "closedTrades": 22,
+          "netProfitGbp": -4.08,
+          "stressNetProfitGbp": -5.2,
+          "maxDrawdownPct": 3.25,
+          "winRatePct": 13.64,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.25,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 7,
+                "wins": 1,
+                "netGbp": -1.07,
+                "stressNetGbp": -1.47,
+                "maxDrawdownPct": 2.28
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 9,
+                "wins": 2,
+                "netGbp": -1.38,
+                "stressNetGbp": -1.88,
+                "maxDrawdownPct": 3.12
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 6,
+                "wins": 0,
+                "netGbp": -1.63,
+                "stressNetGbp": -1.85,
+                "maxDrawdownPct": 3.25
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 20,
+            "exitLookback": 10
+          },
+          "closedTrades": 18,
+          "netProfitGbp": -3.61,
+          "stressNetProfitGbp": -4.49,
+          "maxDrawdownPct": 2.79,
+          "winRatePct": 11.11,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 2.79,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 7,
+                "wins": 1,
+                "netGbp": -1.28,
+                "stressNetGbp": -1.64,
+                "maxDrawdownPct": 2.56
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 7,
+                "wins": 1,
+                "netGbp": -1.24,
+                "stressNetGbp": -1.61,
+                "maxDrawdownPct": 2.79
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 4,
+                "wins": 0,
+                "netGbp": -1.09,
+                "stressNetGbp": -1.24,
+                "maxDrawdownPct": 2.21
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 7.2975,
+        "observedPriceChangePct": 5.63839027,
+        "dailyRealizedVolatilityPct": 3.71182027,
+        "averageCandleRangePct": 0.47890692,
+        "upCandleFractionPct": 50.7164568,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "ema_trend",
+          "fast": 9,
+          "slow": 34
+        },
+        "previousNetGbp": -2.47,
+        "sourceExperimentId": "2b841d54cf25c7ce956a526aefc761214c9b9204b8209633887b5456fa8b5bff",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_3FOLD_V2",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "2a10716da3d27a8e124529480e67be2b4226b2aed643f1042be4e2836192cc47",
+      "symbol": "LINK/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "181124e0c2e668ceb38aa966edec44840de14f4f6af46dfc9411e01608598e16",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 14,
+            "slow": 56
+          },
+          "closedTrades": 15,
+          "netProfitGbp": -2.2,
+          "stressNetProfitGbp": -3.07,
+          "maxDrawdownPct": 2.77,
+          "winRatePct": 13.33,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 2.77,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 5,
+                "wins": 1,
+                "netGbp": -0.74,
+                "stressNetGbp": -1.03,
+                "maxDrawdownPct": 2.77
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 5,
+                "wins": 1,
+                "netGbp": -0.22,
+                "stressNetGbp": -0.6,
+                "maxDrawdownPct": 2.19
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 5,
+                "wins": 0,
+                "netGbp": -1.24,
+                "stressNetGbp": -1.44,
+                "maxDrawdownPct": 2.48
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 15,
+            "slow": 60
+          },
+          "closedTrades": 11,
+          "netProfitGbp": -1.14,
+          "stressNetProfitGbp": -1.87,
+          "maxDrawdownPct": 2.22,
+          "winRatePct": 18.18,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 1,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 2.22,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 4,
+                "wins": 1,
+                "netGbp": -0.36,
+                "stressNetGbp": -0.64,
+                "maxDrawdownPct": 2.09
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 3,
+                "wins": 1,
+                "netGbp": 0.16,
+                "stressNetGbp": -0.11,
+                "maxDrawdownPct": 1.96
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 4,
+                "wins": 0,
+                "netGbp": -0.94,
+                "stressNetGbp": -1.12,
+                "maxDrawdownPct": 2.22
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 10,
+            "slow": 56
+          },
+          "closedTrades": 20,
+          "netProfitGbp": -3.01,
+          "stressNetProfitGbp": -4.15,
+          "maxDrawdownPct": 3.52,
+          "winRatePct": 10,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.52,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 6,
+                "wins": 1,
+                "netGbp": -1.08,
+                "stressNetGbp": -1.39,
+                "maxDrawdownPct": 3.52
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 7,
+                "wins": 1,
+                "netGbp": -0.58,
+                "stressNetGbp": -1.06,
+                "maxDrawdownPct": 2.91
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 7,
+                "wins": 0,
+                "netGbp": -1.35,
+                "stressNetGbp": -1.7,
+                "maxDrawdownPct": 2.81
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "ema_trend",
+            "fast": 14,
+            "slow": 40
+          },
+          "closedTrades": 17,
+          "netProfitGbp": -2.31,
+          "stressNetProfitGbp": -3.32,
+          "maxDrawdownPct": 3.13,
+          "winRatePct": 11.76,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 3.13,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 5,
+                "wins": 1,
+                "netGbp": -0.56,
+                "stressNetGbp": -0.88,
+                "maxDrawdownPct": 2.5
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 7,
+                "wins": 1,
+                "netGbp": -0.55,
+                "stressNetGbp": -1.03,
+                "maxDrawdownPct": 3.13
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 5,
+                "wins": 0,
+                "netGbp": -1.2,
+                "stressNetGbp": -1.41,
+                "maxDrawdownPct": 2.41
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "rsi_reversion",
+            "period": 9,
+            "buyBelow": 25,
+            "sellAbove": 55
+          },
+          "closedTrades": 14,
+          "netProfitGbp": -0.3,
+          "stressNetProfitGbp": -1.42,
+          "maxDrawdownPct": 2.53,
+          "winRatePct": 64.29,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 2,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 2.53,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 2,
+                "wins": 2,
+                "netGbp": 0.13,
+                "stressNetGbp": -0.06,
+                "maxDrawdownPct": 0.53
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 4,
+                "wins": 3,
+                "netGbp": 0.28,
+                "stressNetGbp": -0.11,
+                "maxDrawdownPct": 0.65
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 8,
+                "wins": 4,
+                "netGbp": -0.71,
+                "stressNetGbp": -1.25,
+                "maxDrawdownPct": 2.53
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 15,
+            "exitLookback": 8
+          },
+          "closedTrades": 29,
+          "netProfitGbp": -5.45,
+          "stressNetProfitGbp": -6.89,
+          "maxDrawdownPct": 5.24,
+          "winRatePct": 13.79,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 5.24,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 12,
+                "wins": 2,
+                "netGbp": -2.61,
+                "stressNetGbp": -3.13,
+                "maxDrawdownPct": 5.24
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 10,
+                "wins": 1,
+                "netGbp": -1.52,
+                "stressNetGbp": -2.08,
+                "maxDrawdownPct": 3.38
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 7,
+                "wins": 1,
+                "netGbp": -1.32,
+                "stressNetGbp": -1.68,
+                "maxDrawdownPct": 2.65
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 11.205305,
+        "observedPriceChangePct": 5.77858186,
+        "dailyRealizedVolatilityPct": 4.22590769,
+        "averageCandleRangePct": 0.55752566,
+        "upCandleFractionPct": 49.41380808,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "ema_trend",
+          "fast": 12,
+          "slow": 48
+        },
+        "previousNetGbp": -1.16,
+        "sourceExperimentId": "a2a7b47876999e0bdda0237a50ae1a31a709e258d32b9f096e0cda49d767a696",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_3FOLD_V2",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "57917cabb803693efcd1c867da8fa8f16e5c4fc583c47bd8c28106baec1f0a62",
+      "symbol": "DOGE/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "d839bd2743d2b00c90b21d020e954f21a67e6cef29320bf3550af7463d10ad2f",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 30,
+            "exitLookback": 12
+          },
+          "closedTrades": 18,
+          "netProfitGbp": -3.5,
+          "stressNetProfitGbp": -4.4,
+          "maxDrawdownPct": 2.84,
+          "winRatePct": 11.11,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 2.84,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 5,
+                "wins": 1,
+                "netGbp": -1.37,
+                "stressNetGbp": -1.55,
+                "maxDrawdownPct": 2.74
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 7,
+                "wins": 1,
+                "netGbp": -0.77,
+                "stressNetGbp": -1.22,
+                "maxDrawdownPct": 2.84
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 6,
+                "wins": 0,
+                "netGbp": -1.36,
+                "stressNetGbp": -1.63,
+                "maxDrawdownPct": 2.72
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 40,
+            "exitLookback": 20
+          },
+          "closedTrades": 10,
+          "netProfitGbp": -1.58,
+          "stressNetProfitGbp": -2.15,
+          "maxDrawdownPct": 2.7,
+          "winRatePct": 20,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 1,
+            "stressPositiveWindows": 1,
+            "worstDrawdownPct": 2.7,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 3,
+                "wins": 1,
+                "netGbp": -0.97,
+                "stressNetGbp": -1.05,
+                "maxDrawdownPct": 2.7
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 3,
+                "wins": 1,
+                "netGbp": 0.63,
+                "stressNetGbp": 0.27,
+                "maxDrawdownPct": 1.69
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 4,
+                "wins": 0,
+                "netGbp": -1.24,
+                "stressNetGbp": -1.37,
+                "maxDrawdownPct": 2.49
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 0.08289325,
+        "observedPriceChangePct": 7.10372594,
+        "dailyRealizedVolatilityPct": 4.6293282,
+        "averageCandleRangePct": 0.56452242,
+        "upCandleFractionPct": 51.06382979,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 37,
+          "sellAbove": 65
+        },
+        "previousNetGbp": -1.05,
+        "sourceExperimentId": "686230968e6600c12c8cb90ab454e92a794aece56e4b8b9e06afbe3c5616110c",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_3FOLD_V2",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "5b6b4d2bffaaf9badeb0fa6afbc99d1905d8752cb603e026222ef0553b629244",
+      "symbol": "LTC/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "572fbd5d4b4dfa2c207580723461873d161faa4994a32ade9467e9a1c46677f3",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 30,
+            "exitLookback": 12
+          },
+          "closedTrades": 20,
+          "netProfitGbp": -4.87,
+          "stressNetProfitGbp": -5.7,
+          "maxDrawdownPct": 4.65,
+          "winRatePct": 10,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 4.65,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 6,
+                "wins": 0,
+                "netGbp": -2.28,
+                "stressNetGbp": -2.39,
+                "maxDrawdownPct": 4.65
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 8,
+                "wins": 1,
+                "netGbp": -1.16,
+                "stressNetGbp": -1.62,
+                "maxDrawdownPct": 2.66
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 6,
+                "wins": 1,
+                "netGbp": -1.43,
+                "stressNetGbp": -1.69,
+                "maxDrawdownPct": 2.87
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 40,
+            "exitLookback": 20
+          },
+          "closedTrades": 12,
+          "netProfitGbp": -3.15,
+          "stressNetProfitGbp": -3.62,
+          "maxDrawdownPct": 2.83,
+          "winRatePct": 16.67,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 2.83,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 3,
+                "wins": 0,
+                "netGbp": -1.35,
+                "stressNetGbp": -1.38,
+                "maxDrawdownPct": 2.8
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 5,
+                "wins": 1,
+                "netGbp": -0.82,
+                "stressNetGbp": -1.09,
+                "maxDrawdownPct": 2.83
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 4,
+                "wins": 1,
+                "netGbp": -0.98,
+                "stressNetGbp": -1.15,
+                "maxDrawdownPct": 1.96
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 53.31,
+        "observedPriceChangePct": 12.52770449,
+        "dailyRealizedVolatilityPct": 3.56108341,
+        "averageCandleRangePct": 0.47911298,
+        "upCandleFractionPct": 50.97698654,
+        "zeroVolumeFractionPct": 0,
+        "descriptiveRegime": "DIRECTIONAL",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 37,
+          "sellAbove": 65
+        },
+        "previousNetGbp": 0.07,
+        "sourceExperimentId": "0749ea30a7de9f1e7f1214d27e9b44a5e7b6bbb78fdd9c92b74fb7fbedbe7f22",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_3FOLD_V2",
+      "trulyIndependentForwardValidated": false
+    },
+    {
+      "id": "2820124f0be6de80b11eac5b6d41eab651fc65c0be07f1d1c2e53ff2490d5eef",
+      "symbol": "BCH/USD",
+      "feed": "us-1",
+      "trainingStart": "2026-08-20T13:45:00.000Z",
+      "trainingEnd": "2026-09-13T13:30:00.000Z",
+      "trainFingerprint": "aeb5d001ee82ae165db3d1abd4a21c3ef5942b98512fc963a13bf608999f504a",
+      "acceptedForLearning": false,
+      "trainingOptions": [
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 20,
+            "exitLookback": 10
+          },
+          "closedTrades": 24,
+          "netProfitGbp": -5.6,
+          "stressNetProfitGbp": -6.61,
+          "maxDrawdownPct": 5.63,
+          "winRatePct": 16.67,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 5.63,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 9,
+                "wins": 1,
+                "netGbp": -2.82,
+                "stressNetGbp": -3.07,
+                "maxDrawdownPct": 5.63
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 9,
+                "wins": 2,
+                "netGbp": -1.53,
+                "stressNetGbp": -2.01,
+                "maxDrawdownPct": 3.53
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 6,
+                "wins": 1,
+                "netGbp": -1.25,
+                "stressNetGbp": -1.53,
+                "maxDrawdownPct": 2.5
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 30,
+            "exitLookback": 12
+          },
+          "closedTrades": 20,
+          "netProfitGbp": -5.12,
+          "stressNetProfitGbp": -5.89,
+          "maxDrawdownPct": 5.76,
+          "winRatePct": 15,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 5.76,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 8,
+                "wins": 0,
+                "netGbp": -2.88,
+                "stressNetGbp": -3.04,
+                "maxDrawdownPct": 5.76
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 7,
+                "wins": 2,
+                "netGbp": -1.27,
+                "stressNetGbp": -1.63,
+                "maxDrawdownPct": 2.55
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 5,
+                "wins": 1,
+                "netGbp": -0.97,
+                "stressNetGbp": -1.22,
+                "maxDrawdownPct": 1.94
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        },
+        {
+          "params": {
+            "family": "channel_breakout",
+            "lookback": 40,
+            "exitLookback": 20
+          },
+          "closedTrades": 13,
+          "netProfitGbp": -3.73,
+          "stressNetProfitGbp": -4.18,
+          "maxDrawdownPct": 4.58,
+          "winRatePct": 7.69,
+          "trainingScore": null,
+          "researchReward": {
+            "policy": "TRAINING_REWARD_V1",
+            "points": 0,
+            "eligible": false,
+            "reason": "OVERLAPPING_WINDOW_NO_CREDIT",
+            "scope": "IN_SAMPLE_TRAINING_ONLY",
+            "forwardVerified": false
+          },
+          "robustness": {
+            "windowCount": 3,
+            "positiveWindows": 0,
+            "stressPositiveWindows": 0,
+            "worstDrawdownPct": 4.58,
+            "mode": "NONOVERLAPPING_CHRONOLOGICAL_PRE_HOLDOUT_ONLY",
+            "folds": [
+              {
+                "index": 1,
+                "start": "2026-08-20T13:45:00Z",
+                "end": "2026-08-28T13:30:00.000Z",
+                "candles": 767,
+                "closedTrades": 5,
+                "wins": 0,
+                "netGbp": -2.07,
+                "stressNetGbp": -2.13,
+                "maxDrawdownPct": 4.58
+              },
+              {
+                "index": 2,
+                "start": "2026-08-28T13:30:00Z",
+                "end": "2026-09-05T13:15:00.000Z",
+                "candles": 767,
+                "closedTrades": 5,
+                "wins": 1,
+                "netGbp": -0.84,
+                "stressNetGbp": -1.11,
+                "maxDrawdownPct": 2.28
+              },
+              {
+                "index": 3,
+                "start": "2026-09-05T13:15:00Z",
+                "end": "2026-09-13T13:30:00.000Z",
+                "candles": 769,
+                "closedTrades": 3,
+                "wins": 0,
+                "netGbp": -0.82,
+                "stressNetGbp": -0.94,
+                "maxDrawdownPct": 2.14
+              }
+            ],
+            "independentForwardEvidence": false
+          }
+        }
+      ],
+      "behavior": {
+        "candles": 2303,
+        "timeframe": "15Min",
+        "sampleStart": "2026-08-20T13:45:00.000Z",
+        "sampleEnd": "2026-09-13T13:30:00.000Z",
+        "sampledClose": 222.695,
+        "observedPriceChangePct": 1.91058027,
+        "dailyRealizedVolatilityPct": 4.69800473,
+        "averageCandleRangePct": 0.58971898,
+        "upCandleFractionPct": 50.06513244,
+        "zeroVolumeFractionPct": 0.95527573,
+        "descriptiveRegime": "MIXED_OR_RANGE",
+        "interpretation": "Completed TRAINING bars only. Repeated time windows and tuned features are NOT independent prediction evidence."
+      },
+      "reason": "OVERLAPPING_TRAINING_WINDOW",
+      "parentResearchModel": {
+        "params": {
+          "family": "rsi_reversion",
+          "period": 9,
+          "buyBelow": 32,
+          "sellAbove": 55
+        },
+        "previousNetGbp": -2.18,
+        "sourceExperimentId": "9adc44ace795dcc59bcc9dadc56a469ccb6159bb3b57bf0822d5e9e219c8317e",
+        "confirmedChampion": false
+      },
+      "researchPolicy": "BOUNDED_PARENT_MUTATION_3FOLD_V2",
+      "trulyIndependentForwardValidated": false
     }
   ]
 }
