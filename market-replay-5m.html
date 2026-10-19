@@ -22,6 +22,17 @@ button:disabled{cursor:not-allowed;opacity:.48}
 .metric small{font-size:.75rem;color:#9fbdcc}.metric strong{display:block;margin-top:5px;font-size:1.15rem;overflow-wrap:anywhere}
 #status{padding:12px 0;color:#f0ce91;min-height:45px}
 #footnote{font-size:.78rem;color:#a8bdca}
+.ledger-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.ledger-title h2{font-size:1.25rem;letter-spacing:-.025em;margin:0}
+.ledger-scroll{overflow-x:auto;max-width:100%}
+.ledger{border-collapse:collapse;width:100%;min-width:650px;text-align:left;font-variant-numeric:tabular-nums}
+.ledger th,.ledger td{padding:12px 10px;border-bottom:1px solid #344e66}
+.ledger th{color:#a7c3d4;font-size:.75rem;font-weight:700;text-transform:uppercase}
+.ledger td{font-size:.89rem}.win{color:#87e6cd}.loss{color:#f6a2ab}
+.info{font-size:.82rem;color:#adcbda;line-height:1.5}
+#journalStatus{margin:11px 0;color:#bad1dd}
+#journalEmpty{padding:20px 8px;color:#bcccdc}
+
 @media(max-width:720px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}#chart{height:290px}}
 </style></head>
 <body><main>
@@ -44,14 +55,34 @@ button:disabled{cursor:not-allowed;opacity:.48}
 <div class="metrics" style="margin-top:12px">
 <div class="metric"><small>Completed market candle</small><strong id="time">—</strong></div>
 <div class="metric"><small>Frozen pupil decision</small><strong id="decision">—</strong></div>
-<div class="metric"><small>Next-open virtual fill</small><strong id="fill">—</strong></div>
+<div class="metric"><small>Executed virtual order · USD</small><strong id="fill">No order</strong></div>
 <div class="metric"><small>Simulated account equity</small><strong id="equity">—</strong></div>
 <div class="metric"><small>Net simulated reward</small><strong id="reward">—</strong></div>
 <div class="metric"><small>Virtual closed trades</small><strong id="closes">—</strong></div>
 <div class="metric"><small>Candles revealed</small><strong id="progress">—</strong></div>
 <div class="metric"><small>Market interval</small><strong>5 minutes</strong></div>
+<div class="metric"><small>Position state</small><strong id="position">—</strong></div>
+<div class="metric"><small>Realised trade P&amp;L · virtual units</small><strong id="realized">—</strong></div>
+<div class="metric"><small>Most recent closed trade</small><strong id="lasttrade">—</strong></div>
+<div class="metric"><small>Saved replay progress</small><strong id="saved">—</strong></div>
 </div></section>
-<p id="footnote">Source: Alpaca/Kraken US authentic completed 5-minute bars. Playback is an **offline development replay** of a frozen policy using a 60% training / 20% later-development / 20% untouched-holdout split. Browser visualization is not the agent's vision input: the DQN observes causal numerical price, volume, position and drawdown features. All fills, fees and equity are simulated; this website cannot place paper or real-money orders.</p>
+<section class="card" aria-labelledby="historyHeading">
+<div class="ledger-title"><h2 id="historyHeading">Trade history · saved in replay</h2>
+<button type="button" id="export" disabled>Export closed trades CSV</button></div>
+<p class="info">Entries and exits come from the simulated model execution—not every LONG/FLAT decision is an order. Market prices are USD; account profits are virtual accounting units, not converted GBP. A model can choose FLAT for the entire replay.</p>
+<p id="journalStatus">Load a pupil to view its recorded trades.</p>
+<div class="ledger-scroll"><table class="ledger"><thead><tr>
+<th>Trade</th><th>Entry time</th><th>Exit time</th><th>Entry · USD</th><th>Exit · USD</th>
+<th>Net P&amp;L · virtual</th><th>Return</th><th>Outcome</th></tr></thead>
+<tbody id="tradeRows"></tbody></table></div>
+<div id="journalEmpty">No closed trades recorded yet.</div>
+<h3>Virtual order events</h3>
+<div class="ledger-scroll"><table class="ledger"><thead><tr><th>Time</th><th>Side</th>
+<th>Executed price · USD</th><th>Virtual fee</th><th>Result</th></tr></thead>
+<tbody id="eventRows"></tbody></table></div>
+<p class="info" id="legacyNotice" hidden>Older replay data only records position changes, not precise execution prices, fees or realised P&amp;L. Those are deliberately not invented. Exact order journals will appear when the next authenticated training export runs.</p>
+</section>
+<p id="footnote">Source: Alpaca/Kraken US authentic completed 5-minute bars. Playback is an offline development replay of a frozen policy using a 60% training / 20% later-development / 20% untouched-holdout split. Browser visualization is not the agent's vision input: the DQN observes causal numerical price, volume, position and drawdown features. All fills, fees and equity are simulated; this website cannot place paper or real-money orders.</p>
 </main>
 <script>
 'use strict';
@@ -60,7 +91,127 @@ const base='https://raw.githubusercontent.com/tristanpeto123-eng/Scalp-City-Lab/
 let trace=null,index=0,timer=null;
 function stop(){if(timer!==null){clearInterval(timer);timer=null;}$('play').textContent='Play';}
 function time(t){return new Date(t).toLocaleString('en-GB',{timeZone:'UTC',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})+' UTC';}
-function money(n){return Number.isFinite(n)?'£'+n.toFixed(2):'—';}
+function priceUsd(n){return Number.isFinite(n)?'
+function validate(data,symbol){
+ if(data?.schema!=='SCALP_CAUSAL_REPLAY_5MIN_V1'||data.symbol!==symbol||
+   data.timeframe!=='5Min'||data.source!=='ALPACA_KRAKEN_US_US-1'||
+   data.historicalOnly!==true||data.futureCandlesVisibleAtOnce!==false||
+   data.heldOutQuarantineTouched!==false||data.paperOrders!==0||
+   data.liveOrders!==0||data.fillsAreSimulated!==true||
+   !Number.isInteger(data.warmupCandleCount)||data.warmupCandleCount<33||
+   !Array.isArray(data.candles)||!Array.isArray(data.decisions)||
+   data.candles.length!==data.decisions.length+data.warmupCandleCount||
+   data.candles.length>500)throw Error('Replay source failed provenance or boundary checks');
+ for(let i=0;i<data.candles.length;i++){
+  const b=data.candles[i],t=Number(b.t);
+  if(!Number.isFinite(t)||!['o','h','l','c','v'].every(k=>Number.isFinite(b[k]))||
+      Math.min(b.o,b.h,b.l,b.c)<=0||b.h<Math.max(b.o,b.c,b.l)||
+      b.l>Math.min(b.o,b.c,b.h)||b.v<0||
+      (i>0&&t-data.candles[i-1].t!==300000))
+      throw Error('Missing or fabricated five-minute candle');
+ }
+ for(let i=0;i<data.decisions.length;i++){
+  const d=data.decisions[i],j=i+data.warmupCandleCount;
+  if(d.observedCandleTime!==data.candles[j-1].t||
+    d.nextCandleTime!==data.candles[j].t||
+    !['FLAT','LONG'].includes(d.action)||
+    ![d.reward,d.equityGbp,d.nextOpenPrice].every(Number.isFinite)||
+    !Number.isInteger(d.simulatedClosedTrades))
+      throw Error('Out-of-order or untrusted model action');
+ }
+ return data;
+}
+function draw(){
+ const canvas=$('chart'),ctx=canvas.getContext('2d'),dpi=Math.min(window.devicePixelRatio||1,2);
+ const rect=canvas.getBoundingClientRect(),w=Math.max(310,rect.width),h=Math.max(240,rect.height);
+ canvas.width=Math.round(w*dpi);canvas.height=Math.round(h*dpi);
+ ctx.setTransform(dpi,0,0,dpi,0,0);ctx.clearRect(0,0,w,h);
+ ctx.fillStyle='#0b192d';ctx.fillRect(0,0,w,h);
+ if(!trace)return;
+ const visible=trace.candles.slice(Math.max(0,index-73),index+1);
+ const highest=Math.max(...visible.map(b=>b.h)),lowest=Math.min(...visible.map(b=>b.l));
+ const margin=Math.max(0.0001,(highest-lowest)*.08),high=highest+margin,low=lowest-margin;
+ const y=p=>20+(high-p)/(high-low)*(h-48);
+ for(let j=0;j<=4;j++){
+  const yy=20+(h-48)*j/4;ctx.strokeStyle='#29405a';ctx.beginPath();
+  ctx.moveTo(14,yy);ctx.lineTo(w-12,yy);ctx.stroke();
+  ctx.fillStyle='#7899b8';ctx.font='10px system-ui';
+  ctx.fillText((high-(high-low)*j/4).toFixed(2),10,yy-3);
+ }
+ const step=(w-58)/Math.max(visible.length,9),body=Math.max(2,Math.min(10,step*.65));
+ visible.forEach((b,i)=>{
+  const x=44+(i+.5)*step,up=b.c>=b.o;
+  ctx.strokeStyle=ctx.fillStyle=up?'#79dbc0':'#f18b96';
+  ctx.beginPath();ctx.moveTo(x,y(b.h));ctx.lineTo(x,y(b.l));ctx.stroke();
+  const top=Math.min(y(b.o),y(b.c)),bottom=Math.max(y(b.o),y(b.c));
+  ctx.fillRect(x-body/2,top,body,Math.max(1,bottom-top));
+ });
+ ctx.fillStyle='#b2d0e2';ctx.font='11px system-ui';
+ ctx.fillText('Only completed candles revealed · historical 5m replay',15,h-9);
+}
+function render(){
+ if(!trace)return;
+ const b=trace.candles[index],warmup=trace.warmupCandleCount;
+ const d=index>=warmup?trace.decisions[index-warmup]:null;
+ $('time').textContent=time(b.t);
+ $('decision').textContent=d?d.action+' at previous close':'Feature warm-up';
+ $('fill').textContent=d?money(d.nextOpenPrice):'—';
+ $('equity').textContent=d?money(d.equityGbp):'£50.00 initial';
+ $('reward').textContent=d?d.reward.toFixed(4):'—';
+ $('closes').textContent=d?String(d.simulatedClosedTrades):'0';
+ $('progress').textContent=(index+1)+' / '+trace.candles.length;
+ $('status').textContent=d?
+   'Historical '+trace.symbol+' · the pupil decided after '+time(d.observedCandleTime)+
+   ', with virtual execution at '+time(d.nextCandleTime)+'.':
+   'Causal warm-up: no pupil action shown before the required observation history.';
+ draw();
+}
+function step(){if(!trace)return;index=Math.min(index+1,trace.candles.length-1);
+ render();if(index===trace.candles.length-1)stop();}
+function play(){if(!trace)return;
+ if(timer!==null){stop();return;}
+ if(index>=trace.candles.length-1){index=trace.warmupCandleCount-1;render();}
+ timer=setInterval(step,Number($('speed').value));$('play').textContent='Pause';
+}
+async function load(){
+ stop();trace=null;$('step').disabled=$('play').disabled=$('reset').disabled=true;
+ $('status').textContent='Checking source, timeframe and causal action lineage…';draw();
+ const symbol=$('symbol').value;
+ try{
+  const response=await fetch(base+symbol.replace('/','-')+'-5m.json?ts='+Date.now(),{cache:'no-store'});
+  if(!response.ok)throw Error('No verified five-minute DQN replay has been published (HTTP '+response.status+')');
+  const value=await response.json();trace=validate(value,symbol);
+  index=trace.warmupCandleCount-1;
+  $('step').disabled=$('play').disabled=$('reset').disabled=false;
+  render();
+ }catch(e){$('status').textContent=String(e.message||e)+'. No demo or fabricated candles substituted.';}
+}
+$('load').onclick=load;$('step').onclick=step;$('play').onclick=play;
+$('reset').onclick=()=>{stop();if(trace){index=trace.warmupCandleCount-1;render();}};
+$('speed').onchange=()=>{if(timer!==null){stop();play();}};
+$('symbol').onchange=()=>{stop();trace=null;draw();$('status').textContent='Select Load verified replay for this pupil.';};
+window.addEventListener('resize',draw);
+draw();
+</script></body></html>+n.toLocaleString('en-US',{maximumFractionDigits:7}):'—';}
+function virtualMoney(n){return Number.isFinite(n)?n.toFixed(2)+' units':'—';}
+function signedVirtual(n){return Number.isFinite(n)?(n>0?'+':'')+n.toFixed(2)+' units':'—';}
+function percent(n){return Number.isFinite(n)?(n>0?'+':'')+n.toFixed(2)+'%':'—';}
+function progressKey(){return trace&&trace.policySha256&&/^[0-9a-f]{64}$/.test(trace.policySha256)?
+ 'scalp-city:5m-replay:cursor:'+trace.symbol+':'+trace.policySha256+':'+trace.candles.at(-1).t:null;}
+function persistProgress(){
+ const key=progressKey();if(!key)return false;
+ try{localStorage.setItem(key,String(index));return true;}catch{return false;}
+}
+function restoreProgress(){
+ const key=progressKey();if(!key)return false;
+ try{
+  const saved=Number(localStorage.getItem(key));
+  if(!Number.isInteger(saved)||saved<trace.warmupCandleCount-1||
+      saved>=trace.candles.length)return false;
+  index=saved;return true;
+ }catch{return false;}
+}
+
 function validate(data,symbol){
  if(data?.schema!=='SCALP_CAUSAL_REPLAY_5MIN_V1'||data.symbol!==symbol||
    data.timeframe!=='5Min'||data.source!=='ALPACA_KRAKEN_US_US-1'||
