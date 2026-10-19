@@ -1,5 +1,5 @@
-SCALP-CITY-ROBOT-RESEARCH-TRAINING-HALF-HOUR-V1
-Owner approved scheduling read-only research every 30 minutes using GitHub Actions UTC minute 07/37.
+SCALP-CITY-ROBOT-RESEARCH-TRAINING-FIVE-MINUTE-V2
+Owner approved scheduling read-only research every five minutes with best-effort GitHub Actions UTC cron.
 This trigger queues the first cycle on merge to main; no order placement, deposits, payouts or model promotion.
 Scheduled cycles may produce no new experiment when saved history overlaps or daily safety caps apply.
 
@@ -10,3 +10,5 @@ Scheduled cycles may produce no new experiment when saved history overlaps or da
 2026-10-18: retry verified read-only research after RSI validator bound fix PR #20; ten charts, zero broker orders.
 
 2026-10-19: run owner-approved historical-first 30-minute research with offline archived candles and publish fold report; no broker orders.
+
+2026-10-19: request new authorized read-only Robot Academy research cycle after monitor bootstrap fix PR #32. Generate measured telemetry when true evaluations run, and publish ten pupil historical evidence without fabricating progress. No broker orders.
