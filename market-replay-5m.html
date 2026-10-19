@@ -376,7 +376,7 @@ async function load(){
   render();
  }catch(e){
   trace=null;
-  $('status').textContent=String(e.message||e)+'. No fictional trade history substituted.';
+  $('status').textContent=String(e.message||e)+'. No demo or fabricated candles substituted. No fictional trade history is added.';
   $('journalStatus').textContent='No validated replay source available.';
   $('tradeRows').replaceChildren();$('eventRows').replaceChildren();
   $('journalEmpty').hidden=false;$('journalEmpty').textContent='No verified trades available.';
