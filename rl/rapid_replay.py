@@ -11,7 +11,7 @@ import math
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from .dqn_experiment import SYMBOLS, PERIOD_MS, run, split_development, validate_snapshot
+from .dqn_experiment import SYMBOLS, FIVE_MIN_MS, run, split_development, validate_snapshot
 
 REPORT_SCHEMA='SCALP_RAPID_RL_REPLAY_V1'
 def sha256(path):
@@ -22,7 +22,7 @@ def new_training_tail(previous, train):
     if not previous or not isinstance(previous.get('trainedThrough'),int):
         return len(train)
     delta=train[-1]['t']-previous['trainedThrough']
-    return max(0,min(len(train),delta//PERIOD_MS))
+    return max(0,min(len(train),delta//FIVE_MIN_MS))
 
 def train_replay_batch(*,data_dir,root,episodes=1,seed=7,symbols=SYMBOLS,
                        train_fn=run,now=None):
@@ -41,13 +41,15 @@ def train_replay_batch(*,data_dir,root,episodes=1,seed=7,symbols=SYMBOLS,
     snapshots={}
     for symbol in symbols:
         data=json.loads((data_dir/(symbol.replace('/','-')+'.json')).read_text())
-        if data.get('symbol')!=symbol:
-            raise ValueError('Snapshot symbol mismatch')
+        if data.get('symbol')!=symbol or data.get('timeframe')!='5Min':
+            raise ValueError('Requires genuine native 5Min snapshot for '+symbol)
         bars=validate_snapshot(data)
         training,validation,layout=split_development(bars)
         snapshots[symbol]=(data,training,validation,layout)
     models=root/'models'
     models.mkdir(parents=True,exist_ok=True)
+    replays=root/'rl-rapid'/'replays'
+    replays.mkdir(parents=True,exist_ok=True)
     started=time.perf_counter()
     reports=[]
     for symbol in symbols:
@@ -61,7 +63,8 @@ def train_replay_batch(*,data_dir,root,episodes=1,seed=7,symbols=SYMBOLS,
         elif ckpt.exists():
             raise ValueError('Untracked prior RL checkpoint for '+symbol)
         current=train_fn(data,episodes=episodes,seed=seed,
-                         outdir=models,prior_checkpoint=ckpt if prior else None)
+                         outdir=models,prior_checkpoint=ckpt if prior else None,
+                         trace_out=replays/(stem+'-5m.json'))
         saved=models/(stem+'-dqn.pt')
         model_sha=sha256(saved)
         stats=current['training']
@@ -70,6 +73,7 @@ def train_replay_batch(*,data_dir,root,episodes=1,seed=7,symbols=SYMBOLS,
             current.get('liveOrders')!=0 or current.get('champion') is not False or
             current.get('officialGrade') is not None or
             current.get('policySha256')!=model_sha or
+            current.get('marketTimeframe')!='5Min' or
             current['splits']['sealedHoldoutTouched'] is not False or
             current.get('previousCheckpointSha256')!=(prior['modelSha256'] if prior else None)):
             raise ValueError('Untrusted DQN training output for '+symbol)
@@ -81,6 +85,7 @@ def train_replay_batch(*,data_dir,root,episodes=1,seed=7,symbols=SYMBOLS,
             raise ValueError('Invalid measured RL policy speed')
         reports.append({
             'symbol':symbol,'modelSha256':model_sha,
+            'marketTimeframe':'5Min','visualReplayPath':'rl-rapid/replays/'+stem+'-5m.json',
             'initialCheckpointSha256':prior['modelSha256'] if prior else None,
             'sourceSnapshotAt':data.get('generatedAt'),'trainedThrough':training[-1]['t'],
             'validationThrough':validation[-1]['t'],
@@ -110,7 +115,8 @@ def train_replay_batch(*,data_dir,root,episodes=1,seed=7,symbols=SYMBOLS,
     elapsed=max(1e-6,time.perf_counter()-started)
     result={
         'schema':REPORT_SCHEMA,'generatedAt':now,'cadence':'SCHEDULED_BATCH_NOT_CONTINUOUS',
-        'marketBarTimeframe':'15Min','simulationClock':'HISTORICAL_REPLAY',
+        'marketBarTimeframe':'5Min','minimumSupportedBarTimeframe':'5Min',
+        'simulationClock':'HISTORICAL_REPLAY',
         'decisionsAreNotBrokerTrades':True,
         'decisionCount':sum(p['decisionsThisRun'] for p in reports),
         'simulatedClosedTrades':sum(p['simulatedClosedTradesThisRun'] for p in reports),
@@ -122,7 +128,7 @@ def train_replay_batch(*,data_dir,root,episodes=1,seed=7,symbols=SYMBOLS,
         'positiveDevelopmentPupils':sum(p['positiveUnderStressedCosts'] for p in reports),
         'pupils':reports,'sealedHoldoutAccessed':False,
         'verifiedForwardGrades':0,'paperOrders':0,'liveOrders':0,'automaticAdmissions':0,
-        'claim':'Accelerated DQN historical replay; no one-second market data, broker trades or demonstrated real-world profitability.'
+        'claim':'Native complete 5-minute candles replayed sequentially. No 1-second observations, broker trades or proven predictive returns.'
     }
     latest.parent.mkdir(parents=True,exist_ok=True)
     latest.write_text(json.dumps(result,indent=2)+'\n')
