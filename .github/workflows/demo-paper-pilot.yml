@@ -1,0 +1,101 @@
+name: Scalp City — isolated DEMO PAPER pilot (never live)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'paper_sandbox/**'
+      - '.github/workflows/demo-paper-pilot.yml'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Preflight verifies paper account, plan does no trades, paper permits tiny demo orders only after gates
+        type: choice
+        default: preflight
+        options: [preflight, plan, paper]
+  schedule:
+    - cron: '1,6,11,16,21,26,31,36,41,46,51,56 * * * *'
+permissions:
+  contents: read
+concurrency:
+  group: scalp-isolated-demo-paper-pilot
+  cancel-in-progress: false
+jobs:
+  isolated-paper:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab' && (github.event_name != 'schedule' || vars.SCALP_DEMO_PAPER_ENABLED == 'YES_DEMO_ONLY')
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: paper-sandbox-models
+          path: demo-models
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Independent Checker — no LIVE URLs, model/version and money caps
+        run: |
+          python -m compileall -q paper_sandbox rl/model_registry.py
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('paper_sandbox/paper_executor.py').read_text()
+          if ('https://paper-api.alpaca.markets' not in s or
+              "'SCALP_DEMO_PAPER_ACCOUNT_ID'" not in s or
+              'MAX_DAILY_ORDERS=4' not in s or 'MAX_ORDER_USD=10.00' not in s or
+              'https://api.alpaca.markets' in s):
+              raise SystemExit('PAPER_CHECKER: incorrect endpoint or identity policy')
+          PY
+      - name: Install offline inference/test dependencies
+        run: python -m pip install numpy 'torch>=2.3,<3'
+      - name: Checker — mocked broker tests never submit actual orders
+        run: python -m unittest paper_sandbox.test_paper_executor rl.test_model_registry -v
+      - name: PAPER — verify dedicated account and at most one guarded decision
+        env:
+          SCALP_DEMO_PAPER_KEY: ${{ secrets.SCALP_DEMO_PAPER_KEY }}
+          SCALP_DEMO_PAPER_SECRET: ${{ secrets.SCALP_DEMO_PAPER_SECRET }}
+          SCALP_DEMO_PAPER_ACCOUNT_ID: ${{ secrets.SCALP_DEMO_PAPER_ACCOUNT_ID }}
+          SCALP_DEMO_MODEL_SHA256: ${{ vars.SCALP_DEMO_MODEL_SHA256 }}
+          SCALP_DEMO_SYMBOL: ${{ vars.SCALP_DEMO_SYMBOL }}
+          SCALP_DEMO_PAPER_ENABLED: ${{ vars.SCALP_DEMO_PAPER_ENABLED }}
+          REQUESTED_MODE: ${{ inputs.mode }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          if [ -z "$SCALP_DEMO_PAPER_KEY" ] || [ -z "$SCALP_DEMO_PAPER_SECRET" ] || [ -z "$SCALP_DEMO_PAPER_ACCOUNT_ID" ]; then
+            if [ "$EVENT_NAME" = 'push' ]; then
+              echo 'PAPER_PRECHECK_NOT_CONFIGURED: provide credentials for a dedicated DEMO account; no orders'
+              exit 0
+            fi
+            echo 'PAPER_FAIL_CLOSED: dedicated isolated DEMO account missing'
+            exit 1
+          fi
+          MODE="$REQUESTED_MODE"
+          if [ "$EVENT_NAME" = 'schedule' ]; then MODE=paper; fi
+          if [ "$EVENT_NAME" = 'push' ] || [ -z "$MODE" ]; then MODE=preflight; fi
+          MODEL=''
+          if [ "$MODE" != preflight ]; then
+            if [[ ! "$SCALP_DEMO_SYMBOL" =~ ^(BTC|ETH|SOL|XRP|ADA|AVAX|LINK|DOGE|LTC|BCH)/USD$ ]] ||
+               [[ ! "$SCALP_DEMO_MODEL_SHA256" =~ ^[a-f0-9]{64}$ ]]; then
+              echo 'PAPER_FAIL_CLOSED: choose a frozen model and explicit SHA in repository variables'
+              exit 1
+            fi
+            MODEL="demo-models/frozen/${SCALP_DEMO_SYMBOL//\//-}-${SCALP_DEMO_MODEL_SHA256}.pt"
+            test -f "$MODEL" || { echo 'PAPER_FAIL_CLOSED: model is not frozen in paper-sandbox-models'; exit 1; }
+          fi
+          if [ "$MODE" = paper ] && [ "$SCALP_DEMO_PAPER_ENABLED" != YES_DEMO_ONLY ]; then
+            echo 'PAPER_FAIL_CLOSED: scheduled/manual paper execution must have explicit repository variable YES_DEMO_ONLY'
+            exit 1
+          fi
+          python -m paper_sandbox.paper_executor --mode "$MODE" ${MODEL:+--model "$MODEL"} | tee paper-evidence.log
+      - name: Store demo-only audit (never real funds or credentials)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: guarded-demo-paper-evidence
+          path: paper-evidence.log
+          retention-days: 30
+          if-no-files-found: ignore
