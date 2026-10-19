@@ -6,7 +6,8 @@ import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {PAIRS,checkSnapshot,simulateValidation} from '../strategy-validation-core.mjs';
+import {PAIRS,checkSnapshot} from '../strategy-validation-core.mjs';
+import {evaluateTrainingAcrossFolds} from './historical-training-folds.mjs';
 import {scoreTrainingReward,checkTrainingReward} from './robot-rewards.mjs';
 export {PAIRS};
 
@@ -247,28 +248,23 @@ export function runResearchLesson(memory,{snapshot,symbol,now=Date.now()}={}){
    .reduce((latest,e)=>Math.max(latest,Date.parse(e.trainingEnd)),0);
  const newTrainingCandles=acceptedForLearning?(lastAcceptedEnd?
    Math.max(0,Math.floor((Date.parse(end)-lastAcceptedEnd)/PERIOD)) : training.length):0;
- const dataset={...snapshot,bars:snapshot.bars.slice(0,boundary)};
+ // Three disjoint historical training folds within the first 40% of the
+ // saved 60-day snapshot. The untouched last 60% never enters model selection.
  const outcomes=plan.candidates.map(p=>{
-  const config=toSimulator(p);
-  const result=simulateValidation({snapshot:dataset,symbol,
-    startingBalanceGbp:RESEARCH_LIMITS.startingVirtualGbp,
-    mode:'duration',limit:365,feePerSideFraction:.0025,now,...config});
-  const stress=simulateValidation({snapshot:dataset,symbol,
-    startingBalanceGbp:RESEARCH_LIMITS.startingVirtualGbp,
-    mode:'duration',limit:365,feePerSideFraction:.005,now,...config});
-  const score=result.closedTrades>=20&&result.realizedNetProfitGbp>0&&
-    stress.realizedNetProfitGbp>0&&result.maxDrawdownPct<=10?
-    round(result.realizedNetProfitGbp-result.maxDrawdownPct*.05):null;
-  const researchReward=scoreTrainingReward({closedTrades:result.closedTrades,
-    netProfitGbp:result.realizedNetProfitGbp,
-    stressNetProfitGbp:stress.realizedNetProfitGbp,
-    maxDrawdownPct:result.maxDrawdownPct},{independent:acceptedForLearning});
-  return {params:p,closedTrades:result.closedTrades,netProfitGbp:result.realizedNetProfitGbp,
-   stressNetProfitGbp:stress.realizedNetProfitGbp,maxDrawdownPct:result.maxDrawdownPct,
-   winRatePct:result.winRatePct??0,trainingScore:score,researchReward};
+  const result=evaluateTrainingAcrossFolds({snapshot,symbol,config:toSimulator(p),now});
+  const researchReward=scoreTrainingReward({
+    closedTrades:result.closedTrades,netProfitGbp:result.netGbp,
+    stressNetProfitGbp:result.stressNetGbp,
+    maxDrawdownPct:result.robustness.worstDrawdownPct
+  },{independent:acceptedForLearning});
+  return {params:p,closedTrades:result.closedTrades,
+    netProfitGbp:result.netGbp,stressNetProfitGbp:result.stressNetGbp,
+    maxDrawdownPct:result.robustness.worstDrawdownPct,
+    winRatePct:result.winRatePct,trainingScore:result.trainingScore,
+    researchReward,robustness:result.robustness};
  });
  const ids=outcomes.map(o=>canonical(o.params)).sort();
- const recordId=hash([POLICY,symbol,'us-1',start,end,fingerprint,hash(ids)]);
+ const recordId=hash([POLICY,'HISTORICAL_3FOLD_V1',symbol,'us-1',start,end,fingerprint,hash(ids)]);
  if(memory.experiments.some(e=>e.id===recordId))
   return {memory,changed:false,status:'IDENTICAL_EXPERIMENT_DEDUPED',
    symbol,seed:plan.seed,holdoutUsedForSelection:false,brokerOrders:0};
@@ -281,20 +277,22 @@ export function runResearchLesson(memory,{snapshot,symbol,now=Date.now()}={}){
   parentResearchModel:plan.seed?{params:plan.seed.params,
     previousNetGbp:plan.seed.netProfitGbp,sourceExperimentId:plan.seed.experimentId,
     confirmedChampion:false}:null,
-  researchPolicy:'BOUNDED_PARENT_MUTATION_V1',
+  researchPolicy:'BOUNDED_PARENT_MUTATION_3FOLD_V2',
   trulyIndependentForwardValidated:false
  };
  const next={...memory,experiments:[...memory.experiments,record]};
  checkMemory(next);
  return {memory:next,changed:true,symbol,status:record.reason,
   seed:plan.seed,
-  testedParams:outcomes.length,newTrainingCandles,snapshotAt:snapshot.generatedAt??null,
+  testedParams:outcomes.length,
+  chronologicalTrainingWindows:outcomes[0]?.robustness.windowCount||0,
+  newTrainingCandles,snapshotAt:snapshot.generatedAt??null,
   trainingEnd:end,rewardCreditsAwarded:outcomes.reduce((sum,o)=>sum+o.researchReward.points,0),
   bestObservedTrainingNetGbp:Math.max(...outcomes.map(x=>x.netProfitGbp)),
   bestObservedTrainingWinRatePct:Math.max(...outcomes.map(x=>x.winRatePct)),
   holdoutUsedForSelection:false,brokerOrders:0,
   promotion:'NONE_RESEARCH_ONLY',
-  note:'Only earlier 40% accessed. Same/overlapping candles never equal independent forward trials.'};
+  note:'Three disjoint historical folds within earlier 40%; overlapping refreshes never count as fresh independent forward proof.'};
 }
 export async function evaluateAll({memory,dataDir='validation-data',read=readFile,now=Date.now()}={}){
  checkMemory(memory);
