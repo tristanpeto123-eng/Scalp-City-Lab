@@ -79,16 +79,23 @@ async function main(){
  const priorPath='research-data/training-monitor.json';
  let previous=null;
  try{previous=JSON.parse(await readFile(priorPath,'utf8'));}catch{}
- // Repeated no-op Actions runs remain visible via the GitHub Actions API,
- // without flooding main with 288 identical dashboard commits each day.
- if(previous&&cycle.candidateEvaluations===0&&cycle.newlySavedLessons===0){
-   console.log('TRAINING_MONITOR_NO_NEW_EVALUATIONS; Actions run remains externally visible');
-   return;
- }
+ // Repeated no-op Actions runs remain visible via the GitHub Actions API.
+ // But if source snapshots changed, refresh OOS observations even when the
+ // daily candidate cap yielded zero new evaluations or training lessons.
  const snapshots={};
  for(const symbol of PAIRS)snapshots[symbol]=JSON.parse(await readFile(
    path.join('validation-data',symbol.replace('/','-')+'.json'),'utf8'));
  const report=buildTrainingMonitor({cycle,academy,snapshots,previous});
+ const unchangedOos=previous?.schema==='SCALP_TRAINING_MONITOR_V1'&&
+   report.outOfSample.charts.every(row=>{
+     const prior=previous.outOfSample?.charts?.find(x=>x.symbol===row.symbol);
+     return prior?.sampleHash===row.sampleHash&&prior?.modelHash===row.modelHash&&
+       prior?.status===row.status;
+   });
+ if(previous&&cycle.candidateEvaluations===0&&cycle.newlySavedLessons===0&&unchangedOos){
+   console.log('TRAINING_MONITOR_NO_NEW_EVIDENCE; inspect GitHub Actions for last run');
+   return;
+ }
  await mkdir('research-data',{recursive:true});
  await writeFile(priorPath,JSON.stringify(report,null,2)+'\n');
  console.log('TRAINING_MONITOR_PUBLISHED '+JSON.stringify({
