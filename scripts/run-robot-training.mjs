@@ -71,7 +71,7 @@ export function checkParams(p){
     p.exitLookback>p.lookback)throw Error('Invalid channel parameters');
  return p;
 }
-function toSimulator(p){
+export function toSimulator(p){
  checkParams(p);
  // Strictly intersect archived strategy rules with the live validator's
  // narrower parameter bounds. Archived out-of-bounds parents are not executed.

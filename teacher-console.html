@@ -36,7 +36,7 @@ h2{font-size:1.2rem;letter-spacing:-.025em;margin:0 0 12px}h3{font-size:.96rem;m
 @media(max-width:950px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.rooms{grid-template-columns:repeat(2,minmax(0,1fr))}.stat strong{font-size:1.45rem}.wrap{padding:14px}.office{height:270px}.teacherbot{left:8%}.whiteboard{left:22%;right:7%}}
 </style></head><body>
 <div class="wrap">
-<header class="top"><div class="brand">SCALP CITY / ROBOT ACADEMY / TEACHER-01</div><nav><a class="back" href="./robot-academy.html">← Academy</a> <a class="back" href="./trading-floor.html">Trading Floor ↗</a></nav></header>
+<header class="top"><div class="brand">SCALP CITY / ROBOT ACADEMY / TEACHER-01</div><nav><a class="back" href="./mission-control.html">Mission Control</a> <a class="back" href="./robot-academy.html">← Academy</a> <a class="back" href="./trading-floor.html">Trading Floor ↗</a></nav></header>
 <h1>Teacher's <span>Office</span></h1><p class="lede muted">Connected to the saved Robot Academy research register and the cryptographically signed forward-paper report endpoint. Simulated examples never alter actual grades or place broker orders.</p>
 <div class="meta"><span class="pill warn" id="connectionState">NOT PROVISIONED</span><span class="pill" id="dataState">LOADING RESEARCH</span><span class="pill" id="teacherUpdated">NO VERIFIED REPORT</span></div>
 <div class="stats">
@@ -277,4 +277,5 @@ byId('mockRun').onclick=()=>{
 byId('mockClear').onclick=()=>{if(examTimer)clearInterval(examTimer);examTimer=null;simCount=0;byId('mockRun').disabled=false;byId('mockBar').style.width='0%';byId('mockText').textContent='Mock cleared. No changes to actual evidence.';};
 render();reload();
 })();
-</script></body></html>
+</script><script src="./journey-nav.js" defer></script>
+</body></html>

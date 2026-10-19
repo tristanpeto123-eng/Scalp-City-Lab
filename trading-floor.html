@@ -35,7 +35,7 @@ footer{padding-top:15px;border-top:1px solid #355269;font-size:11px;color:#a9bdc
 @media(max-width:500px){#pupils{grid-template-columns:repeat(2,1fr)}.box,.card{padding:12px}header{padding:14px}}
 </style></head><body>
 <header><div><small>SCALP CITY · THE FOUNDRY</small><h1>Trading Floor</h1><span class="badge" id="modeBadge">RESEARCH-ONLY · NO REAL OR PAPER ORDER CONTROLS</span></div>
-<nav><a href="./agent-city.html">3D City</a><a href="./robot-academy.html">Robot Academy</a><a href="./teacher-console.html">Teacher’s Office</a><a href="./">Research Floor</a></nav>
+<nav><a href="./mission-control.html">Mission Control</a><a href="./agent-city.html">3D City</a><a href="./robot-academy.html">Robot Academy</a><a href="./teacher-console.html">Teacher’s Office</a><a href="./">Research Floor</a></nav>
 </header><main>
 <p class="alert"><b>Connection policy:</b> The ten pupils and research statistics come from the actual saved Academy data. Independently verified grades are only shown from a signed Teacher report. The sandbox below is synthetic; it is never Alpaca paper execution and cannot send real orders or deposit money.</p>
 <section class="statRow" aria-label="Research and examiner status">
@@ -211,4 +211,5 @@ $('export').onclick=()=>{
 const requested=new URLSearchParams(location.search).get('pupil');
 if(requested){const match=PAIRS.find(s=>s.replace('/','')===requested.toUpperCase());if(match)selected=match;}
 render();refresh();
-</script></body></html>
+</script><script src="./journey-nav.js" defer></script>
+</body></html>

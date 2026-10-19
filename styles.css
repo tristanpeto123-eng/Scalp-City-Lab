@@ -51,3 +51,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .scene-fallback .source-actions button{min-height:46px;border-radius:8px;border:1px solid rgba(111,55,255,.58);background:rgba(6,5,16,.88);backdrop-filter:blur(10px);color:#eee9ff;font:800 8px/1 ui-monospace,monospace;letter-spacing:.08em;padding:8px 4px}
 .scene-fallback .source-actions #syncPulse,.scene-fallback .source-actions #emergencyStop{display:none}
 .scene-fallback .source-actions button:disabled{opacity:.38;cursor:not-allowed}
+
+/* Mobile 3D HUD: Mission Control is the single clear entrance; other routes live in Journey. */
+@media(max-width:850px){.hud #academyEntry,.hud #teacherEntry,.hud #agentCityLink{display:none}.hud-mode{display:none}.hud{gap:8px}}
