@@ -37,6 +37,7 @@ export function makeFolds(snapshot) {
   return {folds,cut,holdoutStart:source.bars[cut].t,holdoutEnd:source.bars.at(-1).t+900000,
     developmentEnd:source.bars[cut-1].t+900000,
     snapshotHash:hash(source.bars.map(b=>[b.t,b.o,b.h,b.l,b.c,b.v])),
+    developmentHash:hash(source.bars.slice(0,cut).map(b=>[b.t,b.o,b.h,b.l,b.c,b.v])),
     totalCandles:total};
 }
 function neighbours(p){
@@ -101,7 +102,7 @@ function runFold(snapshot,symbol,config,fold,fee,now){
 export function evaluateV2Symbol({snapshot,symbol,memory,now=Date.now(),limit=V2_POLICY.candidatesPerSymbol}){
   if(snapshot?.symbol!==symbol)throw Error('V2: symbol mismatch');
   const layout=makeFolds(snapshot),developmentEnd=layout.developmentEnd;
-  const proposal=proposeV2Candidates({symbol,memory,snapshotHash:layout.snapshotHash,
+  const proposal=proposeV2Candidates({symbol,memory,snapshotHash:layout.developmentHash,
     developmentEnd,limit});
   const ranked=proposal.candidates.map(params=>{
     const config=toSimulator(params);
