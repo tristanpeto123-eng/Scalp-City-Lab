@@ -41,5 +41,5 @@ test('rewritten overlap, backwards update, gaps and cross-symbol mixes fail clos
  assert.throws(()=>compareFiveMinuteSourceTail(old,{...newer,symbol:'ETH/USD'}),/incompatible/);
  assert.throws(()=>compareFiveMinuteSourceTail(old,snapshot(bars.map(b=>({
    ...b,t:new Date(Date.parse(b.t)+FIVE_MIN_MS*3000).toISOString()
- }))),/previous source tail absent/);
+ }))))),/previous source tail absent/);
 });
