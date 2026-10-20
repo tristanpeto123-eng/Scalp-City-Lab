@@ -40,7 +40,7 @@ footer{padding-top:15px;border-top:1px solid #355269;font-size:11px;color:#a9bdc
 <p class="alert"><b>Connection policy:</b> The ten pupils and research statistics come from the actual saved Academy data. Independently verified grades are only shown from a signed Teacher report. The sandbox below is synthetic; it is never Alpaca paper execution and cannot send real orders or deposit money.</p>
 <section class="statRow" aria-label="Research and examiner status">
  <div class="stat"><small>ACTIVE CHART PUPILS</small><strong id="countPupils">10</strong><em>BTC, ETH, SOL and seven more</em></div>
- <div class="stat"><small>INITIAL RESEARCH ELIGIBLE</small><strong id="countEligible">—</strong><em>Positive training P&L and 30+ closes</em></div>
+ <div class="stat"><small>INDEPENDENT HISTORICAL SCREEN</small><strong id="countEligible">—</strong><em>Manual review only; 0 PAPER admissions</em></div>
  <div class="stat"><small>VERIFIED FORWARD GRADES</small><strong id="countVerified">0</strong><em>Signed broker examination only</em></div>
  <div class="stat"><small>SIGNED EXAMINER FEED</small><strong id="feedStatus" style="font-size:15px">CHECKING</strong><em id="feedDetail">Awaiting configuration</em></div>
 </section>
@@ -61,6 +61,7 @@ footer{padding-top:15px;border-top:1px solid #355269;font-size:11px;color:#a9bdc
  <h2 style="margin-top:24px">Local synthetic journal</h2><ol id="journal"></ol>
  <button id="export">Export synthetic demo JSON</button>
 </div></section>
+<section id="qualification-bridge" aria-label="Historical candidate admission boundaries"><h2>Independent historical screening</h2><p>No PAPER admission can be inferred from research-only statistics.</p></section>
 <footer>All actual figures are sourced from <code>research-data/robot-academy.json</code> or authenticated signed Teacher records. The account sandbox is fictional and isolated. This page does not have brokerage credentials, submit orders or trigger model promotion.</footer>
 </main>
 <script type="module">
@@ -159,8 +160,7 @@ async function refresh(){
  ]);
  if(serial!==request)return;
  research=rr.status==='fulfilled'?rr.value:null;
- const qualified=(research?.pupils||[]).filter(p=>p.researchLeader?.trainingNetGbp>0&&p.researchLeader.trainingClosedTrades>=30).length;
- $('countEligible').textContent=research?String(qualified):'—';
+ $('countEligible').textContent=window.ScalpHistoricalScreen?String(window.ScalpHistoricalScreen.eligibleCount):'—';
  if(fr.status==='fulfilled'){
    grades=fr.value.grades;examStatuses=fr.value.statuses;feedOk=true;
    feedNote='Publisher signature valid. Last report '+new Date(fr.value.generatedAt).toLocaleString();
@@ -182,6 +182,7 @@ async function refresh(){
  render();
 }
 $('refresh').addEventListener('click',refresh);
+window.addEventListener('scalp-historical-screen',()=>{$('countEligible').textContent=String(window.ScalpHistoricalScreen.eligibleCount);});
 $('start').onclick=()=>{
  const capital=Number($('capital').value),risk=Number($('risk').value);
  if(!Number.isFinite(capital)||capital<50||capital>1000000||!Number.isFinite(risk)||risk<1||risk>20||
@@ -212,4 +213,4 @@ const requested=new URLSearchParams(location.search).get('pupil');
 if(requested){const match=PAIRS.find(s=>s.replace('/','')===requested.toUpperCase());if(match)selected=match;}
 render();refresh();
 </script><script src="./journey-nav.js" defer></script>
-</body></html>
+<script type="module" src="./teacher/qualification-bridge.js"></script></body></html>

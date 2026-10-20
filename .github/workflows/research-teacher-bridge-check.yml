@@ -1,0 +1,78 @@
+name: Scalp City — research to Teacher public evidence bridge
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/publish-teacher-screen.mjs'
+      - 'scripts/publish-teacher-screen-tests.mjs'
+      - 'scripts/qualification-bridge-tests.mjs'
+      - 'teacher/qualification-bridge.js'
+      - 'teacher/historical-screen-client.mjs'
+      - 'scripts/historical-screen-client-tests.mjs'
+      - 'scripts/qualification-e2e-tests.mjs'
+      - 'teacher/qualification-runner.mjs'
+      - 'strategy-validation.html'
+      - 'training-monitor.html'
+      - 'teacher-console.html'
+      - 'trading-floor.html'
+      - 'scripts/journey-nav-tests.mjs'
+      - 'robot-academy.html'
+      - 'journey-nav.js'
+      - 'journey-nav.css'
+      - '.github/workflows/teacher-qualification.yml'
+      - '.github/workflows/research-teacher-bridge-check.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/publish-teacher-screen.mjs'
+      - 'scripts/publish-teacher-screen-tests.mjs'
+      - 'scripts/qualification-bridge-tests.mjs'
+      - 'teacher/qualification-bridge.js'
+      - 'teacher-console.html'
+      - 'trading-floor.html'
+      - 'robot-academy.html'
+      - 'journey-nav.css'
+      - '.github/workflows/teacher-qualification.yml'
+      - '.github/workflows/research-teacher-bridge-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  independent-historical-screen-publication:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      TEACHER_ENABLE_EXAMINER: 'false'
+      TEACHER_PAPER_ENABLED: 'false'
+      SCALP_PAPER_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Checker G0 — no server orders or unsigned graduates
+        run: |
+          node --check scripts/publish-teacher-screen.mjs
+          node --check teacher/qualification-bridge.js
+          node --check teacher/historical-screen-client.mjs
+          node --test scripts/historical-screen-client-tests.mjs
+          node --check journey-nav.js
+          node --test scripts/publish-teacher-screen-tests.mjs
+          node --test scripts/qualification-bridge-tests.mjs
+          node --test scripts/journey-nav-tests.mjs
+      - name: Checkout genuine append-only historical research memory (read only)
+        uses: actions/checkout@v4
+        with:
+          ref: scalp-learning-memory
+          path: research-memory
+          persist-credentials: false
+      - name: Checker G1 — independent archive-to-Teacher-to-public historical report
+        run: |
+          node --test scripts/qualification-e2e-tests.mjs
+      - name: Checker G1 — existing signed-feed, qualification and Academy contracts
+        run: |
+          node --test teacher/public-client-tests.mjs
+          node --test teacher/teacher-console-tests.mjs
+          node --test robot-academy-tests.mjs

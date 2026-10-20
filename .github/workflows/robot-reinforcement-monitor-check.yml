@@ -66,7 +66,8 @@ jobs:
             !workflow.includes('build-training-monitor.mjs')||
             !page.includes('TRAINING_MONITOR_V1')||
             !page.includes('No new comparable evidence')||
-            !page.includes('Last successful new lesson'))
+            !page.includes('Last saved historical lesson')||
+            !page.includes('replayed-data-warning'))
             throw Error('Checker: incomplete scheduler or monitoring UI');
           console.log('REVIEW_ONLY: historical XP + measured telemetry, no Paper orders');
           NODE
