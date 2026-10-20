@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#070e1c">
+  <title>Scalp City · Walkable World (UI Test)</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main id="app">
+    <canvas id="world" tabindex="0" aria-label="Walkable 3D Scalp City office tower"></canvas>
+    <div id="fallback" hidden><strong>3D world unavailable</strong><p>The phone and floor navigation remain usable.</p></div>
+    <header class="hud">
+      <div class="identity"><span class="crest">SC</span><span><b>SCALP CITY</b><small>THE FOUNDRY / WORLD TEST</small></span></div>
+      <div class="floor-readout"><small id="floorIndex">FLOOR 01 / 06</small><strong id="floorName">Mission Control</strong><span id="floorRole">Operations hub</span></div>
+      <div class="test-flag">UI TEST · SIMULATION ONLY</div>
+    </header>
+    <aside class="side-hint" id="help">WASD move · Drag to look · E at lift · P phone</aside>
+    <div id="robotInfo" class="robot-info" hidden>
+      <button id="closeInfo" aria-label="Close inspector">×</button>
+      <small id="robotLabel">STATION</small><strong id="robotName"></strong><p id="robotDescription"></p>
+      <button id="robotOpen" class="accent-btn">OPEN RELATED APP ↗</button>
+    </div>
+    <div class="lift-prompt" id="liftPrompt" hidden><span>◈ LIFT ACCESS</span><strong id="liftTarget">Next floor</strong><button id="liftButton" class="accent-btn">ENTER LIFT ↗</button><small>Keyboard: E</small></div>
+    <div class="world-actions">
+      <button id="phoneToggle" class="phone-launch" aria-controls="phoneShell" aria-expanded="false" title="Open city phone">▦ <span>PHONE</span></button>
+      <button id="floorsToggle" class="small-launch" aria-controls="floorMenu" aria-expanded="false">FLOORS</button>
+    </div>
+    <nav id="floorMenu" class="floor-menu" hidden aria-label="Teleport to a floor"></nav>
+    <div class="touch-controls" id="touchControls" aria-label="Movement controls">
+      <button data-move="forward" class="up" aria-label="Walk forward">▲</button>
+      <button data-move="left" class="left" aria-label="Walk left">◀</button>
+      <button data-move="back" class="down" aria-label="Walk backward">▼</button>
+      <button data-move="right" class="right" aria-label="Walk right">▶</button>
+      <span>DRAG VIEW TO LOOK</span>
+    </div>
+    <section class="phone-shell" id="phoneShell" hidden aria-label="Scalp City smartphone">
+      <div class="phone-device">
+        <div class="phone-status"><span id="phoneClock">18:00</span><span>SC NETWORK <span class="bars">▂▄▆</span></span></div>
+        <div class="phone-notch" aria-hidden="true"></div>
+        <div class="phone-inner">
+          <div id="phoneHome" class="phone-home">
+            <div class="phone-head"><small>FOUNDRY OS / TEST</small><h2>Good to see you.</h2><p>One phone. Every department.</p></div>
+            <div class="phone-alert"><span class="status-dot"></span><span>Research & examination are not live-money systems.</span></div>
+            <div id="appGrid" class="app-grid" aria-label="Phone applications"></div>
+            <div class="phone-footer">The original pages open inside each app. Historical statistics remain provisional.</div>
+          </div>
+          <div id="phoneView" class="phone-view" hidden>
+            <div class="phone-app-bar"><button id="appBack" aria-label="Back to apps">‹</button><strong id="appTitle">App</strong><button id="appExpand" aria-label="Expand application">EXPAND</button></div>
+            <div id="nativeView" class="native-view" hidden></div>
+            <iframe id="appFrame" title="Scalp City application" loading="lazy" referrerpolicy="same-origin" hidden></iframe>
+          </div>
+        </div>
+        <div class="phone-navigation"><button id="phoneHomeButton" aria-label="Phone home"><span></span></button></div>
+      </div>
+      <button class="phone-dismiss" id="phoneClose" aria-label="Put away phone">PUT AWAY ×</button>
+    </section>
+    <div id="expandedApp" class="expanded-app" hidden>
+      <div class="expanded-toolbar"><strong id="expandedName">Scalp City app</strong><button id="expandedClose">RETURN TO PHONE ×</button></div>
+      <iframe id="expandedFrame" title="Expanded Scalp City application" hidden></iframe>
+      <div id="expandedNative" hidden></div>
+    </div>
+    <div class="footer-ribbon"><span>SCALP CITY LAB / ISOLATED UI PROTOTYPE</span><a href="../mission-control.html" target="_blank" rel="noopener">ORIGINAL MISSION CONTROL ↗</a></div>
+  </main>
+  <script type="module" src="./world.js"></script>
+  <script type="module" src="./phone.js"></script>
+</body>
+</html>
