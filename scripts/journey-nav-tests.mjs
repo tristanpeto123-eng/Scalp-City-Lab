@@ -41,3 +41,13 @@ test('current-stage handoff is visible and routes all steps without exposing tra
  assert.match(monitor,/Next: Independent Qualification/);
  assert.doesNotMatch(js,/\/v2\/orders|APCA-API-SECRET-KEY/);
 });
+
+test('mobile launcher stays accessible and keeps contextual progression in the menu',async()=>{
+ const css=await readFile(new URL('journey-nav.css',root),'utf8');
+ const js=await readFile(new URL('journey-nav.js',root),'utf8');
+ assert.match(css,/width:48px!important/);
+ assert.match(css,/\.sc-journey-quick\{display:none!important\}/);
+ assert.match(js,/setAttribute\('aria-label','Open Scalp City journey navigation'\)/);
+ assert.match(js,/Training Monitor/);
+ assert.match(js,/sc-journey-next/);
+});

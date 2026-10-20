@@ -31,10 +31,25 @@ table{border-collapse:collapse;width:100%;text-align:left;min-width:660px}th,td{
 <div class="stat"><small>Measured historical evaluations / second</small><strong id="eps">—</strong><small>Last completed candidate batch</small></div>
 <div class="stat"><small>Candidate evaluations</small><strong id="evaluations">—</strong><small>Measured, not presumed</small></div>
 <div class="stat"><small>Historical research batches</small><strong id="batches">—</strong><small>Attempted on saved candles; not independent tests</small></div>
-<div class="stat"><small>Last successful new lesson</small><strong id="lesson">—</strong><small>Saved research, not a grade</small></div>
+<div class="stat"><small>Last saved historical lesson</small><strong id="lesson">—</strong><small>May reuse the same training candles</small></div>
 <div class="stat"><small>New training candles consumed</small><strong id="newdata">—</strong><small>0 means historical data was reused</small></div>
 <div class="stat"><small>Recent failed workflow runs</small><strong id="failures">—</strong><small>Among last 10 GitHub Actions runs</small></div>
 <div class="stat"><small>Verified forward graduates</small><strong>0 <span class="caption">in research telemetry</span></strong><small>Only separate signed Teacher proof counts</small></div>
+</section>
+<section class="panel" aria-label="Deep RL research">
+<h2>Neural reinforcement learning · rapid replay</h2>
+<p>The ten pupils train independent Deep Q Networks. Each policy chooses flat or long, observes virtual profit after fees and drawdown, and updates neural-network weights through real gradient descent. Decisions run as fast as the historical simulator allows; <strong>one 5-minute historical bar does not become one second of genuine market history.</strong></p>
+<div class="stats">
+<div class="stat"><small>Measured RL decisions / wall-clock second</small><strong id="rl-speed">Not measured</strong></div>
+<div class="stat"><small>Simulated position closes / second</small><strong id="rl-closes">Not measured</strong></div>
+<div class="stat"><small>Real neural gradient updates</small><strong id="rl-updates">Not measured</strong></div>
+<div class="stat"><small>Historical replay decisions</small><strong id="rl-decisions">Not measured</strong></div>
+<div class="stat"><small>Pupils passing later development fee stress</small><strong id="rl-positive">Not measured</strong></div>
+<div class="stat"><small>New training data candles</small><strong id="rl-new">Not measured</strong></div>
+</div>
+<p id="rl-status">No verified accelerated DQN replay report loaded. Separate training happens in scheduled batches, not continuous one-second broker trading.</p>
+<div class="scroller"><table><thead><tr><th>Robot</th><th>Decisions/s</th><th>Virtual closes/s</th><th>Learning updates</th><th>Later period £</th><th>After stressed fees £</th></tr></thead><tbody id="rl-pupils"><tr><td colspan="6">Awaiting the first verified replay batch</td></tr></tbody></table></div>
+<p class="caption">Only the first 60% of real archived 5-minute bars enter RL training; later 20% is development validation, and final 20% remains untouched. Research performance is not a verified forward-paper result, and this screen never sends orders. <a href="https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/robot-dqn-replay.yml" target="_blank" rel="noopener noreferrer">Inspect Deep RL training workflow ↗</a></p>
 </section>
 <section class="panel" aria-label="Previously recorded research">
 <h2>Saved historical research</h2>
@@ -47,6 +62,8 @@ table{border-collapse:collapse;width:100%;text-align:left;min-width:660px}th,td{
 </section>
 <section class="panel"><h2>Scheduler and health</h2>
 <p id="schedule">Scheduled research: every 5 minutes (best effort). Market snapshots: every 6 hours. These are configured intervals, not proof of successful execution.</p>
+<p id="replayed-data-warning">Checking whether saved experiments consumed genuinely new candles.</p>
+<p id="observed-cadence">Actual scheduled executions: awaiting GitHub Actions evidence.</p>
 <p id="runstate">Recent workflow status unavailable. <a href="https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/robot-research-training.yml" target="_blank" rel="noopener noreferrer">View GitHub training runs ↗</a></p><p id="snapshotdate">Last feed snapshot: not reported.</p><p id="publisheddate">Last measured batch: not reported.</p>
 </section>
 <section class="panel"><h2>Chronological out-of-sample development</h2>
@@ -62,7 +79,7 @@ table{border-collapse:collapse;width:100%;text-align:left;min-width:660px}th,td{
 </main>
 <script type="module">
 const $=id=>document.getElementById(id),money=n=>Number.isFinite(n)?(n<0?'−':'')+'£'+Math.abs(n).toFixed(2):'—';
-let lastMonitor=null,lastRoster=null,lastActions=null;
+let lastMonitor=null,lastRoster=null,lastActions=null,lastScheduledAt=null;
 const actionsUrl='https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/robot-research-training.yml';
 const ago=d=>{const t=Date.parse(d||'');if(!Number.isFinite(t))return 'Unknown';const m=Math.max(0,Math.round((Date.now()-t)/60000));return m<1?'Just now':m+'m ago';};
 const stamp=d=>{const n=Date.parse(d||'');return Number.isFinite(n)?new Date(n).toLocaleString():'Not reported';};
@@ -111,6 +128,11 @@ async function loadPublished(){
   $('batches').textContent=Number.isInteger(c?.measuredBatchAttempts)?String(c.measuredBatchAttempts)+' across 10 pupils':'Not yet measured';
   $('lesson').textContent=data?.lastSuccessfulLessonAt?ago(data.lastSuccessfulLessonAt):'No new lesson yet';
   $('newdata').textContent=Number.isInteger(c?.newTrainingCandles)?String(c.newTrainingCandles):'Not yet measured';
+  $('replayed-data-warning').textContent=c&&c.newTrainingCandles===0&&c.newlySavedLessons>0?
+    'Caution: this cycle saved '+c.newlySavedLessons+' historical experiments but consumed ZERO new training candles. These are not independent new learning evidence.':
+    c?'Saved experiments: '+c.newlySavedLessons+'; genuinely new training candles: '+c.newTrainingCandles+
+      '. Repeated or overlapping windows do not establish new independent evidence.':
+      'No published cycle evidence: do not infer training has improved.';
   const verified=lastMonitor?.outOfSample;
   $('ooscount').textContent=verified?verified.evaluatedPupils:'Not measured';
   $('positive').textContent=verified?verified.positivePupils:'Not measured';
@@ -144,6 +166,54 @@ async function loadPublished(){
  }
  updateHealth();
 }
+const rlSource='https://raw.githubusercontent.com/tristanpeto123-eng/Scalp-City-Lab/rl-learning-memory/rl-rapid/latest.json';
+async function loadRapidRL(){
+ try{
+  const response=await fetch(rlSource+'?v='+Date.now(),{cache:'no-store',credentials:'omit'});
+  if(!response.ok)throw Error('No checkpoint-backed report yet (HTTP '+response.status+')');
+  const d=await response.json();
+  if(d.schema!=='SCALP_RAPID_RL_REPLAY_V1'||d.marketBarTimeframe!=='5Min'||
+     d.sealedHoldoutAccessed!==false||d.verifiedForwardGrades!==0||
+     d.paperOrders!==0||d.liveOrders!==0||d.decisionsAreNotBrokerTrades!==true||
+     !Array.isArray(d.pupils)||d.pupils.length!==10||
+     new Set(d.pupils.map(x=>x.symbol)).size!==10||
+     !Number.isFinite(d.decisionsPerSecond)||d.decisionsPerSecond<0||
+     !Number.isInteger(d.decisionCount)||d.decisionCount<1||
+     !Number.isInteger(d.gradientUpdates)||d.gradientUpdates<1||
+     !Number.isFinite(d.simulatedClosesPerSecond)||d.simulatedClosesPerSecond<0)
+   throw Error('Untrusted historical RL metrics');
+  for(const r of d.pupils){
+   if(!Number.isFinite(r.decisionsPerSecond)||r.decisionsPerSecond<0||
+      !Number.isFinite(r.simulatedClosesPerSecond)||r.simulatedClosesPerSecond<0||
+      !Number.isInteger(r.gradientUpdatesThisRun)||r.gradientUpdatesThisRun<0||
+      r.researchOnly!==true||r.forwardVerified!==false||r.paperOrders!==0)
+     throw Error('Invalid per-pupil RL metrics');
+  }
+  $('rl-speed').textContent=d.decisionsPerSecond.toFixed(2);
+  $('rl-closes').textContent=d.simulatedClosesPerSecond.toFixed(2);
+  $('rl-updates').textContent=d.gradientUpdates.toLocaleString();
+  $('rl-decisions').textContent=d.decisionCount.toLocaleString();
+  $('rl-positive').textContent=d.positiveDevelopmentPupils+' / 10';
+  $('rl-new').textContent=String(d.newTrainingTailCandles);
+  $('rl-status').textContent='Last research replay: '+stamp(d.generatedAt)+
+    ' · 5-minute archived bars replayed faster than real time · no broker orders. '+
+    'A new model checkpoint is NOT proof of improved predictive performance.';
+  const tbody=$('rl-pupils');tbody.replaceChildren();
+  for(const r of d.pupils){
+   const row=document.createElement('tr');
+   const vals=[r.symbol,r.decisionsPerSecond.toFixed(1),r.simulatedClosesPerSecond.toFixed(2),
+     String(r.gradientUpdatesThisRun),money(r.laterDevelopmentNetGbp),
+     money(r.laterDevelopmentStressedNetGbp)];
+   for(const val of vals){const td=document.createElement('td');td.textContent=val;row.append(td);}
+   tbody.append(row);
+  }
+ }catch(e){
+  for(const id of ['rl-speed','rl-closes','rl-updates','rl-decisions','rl-positive','rl-new'])
+   $(id).textContent='Not measured';
+  $('rl-status').textContent='RL replay report unavailable: '+String(e.message||e)+
+    '. Archived research continues independently; no RL trades or outcomes are assumed.';
+ }
+}
 async function loadActions(){
  try{
   const r=await fetch('https://api.github.com/repos/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/robot-research-training.yml/runs?per_page=10',{cache:'no-store'});
@@ -151,6 +221,15 @@ async function loadActions(){
   const x=await r.json(),runs=x.workflow_runs;
   if(!Array.isArray(runs))throw Error('Malformed workflow evidence');
   lastActions=runs;
+  const scheduled=runs.filter(x=>x.event==='schedule'&&x.status==='completed'&&Number.isFinite(Date.parse(x.created_at)));
+  lastScheduledAt=scheduled[0]?.created_at||null;
+  const recent=scheduled.filter(x=>Date.now()-Date.parse(x.created_at)<86400000).length;
+  const elapsed=lastScheduledAt?Math.max(0,Math.round((Date.now()-Date.parse(lastScheduledAt))/60000)):null;
+  $('observed-cadence').textContent=scheduled.length?
+    'Observed GitHub schedule: '+recent+' completed scheduled runs in the past 24 hours; last '+ago(lastScheduledAt)+
+    '. Requested cron is 5 minutes, but GitHub does not guarantee that frequency.'+
+    (elapsed>30?' Last scheduled execution is over 30 minutes old — investigate the trigger.':''):
+    'No completed scheduled research run visible among these recent workflow results. Cron configuration is not evidence of active training.';
   const failed=runs.filter(x=>x.conclusion==='failure').length;
   $('failures').textContent=String(failed);
   const latest=runs[0];
@@ -159,7 +238,8 @@ async function loadActions(){
   $('runstate').append('Most recent scheduled/manual workflow: '+detail+' · '+(latest?stamp(latest.created_at):'—')+' · ');
   const a=document.createElement('a');a.href=latest?.html_url||actionsUrl;a.textContent=latest?.html_url?'Inspect GitHub run ↗':'Open training workflow ↗';a.rel='noopener noreferrer';a.target='_blank';$('runstate').append(a);
  }catch(err){
-  lastActions=null;$('failures').textContent='Unknown';
+  lastActions=null;lastScheduledAt=null;$('failures').textContent='Unknown';
+  $('observed-cadence').textContent='Could not verify actual scheduled-run cadence. GitHub Actions may be unavailable or rate limited.';
   $('runstate').replaceChildren();$('runstate').append('Workflow status unavailable: '+err.message+' · ');
   const a=document.createElement('a');a.href=actionsUrl;a.textContent='Open GitHub Actions ↗';a.target='_blank';a.rel='noopener noreferrer';$('runstate').append(a);
  }
@@ -170,14 +250,19 @@ function updateHealth(){
  const latest=lastActions?.[0],age=Date.now()-Date.parse(lastMonitor?.publishedAt||'');
  let status='UNVERIFIED',cls='status warn';
  if(latest?.conclusion==='failure'){status='WORKFLOW FAILURE';cls='status bad';}
+ else if(lastScheduledAt&&Date.now()-Date.parse(lastScheduledAt)>30*60000){
+   status=lastMonitor?'SCHEDULE DELAY · MEASURED REPORT MAY BE STALE':'SCHEDULE DELAY · NO NEW MEASURED REPORT';
+   cls='status warn';
+ }
  else if(!lastMonitor){status=lastRoster?'AWAITING FIRST MEASURED RUN':'NO VERIFIED RESEARCH DATA';cls='status warn';}
  else if(Number.isFinite(age)&&age>45*60000){status='STALE MEASURED REPORT';cls='status warn';}
  else if(latest?.conclusion==='success'){status='LAST RUN OK · RESEARCH ONLY';cls='status good';}
  $('health').className=cls;$('health').textContent=status;
 }
-$('refresh').onclick=()=>{loadPublished();loadActions();};
-loadPublished();loadActions();
+$('refresh').onclick=()=>{loadPublished();loadActions();loadRapidRL();};
+loadPublished();loadActions();loadRapidRL();
 setInterval(loadPublished,30000);
 setInterval(loadActions,120000);
+setInterval(loadRapidRL,60000);
 </script><script src="./journey-nav.js" defer></script>
 </body></html>
