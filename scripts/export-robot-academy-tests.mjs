@@ -35,18 +35,19 @@ test('ten pair identities and training-only provenance',()=>{
  assert.equal(x.pupils.every(p=>p.source==='HISTORICAL_TRAINING_RESEARCH'),true);
  assert.equal(x.pupils.every(p=>p.championModel===null&&p.confirmedForward===false),true);
 });
-test('strongest experimental net candidate survives across generations without a made-up champion',()=>{
+test('Teacher candidate can only originate from accepted independent learning window',()=>{
  const x=buildAcademySnapshot(sample),btc=x.pupils[0];
- assert.equal(btc.researchLeader.family,'ema_trend');
- assert.equal(btc.researchLeader.parameters.fast,12);
- assert.equal(btc.researchLeader.trainingNetGbp,-1.5);
- assert.equal(btc.researchLeader.trainingWinRatePct,60);
- assert.equal(btc.researchLeader.trainingClosedTrades,45);
+ assert.equal(btc.researchLeader.family,'rsi_reversion');
+ assert.equal(btc.researchLeader.parameters.period,14);
+ assert.equal(btc.researchLeader.trainingNetGbp,-2.5);
+ assert.equal(btc.researchLeader.trainingWinRatePct,33.33);
+ assert.equal(btc.researchLeader.trainingClosedTrades,30);
+ assert.equal(btc.researchLeader.sourceExperimentId,'a'.repeat(64));
  assert.equal(btc.researchLeader.status,'TRAINING_LOSS_MAKING');
  assert.equal(btc.evidenceStatus,'PROVISIONAL_TRAINING_ONLY');
  assert.equal(btc.championModel,null);
  assert.equal(btc.generations.length,2);
- assert.deepEqual(btc.generations.map(g=>g.grade),[3,6]);
+ assert.deepEqual(btc.generations.map(g=>g.grade),[3,3]);
  assert.equal(btc.experiments,2);
  assert.equal(btc.independentTrainingWindows,1);
  assert.equal(btc.distinctStrategiesTried,4);
@@ -102,4 +103,16 @@ test('provisional lesson lineage shows saved historical parent without declaring
  assert.equal(btc.generations[1].parentHistoricalNetGbp,-2.5);
  assert.equal(btc.championModel,null);
  assert.equal(btc.confirmedForward,false);
+});
+
+test('unaccepted repeated history cannot replace accepted leader, even with extraordinary profits',()=>{
+ const repeated=make('BTC/USD','d',false,[opt('ema_trend',200,98,999)],
+  '2026-02-01T00:00:00Z');
+ const report=buildAcademySnapshot({...sample,experiments:[...sample.experiments,repeated]});
+ const btc=report.pupils[0];
+ assert.equal(btc.researchLeader.sourceExperimentId,'a'.repeat(64));
+ assert.equal(btc.researchLeader.trainingNetGbp,-2.5);
+ assert.equal(btc.generations.at(-1).testedConfigurations,1);
+ assert.equal(btc.confirmedForward,false);
+ assert.equal(report.actualBrokerOrders,0);
 });
