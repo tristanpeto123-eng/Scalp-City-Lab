@@ -7,6 +7,7 @@ on:
       - 'scripts/refresh-rl-5m*'
       - 'scripts/market-replay-5m-tests.mjs'
       - 'scripts/market-replay-trade-journal-tests.mjs'
+      - 'scripts/checkpoint-progress-monitor-tests.mjs'
       - '.github/workflows/robot-rapid-rl-check.yml'
       - '.github/workflows/robot-dqn-replay.yml'
       - '.github/workflows/refresh-rl-5m.yml'
@@ -43,6 +44,7 @@ jobs:
           node --test scripts/market-replay-5m-tests.mjs
           node --test scripts/market-replay-trade-journal-tests.mjs
           node --test scripts/training-monitor-tests.mjs
+          node --test scripts/checkpoint-progress-monitor-tests.mjs
           python -m compileall -q rl
           python - <<'PY'
           from pathlib import Path
