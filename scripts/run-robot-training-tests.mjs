@@ -352,3 +352,40 @@ test('the full memory fallback fails closed if source metadata is missing or exc
   await assert.rejects(get(meta),/SHA|size|inconsistent/);
  }
 });
+
+test('large Contents metadata with omitted/empty inline field uses SHA-pinned Git blob',async()=>{
+ const sha='b'.repeat(40),payload=JSON.stringify({
+  ...memory,oversizePadding:'x'.repeat(1100000)
+ });
+ const size=Buffer.byteLength(payload,'utf8');
+ const endpoints=[];
+ for(const meta of [
+  {sha,size,encoding:'base64',content:''},
+  {sha,size,encoding:'base64'},
+  {sha,size,content:null},
+  {sha,size}
+ ]){
+  const loaded=await fetchMemory({token:'FIXTURE',fetchImpl:async(url,options)=>{
+   endpoints.push(url);
+   if(url.includes('/contents/'))return {ok:true,json:async()=>meta};
+   if(url.endsWith('/git/blobs/'+sha))return {ok:true,json:async()=>({
+    sha,size,encoding:'base64',content:Buffer.from(payload).toString('base64')
+   })};
+   throw Error('Unexpected route: '+url);
+  }});
+  assert.equal(loaded.blobSha,sha);
+  assert.equal(loaded.memory.experiments.length,memory.experiments.length);
+ }
+ assert.equal(endpoints.length,8);
+});
+test('small missing/invalid inline data never triggers large-file fallback',async()=>{
+ let fetchedBlob=false;
+ const result=fetchMemory({token:'FIXTURE',fetchImpl:async(url)=>{
+  if(url.includes('/git/blobs/'))fetchedBlob=true;
+  return {ok:true,json:async()=>({
+    sha:'c'.repeat(40),size:1200,encoding:'base64',content:''
+  })};
+ }});
+ await assert.rejects(result,/missing or invalid base64/);
+ assert.equal(fetchedBlob,false);
+});
