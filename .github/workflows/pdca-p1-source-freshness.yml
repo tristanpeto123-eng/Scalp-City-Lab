@@ -1,0 +1,32 @@
+name: PDCA P1 - source freshness and continuity review
+on:
+  pull_request:
+    paths:
+      - 'scripts/refresh-rl-5m.mjs'
+      - 'scripts/refresh-rl-5m-tests.mjs'
+      - 'scripts/refresh-rl-5m-progress-tests.mjs'
+      - '.github/workflows/refresh-rl-5m.yml'
+      - '.github/workflows/pdca-p1-source-freshness.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  p1-checker:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      SCALP_PAPER_ENABLED: 'false'
+      TEACHER_PAPER_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Native 5m source provenance, no lookahead, immutable overlap
+        run: |
+          node --check scripts/refresh-rl-5m.mjs
+          node --test scripts/refresh-rl-5m-tests.mjs scripts/refresh-rl-5m-progress-tests.mjs
+          node --test scripts/refresh-alpaca-snapshots-tests.mjs
