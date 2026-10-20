@@ -1,6 +1,6 @@
 // Dedicated READ-ONLY authentic 5-minute Alpaca/Kraken crypto candle feed.
 // Isolated from legacy 15-minute strategy-validation history. No broker orders.
-import {writeFile,mkdir,rename} from 'node:fs/promises';
+import {writeFile,readFile,mkdir,rename} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {PAIRS} from '../strategy-validation-core.mjs';
@@ -67,16 +67,54 @@ export async function fetchFiveMinuteSnapshot({
   generatedAt:new Date(now).toISOString(),trading:false,calendarDays:days,bars:ready};
  return validateFiveMinuteSnapshot(result,now);
 }
+// Count only genuinely NEW, completed, source-recorded tail candles.
+// A baseline import or repeating an old window is not training progress.
+export function compareFiveMinuteSourceTail(previous,current){
+ if(!current||!Array.isArray(current.bars)||!current.bars.length)
+  throw Error('5MIN_PROGRESS: current source bars missing');
+ const last=current.bars.at(-1),lastMs=Date.parse(last.t);
+ if(!previous)return {state:'BASELINE_CAPTURE_NO_NEW_LEARNING',newTailCandles:0,
+  previousEnd:null,currentEnd:last.t,overlap:0};
+ if(previous.symbol!==current.symbol||previous.timeframe!=='5Min'||
+    previous.source!==current.source||!Array.isArray(previous.bars)||
+    !previous.bars.length)throw Error('5MIN_PROGRESS: incompatible previous source');
+ const oldEnd=Date.parse(previous.bars.at(-1).t);
+ if(!Number.isFinite(oldEnd)||lastMs<oldEnd)
+  throw Error('5MIN_PROGRESS: source window moved backwards');
+ const overlapMap=new Map(previous.bars.map(b=>[Date.parse(b.t),b]));
+ let overlaps=0;
+ for(const b of current.bars){
+  const ms=Date.parse(b.t),old=overlapMap.get(ms);
+  if(!old)continue;
+  overlaps++;
+  if(['o','h','l','c','v'].some(k=>Number(b[k])!==Number(old[k])))
+   throw Error('5MIN_PROGRESS: previously observed candle changed; cannot silently claim new learning');
+ }
+ if(!overlaps||!current.bars.some(b=>Date.parse(b.t)===oldEnd))
+  throw Error('5MIN_PROGRESS: previous source tail absent; history continuity unverified');
+ const tails=current.bars.filter(b=>Date.parse(b.t)>oldEnd);
+ if(tails.length&&Date.parse(tails[0].t)!==oldEnd+FIVE_MIN_MS)
+  throw Error('5MIN_PROGRESS: missing new completed tail candles');
+ return {state:tails.length?'VERIFIED_NEW_SOURCE_TAIL':'UNCHANGED_SOURCE_NO_NEW_LEARNING',
+  newTailCandles:tails.length,previousEnd:previous.bars.at(-1).t,
+  currentEnd:last.t,overlap:overlaps};
+}
 export async function refreshFiveMinuteHistory({
  key,secret,now=Date.now(),fetchImpl=fetch,outputDir='rl-5m-data/snapshots',symbols=PAIRS
 }={}){
  if(!Array.isArray(symbols)||!symbols.length||new Set(symbols).size!==symbols.length||
     symbols.some(s=>!PAIRS.includes(s)))throw Error('Invalid 5m research pair list');
- const snapshots=[];
+ const snapshots=[],sourceProgress=[];
  for(const symbol of symbols){
   const x=await fetchFiveMinuteSnapshot({symbol,key,secret,now,fetchImpl});
-  snapshots.push(x);
+  const existingPath=path.join(outputDir,symbol.replace('/','-')+'.json');
+  let prior=null;
+  try{prior=JSON.parse(await readFile(existingPath,'utf8'))}
+  catch(e){if(e.code!=='ENOENT')throw Error('5MIN_PROGRESS: cannot parse previous source '+symbol)}
+  const progress=compareFiveMinuteSourceTail(prior,x);
+  snapshots.push(x);sourceProgress.push({symbol,...progress});
  }
+ // Validate ALL charts and their prior immutable overlap before publishing ANY.
  await mkdir(outputDir,{recursive:true});
  for(const x of snapshots){
   const file=path.join(outputDir,x.symbol.replace('/','-')+'.json');
@@ -84,7 +122,18 @@ export async function refreshFiveMinuteHistory({
   await writeFile(temporary,JSON.stringify(x)+'\n');
   await rename(temporary,file);
  }
- return {updated:snapshots.length,timeframe:'5Min',brokerOrders:0,requestMethods:['GET']};
+ const report={schema:'SCALP_VERIFIED_SOURCE_TAIL_V1',
+  generatedAt:new Date(now).toISOString(),timeframe:'5Min',
+  symbols:sourceProgress,brokerOrders:0,liveOrders:0,
+  newSourceTailCandles:sourceProgress.reduce((n,x)=>n+x.newTailCandles,0),
+  caution:'New source bars alone are not proof of training consumption or predictive improvement'};
+ const reportPath=path.join(path.dirname(outputDir),'source-progress','latest.json');
+ await mkdir(path.dirname(reportPath),{recursive:true});
+ await writeFile(reportPath+'.tmp',JSON.stringify(report,null,2)+'\n');
+ await rename(reportPath+'.tmp',reportPath);
+ return {updated:snapshots.length,timeframe:'5Min',brokerOrders:0,
+  requestMethods:['GET'],newSourceTailCandles:report.newSourceTailCandles,
+  progressReport:reportPath};
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  refreshFiveMinuteHistory({key:process.env.ALPACA_PAPER_KEY,
