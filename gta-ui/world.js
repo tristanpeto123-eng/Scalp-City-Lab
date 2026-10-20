@@ -36,6 +36,21 @@ function neonLabel(parent,top,sub,x,y,z,width=6){
   const tex=labelTexture(top,sub);const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,width*230/1024),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));
   mesh.position.set(x,y,z);parent.add(mesh);return mesh;
 }
+function stationScreen(name,role,accent){
+  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=300;
+  const c=canvas.getContext('2d');c.fillStyle='#07151f';c.fillRect(0,0,512,300);
+  c.fillStyle='#153449';c.fillRect(18,18,476,264);c.strokeStyle='#80e6da';
+  c.strokeRect(18,18,476,264);
+  c.fillStyle='#ccecf1';c.font='bold 25px system-ui';c.fillText(name.toUpperCase().slice(0,25),34,58);
+  c.fillStyle='#8ab5c0';c.font='18px system-ui';c.fillText(role.slice(0,42),34,91);
+  c.strokeStyle='#75d6c4';c.lineWidth=4;c.beginPath();
+  // These are decorative waveforms, NOT historical or forward performance charts.
+  for(let i=0;i<33;i++){const x=32+i*14,y=175+Math.sin(i*.54+name.length)*24+Math.cos(i*.26)*15;
+    if(!i)c.moveTo(x,y);else c.lineTo(x,y);}
+  c.stroke();c.fillStyle='#e8ca91';c.font='bold 16px system-ui';
+  c.fillText('VISUAL DEMO / NO ORDER EXECUTION',34,257);
+  const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;return tex;
+}
 function robot(parent,name,role,app,x,z,i,accent){
   const g=new THREE.Group();g.position.set(x,0,z);g.userData.station={name,role,app};
   const accentMat=emissive(accent,.25);
@@ -54,7 +69,7 @@ function robot(parent,name,role,app,x,z,i,accent){
   const desk=box(g,2.4,.12,.94,mats.steel,0,.95,.92);
   for(const sx of [-1.03,1.03])box(g,.08,.92,.08,mats.steel,sx,.47,1.18);
   box(g,1.1,.74,.10,mats.dark,0,1.59,.55);
-  box(g,.99,.62,.025,emissive(accent,.5),0,1.59,.61);
+  const display=new THREE.Mesh(new THREE.PlaneGeometry(.99,.62),new THREE.MeshBasicMaterial({map:stationScreen(name,role,accent),side:THREE.DoubleSide}));display.position.set(0,1.59,.635);g.add(display);
   box(g,.2,.24,.18,mats.steel,0,1.2,.60);
   // "Work" is purely decorative motion, never evidence of a running trade.
   const tag=document.createElement('canvas');tag.width=512;tag.height=96;
@@ -103,6 +118,29 @@ function buildStage(floor){
   for(let i=0;i<floor.stations.length;i++){
     const [name,role,app,x,z]=floor.stations[i];
     robot(stage,name,role,app,x,z,i,floor.accent);
+  }
+  // Purpose-specific decor, avoiding a generic repeated office on every floor.
+  if(floorNumber===0){
+    neonLabel(stage,'DIRECTOR DESK','NAVIGATE RESEARCH → ACADEMY → EXAM',6,2.5,11.75,7);
+    box(stage,5,.16,1.2,mats.gold,8,.85,9.3);
+  }else if(floorNumber===1){
+    neonLabel(stage,'MARKET RESEARCH','HISTORICAL · OOS HOLDOUT · MODEL LAB',-8,2.5,11.75,7);
+    for(const x of [-10,-4,2,8])box(stage,2.1,.09,.34,mats.screen,x,3.05,11.5);
+  }else if(floorNumber===2){
+    neonLabel(stage,'ROBOT CLASSROOM','TEN PUPILS · PROVISIONAL GRADES',7,2.6,11.75,7);
+    for(const x of [-9,-3,3,9])box(stage,.14,2.1,.14,mats.gold,x,1.1,8.5);
+  }else if(floorNumber===3){
+    neonLabel(stage,'EXAMINATION BOARD','INDEPENDENT EVIDENCE REQUIRED',6,2.6,11.75,8);
+    box(stage,7,1.35,.13,mats.glass,6,1.7,11.7);
+  }else if(floorNumber===4){
+    neonLabel(stage,'PAPER GATE','NO VERIFIED SEATS · NO LIVE FUNDS',6,2.7,11.75,8);
+    for(const x of [-12,-6,0,6,12])box(stage,.08,1.5,.35,accent,x,.8,7.8);
+  }else if(floorNumber===5){
+    neonLabel(stage,'OPERATIONS CORE','PUBLISHED BATCH DATA · NOT LIVE STREAM',7,2.7,11.75,9);
+    for(const x of [-12,-10])for(const z of [5,7,9]){
+      box(stage,1.2,2.2,1.1,mats.steel,x,1.1,z);
+      for(let k=0;k<6;k++)box(stage,.8,.045,.02,accent,x,.45+k*.3,z+.56);
+    }
   }
   // Glass planning boards and an evidence wall preserve floor personality.
   const backboard=box(stage,8,1.3,.12,mats.dark,-8,2.6,11.95);backboard.material=emissive(floor.accent,.2);
