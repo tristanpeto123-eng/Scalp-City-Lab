@@ -32,7 +32,7 @@ test('future neural model updates cannot be mistaken for forward grades or live 
 });
 test('historical training can recover large persisted memory without bypassing its optimistic write lock',()=>{
  assert.match(research,/\/git\/blobs\//);
- assert.match(research,/blob\\?\\.sha!==meta\\.sha/);
+ assert.ok(research.includes('blob?.sha!==meta.sha'));
  assert.match(research,/bytes\.length!==expectedSize/);
  assert.match(research,/branch:MEMORY_BRANCH,sha:expectedSha,content:encoded/);
  assert.match(research,/Research history must be append-only/);
