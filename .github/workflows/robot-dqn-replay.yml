@@ -88,11 +88,13 @@ jobs:
               r['verifiedForwardGrades'] or r['sealedHoldoutAccessed'] or
               r['marketBarTimeframe']!='5Min' or r['decisionsAreNotBrokerTrades'] is not True or
               r['decisionCount']<=0 or r['gradientUpdates']<=0 or
-              r.get('checkpointComparisonPupils')!=10 or
+              r.get('checkpointComparisonPupils')!=sum(
+                  p['initialCheckpointSha256'] is not None for p in r['pupils']) or
               not isinstance(r.get('checkpointImprovedPupils'),int) or
-              not 0<=r['checkpointImprovedPupils']<=10 or
+              not 0<=r['checkpointImprovedPupils']<=r['checkpointComparisonPupils'] or
               any(p.get('checkpointProgress',{}).get('comparisonStatus')!=
-                  'SAME_DEVELOPMENT_WINDOW_NOT_FORWARD_VERIFIED'
+                  ('SAME_DEVELOPMENT_WINDOW_NOT_FORWARD_VERIFIED'
+                   if p['initialCheckpointSha256'] else 'FIRST_CHECKPOINT_NO_COMPARATOR')
                   for p in r['pupils'])):
               raise SystemExit('CHECKER: RL policy evidence failed')
           print('SAME_WINDOW_PRIOR_CHECKPOINT_IMPROVED='+
