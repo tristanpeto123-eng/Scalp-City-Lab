@@ -46,9 +46,11 @@ table{border-collapse:collapse;width:100%;text-align:left;min-width:660px}th,td{
 <div class="stat"><small>Historical replay decisions</small><strong id="rl-decisions">Not measured</strong></div>
 <div class="stat"><small>Pupils passing later development fee stress</small><strong id="rl-positive">Not measured</strong></div>
 <div class="stat"><small>New training data candles</small><strong id="rl-new">Not measured</strong></div>
+<div class="stat"><small>Checkpoints compared to previous version</small><strong id="rl-compared">Awaiting results</strong></div>
+<div class="stat"><small>Improved under both cost assumptions</small><strong id="rl-improved">Awaiting results</strong><small>Same validation window only, not proof of profit</small></div>
 </div>
 <p id="rl-status">No verified accelerated DQN replay report loaded. Separate training happens in scheduled batches, not continuous one-second broker trading.</p>
-<div class="scroller"><table><thead><tr><th>Robot</th><th>Decisions/s</th><th>Virtual closes/s</th><th>Learning updates</th><th>Later period £</th><th>After stressed fees £</th></tr></thead><tbody id="rl-pupils"><tr><td colspan="6">Awaiting the first verified replay batch</td></tr></tbody></table></div>
+<div class="scroller"><table><thead><tr><th>Robot</th><th>Decisions/s</th><th>Virtual closes/s</th><th>Learning updates</th><th>Later period £</th><th>After stressed fees £</th><th>Δ previous · virtual</th><th>Δ stress · virtual</th></tr></thead><tbody id="rl-pupils"><tr><td colspan="8">Awaiting the first verified replay batch</td></tr></tbody></table></div>
 <p class="caption">Only the first 60% of real archived 5-minute bars enter RL training; later 20% is development validation, and final 20% remains untouched. Research performance is not a verified forward-paper result, and this screen never sends orders. <a href="https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/robot-dqn-replay.yml" target="_blank" rel="noopener noreferrer">Inspect Deep RL training workflow ↗</a></p>
 </section>
 <section class="panel" aria-label="Previously recorded research">
@@ -195,20 +197,64 @@ async function loadRapidRL(){
   $('rl-decisions').textContent=d.decisionCount.toLocaleString();
   $('rl-positive').textContent=d.positiveDevelopmentPupils+' / 10';
   $('rl-new').textContent=String(d.newTrainingTailCandles);
+  const hasComparison=Number.isInteger(d.checkpointComparisonPupils)&&
+    Number.isInteger(d.checkpointImprovedPupils);
+  if(hasComparison){
+    if(d.checkpointComparisonPupils<0||d.checkpointComparisonPupils>10||
+       d.checkpointImprovedPupils<0||d.checkpointImprovedPupils>d.checkpointComparisonPupils)
+      throw Error('Invalid neural checkpoint progress counts');
+    let checked=0,improved=0;
+    for(const p of d.pupils){
+      const c=p.checkpointProgress;
+      if(!c||c.schema!=='SCALP_CHECKPOINT_SAME_WINDOW_DEVELOPMENT_V1'||
+         c.isIndependentForwardEvidence!==false||c.automaticPromotion!==false||
+         c.paperOrders!==0||c.liveOrders!==0||
+         c.candidateNetVirtual!==p.laterDevelopmentNetGbp||
+         c.candidateStressedNetVirtual!==p.laterDevelopmentStressedNetGbp||
+         !/^[a-f0-9]{64}$/.test(c.validationWindowSha256||''))
+        throw Error('Invalid model progress source; never infer improvement');
+      if(c.comparisonStatus==='SAME_DEVELOPMENT_WINDOW_NOT_FORWARD_VERIFIED'){
+        checked++;
+        if(![c.previousNetVirtual,c.previousStressedNetVirtual,
+              c.deltaNetVirtual,c.deltaStressedNetVirtual].every(Number.isFinite)||
+            Math.abs(c.candidateNetVirtual-c.previousNetVirtual-c.deltaNetVirtual)>.00011||
+            Math.abs(c.candidateStressedNetVirtual-c.previousStressedNetVirtual-
+                     c.deltaStressedNetVirtual)>.00011)
+          throw Error('Previous checkpoint comparison is inconsistent');
+        if(c.improvedUnderBothCostAssumptions){
+          if(c.deltaNetVirtual<=0||c.deltaStressedNetVirtual<=0)
+            throw Error('Invalid checkpoint improvement claim');
+          improved++;
+        }
+      }else if(c.comparisonStatus!=='FIRST_CHECKPOINT_NO_COMPARATOR'||
+        c.improvedUnderBothCostAssumptions!==false){
+        throw Error('Unrecognised checkpoint comparison status');
+      }
+    }
+    if(checked!==d.checkpointComparisonPupils||improved!==d.checkpointImprovedPupils)
+      throw Error('Inconsistent cohort checkpoint improvements');
+  }
+  $('rl-compared').textContent=hasComparison?d.checkpointComparisonPupils+' / 10':'Awaiting next publication';
+  $('rl-improved').textContent=hasComparison?d.checkpointImprovedPupils+' / 10':'Not yet measured';
   $('rl-status').textContent='Last research replay: '+stamp(d.generatedAt)+
     ' · 5-minute archived bars replayed faster than real time · no broker orders. '+
-    'A new model checkpoint is NOT proof of improved predictive performance.';
+    'New checkpoint comparisons use exactly the same historical development candles for each old/new pair. '+
+    'These are descriptive measurements, NOT independent forward profit or grade evidence.';
+  const rlDelta=n=>Number.isFinite(n)?(n>0?'+':'')+n.toFixed(2)+' virtual':'—';
   const tbody=$('rl-pupils');tbody.replaceChildren();
   for(const r of d.pupils){
    const row=document.createElement('tr');
    const vals=[r.symbol,r.decisionsPerSecond.toFixed(1),r.simulatedClosesPerSecond.toFixed(2),
      String(r.gradientUpdatesThisRun),money(r.laterDevelopmentNetGbp),
-     money(r.laterDevelopmentStressedNetGbp)];
+     money(r.laterDevelopmentStressedNetGbp),
+     rlDelta(r.checkpointProgress?.deltaNetVirtual),
+     rlDelta(r.checkpointProgress?.deltaStressedNetVirtual)];
    for(const val of vals){const td=document.createElement('td');td.textContent=val;row.append(td);}
    tbody.append(row);
   }
  }catch(e){
-  for(const id of ['rl-speed','rl-closes','rl-updates','rl-decisions','rl-positive','rl-new'])
+  for(const id of ['rl-speed','rl-closes','rl-updates','rl-decisions','rl-positive','rl-new',
+       'rl-compared','rl-improved'])
    $(id).textContent='Not measured';
   $('rl-status').textContent='RL replay report unavailable: '+String(e.message||e)+
     '. Archived research continues independently; no RL trades or outcomes are assumed.';
