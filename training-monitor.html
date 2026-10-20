@@ -38,7 +38,7 @@ table{border-collapse:collapse;width:100%;text-align:left;min-width:660px}th,td{
 </section>
 <section class="panel" aria-label="Deep RL research">
 <h2>Neural reinforcement learning · rapid replay</h2>
-<p>The ten pupils train independent Deep Q Networks. Each policy chooses flat or long, observes virtual profit after fees and drawdown, and updates neural-network weights through real gradient descent. Decisions run as fast as the historical simulator allows; <strong>one 15-minute historical bar does not become one second of genuine market history.</strong></p>
+<p>The ten pupils train independent Deep Q Networks. Each policy chooses flat or long, observes virtual profit after fees and drawdown, and updates neural-network weights through real gradient descent. Decisions run as fast as the historical simulator allows; <strong>one 5-minute historical bar does not become one second of genuine market history.</strong></p>
 <div class="stats">
 <div class="stat"><small>Measured RL decisions / wall-clock second</small><strong id="rl-speed">Not measured</strong></div>
 <div class="stat"><small>Simulated position closes / second</small><strong id="rl-closes">Not measured</strong></div>
@@ -49,7 +49,7 @@ table{border-collapse:collapse;width:100%;text-align:left;min-width:660px}th,td{
 </div>
 <p id="rl-status">No verified accelerated DQN replay report loaded. Separate training happens in scheduled batches, not continuous one-second broker trading.</p>
 <div class="scroller"><table><thead><tr><th>Robot</th><th>Decisions/s</th><th>Virtual closes/s</th><th>Learning updates</th><th>Later period £</th><th>After stressed fees £</th></tr></thead><tbody id="rl-pupils"><tr><td colspan="6">Awaiting the first verified replay batch</td></tr></tbody></table></div>
-<p class="caption">Only the first 60% of real archived 15-minute bars enter RL training; later 20% is development validation, and final 20% remains untouched. Research performance is not a verified forward-paper result, and this screen never sends orders. <a href="https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/robot-dqn-replay.yml" target="_blank" rel="noopener noreferrer">Inspect Deep RL training workflow ↗</a></p>
+<p class="caption">Only the first 60% of real archived 5-minute bars enter RL training; later 20% is development validation, and final 20% remains untouched. Research performance is not a verified forward-paper result, and this screen never sends orders. <a href="https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/robot-dqn-replay.yml" target="_blank" rel="noopener noreferrer">Inspect Deep RL training workflow ↗</a></p>
 </section>
 <section class="panel" aria-label="Previously recorded research">
 <h2>Saved historical research</h2>
@@ -172,7 +172,7 @@ async function loadRapidRL(){
   const response=await fetch(rlSource+'?v='+Date.now(),{cache:'no-store',credentials:'omit'});
   if(!response.ok)throw Error('No checkpoint-backed report yet (HTTP '+response.status+')');
   const d=await response.json();
-  if(d.schema!=='SCALP_RAPID_RL_REPLAY_V1'||d.marketBarTimeframe!=='15Min'||
+  if(d.schema!=='SCALP_RAPID_RL_REPLAY_V1'||d.marketBarTimeframe!=='5Min'||
      d.sealedHoldoutAccessed!==false||d.verifiedForwardGrades!==0||
      d.paperOrders!==0||d.liveOrders!==0||d.decisionsAreNotBrokerTrades!==true||
      !Array.isArray(d.pupils)||d.pupils.length!==10||
@@ -196,7 +196,7 @@ async function loadRapidRL(){
   $('rl-positive').textContent=d.positiveDevelopmentPupils+' / 10';
   $('rl-new').textContent=String(d.newTrainingTailCandles);
   $('rl-status').textContent='Last research replay: '+stamp(d.generatedAt)+
-    ' · 15-minute archived bars replayed faster than real time · no broker orders. '+
+    ' · 5-minute archived bars replayed faster than real time · no broker orders. '+
     'A new model checkpoint is NOT proof of improved predictive performance.';
   const tbody=$('rl-pupils');tbody.replaceChildren();
   for(const r of d.pupils){
