@@ -77,6 +77,39 @@ def train_replay_batch(*,data_dir,root,episodes=1,seed=7,symbols=SYMBOLS,
             current['splits']['sealedHoldoutTouched'] is not False or
             current.get('previousCheckpointSha256')!=(prior['modelSha256'] if prior else None)):
             raise ValueError('Untrusted DQN training output for '+symbol)
+        progress=current.get('checkpointProgress')
+        if (not isinstance(progress,dict) or
+            progress.get('schema')!='SCALP_CHECKPOINT_SAME_WINDOW_DEVELOPMENT_V1' or
+            progress.get('previousModelSha256')!=(prior['modelSha256'] if prior else None) or
+            not isinstance(progress.get('validationWindowSha256'),str) or
+            len(progress['validationWindowSha256'])!=64 or
+            progress.get('paperOrders')!=0 or progress.get('liveOrders')!=0 or
+            progress.get('automaticPromotion') is not False or
+            progress.get('isIndependentForwardEvidence') is not False or
+            progress.get('candidateNetVirtual')!=current['validation']['netProfitGbp'] or
+            progress.get('candidateStressedNetVirtual')!=current['validationDoubleCostStress']['netProfitGbp'] or
+            progress.get('comparisonStatus')!=(
+                'SAME_DEVELOPMENT_WINDOW_NOT_FORWARD_VERIFIED'
+                if prior else 'FIRST_CHECKPOINT_NO_COMPARATOR')):
+            raise ValueError('Untrusted independent checkpoint comparison for '+symbol)
+        if prior:
+            for metric in ('previousNetVirtual','previousStressedNetVirtual',
+                           'deltaNetVirtual','deltaStressedNetVirtual'):
+                if not isinstance(progress.get(metric),(float,int)) or not math.isfinite(progress[metric]):
+                    raise ValueError('Missing previous model same-window metric '+metric)
+            if (not math.isclose(progress['candidateNetVirtual']-progress['previousNetVirtual'],
+                                progress['deltaNetVirtual'],abs_tol=0.00011) or
+                not math.isclose(progress['candidateStressedNetVirtual']-
+                                 progress['previousStressedNetVirtual'],
+                                 progress['deltaStressedNetVirtual'],abs_tol=0.00011) or
+                progress.get('improvedUnderBothCostAssumptions') is not (
+                    progress['deltaNetVirtual']>0 and progress['deltaStressedNetVirtual']>0)):
+                raise ValueError('Inconsistent or invented checkpoint improvement')
+        elif (progress.get('previousNetVirtual') is not None or
+              progress.get('deltaNetVirtual') is not None or
+              progress.get('deltaStressedNetVirtual') is not None or
+              progress.get('improvedUnderBothCostAssumptions') is not False):
+            raise ValueError('First checkpoint cannot invent an improvement')
         for k in ('steps','gradientUpdates','simulatedClosedTrades','simulatedOpens'):
             if not isinstance(stats.get(k),int) or stats[k]<0:
                 raise ValueError('Missing measured RL metric '+k)
@@ -107,6 +140,8 @@ def train_replay_batch(*,data_dir,root,episodes=1,seed=7,symbols=SYMBOLS,
             'laterDevelopmentNetGbp':current['validation']['netProfitGbp'],
             'laterDevelopmentStressedNetGbp':current['validationDoubleCostStress']['netProfitGbp'],
             'laterDevelopmentMaxDrawdownPct':current['validation']['maxDrawdownPct'],
+            'checkpointProgress':progress,
+            'beatPreviousCheckpointSameWindow':progress['improvedUnderBothCostAssumptions'],
             'positiveUnderStressedCosts':current['validation']['netProfitGbp']>0 and
                 current['validationDoubleCostStress']['netProfitGbp']>0,
             'researchOnly':True,'forwardVerified':False,'paperOrders':0
@@ -126,6 +161,9 @@ def train_replay_batch(*,data_dir,root,episodes=1,seed=7,symbols=SYMBOLS,
         'simulatedClosesPerSecond':round(sum(p['simulatedClosedTradesThisRun'] for p in reports)/elapsed,2),
         'newTrainingTailCandles':sum(p['newTrainingTailCandles'] for p in reports),
         'positiveDevelopmentPupils':sum(p['positiveUnderStressedCosts'] for p in reports),
+        'checkpointComparisonPupils':sum(p['checkpointProgress']['previousModelSha256']
+                                         is not None for p in reports),
+        'checkpointImprovedPupils':sum(p['beatPreviousCheckpointSameWindow'] for p in reports),
         'pupils':reports,'sealedHoldoutAccessed':False,
         'verifiedForwardGrades':0,'paperOrders':0,'liveOrders':0,'automaticAdmissions':0,
         'claim':'Native complete 5-minute candles replayed sequentially. No 1-second observations, broker trades or proven predictive returns.'
