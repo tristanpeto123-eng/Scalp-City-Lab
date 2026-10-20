@@ -274,3 +274,42 @@ test('daily compute cap keys to UTC research time, never a historical candle dat
    new Date(now+86400000).toISOString());
  assert.equal(nextDay.brokerOrders,0);
 });
+
+test('Contents API encoding:none must retrieve exact immutable large history blob, not parse empty JSON',async()=>{
+ const content=JSON.stringify(memory);
+ const length=Buffer.byteLength(content,'utf8'),blob='d'.repeat(40),urls=[];
+ const fakeFetch=async(url,options)=>{
+  urls.push(url);
+  assert.equal(options.method,'GET');
+  assert.match(options.headers.Authorization,/TEST-TOKEN/);
+  if(url.includes('/contents/scalp-learning/history.json'))
+   return {ok:true,json:async()=>({sha:blob,size:length,encoding:'none',content:''})};
+  if(url.endsWith('/git/blobs/'+blob))
+   return {ok:true,json:async()=>({sha:blob,size:length,encoding:'base64',
+    content:Buffer.from(content).toString('base64')})};
+  throw Error('Unexpected API request '+url);
+ };
+ const loaded=await fetchMemory({token:'TEST-TOKEN',fetchImpl:fakeFetch});
+ assert.deepEqual(loaded.memory,memory);
+ assert.equal(loaded.blobSha,blob);
+ assert.equal(urls.length,2);
+ assert.ok(urls[1].endsWith('/git/blobs/'+blob));
+});
+test('large-memory fallback fails closed on missing/truncated blobs or SHA mismatches',async()=>{
+ const blob='e'.repeat(40),source=JSON.stringify(memory),expected=Buffer.byteLength(source);
+ const meta={sha:blob,size:expected,encoding:'none',content:''};
+ const fixture=raw=>async(url)=>{
+  if(url.includes('/contents/'))return {ok:true,json:async()=>meta};
+  return {ok:true,json:async()=>raw};
+ };
+ for(const invalid of [
+  {sha:'f'.repeat(40),size:expected,encoding:'base64',content:Buffer.from(source).toString('base64')},
+  {sha:blob,size:expected,encoding:'base64',content:Buffer.from(source.slice(0,-1)).toString('base64')},
+  {sha:blob,size:expected,encoding:'none',content:''},
+  {sha:blob,size:expected,encoding:'base64',content:''}
+ ]){
+  await assert.rejects(fetchMemory({token:'T',fetchImpl:fixture(invalid)}),/verification|length|base64/);
+ }
+ await assert.rejects(fetchMemory({token:'T',fetchImpl:fixture({sha:blob,size:expected,
+  encoding:'base64',content:Buffer.from('{').toString('base64')})}),/length|corrupt/);
+});
