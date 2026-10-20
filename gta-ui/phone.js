@@ -145,6 +145,20 @@ function setup(){
     const name=document.createElement('span');name.textContent=app.title;tile.append(mark,name);
     tile.addEventListener('click',()=>openApp(app.id));grid.append(tile);
   }
+  // Legacy pages can link to missing files. Keep the route within the phone
+  // and translate these two absent pages to truthful read-only native apps.
+  $('appFrame').addEventListener('load',()=>{
+    if(!current||!opened)return;
+    try{
+      const locationInFrame=$('appFrame').contentWindow.location;
+      if(locationInFrame.origin!==location.origin)return;
+      const page=locationInFrame.pathname.split('/').pop();
+      if(page==='training-monitor.html'){openApp('monitor');return;}
+      if(page==='trading-floor.html'){openApp('paper');return;}
+      const newApp=APPS.find(a=>a.route&&a.route.endsWith('/'+page));
+      if(newApp){current=newApp;$('appTitle').textContent=newApp.title;}
+    }catch(_e){/* Cross-origin links remain managed by the browser. */}
+  });
   $('phoneToggle').addEventListener('click',()=>showPhone(!opened));
   $('phoneClose').addEventListener('click',()=>showPhone(false));
   $('appBack').addEventListener('click',openHome);
