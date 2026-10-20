@@ -93,7 +93,7 @@ export function compareFiveMinuteSourceTail(previous,current){
  if(!overlaps||!current.bars.some(b=>Date.parse(b.t)===oldEnd))
   throw Error('5MIN_PROGRESS: previous source tail absent; history continuity unverified');
  const tails=current.bars.filter(b=>Date.parse(b.t)>oldEnd);
- if(tails.length&&Date.parse(tails[0].t)!==oldEnd+FIVE_MIN_MS)
+ if(tails.some((b,i)=>Date.parse(b.t)!==oldEnd+(i+1)*FIVE_MIN_MS))
   throw Error('5MIN_PROGRESS: missing new completed tail candles');
  return {state:tails.length?'VERIFIED_NEW_SOURCE_TAIL':'UNCHANGED_SOURCE_NO_NEW_LEARNING',
   newTailCandles:tails.length,previousEnd:previous.bars.at(-1).t,
