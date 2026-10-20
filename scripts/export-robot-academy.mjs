@@ -98,8 +98,12 @@ export function buildAcademySnapshot(memory){
   const seen=new Set(),generations=[];
   for(const [i,e] of history.entries()){
    for(const c of e.candidates)seen.add(idOf(c));
-   leader=registerCandidate(leader,e.candidates.map(candidate=>({...candidate,
-    sourceExperimentId:e.id,trainedThrough:e.trainingEnd})));
+   // Teacher can screen only models with independently identified accepted
+   // source experiment lineage. Still display all attempted configurations
+   // in the timeline, but never promote rejected/reused windows as leaders.
+   if(e.independent)
+    leader=registerCandidate(leader,e.candidates.map(candidate=>({...candidate,
+     sourceExperimentId:e.id,trainedThrough:e.trainingEnd})));
    generations.push({run:i+1,trainingEnd:e.trainingEnd,
     experimentId:e.id,independentWindow:e.independent,
     parentStrategy:e.parentResearchModel?.params?paramsLabel(e.parentResearchModel.params):null,
