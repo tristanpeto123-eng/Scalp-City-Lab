@@ -1,0 +1,29 @@
+name: GTA-style UI test
+on:
+  push:
+    branches: [test/gta-phone-world-v1]
+    paths:
+      - "gta-ui/**"
+      - ".github/workflows/gta-phone-ui.yml"
+  pull_request:
+    paths:
+      - "gta-ui/**"
+      - ".github/workflows/gta-phone-ui.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          cp gta-ui/world.js /tmp/scalp-world.mjs
+          cp gta-ui/phone.js /tmp/scalp-phone.mjs
+          node --check /tmp/scalp-world.mjs
+          node --check /tmp/scalp-phone.mjs
+      - name: Run app-route and simulation-safety tests
+        run: node --test gta-ui/smoke.test.mjs
