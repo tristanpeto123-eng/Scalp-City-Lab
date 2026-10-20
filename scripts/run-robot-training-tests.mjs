@@ -274,3 +274,81 @@ test('daily compute cap keys to UTC research time, never a historical candle dat
    new Date(now+86400000).toISOString());
  assert.equal(nextDay.brokerOrders,0);
 });
+
+test('Contents API encoding:none must retrieve exact immutable large history blob, not parse empty JSON',async()=>{
+ const content=JSON.stringify(memory);
+ const length=Buffer.byteLength(content,'utf8'),blob='d'.repeat(40),urls=[];
+ const fakeFetch=async(url,options)=>{
+  urls.push(url);
+  assert.equal(options.method,'GET');
+  assert.match(options.headers.Authorization,/TEST-TOKEN/);
+  if(url.includes('/contents/scalp-learning/history.json'))
+   return {ok:true,json:async()=>({sha:blob,size:length,encoding:'none',content:''})};
+  if(url.endsWith('/git/blobs/'+blob))
+   return {ok:true,json:async()=>({sha:blob,size:length,encoding:'base64',
+    content:Buffer.from(content).toString('base64')})};
+  throw Error('Unexpected API request '+url);
+ };
+ const loaded=await fetchMemory({token:'TEST-TOKEN',fetchImpl:fakeFetch});
+ assert.deepEqual(loaded.memory,memory);
+ assert.equal(loaded.blobSha,blob);
+ assert.equal(urls.length,2);
+ assert.ok(urls[1].endsWith('/git/blobs/'+blob));
+});
+test('large-memory fallback fails closed on missing/truncated blobs or SHA mismatches',async()=>{
+ const blob='e'.repeat(40),source=JSON.stringify(memory),expected=Buffer.byteLength(source);
+ const meta={sha:blob,size:expected,encoding:'none',content:''};
+ const fixture=raw=>async(url)=>{
+  if(url.includes('/contents/'))return {ok:true,json:async()=>meta};
+  return {ok:true,json:async()=>raw};
+ };
+ for(const invalid of [
+  {sha:'f'.repeat(40),size:expected,encoding:'base64',content:Buffer.from(source).toString('base64')},
+  {sha:blob,size:expected,encoding:'base64',content:Buffer.from(source.slice(0,-1)).toString('base64')},
+  {sha:blob,size:expected,encoding:'none',content:''},
+  {sha:blob,size:expected,encoding:'base64',content:''}
+ ]){
+  await assert.rejects(fetchMemory({token:'T',fetchImpl:fixture(invalid)}),/verification|length|base64/);
+ }
+ await assert.rejects(fetchMemory({token:'T',fetchImpl:fixture({sha:blob,size:expected,
+  encoding:'base64',content:Buffer.from('{').toString('base64')})}),/length|corrupt/);
+});
+
+
+test('production-sized >1 MiB history uses authenticated SHA-pinned blob fallback and preserves append-only memory',async()=>{
+ const token='RESEARCH-TEST-TOKEN',sha='a'.repeat(40);
+ // GitHub Content API does NOT return inline bytes once a stored JSON exceeds 1 MiB.
+ // Create the same response shape with no huge fixtures checked into the repo.
+ const full={...memory,largeFixturePadding:'x'.repeat(1091780)};
+ const json=JSON.stringify(full),length=Buffer.byteLength(json,'utf8');
+ assert.ok(length>1048576,'must reproduce actual GitHub size threshold');
+ const calls=[];
+ const fetchImpl=async(url,opts)=>{
+  calls.push({url,method:opts.method});
+  if(url.includes('/contents/scalp-learning/history.json'))
+   return {ok:true,json:async()=>({sha,size:length,encoding:'none',content:''})};
+  if(url.endsWith('/git/blobs/'+sha))
+   return {ok:true,json:async()=>({sha,size:length,encoding:'base64',
+     content:Buffer.from(json).toString('base64').replace(/.{76}/g,match=>match+String.fromCharCode(10))})};
+  throw Error('unexpected GitHub endpoint '+url);
+ };
+ const result=await fetchMemory({token,fetchImpl});
+ assert.equal(result.blobSha,sha);
+ assert.deepEqual(result.memory,full);
+ assert.equal(calls.length,2);
+ assert.ok(calls[1].url.includes('/git/blobs/'));
+ assert.equal(calls[0].method,'GET');
+ assert.equal(calls[1].method,'GET');
+});
+test('the full memory fallback fails closed if source metadata is missing or exceeds bound',async()=>{
+ const content=Buffer.from(JSON.stringify(memory)).toString('base64');
+ const get=meta=>fetchMemory({token:'T',fetchImpl:async()=>({ok:true,json:async()=>meta})});
+ for(const meta of [
+   {sha:'a'.repeat(40),encoding:'none',content:'',size:33554433},
+   {sha:'a'.repeat(40),encoding:'none',content:'',size:-1},
+   {sha:'invalid',encoding:'base64',content,size:123},
+   {sha:'a'.repeat(40),encoding:'none',content:'nonempty',size:120}
+ ]){
+  await assert.rejects(get(meta),/SHA|size|inconsistent/);
+ }
+});

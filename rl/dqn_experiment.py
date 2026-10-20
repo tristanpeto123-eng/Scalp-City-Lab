@@ -348,10 +348,48 @@ def run(snapshot,*,episodes=5,seed=7,outdir=None,prior_checkpoint=None,trace_out
         previous_bytes=Path(prior_checkpoint).read_bytes()
         previous_sha=hashlib.sha256(previous_bytes).hexdigest()
         prior_state=torch.load(io.BytesIO(previous_bytes),map_location='cpu',weights_only=True)
+    # Evaluate the PRE-TRAINING checkpoint against exactly the same later
+    # development candles and fee assumptions as the post-training candidate.
+    # The untouched final 20% is NEVER passed into either evaluation.
+    previous_normal=previous_stress=None
+    if prior_state is not None:
+        frozen=QNetwork()
+        frozen.load_state_dict(prior_state,strict=True)
+        frozen.eval()
+        previous_normal=evaluate(frozen,validation)
+        previous_stress=evaluate(frozen,validation,fee=.005,slippage=.002)
     policy,train_stats=train_dqn(training,episodes=episodes,seed=seed,
                                   initial_state_dict=prior_state)
+    policy.eval()
     baseline=evaluate(policy,validation)
     stress=evaluate(policy,validation,fee=.005,slippage=.002)
+    validation_sha=hashlib.sha256(
+        json.dumps(validation,sort_keys=True).encode()).hexdigest()
+    improved_normal=(baseline['netProfitGbp']-previous_normal['netProfitGbp']
+                     if previous_normal is not None else None)
+    improved_stressed=(stress['netProfitGbp']-previous_stress['netProfitGbp']
+                       if previous_stress is not None else None)
+    checkpoint_progress={
+        'schema':'SCALP_CHECKPOINT_SAME_WINDOW_DEVELOPMENT_V1',
+        'comparisonStatus':'SAME_DEVELOPMENT_WINDOW_NOT_FORWARD_VERIFIED'
+                           if previous_normal is not None else 'FIRST_CHECKPOINT_NO_COMPARATOR',
+        'validationWindowSha256':validation_sha,
+        'previousModelSha256':previous_sha,
+        'previousNetVirtual':previous_normal['netProfitGbp'] if previous_normal else None,
+        'candidateNetVirtual':baseline['netProfitGbp'],
+        'deltaNetVirtual':round(improved_normal,4) if improved_normal is not None else None,
+        'previousStressedNetVirtual':previous_stress['netProfitGbp'] if previous_stress else None,
+        'candidateStressedNetVirtual':stress['netProfitGbp'],
+        'deltaStressedNetVirtual':round(improved_stressed,4)
+                                   if improved_stressed is not None else None,
+        'previousDrawdownPct':previous_normal['maxDrawdownPct'] if previous_normal else None,
+        'candidateDrawdownPct':baseline['maxDrawdownPct'],
+        'improvedUnderBothCostAssumptions':(
+            improved_normal>0 and improved_stressed>0
+            if previous_normal is not None else False),
+        'isIndependentForwardEvidence':False,
+        'automaticPromotion':False,'paperOrders':0,'liveOrders':0
+    }
     comparisons={name:evaluate(policy,validation,strategy=name)
                  for name in ('cash','buy_hold')}
     buffer=io.BytesIO()
@@ -365,6 +403,7 @@ def run(snapshot,*,episodes=5,seed=7,outdir=None,prior_checkpoint=None,trace_out
         'seed':seed,'training':train_stats,'marketTimeframe':snapshot['timeframe'],
         'splits':split,
         'previousCheckpointSha256':previous_sha,
+        'checkpointProgress':checkpoint_progress,
         'cumulativeGradientUpdatesVerified':False,
         'validation':baseline,'validationDoubleCostStress':stress,
         'benchmarks':comparisons,

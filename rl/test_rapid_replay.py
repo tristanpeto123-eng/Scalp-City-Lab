@@ -51,6 +51,22 @@ class RapidReplayContract(unittest.TestCase):
                     p=Path(trace_out);p.parent.mkdir(parents=True,exist_ok=True)
                     p.write_text('REPLAY_PROVENANCE_MOCK')
                 training,validation,layout=split_development(validate_snapshot(data))
+                had_prior=prior_checkpoint is not None
+                previous_sha=hashlib.sha256(Path(prior_checkpoint).read_bytes()).hexdigest() if had_prior else None
+                progress={
+                    'schema':'SCALP_CHECKPOINT_SAME_WINDOW_DEVELOPMENT_V1',
+                    'comparisonStatus':'SAME_DEVELOPMENT_WINDOW_NOT_FORWARD_VERIFIED' if had_prior else 'FIRST_CHECKPOINT_NO_COMPARATOR',
+                    'validationWindowSha256':'c'*64,
+                    'previousModelSha256':previous_sha,
+                    'previousNetVirtual':-3.0 if had_prior else None,
+                    'candidateNetVirtual':-2.5,
+                    'deltaNetVirtual':0.5 if had_prior else None,
+                    'previousStressedNetVirtual':-6.0 if had_prior else None,
+                    'candidateStressedNetVirtual':-5.0,
+                    'deltaStressedNetVirtual':1.0 if had_prior else None,
+                    'improvedUnderBothCostAssumptions':had_prior,
+                    'isIndependentForwardEvidence':False,
+                    'automaticPromotion':False,'paperOrders':0,'liveOrders':0}
                 return {
                     'schema':'SCALP_DQN_DEVELOPMENT_V1',
                     'symbol':'BTC/USD','marketTimeframe':'5Min',
@@ -60,6 +76,7 @@ class RapidReplayContract(unittest.TestCase):
                     'previousCheckpointSha256':(
                         hashlib.sha256(Path(prior_checkpoint).read_bytes()).hexdigest()
                         if prior_checkpoint else None),
+                    'checkpointProgress':progress,
                     'trainingDataSha256':'f'*64,
                     'splits':{'sealedHoldoutTouched':False},
                     'training':{'steps':150,'gradientUpdates':35,'simulatedClosedTrades':12,
@@ -83,6 +100,12 @@ class RapidReplayContract(unittest.TestCase):
             self.assertIsNotNone(second['pupils'][0]['initialCheckpointSha256'])
             self.assertFalse(second['pupils'][0]['positiveUnderStressedCosts'])
             self.assertEqual(second['marketBarTimeframe'],'5Min')
+            self.assertEqual(first['checkpointComparisonPupils'],0)
+            self.assertEqual(first['checkpointImprovedPupils'],0)
+            self.assertEqual(second['checkpointComparisonPupils'],1)
+            self.assertEqual(second['checkpointImprovedPupils'],1)
+            self.assertEqual(second['pupils'][0]['checkpointProgress']['deltaStressedNetVirtual'],1.0)
+            self.assertFalse(second['pupils'][0]['checkpointProgress']['isIndependentForwardEvidence'])
 
     def test_missing_checkpoint_is_not_replaced_by_fake_new_model(self):
         with tempfile.TemporaryDirectory() as d:

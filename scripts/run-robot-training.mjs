@@ -380,14 +380,47 @@ function ghHeaders(token){if(!token)throw Error('Missing GitHub Actions token');
  return {'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json',
  'X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json',
  'User-Agent':'Scalp-City-Safe-Research'};}
+const MAX_MEMORY_BYTES=32*1024*1024; // bounded historical memory, never unbounded / guessed content
 export async function fetchMemory({token,fetchImpl=fetch}={}){
+ const headers=ghHeaders(token);
  const response=await fetchImpl(API+'?ref='+MEMORY_BRANCH,{
-  method:'GET',headers:ghHeaders(token),cache:'no-store'});
+  method:'GET',headers,cache:'no-store'});
  if(!response.ok)throw Error('Cannot read existing research memory HTTP '+response.status);
  const meta=await response.json();
- if(!SHA.test(meta.sha||'')||typeof meta.content!=='string')
-  throw Error('Research memory GitHub source returned invalid SHA/content');
- const memory=JSON.parse(Buffer.from(meta.content.replace(/\s/g,''),'base64').toString('utf8'));
+ if(!SHA.test(meta?.sha||'')||!Number.isInteger(meta.size)&&meta.size!==undefined||
+    (Number.isInteger(meta.size)&&(meta.size<1||meta.size>MAX_MEMORY_BYTES)))
+  throw Error('Research memory GitHub source returned invalid SHA or file size');
+ // GitHub Contents API returns encoding:none and an empty content field for
+ // files above 1 MiB. An empty string is NOT an empty training history.
+ // Retrieve the exact immutable git blob instead of parsing a truncated value.
+ let encoded=meta.content;
+ let expectedSize=meta.size;
+ if(meta.encoding==='none'){
+  if(typeof encoded==='string'&&encoded.trim())
+   throw Error('Research memory source has inconsistent Contents encoding');
+  const blobUrl='https://api.github.com/repos/tristanpeto123-eng/Scalp-City-Lab/git/blobs/'+meta.sha;
+  const blobResponse=await fetchImpl(blobUrl,{method:'GET',headers,cache:'no-store'});
+  if(!blobResponse.ok)throw Error('Cannot read large research memory blob HTTP '+blobResponse.status);
+  const blob=await blobResponse.json();
+  if(blob?.sha!==meta.sha||blob.encoding!=='base64'||
+     typeof blob.content!=='string'||!blob.content.trim()||
+     !Number.isInteger(blob.size)||blob.size<1||blob.size>MAX_MEMORY_BYTES||
+     (Number.isInteger(meta.size)&&blob.size!==meta.size))
+   throw Error('Large research memory blob failed SHA/size/encoding verification');
+  encoded=blob.content;expectedSize=blob.size;
+ }else if(meta.encoding!==undefined&&meta.encoding!=='base64'){
+  throw Error('Unsupported research memory Contents encoding');
+ }
+ if(typeof encoded!=='string'||!encoded.trim()||
+    !/^[A-Za-z0-9+/\s]*={0,2}$/.test(encoded))
+  throw Error('Research memory content is missing or invalid base64');
+ const bytes=Buffer.from(encoded.replace(/\s/g,''),'base64');
+ if(bytes.length<1||bytes.length>MAX_MEMORY_BYTES||
+    (Number.isInteger(expectedSize)&&bytes.length!==expectedSize))
+  throw Error('Research memory content length mismatches authoritative GitHub metadata');
+ let memory;
+ try{memory=JSON.parse(bytes.toString('utf8'))}
+ catch{throw Error('Research memory JSON is corrupt or incomplete — no experiments written')}
  return {memory:checkMemory(memory),blobSha:meta.sha};
 }
 export async function persistMemory({token,expectedSha,previous,next,fetchImpl=fetch}={}){
