@@ -2,19 +2,19 @@
   "schema": "SCALP_DQN_DEVELOPMENT_V1",
   "symbol": "BTC/USD",
   "modelType": "DEEP_Q_NETWORK",
-  "policySha256": "8f3d9b9cdb1fbf6cbbb8fa00f802370f5204586a584382190ff2544b8b2277b4",
-  "trainingDataSha256": "c18232d41c5d2269807f019dd2ea13412bb62e3497d5b15a2461c47679daf997",
+  "policySha256": "7e8f578670f0a542fda6720922217b6b1858c68411126a48d73ef93af60bae07",
+  "trainingDataSha256": "28f761191e6618d1b9ba126d6534620fd84703f5e70b8d6eda9034d156de259a",
   "seed": 7,
   "training": {
     "steps": 15450,
     "gradientUpdates": 3847,
     "episodes": 3,
-    "simulatedClosedTrades": 1749,
-    "simulatedOpens": 1750,
-    "trainingElapsedSeconds": 6.4176,
-    "decisionsPerSecond": 2407.45,
-    "virtualClosesPerSecond": 272.53,
-    "gradientUpdatesPerSecond": 599.45,
+    "simulatedClosedTrades": 1647,
+    "simulatedOpens": 1648,
+    "trainingElapsedSeconds": 4.4267,
+    "decisionsPerSecond": 3490.15,
+    "virtualClosesPerSecond": 372.06,
+    "gradientUpdatesPerSecond": 869.04,
     "marketTimeframe": "5Min",
     "cadenceType": "ACCELERATED_HISTORICAL_REPLAY_NOT_REALTIME_1S"
   },
@@ -24,32 +24,32 @@
     "trainCandles": 5183,
     "validationCandles": 1728,
     "sealedHoldoutCandles": 1728,
-    "holdoutStart": 1791923400000,
+    "holdoutStart": 1791953700000,
     "sealedHoldoutTouched": false
   },
-  "previousCheckpointSha256": "a1a2f3c4b42cc6705869fe8cccbc15e69046f898b60ecf68aba82327d8ce3575",
+  "previousCheckpointSha256": "8f3d9b9cdb1fbf6cbbb8fa00f802370f5204586a584382190ff2544b8b2277b4",
   "cumulativeGradientUpdatesVerified": false,
   "validation": {
-    "equityGbp": 49.7914,
-    "netProfitGbp": -0.2086,
-    "maxDrawdownPct": 0.4171,
+    "equityGbp": 49.4673,
+    "netProfitGbp": -0.5327,
+    "maxDrawdownPct": 1.8131,
     "closedTrades": 1,
     "wins": 0,
     "openedPositions": 1,
     "openPosition": false,
     "lastVirtualFill": null,
-    "realizedProfitVirtual": -0.208572
+    "realizedProfitVirtual": -0.532664
   },
   "validationDoubleCostStress": {
-    "equityGbp": 49.6185,
-    "netProfitGbp": -0.3815,
-    "maxDrawdownPct": 0.763,
+    "equityGbp": 49.2967,
+    "netProfitGbp": -0.7033,
+    "maxDrawdownPct": 1.8999,
     "closedTrades": 1,
     "wins": 0,
     "openedPositions": 1,
     "openPosition": false,
     "lastVirtualFill": null,
-    "realizedProfitVirtual": -0.381508
+    "realizedProfitVirtual": -0.70334
   },
   "benchmarks": {
     "cash": {
@@ -64,9 +64,9 @@
       "realizedProfitVirtual": 0.0
     },
     "buy_hold": {
-      "equityGbp": 49.8207,
-      "netProfitGbp": -0.1793,
-      "maxDrawdownPct": 1.9497,
+      "equityGbp": 49.9917,
+      "netProfitGbp": -0.0083,
+      "maxDrawdownPct": 1.9337,
       "closedTrades": 0,
       "wins": 0,
       "openedPositions": 1,
