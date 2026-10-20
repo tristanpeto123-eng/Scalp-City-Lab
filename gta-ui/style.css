@@ -19,3 +19,13 @@
 @media(hover:none),(pointer:coarse){.touch-controls{display:block}.side-hint{display:none}.lift-prompt{bottom:calc(229px + env(safe-area-inset-bottom))}.world-actions{bottom:calc(96px + env(safe-area-inset-bottom))}}
 @media(max-width:650px){.hud{padding:calc(10px + env(safe-area-inset-top)) 12px 10px;gap:6px}.crest{height:32px;width:32px;font-size:11px}.identity{gap:6px}.identity b{font-size:11px}.identity small{font-size:7px}.test-flag{display:none}.floor-readout{text-align:right}.floor-readout strong{font-size:18px}.floor-readout span{font-size:9px}.lift-prompt{left:52%;width:200px;min-width:0}.robot-info{top:18%;left:10px;width:min(280px,88vw)}.phone-shell{left:50%;right:auto;transform:translateX(-50%);height:calc(100dvh - 33px);bottom:calc(3px + env(safe-area-inset-bottom));width:min(390px,calc(100vw - 18px))}.phone-device{border-width:5px;border-radius:30px}.footer-ribbon{font-size:8px}.footer-ribbon span{display:none}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* Full-size app mode retains the existing iframe so running page state survives. */
+.phone-shell.maximized{position:fixed;inset:0;transform:none;right:0;left:0;bottom:0;width:100%;max-width:none;height:100dvh;z-index:35;filter:none}
+.phone-shell.maximized .phone-device{height:100%;width:100%;border:0;border-radius:0}
+.phone-shell.maximized .phone-dismiss{display:none}
+.phone-shell.maximized .phone-notch{display:none}
+.phone-shell.maximized .phone-status{height:calc(30px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}
+.phone-shell.maximized .phone-navigation{height:calc(25px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom)}
+.native-floor{display:block;width:100%;border:1px solid #4a8191;background:#12344a;color:#e5f6fa;text-align:left;padding:13px 11px;margin:9px 0;border-radius:9px;font-weight:800}
+.native-floor:hover,.native-floor:focus-visible{border-color:var(--gold);color:var(--gold)}
