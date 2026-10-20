@@ -313,3 +313,42 @@ test('large-memory fallback fails closed on missing/truncated blobs or SHA misma
  await assert.rejects(fetchMemory({token:'T',fetchImpl:fixture({sha:blob,size:expected,
   encoding:'base64',content:Buffer.from('{').toString('base64')})}),/length|corrupt/);
 });
+
+
+test('production-sized >1 MiB history uses authenticated SHA-pinned blob fallback and preserves append-only memory',async()=>{
+ const token='RESEARCH-TEST-TOKEN',sha='a'.repeat(40);
+ // GitHub Content API does NOT return inline bytes once a stored JSON exceeds 1 MiB.
+ // Create the same response shape with no huge fixtures checked into the repo.
+ const full={...memory,largeFixturePadding:'x'.repeat(1091780)};
+ const json=JSON.stringify(full),length=Buffer.byteLength(json,'utf8');
+ assert.ok(length>1048576,'must reproduce actual GitHub size threshold');
+ const calls=[];
+ const fetchImpl=async(url,opts)=>{
+  calls.push({url,method:opts.method});
+  if(url.includes('/contents/scalp-learning/history.json'))
+   return {ok:true,json:async()=>({sha,size:length,encoding:'none',content:''})};
+  if(url.endsWith('/git/blobs/'+sha))
+   return {ok:true,json:async()=>({sha,size:length,encoding:'base64',
+     content:Buffer.from(json).toString('base64').replace(/.{76}/g,'$&\\n')})};
+  throw Error('unexpected GitHub endpoint '+url);
+ };
+ const result=await fetchMemory({token,fetchImpl});
+ assert.equal(result.blobSha,sha);
+ assert.deepEqual(result.memory,full);
+ assert.equal(calls.length,2);
+ assert.ok(calls[1].url.includes('/git/blobs/'));
+ assert.equal(calls[0].method,'GET');
+ assert.equal(calls[1].method,'GET');
+});
+test('the full memory fallback fails closed if source metadata is missing or exceeds bound',async()=>{
+ const content=Buffer.from(JSON.stringify(memory)).toString('base64');
+ const get=meta=>fetchMemory({token:'T',fetchImpl:async()=>({ok:true,json:async()=>meta})});
+ for(const meta of [
+   {sha:'a'.repeat(40),encoding:'none',content:'',size:33554433},
+   {sha:'a'.repeat(40),encoding:'none',content:'',size:-1},
+   {sha:'invalid',encoding:'base64',content,size:123},
+   {sha:'a'.repeat(40),encoding:'none',content:'nonempty',size:120}
+ ]){
+  await assert.rejects(get(meta),/SHA|size|inconsistent/);
+ }
+});
