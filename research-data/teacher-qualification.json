@@ -1,0 +1,165 @@
+{
+  "schema": "TEACHER_PUBLIC_HISTORICAL_SCREEN_V1",
+  "source": "INDEPENDENT_HISTORICAL_SCREEN_NO_PAPER_ORDERS",
+  "checkedAt": "2026-10-20T18:16:29.095Z",
+  "lastResearchTrainingEnd": "2026-09-13T17:00:00.000Z",
+  "academySourceSha256": "d5050da496e429ad2f057e2bbe36c032f552830a4f616ea50bc06f3b1712dfe4",
+  "memorySourceSha256": "680ccd771fc520e291c1e305964e34ea9a47c8de1f972f55104dfd4ac8c61990",
+  "eligibleCount": 0,
+  "screenedCount": 10,
+  "slotsCap": 3,
+  "admissionsIssued": 0,
+  "brokerOrdersSubmitted": 0,
+  "verifiedForwardGrades": 0,
+  "trainingOnly": true,
+  "status": "NO_ADMISSIBLE_PUPILS",
+  "pupils": [
+    {
+      "symbol": "BTC/USD",
+      "verdict": "BLOCKED",
+      "trainingTrades": 22,
+      "trainingNetGbp": -0.76,
+      "trainingWinRatePct": 31.82,
+      "historicalHoldoutNetGbp": null,
+      "doubleCostNetGbp": null,
+      "lastTrainingSample": "2026-09-12T15:15:00.000Z",
+      "reasons": [
+        "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
+        "UNDER_30_TRAINING_CLOSES",
+        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+      ]
+    },
+    {
+      "symbol": "ETH/USD",
+      "verdict": "BLOCKED",
+      "trainingTrades": 22,
+      "trainingNetGbp": -2.74,
+      "trainingWinRatePct": 18.18,
+      "historicalHoldoutNetGbp": null,
+      "doubleCostNetGbp": null,
+      "lastTrainingSample": "2026-09-13T13:30:00.000Z",
+      "reasons": [
+        "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
+        "UNDER_30_TRAINING_CLOSES",
+        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+      ]
+    },
+    {
+      "symbol": "SOL/USD",
+      "verdict": "BLOCKED",
+      "trainingTrades": 23,
+      "trainingNetGbp": -0.79,
+      "trainingWinRatePct": 60.87,
+      "historicalHoldoutNetGbp": null,
+      "doubleCostNetGbp": null,
+      "lastTrainingSample": "2026-09-11T22:15:00.000Z",
+      "reasons": [
+        "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
+        "UNDER_30_TRAINING_CLOSES",
+        "AUDIT: AUDITOR: frozen training fingerprint unavailable or changed"
+      ]
+    },
+    {
+      "symbol": "XRP/USD",
+      "verdict": "BLOCKED",
+      "trainingTrades": 24,
+      "trainingNetGbp": -1.32,
+      "trainingWinRatePct": 62.5,
+      "historicalHoldoutNetGbp": null,
+      "doubleCostNetGbp": null,
+      "lastTrainingSample": "2026-09-11T22:15:00.000Z",
+      "reasons": [
+        "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
+        "UNDER_30_TRAINING_CLOSES",
+        "AUDIT: AUDITOR: frozen training fingerprint unavailable or changed"
+      ]
+    },
+    {
+      "symbol": "ADA/USD",
+      "verdict": "BLOCKED",
+      "trainingTrades": 25,
+      "trainingNetGbp": 0.06,
+      "trainingWinRatePct": 72,
+      "historicalHoldoutNetGbp": null,
+      "doubleCostNetGbp": null,
+      "lastTrainingSample": "2026-09-13T13:30:00.000Z",
+      "reasons": [
+        "UNDER_30_TRAINING_CLOSES",
+        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+      ]
+    },
+    {
+      "symbol": "AVAX/USD",
+      "verdict": "BLOCKED",
+      "trainingTrades": 23,
+      "trainingNetGbp": -2.47,
+      "trainingWinRatePct": 17.39,
+      "historicalHoldoutNetGbp": null,
+      "doubleCostNetGbp": null,
+      "lastTrainingSample": "2026-09-13T13:30:00.000Z",
+      "reasons": [
+        "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
+        "UNDER_30_TRAINING_CLOSES",
+        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+      ]
+    },
+    {
+      "symbol": "LINK/USD",
+      "verdict": "BLOCKED",
+      "trainingTrades": 22,
+      "trainingNetGbp": -1.16,
+      "trainingWinRatePct": 13.64,
+      "historicalHoldoutNetGbp": null,
+      "doubleCostNetGbp": null,
+      "lastTrainingSample": "2026-09-13T13:30:00.000Z",
+      "reasons": [
+        "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
+        "UNDER_30_TRAINING_CLOSES",
+        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+      ]
+    },
+    {
+      "symbol": "DOGE/USD",
+      "verdict": "BLOCKED",
+      "trainingTrades": 30,
+      "trainingNetGbp": -1.05,
+      "trainingWinRatePct": 53.33,
+      "historicalHoldoutNetGbp": null,
+      "doubleCostNetGbp": null,
+      "lastTrainingSample": "2026-09-12T18:15:00.000Z",
+      "reasons": [
+        "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
+        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+      ]
+    },
+    {
+      "symbol": "LTC/USD",
+      "verdict": "BLOCKED",
+      "trainingTrades": 24,
+      "trainingNetGbp": 0.07,
+      "trainingWinRatePct": 58.33,
+      "historicalHoldoutNetGbp": null,
+      "doubleCostNetGbp": null,
+      "lastTrainingSample": "2026-09-13T17:00:00.000Z",
+      "reasons": [
+        "UNDER_30_TRAINING_CLOSES",
+        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+      ]
+    },
+    {
+      "symbol": "BCH/USD",
+      "verdict": "BLOCKED",
+      "trainingTrades": 30,
+      "trainingNetGbp": -2.18,
+      "trainingWinRatePct": 56.67,
+      "historicalHoldoutNetGbp": null,
+      "doubleCostNetGbp": null,
+      "lastTrainingSample": "2026-09-12T18:15:00.000Z",
+      "reasons": [
+        "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
+        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+      ]
+    }
+  ],
+  "caveat": "An independent HISTORICAL screen is not PAPER admission, forward fill evidence, or a signed official grade. Historical candidates require separate risk review and owner approval."
+}
