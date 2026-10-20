@@ -1,0 +1,58 @@
+name: Scalp City — integrated Teacher + Deep RL release Checker
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/integrated-teacher-rl-tests.mjs'
+      - 'training-monitor.html'
+      - 'teacher/**'
+      - 'robot-academy.html'
+      - 'journey-nav.css'
+      - '.github/workflows/integrated-teacher-rl-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cross-page-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      TEACHER_ENABLE_EXAMINER: 'false'
+      TEACHER_PAPER_ENABLED: 'false'
+      SCALP_PAPER_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Checker G0 — cross-page source truth, actual 5m DQN schema, no order authority
+        run: |
+          node --test scripts/integrated-teacher-rl-tests.mjs
+          node --test scripts/historical-screen-client-tests.mjs
+          node --test scripts/qualification-bridge-tests.mjs
+          node --test scripts/journey-nav-tests.mjs
+          python -m compileall -q rl
+      - name: Checker G1 — historical Teacher publication sanitization and Academy safeguards
+        run: |
+          node --test scripts/publish-teacher-screen-tests.mjs
+          node --test scripts/qualification-e2e-tests.mjs
+          node --test robot-academy-tests.mjs
+      - name: Checker G1 — preserve no-funds/no-automatic-admission isolation
+        run: |
+          node --input-type=module <<'NODE'
+          import {readFileSync} from 'node:fs';
+          for(const file of ['training-monitor.html','teacher/qualification-bridge.js','teacher/historical-screen-client.mjs']){
+            const s=readFileSync(file,'utf8');
+            for(const bad of ['paper-api.alpaca.markets/v2/orders','APCA-API-SECRET-KEY'])
+              if(s.includes(bad))throw Error(file+' browser code contains forbidden broker/order secret');
+          }
+          const a=readFileSync('rl/rapid_replay.py','utf8');
+          if(!a.includes("'paperOrders':0")||!a.includes("'liveOrders':0"))
+            throw Error('RL replay cannot be automatically promoted to trading');
+          console.log('CHECKER: original historical/PAPER boundaries and current 5-minute source retained');
+          NODE
