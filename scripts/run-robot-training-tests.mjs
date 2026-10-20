@@ -329,7 +329,7 @@ test('production-sized >1 MiB history uses authenticated SHA-pinned blob fallbac
    return {ok:true,json:async()=>({sha,size:length,encoding:'none',content:''})};
   if(url.endsWith('/git/blobs/'+sha))
    return {ok:true,json:async()=>({sha,size:length,encoding:'base64',
-     content:Buffer.from(json).toString('base64').replace(/.{76}/g,'$&\\n')})};
+     content:Buffer.from(json).toString('base64').replace(/.{76}/g,match=>match+String.fromCharCode(10))})};
   throw Error('unexpected GitHub endpoint '+url);
  };
  const result=await fetchMemory({token,fetchImpl});
