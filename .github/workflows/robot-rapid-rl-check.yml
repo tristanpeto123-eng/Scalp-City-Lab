@@ -67,7 +67,7 @@ jobs:
         run: python -m pip install numpy 'torch>=2.3,<3'
       - name: Checker G1 — DQN gradients, checkpoint lineage, genuine causal trace
         run: |
-          python -m unittest rl.test_dqn_experiment rl.test_rapid_replay rl.test_five_min_replay rl.test_virtual_trade_journal rl.test_checkpoint_progress -v
+          python -m unittest rl.test_dqn_experiment rl.test_rapid_replay rl.test_five_min_replay rl.test_virtual_trade_journal rl.test_checkpoint_progress rl.test_profit_objective -v
       - name: Checker G1 — source history separation and holdout protection
         run: |
           python - <<'PY'
