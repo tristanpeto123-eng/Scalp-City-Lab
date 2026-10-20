@@ -83,12 +83,15 @@ class RapidReplayContract(unittest.TestCase):
                       'simulatedOpens':15,'decisionsPerSecond':123.4,
                       'virtualClosesPerSecond':9.8,'gradientUpdatesPerSecond':29.3,
                       'trainingElapsedSeconds':1.21},
-                    'validation':{'netProfitGbp':-2.5,'maxDrawdownPct':6},
+                    'validation':{'netProfitGbp':-2.5,'maxDrawdownPct':6,'closedTrades':8},
                     'validationDoubleCostStress':{'netProfitGbp':-5.0}
                 }
             first=train_replay_batch(data_dir=root/'data',root=root/'memory',symbols=('BTC/USD',),
                                     train_fn=fake_train)
             self.assertEqual(first['decisionCount'],150)
+            self.assertEqual(first['profitDevelopmentGatePasses'],0)
+            self.assertFalse(first['pupils'][0]['profitObjective']['developmentGatePassed'])
+            self.assertEqual(first['pupils'][0]['profitObjective']['automaticPromotion'],False)
             self.assertEqual(first['simulatedClosedTrades'],12)
             self.assertEqual(first['verifiedForwardGrades'],0)
             self.assertFalse(first['sealedHoldoutAccessed'])
