@@ -2,19 +2,19 @@
   "schema": "SCALP_DQN_DEVELOPMENT_V1",
   "symbol": "ADA/USD",
   "modelType": "DEEP_Q_NETWORK",
-  "policySha256": "cbaeac822e809059d1aa5bef2a0c38b49e2652bb02030747e8d6cda4b64f0d7f",
+  "policySha256": "1693a1088dadca062b5e779d057ef2ce7e086b9a297da11e44d84fbcddd23323",
   "trainingDataSha256": "f73280d36becdac3947c06b42a06dee1afc7edb322403a57dcf770b21ae1875c",
   "seed": 7,
   "training": {
     "steps": 15450,
     "gradientUpdates": 3847,
     "episodes": 3,
-    "simulatedClosedTrades": 1728,
-    "simulatedOpens": 1730,
-    "trainingElapsedSeconds": 4.3951,
-    "decisionsPerSecond": 3515.28,
-    "virtualClosesPerSecond": 393.17,
-    "gradientUpdatesPerSecond": 875.29,
+    "simulatedClosedTrades": 1722,
+    "simulatedOpens": 1724,
+    "trainingElapsedSeconds": 6.5505,
+    "decisionsPerSecond": 2358.61,
+    "virtualClosesPerSecond": 262.88,
+    "gradientUpdatesPerSecond": 587.29,
     "marketTimeframe": "5Min",
     "cadenceType": "ACCELERATED_HISTORICAL_REPLAY_NOT_REALTIME_1S"
   },
@@ -27,29 +27,29 @@
     "holdoutStart": 1791953700000,
     "sealedHoldoutTouched": false
   },
-  "previousCheckpointSha256": "45639554122b7aede2dda87b1a46f9741c5717d9f3b640bd41ea442e4bf0fba8",
+  "previousCheckpointSha256": "cbaeac822e809059d1aa5bef2a0c38b49e2652bb02030747e8d6cda4b64f0d7f",
   "cumulativeGradientUpdatesVerified": false,
   "validation": {
-    "equityGbp": 47.4618,
-    "netProfitGbp": -2.5382,
-    "maxDrawdownPct": 6.6606,
+    "equityGbp": 47.7528,
+    "netProfitGbp": -2.2472,
+    "maxDrawdownPct": 6.5632,
     "closedTrades": 3,
     "wins": 1,
     "openedPositions": 4,
     "openPosition": true,
     "lastVirtualFill": null,
-    "realizedProfitVirtual": -2.279052
+    "realizedProfitVirtual": -1.986411
   },
   "validationDoubleCostStress": {
-    "equityGbp": 46.4717,
-    "netProfitGbp": -3.5283,
-    "maxDrawdownPct": 8.2659,
+    "equityGbp": 47.0978,
+    "netProfitGbp": -2.9022,
+    "maxDrawdownPct": 7.135,
     "closedTrades": 3,
     "wins": 1,
     "openedPositions": 4,
     "openPosition": true,
     "lastVirtualFill": null,
-    "realizedProfitVirtual": -3.11186
+    "realizedProfitVirtual": -2.480141
   },
   "benchmarks": {
     "cash": {
