@@ -395,7 +395,13 @@ export async function fetchMemory({token,fetchImpl=fetch}={}){
  // Retrieve the exact immutable git blob instead of parsing a truncated value.
  let encoded=meta.content;
  let expectedSize=meta.size;
- if(meta.encoding==='none'){
+ // GitHub's large-file Contents response can omit inline bytes without
+ // explicitly reporting encoding:none. Fetch its immutable blob only when
+ // source metadata confirms the file exceeds the 1 MiB inline limit.
+ const unavailableLargeInline=Number.isInteger(meta.size)&&meta.size>1024*1024&&
+   (encoded===undefined||encoded===null||
+     (typeof encoded==='string'&&!encoded.trim()));
+ if(meta.encoding==='none'||unavailableLargeInline){
   if(typeof encoded==='string'&&encoded.trim())
    throw Error('Research memory source has inconsistent Contents encoding');
   const blobUrl='https://api.github.com/repos/tristanpeto123-eng/Scalp-City-Lab/git/blobs/'+meta.sha;
