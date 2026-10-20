@@ -37,6 +37,12 @@ jobs:
           node --test scripts/qualification-bridge-tests.mjs
           node --test scripts/journey-nav-tests.mjs
           python -m compileall -q rl
+      - name: Read original append-only historical learning ledger without write tokens
+        uses: actions/checkout@v4
+        with:
+          ref: scalp-learning-memory
+          path: research-memory
+          persist-credentials: false
       - name: Checker G1 — historical Teacher publication sanitization and Academy safeguards
         run: |
           node --test scripts/publish-teacher-screen-tests.mjs
