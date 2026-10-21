@@ -63,7 +63,10 @@ jobs:
               'def do_POST' in file or
               'SCALP_PAPER_PASSIVE_COMMISSIONER' not in file or
               'python", "-m", "paper_sandbox.railway_commission' not in docker or
-              'pip install' in docker or 'torch' in docker):
+              'pip install' in docker or 'torch' in docker or
+              'COPY paper_sandbox /app' in docker or
+              'shared_runtime.py' in docker or 'paper_executor.py' in docker or
+              'COPY paper_sandbox/railway_commission.py' not in docker):
               raise SystemExit('PASSIVE PAPER COMMISSION VIOLATION')
           print('PASSIVE_COMMISSION_PAPER_ONLY; NO_BROKER_ORDERS')
           PY
