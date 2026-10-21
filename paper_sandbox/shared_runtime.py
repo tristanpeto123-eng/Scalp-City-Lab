@@ -45,7 +45,7 @@ def _owned_history(snapshot, journal, symbol):
                 bound['side']!=o.get('side') or
                 o.get('id')!=ack['brokerOrderId']):
                 raise FailClosed('Pupil broker order differs from durable model-bound ledger')
-        elif o.get('symbol')==symbol:
+        elif str(o.get('symbol','')).replace('/','')==symbol.replace('/',''):
             # Even historical Teacher orders in the same symbol may have
             # incurred shared coin-denominated fees; no safe allocation yet.
             raise FailClosed('Shared symbol used by Teacher: inventory/fee attribution ambiguous')
