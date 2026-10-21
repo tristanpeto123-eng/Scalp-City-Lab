@@ -107,12 +107,13 @@ jobs:
               report.get('liveOrdersSubmitted')!=0 or
               report.get('account',{}).get('status')!='GET_ONLY_PREFLIGHT_NOT_REQUESTED'):
               raise SystemExit('RAILWAY_IMAGE_FAILED_COLD_START_READ_ONLY_CONTRACT')
-          marker=pathlib.Path(os.environ['RUNNER_TEMP'],'scalp-paper-commission',
-                              'scalp-paper','read-only-host-ready')
-          if not marker.is_file():
-              raise SystemExit('RAILWAY_IMAGE_VOLUME_NOT_PERSISTING')
-          print('RAILWAY_IMAGE_COLD_START_OK; PRIVATE_VOLUME_OK; ZERO_BROKER_ORDERS')
+          print('RAILWAY_IMAGE_COLD_START_OK; ZERO_BROKER_ORDERS')
           PY
+          # The private marker is owned by root inside the container. Inspect
+          # within the container; the unprivileged GitHub runner cannot walk
+          # the mode-0700 directory, as intended.
+          docker exec scalp-paper-commission-test python -c \
+            'from pathlib import Path; assert Path("/data/scalp-paper/read-only-host-ready").is_file()'
           docker stop scalp-paper-commission-test >/dev/null
           docker start scalp-paper-commission-test >/dev/null
           success=no
@@ -125,4 +126,6 @@ jobs:
           done
           [ "$success" = yes ] || { echo 'READ_ONLY_IMAGE_RESTART_FAILED'; exit 1; }
           cmp "$RUNNER_TEMP/scalp-paper-health.json" "$RUNNER_TEMP/scalp-paper-health-restart.json"
+          docker exec scalp-paper-commission-test python -c \
+            'from pathlib import Path; assert Path("/data/scalp-paper/read-only-host-ready").read_bytes() == b"PAPER_READ_ONLY_HOST_V1\\\\n"'
           echo 'RAILWAY_IMAGE_RESTART_AND_VOLUME_CANARY_OK'
