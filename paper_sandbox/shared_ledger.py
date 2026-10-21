@@ -200,7 +200,7 @@ def _valid_intent(x):
             _is_sha(x.get('accountFingerprint')) and
             isinstance(x.get('sourceCandleMs'), int) and x['sourceCandleMs'] > 0 and
             x.get('paperOnly') is True and x.get('liveOrders') == 0 and
-            x.get('maxOrderUsd') == 10.0)
+            x.get('maxOrderUsd') == '10.00')
 
 
 def _valid_ack(x):
