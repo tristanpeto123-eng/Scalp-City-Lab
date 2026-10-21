@@ -179,6 +179,14 @@ def paper_decision(*,env,model_file,now=None,transport=None,execute=False,
     'accountFingerprint':verified['accountFingerprint'],
     'paperOnly':True,'liveOrders':0,'demoOrderSubmitted':False}
  if not execute or not side:return plan
+ # Legacy GitHub Actions is an ephemeral runner: no persistent broker intent
+ # journal or shared-account lock can be trusted there.
+ if env.get('GITHUB_ACTIONS')=='true':
+  raise FailClosed('Ephemeral GitHub runner cannot place PAPER orders')
+ # In production the old single-account standalone path has been retired.
+ # The shared account must use shared_runtime under a durable journal lock.
+ if not shared_mode and transport is None:
+  raise FailClosed('Legacy standalone PAPER POST disabled; use shared single-writer runtime')
  if env.get('SCALP_DEMO_PAPER_ENABLED')!='YES_DEMO_ONLY':
   raise FailClosed('Demo POST explicitly disabled; preflight only')
  payload={'symbol':symbol,'side':side,'type':'market','time_in_force':'gtc',
