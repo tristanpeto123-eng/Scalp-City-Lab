@@ -83,13 +83,13 @@
       "bestResearchCandidate": {
         "parameters": {
           "family": "channel_breakout",
-          "lookback": 20,
-          "exitLookback": 11
+          "lookback": 38,
+          "exitLookback": 10
         },
-        "normalNetAcrossDisjointFolds": -5.25,
-        "stressedNetAcrossDisjointFolds": -7.13,
+        "normalNetAcrossDisjointFolds": -3.44,
+        "stressedNetAcrossDisjointFolds": -4.67,
         "profitableFolds": 0,
-        "researchRankScore": -7.13,
+        "researchRankScore": -4.67,
         "note": "Disjoint development folds are historical research, not broker fills or untouched admission evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -160,14 +160,14 @@
       "bestResearchCandidate": {
         "parameters": {
           "family": "rsi_reversion",
-          "period": 9,
+          "period": 11,
           "buyBelow": 27,
           "sellAbove": 55
         },
-        "normalNetAcrossDisjointFolds": -4.38,
-        "stressedNetAcrossDisjointFolds": -6.48,
+        "normalNetAcrossDisjointFolds": -3.09,
+        "stressedNetAcrossDisjointFolds": -4.47,
         "profitableFolds": 0,
-        "researchRankScore": -6.48,
+        "researchRankScore": -4.47,
         "note": "Disjoint development folds are historical research, not broker fills or untouched admission evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -394,14 +394,14 @@
       "bestResearchCandidate": {
         "parameters": {
           "family": "rsi_reversion",
-          "period": 9,
-          "buyBelow": 27,
-          "sellAbove": 60
+          "period": 14,
+          "buyBelow": 32,
+          "sellAbove": 55
         },
-        "normalNetAcrossDisjointFolds": -4.15,
-        "stressedNetAcrossDisjointFolds": -6.14,
-        "profitableFolds": 0,
-        "researchRankScore": -6.14,
+        "normalNetAcrossDisjointFolds": -3.48,
+        "stressedNetAcrossDisjointFolds": -5.01,
+        "profitableFolds": 1,
+        "researchRankScore": -5,
         "note": "Disjoint development folds are historical research, not broker fills or untouched admission evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
