@@ -411,10 +411,16 @@ export async function fetchMemory({token,fetchImpl=fetch}={}){
  }else if(meta.encoding!==undefined&&meta.encoding!=='base64'){
   throw Error('Unsupported research memory Contents encoding');
  }
- if(typeof encoded!=='string'||!encoded.trim()||
-    !/^[A-Za-z0-9+/\s]*={0,2}$/.test(encoded))
+ // GitHub can wrap base64 lines and append CRLF even after '=' padding.
+ // Normalize transport whitespace before checking canonical base64 syntax.
+ const compact=typeof encoded==='string'?encoded.replace(/\s/g,''):null;
+ if(!compact||
+    !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(compact))
   throw Error('Research memory content is missing or invalid base64');
- const bytes=Buffer.from(encoded.replace(/\s/g,''),'base64');
+ const bytes=Buffer.from(compact,'base64');
+ // Node's decoder accepts some malformed input; fail closed on altered padding.
+ if(bytes.toString('base64')!==compact)
+  throw Error('Research memory content is non-canonical base64');
  if(bytes.length<1||bytes.length>MAX_MEMORY_BYTES||
     (Number.isInteger(expectedSize)&&bytes.length!==expectedSize))
   throw Error('Research memory content length mismatches authoritative GitHub metadata');

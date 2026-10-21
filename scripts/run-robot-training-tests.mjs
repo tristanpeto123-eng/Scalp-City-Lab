@@ -340,6 +340,38 @@ test('production-sized >1 MiB history uses authenticated SHA-pinned blob fallbac
  assert.equal(calls[0].method,'GET');
  assert.equal(calls[1].method,'GET');
 });
+test('production GitHub blob accepts wrapped base64 with newline after == padding',async()=>{
+ const sha='f'.repeat(40),payload={...memory,largeFixturePadding:'x'.repeat(1060000)};
+ let json=JSON.stringify(payload);
+ // Use a >1 MiB fixture whose canonical base64 ends in == padding.
+ while(Buffer.byteLength(json,'utf8')%3!==1)json+=' ';
+ const size=Buffer.byteLength(json,'utf8');
+ assert.ok(size>1048576);
+ const base64=Buffer.from(json).toString('base64');
+ assert.ok(base64.endsWith('=='));
+ const wrapped=base64.match(/.{1,76}/g).join('\n')+'\r\n';
+ assert.match(wrapped,/==\r\n$/);
+ const request=async(url)=>{
+  if(url.includes('/contents/'))
+   return {ok:true,json:async()=>({sha,size,encoding:'none',content:''})};
+  if(url.endsWith('/git/blobs/'+sha))
+   return {ok:true,json:async()=>({sha,size,encoding:'base64',content:wrapped})};
+  throw Error('Unexpected research memory request');
+ };
+ const actual=await fetchMemory({token:'TEST',fetchImpl:request});
+ assert.deepEqual(actual.memory,payload);
+ assert.equal(actual.blobSha,sha);
+});
+test('inline Contents base64 permits trailing whitespace but rejects malformed padding',async()=>{
+ const sha='a'.repeat(40),json=JSON.stringify(memory),size=Buffer.byteLength(json,'utf8');
+ const canonical=Buffer.from(json).toString('base64');
+ const read=content=>fetchMemory({token:'TEST',fetchImpl:async()=>({
+  ok:true,json:async()=>({sha,size,encoding:'base64',content})
+ })});
+ assert.deepEqual((await read(canonical+'\r\n')).memory,memory);
+ await assert.rejects(read(canonical+'==='),/invalid base64/);
+ await assert.rejects(read(canonical+'!'),/invalid base64/);
+});
 test('the full memory fallback fails closed if source metadata is missing or exceeds bound',async()=>{
  const content=Buffer.from(JSON.stringify(memory)).toString('base64');
  const get=meta=>fetchMemory({token:'T',fetchImpl:async()=>({ok:true,json:async()=>meta})});

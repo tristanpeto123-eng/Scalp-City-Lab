@@ -1,0 +1,30 @@
+name: Research memory transport — independent Checker
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/run-robot-training.mjs'
+      - 'scripts/run-robot-training-tests.mjs'
+      - '.github/workflows/research-memory-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  memory-readonly-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Checker G0 — syntax and saved research-memory transport regression
+        run: |
+          node --check scripts/run-robot-training.mjs
+          node --check scripts/run-robot-training-tests.mjs
+          node --test scripts/run-robot-training-tests.mjs
+      - name: Checker G1 — historical isolation and reward integrity (offline)
+        run: |
+          node --test scripts/historical-training-folds-tests.mjs scripts/robot-rewards-tests.mjs
