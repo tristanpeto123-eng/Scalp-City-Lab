@@ -1,0 +1,40 @@
+name: Scalp City — passive PAPER host commissioning Checker
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'paper_sandbox/railway_commission.py'
+      - 'paper_sandbox/test_railway_commission.py'
+      - 'paper_sandbox/Dockerfile.commission'
+      - '.github/workflows/paper-commission-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  passive-paper-commission:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: No demo or LIVE brokerage mutation in commissioning process
+        run: |
+          python -m unittest paper_sandbox.test_railway_commission -v
+          python -m compileall -q paper_sandbox/railway_commission.py
+          python - <<'PY'
+          from pathlib import Path
+          file=Path('paper_sandbox/railway_commission.py').read_text()
+          docker=Path('paper_sandbox/Dockerfile.commission').read_text()
+          if ("'GET'" not in file or 'paper-api.alpaca.markets' not in file or
+              'https://api.alpaca.markets' in file or
+              'def do_POST' in file or
+              'SCALP_PAPER_PASSIVE_COMMISSIONER' not in file or
+              'python", "-m", "paper_sandbox.railway_commission' not in docker or
+              'pip install' in docker or 'torch' in docker):
+              raise SystemExit('PASSIVE PAPER COMMISSION VIOLATION')
+          print('PASSIVE_COMMISSION_PAPER_ONLY; NO_BROKER_ORDERS')
+          PY
