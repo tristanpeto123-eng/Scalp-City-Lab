@@ -128,3 +128,29 @@ def shared_cycle(*,env,model_file,now=None,transport=None,execute=False):
               'privateAuditChainHash':journal.export_observer_receipt()['latestChainHash']}
     except JournalError as exc:
         raise FailClosed('Shared account durable audit blocked: '+str(exc)) from exc
+
+def main():
+    """Explicit private-host commissioning. No background scheduler created."""
+    import argparse
+    import json
+    from datetime import datetime, timezone
+    parser=argparse.ArgumentParser(description='Persistent single-writer Alpaca PAPER pilot')
+    parser.add_argument('--mode',choices=('preflight','plan','paper'),default='preflight')
+    parser.add_argument('--model',default=None)
+    args=parser.parse_args()
+    if args.mode=='preflight':
+        result=shared_cycle(env=os.environ,model_file=None,execute=False)
+    elif args.mode=='plan':
+        result=paper_decision(env=os.environ,model_file=args.model,execute=False,
+                              shared_mode=True)
+    else:
+        result=shared_cycle(env=os.environ,model_file=args.model,execute=True)
+    print('SCALP_SHARED_PAPER_'+args.mode.upper()+' '+json.dumps(result,
+          sort_keys=True,separators=(',',':')))
+
+
+if __name__=='__main__':
+    try:
+        main()
+    except (JournalError,FailClosed) as exc:
+        raise SystemExit('SHARED_PAPER_FAIL_CLOSED '+str(exc))
