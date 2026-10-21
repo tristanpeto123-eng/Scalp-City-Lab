@@ -59,8 +59,8 @@ jobs:
               "PAPER_WRITER_HOST_REQUIRED" not in wf or
               "on:" not in wf):
               raise SystemExit('G0: paper-only endpoint, hash, identity or opt-in gate failed')
-          if 'method=\'POST\'' not in runner or
-              'Ephemeral GitHub runner cannot place PAPER orders' not in runner:
+          if ("method='POST'" not in runner or
+              "Ephemeral GitHub runner cannot place PAPER orders" not in runner):
               raise SystemExit('G0: missing journaled no-ephemeral-writer invariant')
           print('G0: PAPER-host only; GitHub read-only preflight/plan')
           PY
