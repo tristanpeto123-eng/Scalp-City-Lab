@@ -66,7 +66,7 @@ def auth_config(env):
   raise FailClosed('A configured non-paper brokerage endpoint is prohibited')
  return key,secret,account_id
 
-def preflight(*,env,transport=None):
+def preflight(*,env,transport=None,shared_mode=False):
  key,secret,expected=auth_config(env)
  account=api_request(PAPER,'/v2/account',key=key,secret=secret,transport=transport)
  if (not isinstance(account,dict) or account.get('id')!=expected or
@@ -76,10 +76,19 @@ def preflight(*,env,transport=None):
   raise FailClosed('Paper account identity/status mismatch or restricted account')
  orders=api_request(PAPER,'/v2/orders?status=all&limit=500',key=key,secret=secret,transport=transport)
  positions=api_request(PAPER,'/v2/positions',key=key,secret=secret,transport=transport)
- if not isinstance(orders,list) or not isinstance(positions,list):
-  raise FailClosed('Paper order/position ledger missing')
- if any(not x.get('client_order_id','').startswith(PREFIX) for x in orders):
-  raise FailClosed('Dedicated demo account contains unrelated orders')
+ if not isinstance(orders,list) or not isinstance(positions,list) or len(orders)>=500:
+  raise FailClosed('Paper order/position ledger missing or truncated')
+ for order in orders:
+  client=order.get('client_order_id','')
+  if not isinstance(client,str):
+   raise FailClosed('Untrusted broker client order ID')
+  if client.startswith(PREFIX):
+   continue
+  if (shared_mode and len(client)==42 and client.startswith('teacher-') and
+      all(c in '0123456789abcdef' for c in client[8:]) and
+      order.get('status') in ('filled','canceled','cancelled','expired','rejected','done_for_day')):
+   continue
+  raise FailClosed('Dedicated demo account contains unrelated or active Teacher orders')
  return {'account':account,'orders':orders,'positions':positions,'paperEndpoint':PAPER,
          'accountFingerprint':hashlib.sha256(expected.encode()).hexdigest()[:12]}
 
@@ -111,10 +120,11 @@ def verified_market_bars(*,key,secret,symbol,now,transport=None):
   raise FailClosed('Stale/incomplete last closed five-minute candle')
  return out
 
-def paper_decision(*,env,model_file,now=None,transport=None,execute=False):
+def paper_decision(*,env,model_file,now=None,transport=None,execute=False,
+                   shared_mode=False,on_intent=None,on_ack=None):
  now=now or datetime.now(timezone.utc)
  if now.tzinfo is None:raise FailClosed('UTC-aware time mandatory')
- verified=preflight(env=env,transport=transport)
+ verified=preflight(env=env,transport=transport,shared_mode=shared_mode)
  key,secret,_=auth_config(env)
  symbol=env.get('SCALP_DEMO_SYMBOL','BTC/USD')
  sha=env.get('SCALP_DEMO_MODEL_SHA256','')
@@ -139,8 +149,9 @@ def paper_decision(*,env,model_file,now=None,transport=None,execute=False):
            for x in orders if x.get('created_at'))
  if daily>=MAX_DAILY_ORDERS:
   raise FailClosed('Demo order budget exhausted for today')
- if any(x.get('status') in ('new','accepted','partially_filled','pending_new') for x in orders):
-  raise FailClosed('Unfilled demo order blocks new placement')
+ if any(x.get('status') not in
+        ('filled','canceled','cancelled','expired','rejected','done_for_day') for x in orders):
+  raise FailClosed('Unfinished paper order blocks new placement')
  bars=verified_market_bars(key=key,secret=secret,symbol=symbol,now=now,transport=transport)
  model=QNetwork()
  model.load_state_dict(torch.load(io.BytesIO(data),map_location='cpu',weights_only=True),strict=True)
@@ -168,6 +179,14 @@ def paper_decision(*,env,model_file,now=None,transport=None,execute=False):
     'accountFingerprint':verified['accountFingerprint'],
     'paperOnly':True,'liveOrders':0,'demoOrderSubmitted':False}
  if not execute or not side:return plan
+ # Legacy GitHub Actions is an ephemeral runner: no persistent broker intent
+ # journal or shared-account lock can be trusted there.
+ if env.get('GITHUB_ACTIONS')=='true':
+  raise FailClosed('Ephemeral GitHub runner cannot place PAPER orders')
+ # In production the old single-account standalone path has been retired.
+ # The shared account must use shared_runtime under a durable journal lock.
+ if not shared_mode and transport is None:
+  raise FailClosed('Legacy standalone PAPER POST disabled; use shared single-writer runtime')
  if env.get('SCALP_DEMO_PAPER_ENABLED')!='YES_DEMO_ONLY':
   raise FailClosed('Demo POST explicitly disabled; preflight only')
  payload={'symbol':symbol,'side':side,'type':'market','time_in_force':'gtc',
@@ -178,10 +197,25 @@ def paper_decision(*,env,model_file,now=None,transport=None,execute=False):
   qty=float(pos[0].get('qty','0'))
   if qty<=0:raise FailClosed('No paper position to close')
   payload['qty']=format(qty,'.8f')
+ if (on_intent is None)!=(on_ack is None):
+  raise FailClosed('Both durable intent and acknowledgement callbacks are mandatory')
+ if shared_mode and (on_intent is None or on_ack is None):
+  raise FailClosed('Shared paper execution requires a durable single-writer journal')
+ if on_intent:
+  on_intent({'clientOrderId':order_id,'symbol':symbol,
+    'side':side,'modelSha256':sha,
+    'accountFingerprint':hashlib.sha256(auth_config(env)[2].encode()).hexdigest(),
+    'sourceCandleMs':bars[-1]['t'],'maxOrderUsd':'10.00',
+    'paperOnly':True,'liveOrders':0})
  order=api_request(PAPER,'/v2/orders',key=key,secret=secret,method='POST',
                    body=payload,transport=transport)
  if not isinstance(order,dict) or order.get('client_order_id')!=order_id:
   raise FailClosed('Paper order reply did not confirm client ID')
+ if on_ack:
+  if not isinstance(order.get('id'),str) or not order['id']:
+   raise FailClosed('Broker acknowledgement lacks actual order identity')
+  on_ack({'clientOrderId':order_id,'brokerOrderId':order['id'],
+   'providerStatus':str(order.get('status','unknown')),'paperOnly':True})
  plan.update(status='PAPER_ORDER_SUBMITTED_NOT_FILLED',demoOrderSubmitted=True,
              paperOrderStatus=order.get('status','unknown'))
  return plan

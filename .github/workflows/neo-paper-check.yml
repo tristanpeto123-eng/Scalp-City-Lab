@@ -55,16 +55,20 @@ jobs:
               "SCALP_DEMO_PAPER_ACCOUNT_ID" not in runner or
               "SCALP_DEMO_MODEL_SHA256" not in runner or
               "SCALP_DEMO_PAPER_ENABLED" not in runner or
-              "vars.SCALP_DEMO_PAPER_ENABLED == 'YES_DEMO_ONLY'" not in wf or
+              "github.event_name != 'schedule'" not in wf or
+              "PAPER_WRITER_HOST_REQUIRED" not in wf or
               "on:" not in wf):
               raise SystemExit('G0: paper-only endpoint, hash, identity or opt-in gate failed')
-          print('G0: demo-money only; no anonymous broker writes')
+          if ("method='POST'" not in runner or
+              "Ephemeral GitHub runner cannot place PAPER orders" not in runner):
+              raise SystemExit('G0: missing journaled no-ephemeral-writer invariant')
+          print('G0: PAPER-host only; GitHub read-only preflight/plan')
           PY
       - name: Install numerical and actual DQN inference dependencies
         run: python -m pip install numpy 'torch>=2.3,<3'
       - name: Checker G1 — source-causal NEO memory, frozen weight isolation and paper-order mocks
         run: |
-          python -m unittest neo.test_pattern_memory rl.test_model_registry paper_sandbox.test_paper_executor -v
+          python -m unittest neo.test_pattern_memory rl.test_model_registry paper_sandbox.test_paper_executor paper_sandbox.test_shared_ledger paper_sandbox.test_shared_runtime -v
           python -m unittest rl.test_dqn_experiment rl.test_rapid_replay rl.test_five_min_replay -v
       - name: Checker G1 — ingest ten authentic archived five-minute markets twice
         run: |

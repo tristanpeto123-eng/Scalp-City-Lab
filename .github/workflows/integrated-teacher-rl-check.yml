@@ -34,6 +34,7 @@ jobs:
         run: |
           node --test scripts/integrated-teacher-rl-tests.mjs
           node --test teacher/shared-paper-observer-tests.mjs
+          node --test teacher/shared-paper-journal-tests.mjs
           node --test scripts/historical-screen-client-tests.mjs
           node --test scripts/qualification-bridge-tests.mjs
           node --test scripts/journey-nav-tests.mjs

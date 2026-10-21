@@ -1,4 +1,4 @@
-name: Scalp City — isolated DEMO PAPER pilot (never live)
+name: Scalp City — shared PAPER read-only commissioning (never live)
 on:
   push:
     branches: [main]
@@ -8,11 +8,13 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: Preflight verifies paper account, plan does no trades, paper permits tiny demo orders only after gates
+        description: Preflight or plan only. All actual PAPER POSTs require the private persistent single-writer host.
         type: choice
         default: preflight
-        options: [preflight, plan, paper]
+        options: [preflight, plan]
   schedule:
+    # Scheduled ephemeral GitHub PAPER order attempts are retired. The
+    # persistent single-writer PAPER host is the only eventual executor.
     - cron: '1,6,11,16,21,26,31,36,41,46,51,56 * * * *'
 permissions:
   contents: read
@@ -21,7 +23,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   isolated-paper:
-    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab' && (github.event_name != 'schedule' || vars.SCALP_DEMO_PAPER_ENABLED == 'YES_DEMO_ONLY')
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab' && github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -53,7 +55,7 @@ jobs:
         run: python -m pip install numpy 'torch>=2.3,<3'
       - name: Checker — mocked broker tests never submit actual orders
         run: python -m unittest paper_sandbox.test_paper_executor rl.test_model_registry -v
-      - name: PAPER — verify dedicated account and at most one guarded decision
+      - name: READ ONLY — verify existing paper account; never issue demo orders from GitHub
         env:
           SCALP_DEMO_PAPER_KEY: ${{ secrets.SCALP_DEMO_PAPER_KEY }}
           SCALP_DEMO_PAPER_SECRET: ${{ secrets.SCALP_DEMO_PAPER_SECRET }}
@@ -74,7 +76,10 @@ jobs:
             exit 1
           fi
           MODE="$REQUESTED_MODE"
-          if [ "$EVENT_NAME" = 'schedule' ]; then MODE=paper; fi
+          if [ "$MODE" = paper ] || [ "$EVENT_NAME" = schedule ]; then
+            echo 'PAPER_WRITER_HOST_REQUIRED: no simulated broker orders from ephemeral GitHub Actions'
+            exit 1
+          fi
           if [ "$EVENT_NAME" = 'push' ] || [ -z "$MODE" ]; then MODE=preflight; fi
           MODEL=''
           if [ "$MODE" != preflight ]; then
@@ -85,10 +90,6 @@ jobs:
             fi
             MODEL="demo-models/frozen/${SCALP_DEMO_SYMBOL//\//-}-${SCALP_DEMO_MODEL_SHA256}.pt"
             test -f "$MODEL" || { echo 'PAPER_FAIL_CLOSED: model is not frozen in paper-sandbox-models'; exit 1; }
-          fi
-          if [ "$MODE" = paper ] && [ "$SCALP_DEMO_PAPER_ENABLED" != YES_DEMO_ONLY ]; then
-            echo 'PAPER_FAIL_CLOSED: scheduled/manual paper execution must have explicit repository variable YES_DEMO_ONLY'
-            exit 1
           fi
           python -m paper_sandbox.paper_executor --mode "$MODE" ${MODEL:+--model "$MODEL"} | tee paper-evidence.log
       - name: Store demo-only audit (never real funds or credentials)

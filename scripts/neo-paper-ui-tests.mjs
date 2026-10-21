@@ -32,6 +32,9 @@ test('Neo chart training and PAPER account credentials cannot leak between jobs'
  assert.match(paper,/secrets\.SCALP_DEMO_PAPER_KEY/);
  assert.match(paper,/secrets\.SCALP_DEMO_PAPER_SECRET/);
  assert.doesNotMatch(paper,/secrets\.ALPACA_PAPER_KEY/);
- assert.match(paper,/vars\.SCALP_DEMO_PAPER_ENABLED == 'YES_DEMO_ONLY'/);
+ assert.match(paper,/github\.event_name != 'schedule'/);
+ assert.match(paper,/PAPER_WRITER_HOST_REQUIRED/);
+ assert.match(paper,/options: \[preflight, plan\]/);
+ assert.doesNotMatch(paper,/options: \[preflight, plan, paper\]/);
  assert.match(paper,/--mode "\$MODE"/);
 });
