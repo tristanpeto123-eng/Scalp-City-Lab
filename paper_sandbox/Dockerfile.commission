@@ -1,9 +1,11 @@
 # Private Scalp City PAPER commissioning host: stdlib-only, GET broker calls only.
-# This image deliberately does not install Torch or include any service
-# capable of executing a paper order. No LIVE or demo-money POST code starts.
+# This image deliberately ships ONLY the Python stdlib commissioning module.
+# No neural trading runtime, broker POST implementation or demo/live executor.
 FROM python:3.11-slim
 WORKDIR /app
-COPY paper_sandbox /app/paper_sandbox
+RUN mkdir -p /app/paper_sandbox
+COPY paper_sandbox/railway_commission.py /app/paper_sandbox/railway_commission.py
+COPY paper_sandbox/__init__.py /app/paper_sandbox/__init__.py
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     SCALP_READ_ONLY_ACCOUNT_PREFLIGHT=NO
