@@ -197,7 +197,7 @@ def paper_decision(*,env,model_file,now=None,transport=None,execute=False,
   on_intent({'clientOrderId':order_id,'symbol':symbol,
     'side':side,'modelSha256':sha,
     'accountFingerprint':hashlib.sha256(auth_config(env)[2].encode()).hexdigest(),
-    'sourceCandleMs':bars[-1]['t'],'maxOrderUsd':MAX_ORDER_USD,
+    'sourceCandleMs':bars[-1]['t'],'maxOrderUsd':'10.00',
     'paperOnly':True,'liveOrders':0})
  order=api_request(PAPER,'/v2/orders',key=key,secret=secret,method='POST',
                    body=payload,transport=transport)
