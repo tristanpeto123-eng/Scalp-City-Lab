@@ -1,0 +1,11 @@
+# Private Scalp City PAPER commissioning host: stdlib-only, GET broker calls only.
+# This image deliberately does not install Torch or include any service
+# capable of executing a paper order. No LIVE or demo-money POST code starts.
+FROM python:3.11-slim
+WORKDIR /app
+COPY paper_sandbox /app/paper_sandbox
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    SCALP_READ_ONLY_ACCOUNT_PREFLIGHT=NO
+EXPOSE 8080
+CMD ["python", "-m", "paper_sandbox.railway_commission"]
