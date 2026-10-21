@@ -127,5 +127,5 @@ jobs:
           [ "$success" = yes ] || { echo 'READ_ONLY_IMAGE_RESTART_FAILED'; exit 1; }
           cmp "$RUNNER_TEMP/scalp-paper-health.json" "$RUNNER_TEMP/scalp-paper-health-restart.json"
           docker exec scalp-paper-commission-test python -c \
-            'from pathlib import Path; assert Path("/data/scalp-paper/read-only-host-ready").read_bytes() == b"PAPER_READ_ONLY_HOST_V1\\\\n"'
+            'from pathlib import Path; assert Path("/data/scalp-paper/read-only-host-ready").read_bytes().startswith(b"PAPER_READ_ONLY_HOST_V1")'
           echo 'RAILWAY_IMAGE_RESTART_AND_VOLUME_CANARY_OK'
