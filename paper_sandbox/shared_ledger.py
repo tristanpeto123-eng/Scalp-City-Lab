@@ -61,8 +61,8 @@ class PaperIntentJournal:
                 raise JournalError('Concurrent paper writer already owns this host volume') from exc
             self._fd = fd
             self._locked = True
-            self.read_verified()
             try:
+                self.read_verified()
                 yield self
             finally:
                 self._locked = False
@@ -150,7 +150,12 @@ class PaperIntentJournal:
         try:
             if os.fstat(fd).st_mode & 0o077:
                 raise JournalError('Journal file permissions expose private evidence')
-            os.write(fd, line)
+            remaining = memoryview(line)
+            while remaining:
+                count = os.write(fd, remaining)
+                if count <= 0:
+                    raise JournalError('Short private journal write; block future orders')
+                remaining = remaining[count:]
             os.fsync(fd)
         finally:
             os.close(fd)
