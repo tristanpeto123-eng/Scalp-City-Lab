@@ -81,7 +81,7 @@ def _owned_history(snapshot, journal, symbol):
             'teacherObservationOnly':True,'unresolved':0,'paperOnly':True}
 
 
-def _runtime_gates(env):
+def _runtime_gates(env,*,mock_broker=False):
     if env.get('GITHUB_ACTIONS')=='true':
         raise FailClosed('Ephemeral GitHub Actions cannot be the shared PAPER account writer')
     if env.get('SCALP_SHARED_ACCOUNT_MODE')!='SINGLE_WRITER_TEACHER_READ_ONLY':
@@ -93,7 +93,10 @@ def _runtime_gates(env):
     if env.get('SCALP_DEMO_PAPER_ENABLED')!='YES_DEMO_ONLY':
         raise FailClosed('Existing tiny demo PAPER execution switch is OFF')
     path=env.get('SCALP_SHARED_ACCOUNT_JOURNAL_DIR','')
-    if not path.startswith('/data/') or path.endswith('/..') or '/../' in path:
+    safe_path=(path.startswith('/data/') and not path.endswith('/..') and '/../' not in path)
+    mock_path=(mock_broker and env.get('SCALP_INTERNAL_MOCK_ONLY')=='YES_UNIT_TEST' and
+               Path(path).is_absolute())
+    if not (safe_path or mock_path):
         raise FailClosed('Private persistent /data journal required; never GitHub/temporary disk')
     return PaperIntentJournal(path)
 
@@ -108,7 +111,7 @@ def shared_cycle(*,env,model_file,now=None,transport=None,execute=False):
           'paperOnly':True,'teacherReadOnly':True,
           'paperOrdersSubmitted':0,'liveOrders':0,
           'warning':'No account sharing or broker order enabled by preflight'}
-    journal=_runtime_gates(env)
+    journal=_runtime_gates(env,mock_broker=transport is not None)
     try:
         with journal.writer():
             # Re-read account under the exclusive SAME-HOST journal lock.
