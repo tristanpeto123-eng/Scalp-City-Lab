@@ -70,3 +70,59 @@ jobs:
               raise SystemExit('PASSIVE PAPER COMMISSION VIOLATION')
           print('PASSIVE_COMMISSION_PAPER_ONLY; NO_BROKER_ORDERS')
           PY
+
+      - name: Build and smoke-test the actual Railway read-only Docker image
+        run: |
+          set -euo pipefail
+          docker build -f paper_sandbox/Dockerfile.commission \
+            -t scalp-paper-readonly-commission:test .
+          mkdir -p "$RUNNER_TEMP/scalp-paper-commission"
+          chmod 700 "$RUNNER_TEMP/scalp-paper-commission"
+          docker run -d --name scalp-paper-commission-test \
+            -e SCALP_READ_ONLY_ACCOUNT_PREFLIGHT=NO \
+            -p 127.0.0.1:18080:8080 \
+            -v "$RUNNER_TEMP/scalp-paper-commission:/data" \
+            scalp-paper-readonly-commission:test
+          trap 'docker rm -f scalp-paper-commission-test >/dev/null 2>&1 || true' EXIT
+          success=no
+          for i in $(seq 1 20); do
+            if curl --silent --fail http://127.0.0.1:18080/health -o "$RUNNER_TEMP/scalp-paper-health.json"; then
+              success=yes
+              break
+            fi
+            sleep 1
+          done
+          if [ "$success" != yes ]; then
+            docker logs scalp-paper-commission-test
+            echo "READ_ONLY_RAILWAY_IMAGE_BOOT_FAILED"
+            exit 1
+          fi
+          python - <<'PY'
+          import json,os,pathlib
+          report=json.loads(pathlib.Path(os.environ['RUNNER_TEMP'],'scalp-paper-health.json').read_text())
+          if (report.get('schema')!='SCALP_SHARED_PAPER_COMMISSION_V1' or
+              report.get('storageReady') is not True or
+              report.get('writerEnabled') is not False or
+              report.get('paperOrdersSubmitted')!=0 or
+              report.get('liveOrdersSubmitted')!=0 or
+              report.get('account',{}).get('status')!='GET_ONLY_PREFLIGHT_NOT_REQUESTED'):
+              raise SystemExit('RAILWAY_IMAGE_FAILED_COLD_START_READ_ONLY_CONTRACT')
+          marker=pathlib.Path(os.environ['RUNNER_TEMP'],'scalp-paper-commission',
+                              'scalp-paper','read-only-host-ready')
+          if not marker.is_file():
+              raise SystemExit('RAILWAY_IMAGE_VOLUME_NOT_PERSISTING')
+          print('RAILWAY_IMAGE_COLD_START_OK; PRIVATE_VOLUME_OK; ZERO_BROKER_ORDERS')
+          PY
+          docker stop scalp-paper-commission-test >/dev/null
+          docker start scalp-paper-commission-test >/dev/null
+          success=no
+          for i in $(seq 1 20); do
+            if curl --silent --fail http://127.0.0.1:18080/health -o "$RUNNER_TEMP/scalp-paper-health-restart.json"; then
+              success=yes
+              break
+            fi
+            sleep 1
+          done
+          [ "$success" = yes ] || { echo 'READ_ONLY_IMAGE_RESTART_FAILED'; exit 1; }
+          cmp "$RUNNER_TEMP/scalp-paper-health.json" "$RUNNER_TEMP/scalp-paper-health-restart.json"
+          echo 'RAILWAY_IMAGE_RESTART_AND_VOLUME_CANARY_OK'
