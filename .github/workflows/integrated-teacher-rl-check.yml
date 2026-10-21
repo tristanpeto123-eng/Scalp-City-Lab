@@ -33,6 +33,7 @@ jobs:
       - name: Checker G0 — cross-page source truth, actual 5m DQN schema, no order authority
         run: |
           node --test scripts/integrated-teacher-rl-tests.mjs
+          node --test teacher/shared-paper-observer-tests.mjs
           node --test scripts/historical-screen-client-tests.mjs
           node --test scripts/qualification-bridge-tests.mjs
           node --test scripts/journey-nav-tests.mjs
