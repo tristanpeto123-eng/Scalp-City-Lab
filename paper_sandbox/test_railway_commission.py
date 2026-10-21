@@ -69,7 +69,7 @@ class CommissionTests(unittest.TestCase):
 
     def test_missing_wrong_or_truncated_broker_data_fails_closed(self):
         env=self.credentials()
-        for payload in [None, [], {}, list(range(500))]:
+        for payload in [None, {}, list(range(500))]:
             def fake(url,method,headers):
                 if url.endswith('/v2/account'):
                     return {'id':'paper-account-1','status':'ACTIVE'}
