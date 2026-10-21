@@ -126,9 +126,9 @@ class PaperIntentJournal:
         if kind not in KINDS or not isinstance(data, dict):
             raise JournalError('Invalid journal event')
         old = self.read_verified()
-        if self.unresolved():
-            raise JournalError('Unresolved previous order: human broker reconciliation required')
         if kind == 'INTENT':
+            if self.unresolved():
+                raise JournalError('Unresolved previous order: human broker reconciliation required')
             if not _valid_intent(data):
                 raise JournalError('Invalid or unsigned frozen model intent')
             if any(x['data']['clientOrderId'] == data['clientOrderId'] for x in old):
