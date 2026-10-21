@@ -54,6 +54,8 @@ def _source_credentials(env):
         return None, 'CREDENTIAL_REFERENCE_MISSING'
     try:
         parsed = json.loads(raw)
+        if not isinstance(parsed, dict):
+            return None, 'PAPER_CREDENTIAL_REFERENCE_INVALID'
         entry = parsed.get(symbol)
         if (not isinstance(parsed, dict) or
             not isinstance(entry, dict) or
