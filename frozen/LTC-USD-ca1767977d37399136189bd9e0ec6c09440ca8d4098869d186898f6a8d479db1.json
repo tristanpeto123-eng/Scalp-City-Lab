@@ -1,0 +1,16 @@
+{
+  "continuesLearning": false,
+  "graduated": false,
+  "liveOrders": 0,
+  "modelLocked": true,
+  "modelSha256": "ca1767977d37399136189bd9e0ec6c09440ca8d4098869d186898f6a8d479db1",
+  "origin": "RL_LEARNER_CHECKPOINT",
+  "ownerReleaseReference": "PAPER-EXPERIMENTAL-UNPROFITABLE-UNVERIFIED-20261021",
+  "paperOrders": 0,
+  "parallelResearchLearnerMayContinue": true,
+  "schema": "SCALP_IMMUTABLE_MODEL_RELEASE_V1",
+  "signedGradeVerified": false,
+  "sourceRunSha256": "fe50fceeeff7fac11c88dbf2fa5615d580a3aa61ad13af2ba0de8e69b50600ea",
+  "symbol": "LTC/USD",
+  "tradingFloorAdmitted": false
+}
