@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08101b">
+<title>Scalp City — Autonomous Robot Observer</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,sans-serif;color:#edf7ff;background:#08101b;--panel:#122236;--line:#31506a;--muted:#a6c2d3;--cyan:#71e2da;--positive:#8bf1b7;--negative:#ffa7a4;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%}body{background:radial-gradient(ellipse at 80% -10%,#203d55,transparent 55%),#08101b}
+button,select,textarea,input{font:inherit}button,select,textarea{color:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #fcdb91;outline-offset:3px}
+a{color:#96efdf}main{max-width:1160px;margin:auto;padding:clamp(12px,3vw,28px) clamp(12px,3vw,28px) 80px}
+header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-bottom:15px;border-bottom:1px solid #31506a}
+nav{display:flex;flex-wrap:wrap;gap:12px;font-size:.85rem}.mark{font-size:.78rem;font-weight:900;letter-spacing:.17em;color:var(--cyan)}h1{font-size:clamp(2rem,5vw,3.7rem);letter-spacing:-.05em;line-height:1;margin:15px 0 8px}h1 b{color:var(--cyan)}h2{margin:0 0 7px;font-size:1.25rem}p{color:var(--muted);line-height:1.45;margin:5px 0 14px}.kicker{text-transform:uppercase;letter-spacing:.13em;color:#8fd7d3;font-size:.69rem;font-weight:800}
+.panel{background:linear-gradient(145deg,#15293d,#101e30);border:1px solid #34516c;border-radius:17px;padding:clamp(14px,2.4vw,22px);margin-top:14px}
+.badge{border-radius:18px;padding:6px 10px;border:1px solid #4d7189;color:#d5f2f2;background:#203b51;font-size:.72rem;font-weight:800;letter-spacing:.04em}
+.banner{border:1px solid #946e37;background:#2a2531;padding:10px 14px;border-radius:12px;color:#f6dca4;font-size:.85rem;margin:14px 0;line-height:1.4}
+.topline{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.picker{display:flex;gap:8px;overflow:auto;padding:6px 1px 12px;scrollbar-width:thin}
+.picker button{white-space:nowrap;background:#1b3147;border:1px solid #375a77;border-radius:12px;padding:10px 14px;font-weight:800}
+.picker button[aria-pressed=true]{color:#08202d;background:#79dcd6;border-color:#79dcd6}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.metric{background:#0d2033;border:1px solid #294b65;padding:13px;border-radius:13px;min-height:95px}
+.metric small{color:#bed2df;font-size:.75rem}.metric strong{display:block;font-size:clamp(1.15rem,2.6vw,1.7rem);margin:8px 0 4px;font-variant-numeric:tabular-nums}.metric span{display:block;color:#92adbe;font-size:.71rem}
+.positive{color:var(--positive)!important}.negative{color:var(--negative)!important}
+.stage{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(250px,.8fr);gap:14px}
+.chart{height:276px;width:100%;display:block;border:1px solid #223f55;border-radius:12px;background:#091a2c}
+.signal{background:#0a1c2d;border:1px solid #335974;border-radius:13px;padding:16px}
+.signal strong{font-size:2rem;display:block;letter-spacing:.02em;margin:8px 0}
+.signal small{color:#adc9d8}.time{font-variant-numeric:tabular-nums;font-size:.8rem;color:#afcad6}
+.controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.action{border:1px solid #446881;background:#1d3b50;border-radius:12px;padding:11px 16px;font-weight:800;min-height:43px}
+.action.primary{background:#7de4d3;color:#07232d;border-color:#7de4d3}
+.action[disabled]{opacity:.45;cursor:not-allowed}
+input[type=range]{accent-color:#77e1d9;flex:1;min-width:140px}
+select,textarea{background:#0b2236;border:1px solid #4a6680;border-radius:10px;padding:11px}
+table{border-collapse:collapse;width:100%;text-align:left;font-variant-numeric:tabular-nums}th,td{padding:11px 9px;border-bottom:1px solid #2f4a5f;text-align:left;white-space:nowrap}th{font-size:.73rem;color:#abcbda}td{font-size:.84rem}.scroll{overflow-x:auto}
+.split{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.aside-note{font-size:.8rem;color:#a3bfcc}.fine{font-size:.76rem;color:#9bb5c7}
+.coach{display:grid;grid-template-columns:1fr;gap:10px}textarea{width:100%;min-height:88px;resize:vertical}.label{font-size:.79rem;color:#bcd5e2}
+#loadstatus{min-height:1.3em}#currentSignal{color:#9bdde1}.footer{margin-top:22px;font-size:.77rem;color:#a8c2ce}
+@media(max-width:800px){.stage,.split{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.chart{height:220px}}
+@media(max-width:400px){.controls{gap:7px}.action{padding:11px 12px}.picker button{padding:9px 11px}.metric{min-height:80px;padding:10px}.metric strong{font-size:1.15rem}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="mark">SCALP CITY / ROBOT ACADEMY</div>
+  <nav aria-label="Navigation">
+    <a href="./robot-academy.html">Academy</a>
+    <a href="./training-monitor.html">Training telemetry</a>
+    <a href="./mission-control.html">Mission control</a>
+  </nav>
+</header>
+<section aria-labelledby="title">
+  <p class="kicker" style="margin-top:22px">Director's autonomous observer</p>
+  <h1 id="title">Watch the robots <b>learn.</b></h1>
+  <p>The pupils independently update their neural networks in GitHub training batches. You watch their actual saved historical decisions, outcomes and statistics; coaching is optional.</p>
+  <div class="banner" role="note"><strong>Historical virtual replay — not live or PAPER trading.</strong> Playback animates already-published decisions; the iPhone itself does not retrain the model. No credentials, deposits or broker orders.</div>
+</section>
+<section class="panel" aria-label="Training source and pupil">
+  <div class="topline"><div><div class="kicker">Saved autonomous research batch</div><h2>Robot fleet <span id="batchtime" class="time">—</span></h2></div><button class="action" id="refresh" type="button">Refresh evidence ↻</button></div>
+  <p id="loadstatus" role="status" aria-live="polite">Checking published independent source data…</p>
+  <div id="pupils" class="picker" role="group" aria-label="Choose a robot pupil"></div>
+  <div class="metrics" aria-label="Selected pupil metrics">
+    <div class="metric"><small>Virtual P&L in replay</small><strong id="net">—</strong><span>From 50 virtual units</span></div>
+    <div class="metric"><small>Closed virtual trades</small><strong id="closes">—</strong><span>Through playback position</span></div>
+    <div class="metric"><small>Virtual win rate</small><strong id="wins">—</strong><span>Closed replay trades only</span></div>
+    <div class="metric"><small>Peak drawdown</small><strong id="drawdown">—</strong><span>Observed replay equity</span></div>
+    <div class="metric"><small>Gradient updates</small><strong id="updates">—</strong><span>Published cumulative training</span></div>
+    <div class="metric"><small>Development net</small><strong id="development">—</strong><span>Separate virtual reference window</span></div>
+    <div class="metric"><small>Double-cost stress</small><strong id="stress">—</strong><span>Separate virtual reference window</span></div>
+    <div class="metric"><small>Broker orders</small><strong id="orders">0</strong><span>Not a connected paper account</span></div>
+  </div>
+</section>
+<section class="stage" aria-label="Historical playback">
+  <div class="panel">
+    <div class="topline"><div><div class="kicker">Published historical 5-minute bars</div><h2 id="symbol">No verified pupil</h2></div><span id="replayflag" class="badge">NO REPLAY LOADED</span></div>
+    <svg class="chart" id="chart" viewBox="0 0 900 270" aria-label="Historical price curve with simulated trade entries and exits" role="img">
+      <text x="450" y="140" text-anchor="middle" fill="#abc2d3" font-size="17">Waiting for verified historical candles</text>
+    </svg>
+    <p class="fine">Only past candles through the selected playback position are shown. Green markers = virtual buys; red markers = virtual sells.</p>
+    <div class="controls">
+      <button class="action primary" id="play" type="button" disabled>▶ Play</button>
+      <button class="action" id="step" type="button" disabled>Next ▷</button>
+      <label class="label" for="speed">Speed</label>
+      <select id="speed" aria-label="Playback speed"><option value="1">1×</option><option value="4" selected>4×</option><option value="12">12×</option></select>
+    </div>
+    <div class="controls"><label class="label" for="position">History</label><input id="position" type="range" min="0" max="0" value="0" disabled><span id="progress" class="time">0 / 0</span></div>
+  </div>
+  <div class="panel">
+    <div class="kicker">Robot's recorded decision</div>
+    <div class="signal">
+      <small id="currentTime">No replay loaded</small>
+      <strong id="currentSignal">—</strong>
+      <div id="positionState" class="aside-note">Awaiting saved decisions</div>
+    </div>
+    <h2 style="margin-top:21px">What you are watching</h2>
+    <p id="description">No synthetic trading feed or imaginary neural updates. Source records appear after the next published GitHub batch.</p>
+    <p class="aside-note" id="sourceid">Model SHA: awaiting verified research</p>
+    <p class="aside-note" id="sourceUpdated">Generated: —</p>
+    <a id="sourceLink" target="_blank" rel="noopener noreferrer" href="https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/robot-dqn-replay.yml">View training runs ↗</a>
+  </div>
+</section>
+<section class="split">
+  <div class="panel">
+    <div class="topline"><h2>Virtual trade tape</h2><span class="badge">Replay evidence</span></div>
+    <p>Actual recorded simulated fills from the selected historical episode. No fills means the model stayed inactive.</p>
+    <div class="scroll">
+      <table><thead><tr><th>Historical time</th><th>Action</th><th>Simulated price ($)</th><th>Virtual net after exit</th></tr></thead>
+      <tbody id="trades"><tr><td colspan="4">Waiting for replay data</td></tr></tbody></table>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>Coach's desk <span class="badge">Optional</span></h2>
+    <p>Only step in when necessary. Your coaching is saved as a <strong>local review proposal</strong>, not silently injected into the learner's rewards or training data.</p>
+    <div class="coach">
+      <label class="label" for="coachingType">What deserves a review?</label>
+      <select id="coachingType">
+        <option>Investigate inactivity</option><option>Review transaction costs</option>
+        <option>Review excessive trading</option><option>Review drawdown</option>
+        <option>Consider more exploration</option>
+      </select>
+      <label class="label" for="coachingNote">Optional observation</label>
+      <textarea id="coachingNote" maxlength="250" placeholder="Example: Model remains flat in this regime. Check exploration during training only."></textarea>
+      <button class="action" id="saveCoach" disabled type="button">Save review proposal</button>
+      <button class="action" id="exportCoach" disabled type="button">Export proposals JSON</button>
+      <p class="fine" id="coachingStatus" role="status">No coaching applied. The neural model keeps learning independently.</p>
+    </div>
+  </div>
+</section>
+<p class="footer">Scalp City Lab — source-bound historical virtual experiments. Improvements between repeated development windows may reflect overfitting and do not prove profitability. No actual PAPER or live-money orders, independent forward grades, or automatic graduation.</p>
+</main>
+<script type="module" src="./robot-observer.js"></script>
+</body></html>
