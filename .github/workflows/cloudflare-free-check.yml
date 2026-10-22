@@ -1,0 +1,106 @@
+name: Cloudflare free research audit — independent Checker
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'cloudflare/**'
+      - 'docs/CLOUDFLARE-FREE-AUDIT.md'
+      - '.github/workflows/cloudflare-free-check.yml'
+      - '.github/workflows/cloudflare-free-deploy.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cf-free-audit-check
+  cancel-in-progress: false
+jobs:
+  cf-free-security:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Checker G0 — free SQLite only; no broker order routes or paid features
+        run: |
+          python - <<'PY'
+          import pathlib,json
+          root=pathlib.Path('cloudflare')
+          config=json.loads((root/'wrangler.jsonc').read_text())
+          assert config['main']=='src/index.mjs'
+          assert config['name']=='scalp-city-free-audit'
+          assert config['durable_objects']['bindings']==[{'name':'AUDIT_LEDGER','class_name':'ResearchAudit'}]
+          assert config['exports']=={'ResearchAudit':{'type':'durable-object','storage':'sqlite'}}
+          assert not config.get('triggers') and not config.get('queues')
+          assert not config.get('kv_namespaces') and not config.get('r2_buckets')
+          assert not config.get('d1_databases') and not config.get('containers')
+          assert not config.get('workflows') and not config.get('unsafe')
+          assert config['observability']['enabled'] is False
+          data=' '.join((root/'src'/x).read_text() for x in ('index.mjs','audit-core.mjs'))
+          for forbidden in ('https://paper-api.alpaca.markets',
+            'https://api.alpaca.markets','api.alpaca','fetchBroker',
+            'placeOrder(', 'submitOrder(', 'do_POST', 'ALPACA_PAPER_SECRET',
+            'APCA_API_SECRET_KEY', 'async scheduled(', 'async queue('):
+              if forbidden in data:raise SystemExit('CLOUDFLARE_UNSAFE_WORKER: '+forbidden)
+          print('CF_FREE_G0_NO_FUNDS_NO_CRON_NO_PAID_STORAGE')
+          PY
+      - name: Install Wrangler for local Worker+SQLite integration
+        working-directory: cloudflare
+        run: npm install --no-audit --no-fund
+      - name: Checker G1 — real Worker bundle dry-run
+        working-directory: cloudflare
+        run: |
+          node --check src/index.mjs
+          node --check src/audit-core.mjs
+          npm run dry-run
+      - name: Checker G1 — tamper evidence and no-admission schema tests
+        working-directory: cloudflare
+        run: npm test
+      - name: Checker G1 — actual free SQLite Durable Object idempotency and restart
+        working-directory: cloudflare
+        run: |
+          set -euo pipefail
+          TOKEN="$(openssl rand -hex 40)"
+          printf 'SCALP_CF_AUDIT_TOKEN=%s\n' "$TOKEN" > .dev.vars
+          chmod 600 .dev.vars
+          export SCALP_CF_TEST_TOKEN="$TOKEN"
+          export SCALP_CF_LOCAL_URL=http://127.0.0.1:8787
+          mkdir -p "$RUNNER_TEMP/scalp-cf-audit-state"
+          PID=''
+          cleanup() {
+            if [ -n "$PID" ]; then kill "$PID" 2>/dev/null || true; wait "$PID" 2>/dev/null || true; fi
+            rm -f .dev.vars
+          }
+          trap cleanup EXIT
+          start_worker() {
+            npx wrangler dev --local --ip 127.0.0.1 --port 8787 \
+              --persist-to "$RUNNER_TEMP/scalp-cf-audit-state" \
+              > "$RUNNER_TEMP/scalp-cf-dev.log" 2>&1 &
+            PID="$!"
+            ready=no
+            for i in $(seq 1 45); do
+              if curl --silent --fail --max-time 2 http://127.0.0.1:8787/health >/dev/null; then
+                ready=yes; break
+              fi
+              if ! kill -0 "$PID" 2>/dev/null; then break; fi
+              sleep 1
+            done
+            if [ "$ready" != yes ]; then
+              tail -n 80 "$RUNNER_TEMP/scalp-cf-dev.log"
+              echo 'CF_FREE_SQLITE_WORKER_BOOT_FAIL'
+              exit 1
+            fi
+          }
+          start_worker
+          node test/smoke.mjs initial
+          kill "$PID" 2>/dev/null || true
+          wait "$PID" 2>/dev/null || true
+          PID=''
+          sleep 2
+          start_worker
+          node test/smoke.mjs restart
+          echo 'CF_FREE_G1_REAL_SQLITE_RESTART_AND_PARALLEL_DEDUP_PASS'
