@@ -1,0 +1,22 @@
+# Scalp City PAPER — private, read-only commissioning ONLY.
+# Provisioning is opt-in via Render Blueprints. Committing this file does NOT deploy.
+# Cost: paid single-instance compute + 1 GB persistent storage.
+services:
+  - type: pserv
+    name: scalp-paper-readonly-commissioner
+    runtime: docker
+    region: frankfurt
+    plan: 0.5c-512mb
+    numInstances: 1
+    autoDeployTrigger: "off"
+    dockerfilePath: ./paper_sandbox/Dockerfile.commission
+    dockerContext: .
+    envVars:
+      - key: SCALP_READ_ONLY_ACCOUNT_PREFLIGHT
+        value: "NO"
+      - key: PORT
+        value: "8080"
+    disk:
+      name: scalp-paper-readonly-journal
+      mountPath: /data
+      sizeGB: 1
