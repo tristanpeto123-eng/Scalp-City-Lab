@@ -1,0 +1,70 @@
+name: Scalp City — autonomous iPhone observer Checker
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'robot-observer.html'
+      - 'robot-observer.js'
+      - 'robot-observer-core.mjs'
+      - 'robot-observer-tests.mjs'
+      - 'robot-academy.html'
+      - 'training-monitor.html'
+      - '.github/workflows/robot-observer-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  observer-g0-g1:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout reviewed code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Checkout previously published autonomous research evidence
+        uses: actions/checkout@v4
+        with:
+          ref: rl-learning-memory
+          path: verified-rl-history
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: G0 — reject broker mutation and fake live learning
+        run: |
+          node --check robot-observer-core.mjs
+          node --check robot-observer.js
+          node --check robot-observer-tests.mjs
+          node --input-type=module <<'JS'
+          import {readFileSync} from 'node:fs';
+          import assert from 'node:assert/strict';
+          const ui=readFileSync('robot-observer.html','utf8');
+          const client=readFileSync('robot-observer.js','utf8');
+          const core=readFileSync('robot-observer-core.mjs','utf8');
+          const academy=readFileSync('robot-academy.html','utf8');
+          const monitor=readFileSync('training-monitor.html','utf8');
+          for(const id of ['pupils','chart','play','position','trades','net','closes',
+             'wins','drawdown','updates','development','stress','coachingType',
+             'coachingNote','saveCoach','exportCoach','loadstatus']){
+            assert.match(ui,new RegExp('id="'+id+'"'));
+          }
+          assert.ok(academy.includes('href="./robot-observer.html"'));
+          assert.ok(monitor.includes('href="./robot-observer.html"'));
+          assert.ok(ui.includes('not live or PAPER trading'));
+          assert.ok(ui.includes('local review proposal'));
+          assert.ok(client.includes('rl-rapid/latest.json'));
+          assert.ok(client.includes('validateTrace(raw,pupil)'));
+          assert.ok(core.includes('paperOrders !== 0'));
+          assert.ok(core.includes('UNVERIFIED_RESEARCH'));
+          assert.ok(!client.includes('APCA-API-SECRET-KEY'));
+          assert.ok(!client.includes('POST'));
+          assert.ok(!client.includes('Bearer '));
+          assert.ok(!client.includes('github_pat_'));
+          console.log('OBSERVER_G0_MOBILE_READ_ONLY_UI; NO_BROKER; NO_FAKE_LEARNING');
+          JS
+      - name: G1 — 10 real source-bound virtual trading traces and coaching isolation
+        env:
+          SCALP_OBSERVER_RESEARCH_ROOT: verified-rl-history
+        run: node robot-observer-tests.mjs
