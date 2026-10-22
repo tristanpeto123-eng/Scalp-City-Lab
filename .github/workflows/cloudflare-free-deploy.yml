@@ -1,0 +1,65 @@
+name: Cloudflare free read-only audit — manual deployment only
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type DEPLOY_FREE_RESEARCH_ONLY after verifying Cloudflare Workers FREE"
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: scalp-cf-free-manual-deploy
+  cancel-in-progress: false
+jobs:
+  deploy-read-only:
+    if: >-
+      github.repository == 'tristanpeto123-eng/Scalp-City-Lab' &&
+      github.ref == 'refs/heads/main' &&
+      inputs.confirm == 'DEPLOY_FREE_RESEARCH_ONLY' &&
+      vars.CLOUDFLARE_FREE_PLAN_CONFIRMED == 'YES_FREE_NO_BILLING'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check no paid products, triggers or broker write code
+        run: |
+          python - <<'PY'
+          import json,pathlib
+          config=json.loads(pathlib.Path('cloudflare/wrangler.jsonc').read_text())
+          assert len(config['durable_objects']['bindings'])==1
+          assert list(config['exports'].values())==[{'type':'durable-object','storage':'sqlite'}]
+          assert not config.get('triggers') and not config.get('containers')
+          assert not config.get('r2_buckets') and not config.get('queues')
+          src=pathlib.Path('cloudflare/src/index.mjs').read_text()
+          assert 'paperOrdersSubmitted:0' in src and 'liveOrdersSubmitted:0' in src
+          assert 'https://paper-api.alpaca.markets' not in src
+          assert 'https://api.alpaca.markets' not in src
+          print('CF_MANUAL_DEPLOY_RESEARCH_ONLY_NO_PAID_CONFIG')
+          PY
+      - name: Check Cloudflare account credentials are available privately
+        env:
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$CF_ACCOUNT" ] || [ -z "$CF_API_TOKEN" ]; then
+            echo 'Cloudflare credentials not configured in GitHub Actions Secrets; no deployment'
+            exit 1
+          fi
+      - name: Install and test standalone free Worker
+        working-directory: cloudflare
+        run: |
+          npm install --no-audit --no-fund
+          npm test
+          npm run dry-run
+      - name: Deploy only the research/audit Worker (no PAPER or LIVE trading)
+        working-directory: cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy
