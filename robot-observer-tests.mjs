@@ -78,7 +78,7 @@ assert.equal(first.openPosition,true);
 assert.equal(first.winRate,null);
 assert.equal(last.completed.length,1);
 assert.equal(last.fills.length,2);
-assert.equal(last.net,0.2);
+assert.ok(Math.abs(last.net-0.2)<1e-9, 'floating point virtual P&L tolerance');
 assert.equal(last.winRate,100);
 assert.equal(last.openPosition,false);
 assert.ok(last.maxDrawdownPct>0);
