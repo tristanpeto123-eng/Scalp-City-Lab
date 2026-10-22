@@ -1,0 +1,59 @@
+name: Cloudflare free research history — manually sync ten ungraded models
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type SYNC_UNVERIFIED_RESEARCH_ONLY after free Worker + private audit token are configured"
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: scalp-cf-free-unverified-research-sync
+  cancel-in-progress: false
+jobs:
+  research-receipts-only:
+    if: >-
+      github.repository == 'tristanpeto123-eng/Scalp-City-Lab' &&
+      github.ref == 'refs/heads/main' &&
+      inputs.confirm == 'SYNC_UNVERIFIED_RESEARCH_ONLY' &&
+      vars.CLOUDFLARE_FREE_PLAN_CONFIRMED == 'YES_FREE_NO_BILLING'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: rl-learning-memory
+          path: rl-history
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify research-only report and emit no broker orders
+        run: |
+          node cloudflare/scripts/export-research-receipts.mjs rl-history/rl-rapid/latest.json \
+            > "$RUNNER_TEMP/cf-receipts.jsonl"
+          node --input-type=module -e "
+            import fs from 'node:fs';
+            const rows=fs.readFileSync(process.env.RUNNER_TEMP+'/cf-receipts.jsonl','utf8')
+              .trim().split('\n').map(JSON.parse);
+            if(rows.length!==10 || rows.some(x=>x.paperOrders!==0||
+              x.liveOrders!==0||x.officialGrades!==0||
+              x.source!=='GITHUB_RESEARCH_UNVERIFIED'))
+              throw Error('NOT_RESEARCH_ONLY');
+            console.log('TEN_MODEL_UNVERIFIED_RESEARCH_VALIDATED_NO_ORDERS');
+          "
+      - name: Publish idempotent receipts to one authenticated CF Worker
+        env:
+          SCALP_CF_FREE_WORKER_URL: ${{ vars.SCALP_CF_FREE_WORKER_URL }}
+          SCALP_CF_AUDIT_TOKEN: ${{ secrets.SCALP_CF_AUDIT_TOKEN }}
+        run: |
+          if [ -z "$SCALP_CF_FREE_WORKER_URL" ] ||
+             [ -z "$SCALP_CF_AUDIT_TOKEN" ]; then
+            echo 'Cloudflare worker URL or audit token not configured; no research sync'
+            exit 1
+          fi
+          node cloudflare/scripts/sync-research.mjs rl-history/rl-rapid/latest.json
