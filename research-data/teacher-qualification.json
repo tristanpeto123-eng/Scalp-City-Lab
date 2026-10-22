@@ -1,10 +1,10 @@
 {
   "schema": "TEACHER_PUBLIC_HISTORICAL_SCREEN_V1",
   "source": "INDEPENDENT_HISTORICAL_SCREEN_NO_PAPER_ORDERS",
-  "checkedAt": "2026-10-22T04:34:03.482Z",
-  "lastResearchTrainingEnd": "2026-09-15T21:45:00.000Z",
-  "academySourceSha256": "325dff6dff91eac33ab6e7f2e2576f3bcc1d6d39ab492e3766cba79d172f8427",
-  "memorySourceSha256": "0c31b34d9fce655385c0ffeb80ffa25a9b303647d7942ae02c9260b9eb806c62",
+  "checkedAt": "2026-10-22T09:36:38.354Z",
+  "lastResearchTrainingEnd": "2026-09-16T05:00:00.000Z",
+  "academySourceSha256": "ce95655638514b9c2722efaf11ce488b590264f40e3ade6522f2c12987b0ee31",
+  "memorySourceSha256": "5b411e58600be34bb509ceeadf174d060818d81364a1c4c6f4de59576ff74dde",
   "eligibleCount": 0,
   "screenedCount": 10,
   "slotsCap": 3,
@@ -32,12 +32,12 @@
     {
       "symbol": "ETH/USD",
       "verdict": "BLOCKED",
-      "trainingTrades": 22,
-      "trainingNetGbp": -1.57,
-      "trainingWinRatePct": 27.27,
+      "trainingTrades": 20,
+      "trainingNetGbp": -1.26,
+      "trainingWinRatePct": 30,
       "historicalHoldoutNetGbp": null,
       "doubleCostNetGbp": null,
-      "lastTrainingSample": "2026-09-15T21:45:00.000Z",
+      "lastTrainingSample": "2026-09-16T05:00:00.000Z",
       "reasons": [
         "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
         "UNDER_30_TRAINING_CLOSES",
@@ -104,14 +104,13 @@
     {
       "symbol": "LINK/USD",
       "verdict": "BLOCKED",
-      "trainingTrades": 24,
-      "trainingNetGbp": -0.2,
-      "trainingWinRatePct": 25,
+      "trainingTrades": 22,
+      "trainingNetGbp": 0.16,
+      "trainingWinRatePct": 27.27,
       "historicalHoldoutNetGbp": null,
       "doubleCostNetGbp": null,
-      "lastTrainingSample": "2026-09-15T21:45:00.000Z",
+      "lastTrainingSample": "2026-09-16T05:00:00.000Z",
       "reasons": [
-        "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
         "UNDER_30_TRAINING_CLOSES",
         "AUDIT: AUDITOR: parent model lineage not independently identifiable"
       ]
