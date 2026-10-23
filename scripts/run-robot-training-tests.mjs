@@ -384,3 +384,20 @@ test('the full memory fallback fails closed if source metadata is missing or exc
   await assert.rejects(get(meta),/SHA|size|inconsistent/);
  }
 });
+
+test('actual 3.5 MiB research-memory sized Contents payload validates without recursive regexp stack',async()=>{
+ const padded={...memory,largeArchivePadding:'x'.repeat(3500000)};
+ const original=JSON.stringify(padded),raw=Buffer.from(original,'utf8');
+ const encoded=raw.toString('base64'),sha='d'.repeat(40);
+ assert.ok(encoded.length>4600000);
+ const remote=await fetchMemory({token:'TEST_ONLY',fetchImpl:async(url,options)=>{
+  assert.equal(options.method,'GET');
+  assert.match(url,/\/contents\/scalp-learning\/history.json/);
+  return {ok:true,json:async()=>({
+   sha,size:raw.byteLength,encoding:'base64',content:encoded
+  })};
+ }});
+ assert.equal(remote.blobSha,sha);
+ assert.equal(remote.memory.experiments.length,memory.experiments.length);
+ assert.equal(remote.memory.largeArchivePadding.length,3500000);
+});

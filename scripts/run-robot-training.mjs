@@ -414,8 +414,12 @@ export async function fetchMemory({token,fetchImpl=fetch}={}){
  // GitHub can wrap base64 lines and append CRLF even after '=' padding.
  // Normalize transport whitespace before checking canonical base64 syntax.
  const compact=typeof encoded==='string'?encoded.replace(/\s/g,''):null;
- if(!compact||
-    !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(compact))
+ // Never run nested/repeating base64 regexes over multi-megabyte payloads:
+ // Node's RegExp engine can exhaust its call stack on valid saved archives.
+ // Strict canonical round-trip below independently checks ALL alphabet and
+ // padding bytes in linear time, including rejecting URL-safe and junk chars.
+ if(!compact||compact.length%4!==0||
+    compact.length>4*Math.ceil(MAX_MEMORY_BYTES/3))
   throw Error('Research memory content is missing or invalid base64');
  const bytes=Buffer.from(compact,'base64');
  // Node's decoder accepts some malformed input; fail closed on altered padding.
