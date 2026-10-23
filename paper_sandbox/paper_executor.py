@@ -23,12 +23,18 @@ DATA='https://data.alpaca.markets'
 MAX_ORDER_USD=10.00
 MAX_DAILY_ORDERS=4
 PREFIX='SCALPDEMO5M-'
+# Source-controlled RELEASE LOCK: remain OFF until verified independent returns,
+# frozen model, private durable host and a separately audited owner release.
+# Environment variables must NEVER unlock a broker POST by themselves.
+BROKER_POST_RELEASED = False
 class FailClosed(Exception):pass
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,*a,**k):raise FailClosed('HTTP redirects prohibited on paper requests')
 
 def api_request(base,path,*,key,secret,method='GET',body=None,transport=None):
+ if base==PAPER and method=='POST' and transport is None and not BROKER_POST_RELEASED:
+  raise FailClosed('PAPER broker POST source-locked: independent evidence and host commissioning pending')
  if base not in (PAPER,DATA) or not path.startswith('/') or '//' in path:
   raise FailClosed('Only pinned Alpaca paper/data API hosts permitted')
  if base==PAPER and not (path.startswith('/v2/account') or
@@ -122,6 +128,8 @@ def verified_market_bars(*,key,secret,symbol,now,transport=None):
 
 def paper_decision(*,env,model_file,now=None,transport=None,execute=False,
                    shared_mode=False,on_intent=None,on_ack=None):
+ if execute and transport is None and not BROKER_POST_RELEASED:
+  raise FailClosed('PAPER broker execution source-locked pending independent evidence and commissioning')
  now=now or datetime.now(timezone.utc)
  if now.tzinfo is None:raise FailClosed('UTC-aware time mandatory')
  verified=preflight(env=env,transport=transport,shared_mode=shared_mode)
