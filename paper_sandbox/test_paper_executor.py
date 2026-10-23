@@ -113,4 +113,16 @@ class PaperSandboxTests(unittest.TestCase):
    with self.assertRaisesRegex(FailClosed,'budget'):
     paper_decision(env=env,model_file=f,now=NOW,transport=transport,execute=True)
 
+
+    def test_source_release_interlock_cannot_be_bypassed_by_environment(self):
+        env,blob=setup()
+        # This must fail before any GET/POST, even if legacy flags are YES.
+        env.update(SCALP_SHARED_PAPER_APPROVED='EXACT_SHARED_PAPER_PILOT_V1',
+                   SCALP_DEMO_PAPER_ENABLED='YES_DEMO_ONLY')
+        with self.assertRaisesRegex(FailClosed,'source-locked'):
+            paper_decision(env=env,model_file='/never/access/model.pt',execute=True)
+        with self.assertRaisesRegex(FailClosed,'source-locked'):
+            api_request(PAPER,'/v2/orders',key='key',secret='secret',
+                        method='POST',body={'symbol':'BTC/USD'})
+
 if __name__=='__main__':unittest.main()

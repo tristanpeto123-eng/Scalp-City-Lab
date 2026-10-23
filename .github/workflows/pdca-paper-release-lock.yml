@@ -1,0 +1,30 @@
+name: PDCA PAPER execution interlock - unit and release gate
+on:
+  pull_request:
+    paths:
+      - 'paper_sandbox/**'
+      - '.github/workflows/pdca-paper-release-lock.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-interlock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install isolated test-only dependencies
+        run: python -m pip install numpy 'torch>=2.3,<3'
+      - name: Assert no production broker POST or autonomous paper release
+        run: |
+          python -m unittest paper_sandbox.test_paper_executor paper_sandbox.test_shared_runtime paper_sandbox.test_shared_ledger -v
+          python - <<'PY'
+          from paper_sandbox.paper_executor import BROKER_POST_RELEASED
+          assert BROKER_POST_RELEASED is False, 'Source-controlled broker release must stay OFF'
+          print('PAPER_EXECUTION_SOURCE_LOCKED; BROKER_ORDERS=0')
+          PY

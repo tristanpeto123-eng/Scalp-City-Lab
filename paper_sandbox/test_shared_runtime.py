@@ -135,5 +135,15 @@ class SharedRuntimeTests(unittest.TestCase):
                 shared_cycle(env=env,model_file=model,transport=transport,now=NOW,execute=True)
 
 
+
+    def test_private_shared_order_host_is_locked_in_source_even_with_all_env_flags(self):
+        with tempfile.TemporaryDirectory() as dirname:
+            env,blob=config(Path(dirname)/'journal')
+            env['SCALP_SHARED_ACCOUNT_JOURNAL_DIR']='/data/scalp-paper'
+            env['SCALP_SHARED_PAPER_APPROVED']='EXACT_SHARED_PAPER_PILOT_V1'
+            env['SCALP_DEMO_PAPER_ENABLED']='YES_DEMO_ONLY'
+            with self.assertRaisesRegex(FailClosed,'source-locked'):
+                shared_cycle(env=env,model_file=None,transport=None,execute=True)
+
 if __name__=='__main__':
     unittest.main()
