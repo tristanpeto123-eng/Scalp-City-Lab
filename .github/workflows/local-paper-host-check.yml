@@ -1,0 +1,72 @@
+name: Scalp City — local zero-subscription paper host Checker
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'paper_sandbox/local_host.py'
+      - 'paper_sandbox/test_local_host.py'
+      - 'paper_sandbox/deploy/**'
+      - 'docs/SCALP-LOCAL-PAPER-ZERO-SUBSCRIPTION.md'
+      - '.github/workflows/local-paper-host-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  local-host-g0-g1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: G0 — safe defaults, no host charges, NTP and no backfill
+        run: |
+          python -m compileall -q paper_sandbox/local_host.py rl/model_registry.py
+          python - <<'PY'
+          from pathlib import Path
+          root=Path('paper_sandbox/deploy')
+          env=(root/'paper.env.example').read_text()
+          service=(root/'systemd/scalp-paper-check.service').read_text()
+          timer=(root/'systemd/scalp-paper-check.timer').read_text()
+          host=Path('paper_sandbox/local_host.py').read_text()
+          if ('SCALP_LOCAL_MODE=OFF' not in env or
+              'Environment=SCALP_LOCAL_MODE=OFF' not in service or
+              'PrivateTmp=true' not in service or
+              'ProtectSystem=strict' not in service or
+              'NoNewPrivileges=true' not in service or
+              'User=scalpbot' not in service or
+              'ReadWritePaths=/data/scalp-paper' not in service or
+              'Persistent=false' not in timer or
+              'SCALP_LOCAL_HOST_OWNER_RELEASE' not in host or
+              'GITHUB_ACTIONS' not in host):
+              raise SystemExit('LOCAL_G0: safe no-hosting contract violated')
+          for line in env.splitlines():
+              if not line.startswith('#') and any(key in line for key in (
+                'SCALP_DEMO_PAPER_KEY=', 'SCALP_DEMO_PAPER_SECRET=',
+                'SCALP_DEMO_PAPER_ACCOUNT_ID=', 'SCALP_SHARED_PAPER_APPROVED=',
+                'SCALP_LOCAL_HOST_OWNER_RELEASE=')):
+                  raise SystemExit('LOCAL_G0: credential or writer gate unexpectedly set')
+          print('LOCAL_G0_OFF_BY_DEFAULT; NO_PAPER_KEY; NO_BROKER_WRITER_ARMED')
+          PY
+      - name: G1 — actual five-minute no-backfill Linux timer is parsable
+        run: |
+          systemd-analyze calendar '*-*-* *:02,07,12,17,22,27,32,37,42,47,52,57:00' --iterations=5
+      - name: G1 — local mocked OFF, preflight, frozen model plan and explicit owner gate
+        run: |
+          python -m unittest paper_sandbox.test_local_host rl.test_model_registry -v
+      - name: G1 — no live Alpaca executor included in this oneshot entrypoint
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          data=Path('paper_sandbox/local_host.py').read_text()
+          if ('https://api.alpaca.markets' in data or
+              'def do_POST' in data or
+              'import torch' in data or
+              'os.system(' in data or
+              'subprocess' in data):
+              raise SystemExit('LOCAL_G1: host wrapper exceeds controlled dependency scope')
+          print('LOCAL_G1_SOURCE_ONLY; ZERO_BROKER_POSTS; NO_CLOUD_RESOURCES')
+          PY

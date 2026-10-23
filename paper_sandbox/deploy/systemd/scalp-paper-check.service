@@ -1,0 +1,33 @@
+# Runs only on an existing Raspberry Pi / spare 64-bit Linux computer.
+# OFF is the default. All higher modes are explicit and fail closed.
+[Unit]
+Description=Scalp City PAPER owner-gated local five-minute check
+Documentation=https://github.com/tristanpeto123-eng/Scalp-City-Lab
+Wants=network-online.target
+After=network-online.target
+ConditionPathIsDirectory=/data/scalp-paper
+
+[Service]
+Type=oneshot
+User=scalpbot
+Group=scalpbot
+WorkingDirectory=/opt/scalp-city/app
+Environment=SCALP_LOCAL_MODE=OFF
+EnvironmentFile=-/etc/scalp-city/paper.env
+ExecStart=/opt/scalp-city/venv/bin/python -m paper_sandbox.local_host
+TimeoutStartSec=130
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+LockPersonality=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+ReadWritePaths=/data/scalp-paper
