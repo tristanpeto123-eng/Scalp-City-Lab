@@ -103,6 +103,12 @@ def _runtime_gates(env,*,mock_broker=False):
 
 def shared_cycle(*,env,model_file,now=None,transport=None,execute=False):
     """Review-only unless every dedicated shared-account gate is satisfied."""
+    # Source-controlled interlock: no real broker POST even if all legacy
+    # environmental flags are accidentally or maliciously switched on.
+    if execute and transport is None:
+        from paper_sandbox.paper_executor import BROKER_POST_RELEASED
+        if not BROKER_POST_RELEASED:
+            raise FailClosed('Shared PAPER broker execution source-locked; independent evidence and host not commissioned')
     snapshot=preflight(env=env,transport=transport,shared_mode=True)
     if not execute:
         return {'status':'SHARED_PAPER_PREFLIGHT_ONLY',
