@@ -20,4 +20,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --stack-trace-limit=70 scripts/production-memory-research-check.mjs
+      - name: Repeat actual authenticated large-memory GET (no writes)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node --stack-trace-limit=70 scripts/production-memory-research-check.mjs
