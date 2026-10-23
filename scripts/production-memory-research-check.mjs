@@ -1,7 +1,7 @@
 // Read-only reproduction of production research against the actual saved history.
 // No GitHub token, private broker keys, POST or persistence permitted.
 import {readFile} from 'node:fs/promises';
-import {checkMemory,evaluateAll} from './run-robot-training.mjs';
+import {checkMemory,evaluateAll,fetchMemory} from './run-robot-training.mjs';
 const file=process.argv[2]||'ci-memory/scalp-learning/history.json';
 let step='READ';
 try {
@@ -11,6 +11,14 @@ try {
  checkMemory(memory);
  console.log('RESEARCH_STACK_STAGE',JSON.stringify({
   step:'CHECK_MEMORY',experiments:memory.experiments.length,bytes:Buffer.byteLength(text)}));
+ step='AUTHENTICATED_READ_ONLY_GITHUB_FETCH';
+ if(!process.env.GITHUB_TOKEN)throw Error('Diagnostic requires a read-only GitHub token');
+ const source=await fetchMemory({token:process.env.GITHUB_TOKEN});
+ if(source.memory.experiments.length<memory.experiments.length)
+  throw Error('Remote memory is older than checked-out immutable snapshot');
+ console.log('RESEARCH_STACK_STAGE',JSON.stringify({step,
+  fetchedExperiments:source.memory.experiments.length,
+  immutableSourceSha:source.blobSha,orderWrites:0}));
  step='EVALUATE_ALL';
  const result=await evaluateAll({
   memory,dataDir:'validation-data',batchesPerPupil:3,now:Date.now()});
