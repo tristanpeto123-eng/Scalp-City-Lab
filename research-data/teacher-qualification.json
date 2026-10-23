@@ -1,10 +1,10 @@
 {
   "schema": "TEACHER_PUBLIC_HISTORICAL_SCREEN_V1",
   "source": "INDEPENDENT_HISTORICAL_SCREEN_NO_PAPER_ORDERS",
-  "checkedAt": "2026-10-23T00:32:03.499Z",
-  "lastResearchTrainingEnd": "2026-09-16T21:30:00.000Z",
-  "academySourceSha256": "e8fd0f4993d135a0fe12b3d1ace9a25c4b77b1dc0554975395454768277108ce",
-  "memorySourceSha256": "0dd526b1c9de026ef5abd9b418ceeaa38d23ae3910d24ec49d99e7adfc42f107",
+  "checkedAt": "2026-10-23T18:26:35.680Z",
+  "lastResearchTrainingEnd": "2026-09-17T17:15:00.000Z",
+  "academySourceSha256": "87ccd83c3f9a1b55937a11af232c6e4f461eafc5f2f3f39a136960e4eff7147b",
+  "memorySourceSha256": "78565fcd786d91324133d64efb97e7141d4246c894ea308da99ce74873a15f8e",
   "eligibleCount": 0,
   "screenedCount": 10,
   "slotsCap": 3,
@@ -17,145 +17,149 @@
     {
       "symbol": "BTC/USD",
       "verdict": "BLOCKED",
-      "trainingTrades": 22,
-      "trainingNetGbp": -0.76,
-      "trainingWinRatePct": 31.82,
+      "trainingTrades": 25,
+      "trainingNetGbp": -1.6,
+      "trainingWinRatePct": 24,
       "historicalHoldoutNetGbp": null,
       "doubleCostNetGbp": null,
-      "lastTrainingSample": "2026-09-12T15:15:00.000Z",
+      "lastTrainingSample": "2026-09-11T22:15:00.000Z",
       "reasons": [
         "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
         "UNDER_30_TRAINING_CLOSES",
-        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+        "AUDIT: AUDITOR: frozen training fingerprint unavailable or changed"
       ]
     },
     {
       "symbol": "ETH/USD",
       "verdict": "BLOCKED",
-      "trainingTrades": 20,
-      "trainingNetGbp": -1.26,
-      "trainingWinRatePct": 30,
+      "trainingTrades": 46,
+      "trainingNetGbp": -8.1098,
+      "trainingWinRatePct": 8.7,
       "historicalHoldoutNetGbp": null,
       "doubleCostNetGbp": null,
-      "lastTrainingSample": "2026-09-16T05:00:00.000Z",
+      "lastTrainingSample": "2026-08-15T21:45:00.000Z",
       "reasons": [
         "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
-        "UNDER_30_TRAINING_CLOSES",
-        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+        "AUDIT: AUDITOR: frozen training fingerprint unavailable or changed"
       ]
     },
     {
       "symbol": "SOL/USD",
       "verdict": "BLOCKED",
-      "trainingTrades": 21,
-      "trainingNetGbp": 0.36,
-      "trainingWinRatePct": 33.33,
+      "trainingTrades": 23,
+      "trainingNetGbp": -0.79,
+      "trainingWinRatePct": 60.87,
       "historicalHoldoutNetGbp": null,
       "doubleCostNetGbp": null,
-      "lastTrainingSample": "2026-09-15T17:15:00.000Z",
+      "lastTrainingSample": "2026-09-11T22:15:00.000Z",
       "reasons": [
+        "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
         "UNDER_30_TRAINING_CLOSES",
-        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+        "AUDIT: AUDITOR: frozen training fingerprint unavailable or changed"
       ]
     },
     {
       "symbol": "XRP/USD",
       "verdict": "BLOCKED",
-      "trainingTrades": 20,
-      "trainingNetGbp": -0.8,
-      "trainingWinRatePct": 55,
+      "trainingTrades": 24,
+      "trainingNetGbp": -1.32,
+      "trainingWinRatePct": 62.5,
       "historicalHoldoutNetGbp": null,
       "doubleCostNetGbp": null,
-      "lastTrainingSample": "2026-09-15T17:15:00.000Z",
+      "lastTrainingSample": "2026-09-11T22:15:00.000Z",
       "reasons": [
         "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
         "UNDER_30_TRAINING_CLOSES",
-        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+        "AUDIT: AUDITOR: frozen training fingerprint unavailable or changed"
       ]
     },
     {
       "symbol": "ADA/USD",
       "verdict": "BLOCKED",
       "trainingTrades": 25,
-      "trainingNetGbp": 0.06,
-      "trainingWinRatePct": 72,
+      "trainingNetGbp": -0.53,
+      "trainingWinRatePct": 52,
       "historicalHoldoutNetGbp": null,
       "doubleCostNetGbp": null,
-      "lastTrainingSample": "2026-09-13T13:30:00.000Z",
+      "lastTrainingSample": "2026-09-11T22:15:00.000Z",
       "reasons": [
+        "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
         "UNDER_30_TRAINING_CLOSES",
-        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+        "AUDIT: AUDITOR: frozen training fingerprint unavailable or changed"
       ]
     },
     {
       "symbol": "AVAX/USD",
       "verdict": "BLOCKED",
-      "trainingTrades": 21,
-      "trainingNetGbp": 0.07,
-      "trainingWinRatePct": 57.14,
+      "trainingTrades": 20,
+      "trainingNetGbp": -3.6783,
+      "trainingWinRatePct": 25,
       "historicalHoldoutNetGbp": null,
       "doubleCostNetGbp": null,
-      "lastTrainingSample": "2026-09-15T21:45:00.000Z",
+      "lastTrainingSample": "2026-08-15T21:45:00.000Z",
       "reasons": [
+        "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
         "UNDER_30_TRAINING_CLOSES",
-        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+        "AUDIT: AUDITOR: frozen training fingerprint unavailable or changed"
       ]
     },
     {
       "symbol": "LINK/USD",
       "verdict": "BLOCKED",
-      "trainingTrades": 22,
-      "trainingNetGbp": 0.16,
-      "trainingWinRatePct": 27.27,
+      "trainingTrades": 25,
+      "trainingNetGbp": -2.24,
+      "trainingWinRatePct": 52,
       "historicalHoldoutNetGbp": null,
       "doubleCostNetGbp": null,
-      "lastTrainingSample": "2026-09-16T05:00:00.000Z",
+      "lastTrainingSample": "2026-09-11T22:15:00.000Z",
       "reasons": [
+        "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
         "UNDER_30_TRAINING_CLOSES",
-        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+        "AUDIT: AUDITOR: frozen training fingerprint unavailable or changed"
       ]
     },
     {
       "symbol": "DOGE/USD",
       "verdict": "BLOCKED",
-      "trainingTrades": 30,
-      "trainingNetGbp": -1.05,
-      "trainingWinRatePct": 53.33,
+      "trainingTrades": 25,
+      "trainingNetGbp": -1.7,
+      "trainingWinRatePct": 44,
       "historicalHoldoutNetGbp": null,
       "doubleCostNetGbp": null,
-      "lastTrainingSample": "2026-09-12T18:15:00.000Z",
+      "lastTrainingSample": "2026-09-11T22:15:00.000Z",
       "reasons": [
         "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
-        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+        "UNDER_30_TRAINING_CLOSES",
+        "AUDIT: AUDITOR: frozen training fingerprint unavailable or changed"
       ]
     },
     {
       "symbol": "LTC/USD",
       "verdict": "BLOCKED",
-      "trainingTrades": 24,
-      "trainingNetGbp": 0.66,
-      "trainingWinRatePct": 70.83,
+      "trainingTrades": 23,
+      "trainingNetGbp": -0.48,
+      "trainingWinRatePct": 65.22,
       "historicalHoldoutNetGbp": null,
       "doubleCostNetGbp": null,
-      "lastTrainingSample": "2026-09-15T17:15:00.000Z",
+      "lastTrainingSample": "2026-09-11T22:15:00.000Z",
       "reasons": [
+        "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
         "UNDER_30_TRAINING_CLOSES",
-        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+        "AUDIT: AUDITOR: frozen training fingerprint unavailable or changed"
       ]
     },
     {
       "symbol": "BCH/USD",
       "verdict": "BLOCKED",
-      "trainingTrades": 20,
-      "trainingNetGbp": -1.72,
-      "trainingWinRatePct": 50,
+      "trainingTrades": 30,
+      "trainingNetGbp": -4.03,
+      "trainingWinRatePct": 46.67,
       "historicalHoldoutNetGbp": null,
       "doubleCostNetGbp": null,
-      "lastTrainingSample": "2026-09-15T17:15:00.000Z",
+      "lastTrainingSample": "2026-09-11T22:15:00.000Z",
       "reasons": [
         "NEGATIVE_OR_ZERO_TRAINING_PROFIT",
-        "UNDER_30_TRAINING_CLOSES",
-        "AUDIT: AUDITOR: parent model lineage not independently identifiable"
+        "AUDIT: AUDITOR: frozen training fingerprint unavailable or changed"
       ]
     }
   ],
