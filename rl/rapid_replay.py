@@ -11,7 +11,8 @@ import math
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from .dqn_experiment import SYMBOLS, FIVE_MIN_MS, run, split_development, validate_snapshot
+from .dqn_experiment import SYMBOLS, FIVE_MIN_MS, run, split_development, validate_snapshot, evaluate
+from .profit_objective import assess_profit_objective, OBJECTIVE_ID
 
 REPORT_SCHEMA='SCALP_RAPID_RL_REPLAY_V1'
 def sha256(path):
@@ -110,6 +111,17 @@ def train_replay_batch(*,data_dir,root,episodes=1,seed=7,symbols=SYMBOLS,
               progress.get('deltaStressedNetVirtual') is not None or
               progress.get('improvedUnderBothCostAssumptions') is not False):
             raise ValueError('First checkpoint cannot invent an improvement')
+        # Independent frozen candidate assessment on the SAME development
+        # window: compare to cash and buy/hold under explicit fees. Never
+        # use this gate as a training reward or a PAPER/Teacher admission.
+        objective=assess_profit_objective(current['validation'],
+          current['validationDoubleCostStress'],
+          {'cash':evaluate(None,validation,strategy='cash'),
+           'buy_hold':evaluate(None,validation,strategy='buy_hold')})
+        if (objective.get('forwardVerified') is not False or
+            objective.get('automaticPromotion') is not False or
+            objective.get('brokerOrders')!=0):
+            raise ValueError('RL profit objective attempted forward promotion')
         for k in ('steps','gradientUpdates','simulatedClosedTrades','simulatedOpens'):
             if not isinstance(stats.get(k),int) or stats[k]<0:
                 raise ValueError('Missing measured RL metric '+k)
@@ -141,6 +153,7 @@ def train_replay_batch(*,data_dir,root,episodes=1,seed=7,symbols=SYMBOLS,
             'laterDevelopmentStressedNetGbp':current['validationDoubleCostStress']['netProfitGbp'],
             'laterDevelopmentMaxDrawdownPct':current['validation']['maxDrawdownPct'],
             'checkpointProgress':progress,
+            'profitObjective':objective,
             'beatPreviousCheckpointSameWindow':progress['improvedUnderBothCostAssumptions'],
             'positiveUnderStressedCosts':current['validation']['netProfitGbp']>0 and
                 current['validationDoubleCostStress']['netProfitGbp']>0,
@@ -164,6 +177,8 @@ def train_replay_batch(*,data_dir,root,episodes=1,seed=7,symbols=SYMBOLS,
         'checkpointComparisonPupils':sum(p['checkpointProgress']['previousModelSha256']
                                          is not None for p in reports),
         'checkpointImprovedPupils':sum(p['beatPreviousCheckpointSameWindow'] for p in reports),
+        'profitObjectiveId':OBJECTIVE_ID,
+        'profitDevelopmentGatePasses':sum(p['profitObjective']['developmentGatePassed'] for p in reports),
         'pupils':reports,'sealedHoldoutAccessed':False,
         'verifiedForwardGrades':0,'paperOrders':0,'liveOrders':0,'automaticAdmissions':0,
         'claim':'Native complete 5-minute candles replayed sequentially. No 1-second observations, broker trades or proven predictive returns.'

@@ -55,7 +55,7 @@ jobs:
         run: python -m pip install numpy 'torch>=2.3,<3'
       - name: Checker — check historical replay policy and gradient integrity
         run: |
-          python -m unittest rl.test_dqn_experiment rl.test_rapid_replay rl.test_virtual_trade_journal rl.test_checkpoint_progress -v
+          python -m unittest rl.test_dqn_experiment rl.test_rapid_replay rl.test_virtual_trade_journal rl.test_checkpoint_progress rl.test_profit_objective -v
           python -m compileall -q rl
       - name: Reject stale or fabricated source feeds before research
         run: |
@@ -87,6 +87,14 @@ jobs:
               r['paperOrders'] or r['liveOrders'] or r['automaticAdmissions'] or
               r['verifiedForwardGrades'] or r['sealedHoldoutAccessed'] or
               r['marketBarTimeframe']!='5Min' or r['decisionsAreNotBrokerTrades'] is not True or
+              r.get('profitObjectiveId')!='MAXIMISE_NET_PROFIT_AFTER_FEES_AND_SLIPPAGE_V1' or
+              r.get('profitDevelopmentGatePasses')!=sum(
+                p.get('profitObjective',{}).get('developmentGatePassed',False)
+                for p in r['pupils']) or
+              any(p.get('profitObjective',{}).get('brokerOrders')!=0 or
+                  p.get('profitObjective',{}).get('forwardVerified') is not False or
+                  p.get('profitObjective',{}).get('automaticPromotion') is not False
+                  for p in r['pupils']) or
               r['decisionCount']<=0 or r['gradientUpdates']<=0 or
               r.get('checkpointComparisonPupils')!=sum(
                   p['initialCheckpointSha256'] is not None for p in r['pupils']) or
