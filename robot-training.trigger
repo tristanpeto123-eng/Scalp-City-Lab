@@ -24,3 +24,4 @@ Scheduled cycles may produce no new experiment when saved history overlaps or da
 2026-10-19: postmerge UTC-budget correction commissioning test for actual new historical evaluations, paper orders OFF.
 
 2026-10-23 PDCA research regression validation canary 1/3 (after source fix; no PAPER orders)
+2026-10-23 PDCA research regression validation canary 2/3 (no PAPER orders)
