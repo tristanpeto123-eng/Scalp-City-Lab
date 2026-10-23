@@ -1,0 +1,23 @@
+name: Research full-memory regression
+on:
+  pull_request:
+    paths: ['scripts/production-memory-research-check.mjs', '.github/workflows/research-production-replay-check.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: scalp-learning-memory
+          path: ci-memory
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --stack-trace-limit=70 scripts/production-memory-research-check.mjs
