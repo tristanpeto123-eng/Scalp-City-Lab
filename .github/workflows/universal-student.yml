@@ -1,0 +1,161 @@
+name: Universal Student — cross-market research training
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Market the student should study (real completed 5m crypto snapshots only)"
+        type: choice
+        required: true
+        default: BTC/USD
+        options:
+          - BTC/USD
+          - ETH/USD
+          - SOL/USD
+          - XRP/USD
+          - ADA/USD
+          - AVAX/USD
+          - LINK/USD
+          - DOGE/USD
+          - LTC/USD
+          - BCH/USD
+      source:
+        description: "Previously trained model to transfer into a NEW student (DQN architecture)"
+        type: choice
+        required: true
+        default: BTC/USD
+        options:
+          - BTC/USD
+          - ETH/USD
+          - SOL/USD
+          - XRP/USD
+          - ADA/USD
+          - AVAX/USD
+          - LINK/USD
+          - DOGE/USD
+          - LTC/USD
+          - BCH/USD
+      episodes:
+        description: "Capped historical training episodes (1–10)"
+        type: number
+        required: true
+        default: 3
+  pull_request:
+    branches: [main]
+    paths:
+      - 'universal_student/**'
+      - 'universal-student.html'
+      - 'universal-student-tests.mjs'
+      - '.github/workflows/universal-student.yml'
+      - 'robot-academy.html'
+permissions:
+  contents: read
+concurrency:
+  group: universal-student-research
+  cancel-in-progress: false
+jobs:
+  checker:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: node --test universal-student-tests.mjs
+      - run: python -m unittest universal_student.test_run_github -v
+      - uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
+        with:
+          ref: rl-5m-data
+          path: universal-data-input
+          sparse-checkout: snapshots
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
+        with:
+          ref: rl-learning-memory
+          path: universal-seed-input
+          sparse-checkout: models
+          persist-credentials: false
+      - name: REAL cross-market trained-checkpoint smoke — read-only
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m pip install 'numpy>=1.26,<3' 'torch>=2.3,<3'
+          python -m universal_student.run_github --target ETH/USD --source BTC/USD --episodes 1 \
+            --data-root universal-data-input --seed-root universal-seed-input --state-root universal-smoke-output
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("universal-smoke-output/universal-student-data/markets/ETH-USD.json")
+          j=json.loads(p.read_text())
+          assert j["sourceSymbol"]=="BTC/USD" and j["targetSymbol"]=="ETH/USD"
+          assert j["brokerOrders"]==0 and j["liveOrders"]==0 and j["officialGrade"] is None
+          assert len(j["generations"])==1
+          print("REAL_DQN_CROSS_MARKET_SMOKE_PASS")
+          PY
+  research:
+    needs: checker
+    if: github.event_name == 'workflow_dispatch' && github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: write
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: rl-5m-data
+          path: universal-data-input
+          sparse-checkout: snapshots
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: rl-learning-memory
+          path: universal-seed-input
+          sparse-checkout: models
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: universal-student-memory
+          path: universal-state
+          sparse-checkout: |
+            universal-student-data
+            universal-student-models
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install 'numpy>=1.26,<3' 'torch>=2.3,<3'
+      - name: Validate saved weight lineage and train isolated model (NO BROKER)
+        run: |
+          python -m universal_student.run_github \
+            --target '${{ inputs.target }}' \
+            --source '${{ inputs.source }}' \
+            --episodes '${{ inputs.episodes }}'
+      - name: Append-only student research save (not a release)
+        working-directory: universal-state
+        run: |
+          git config user.name 'scalp-city-research-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add universal-student-data universal-student-models
+          if git diff --cached --quiet; then
+            echo 'No research changes'
+          else
+            git commit -m "research(universal): persist isolated student generation"
+            git push origin HEAD:universal-student-memory
+          fi
+      - name: Publication boundary
+        run: |
+          echo 'Historical-only research checkpoint saved to the dedicated memory branch.'
+          echo 'No signed grade, paper order, live order, market approval, or production promotion.'
