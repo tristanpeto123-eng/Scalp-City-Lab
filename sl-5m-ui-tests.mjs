@@ -16,7 +16,7 @@ assert.equal(new Set(ids).size,ids.length,'no duplicated element IDs');
 for(const [,id] of code.matchAll(/\$\('([^']+)'\)/g)){
  assert.ok(ids.includes(id),'UI references an absent element: '+id);
 }
-assert.match(code,/fiveSession\.bars\.slice\(from,end\+1\)/,'replay chart draws only revealed bars');
+assert.match(code,/view=bars\.slice\(from,end\+1\)/,'replay chart draws only revealed bars');
 assert.match(code,/predictSL\(/,'neural policy integrated');
 assert.doesNotMatch(code,/fetch\(|WebSocket|sendOrder|placeOrder|tradeAPI/,'offline read-only UI');
 console.log('SL 5m UI checks passed: valid module JavaScript, working element references, future-candle masking, no order route');
