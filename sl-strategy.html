@@ -732,4 +732,5 @@ load();loopRestore();restoreFiveHistory();
 initSLPaperUI({getConfig:loopConf,isLoopBusy:()=>learningLoopActive||learningLoopBusy,getLoop:()=>learningLoopState});
 window.__slAppStarted=true;
 try{loopPollStatus();}catch(err){$('loopQuota').textContent='Hourly quota record requires attention: '+err.message;}
-</script></body></html>
+</script><script src="./journey-nav.js" defer></script>
+</body></html>

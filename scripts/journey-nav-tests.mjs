@@ -1,53 +1,55 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import {Script} from 'node:vm';
 const root=new URL('../',import.meta.url);
-const pages=['index.html','agent-city.html','robot-academy.html','teacher-console.html',
-  'trading-floor.html','strategy-validation.html','mission-control.html'];
-test('each Scalp City area exposes its shared route map without replacing original interactions',async()=>{
- const navigator=await readFile(new URL('journey-nav.js',root),'utf8');
+const pages=[
+ 'index.html','mission-control.html','strategy-validation.html','sl-strategy.html',
+ 'robot-academy.html','student-progress.html','universal-student.html',
+ 'training-monitor.html','market-replay-5m.html','robot-observer.html','neo-lab.html',
+ 'teacher-console.html','trading-floor.html','agent-city.html'
+];
+const content=name=>readFile(new URL(name,root),'utf8');
+test('one six-area map covers all 14 Scalp City screens',async()=>{
+ const js=await content('journey-nav.js');
+ assert.doesNotThrow(()=>new Script(js));
  for(const route of ['mission-control.html','strategy-validation.html','robot-academy.html',
-    'teacher-console.html','trading-floor.html','agent-city.html'])assert.ok(navigator.includes(route));
- assert.match(navigator,/aria-expanded/);
- assert.match(navigator,/Escape/);
- assert.doesNotMatch(navigator,/broker|paperOrder\(|fetch\(['"]https:/);
+   'teacher-console.html','trading-floor.html','agent-city.html'])assert.ok(js.includes("path:'"+route+"'"),route);
  for(const page of pages){
-  const text=await readFile(new URL(page,root),'utf8');
-  assert.match(text,/journey-nav\.js/,'Missing journey nav on '+page);
-  assert.match(text,/mission-control\.html/,'Missing mission entry on '+page);
+  const html=await content(page);
+  assert.match(html,/journey-nav\.js/,page);
  }
+ assert.match(js,/aria-current/);
+ assert.match(js,/aria-expanded/);
+ assert.match(js,/Escape/);
+ assert.match(js,/data-area/);
+ assert.match(js,/Legacy research workstation/);
+ assert.doesNotMatch(js,/paperOrder\(|\/v2\/orders|APCA-API-SECRET-KEY/);
 });
-test('Mission Control has all four canonical entry links and evidence-only data sources',async()=>{
- const html=await readFile(new URL('mission-control.html',root),'utf8');
- assert.match(html,/ONE JOURNEY\. FOUR CONNECTED STAGES/);
- assert.match(html,/readResearch/);
- assert.match(html,/readHostingConnection/);
+test('historical evidence has exactly one visible owner but existing readers are preserved',async()=>{
+ const js=await content('journey-nav.js');
+ const teacher=await content('teacher-console.html');
+ const trade=await content('trading-floor.html');
+ assert.match(teacher,/id="qualification-bridge"/);
+ assert.match(teacher,/teacher\/qualification-bridge\.js/);
+ assert.match(trade,/ScalpHistoricalScreen/);
+ assert.match(js,/sc-retired-evidence/);
+ assert.match(js,/Teacher.s Office/);
+ assert.match(js,/sc-retired-links/);
+ const css=await content('journey-nav.css');
+ assert.match(css,/\.sc-retired-evidence\{display:none!important\}/);
+});
+test('PWA launches Command without removing the legacy research room',async()=>{
+ const pwa=JSON.parse(await content('manifest.webmanifest'));
+ assert.equal(pwa.start_url,'./mission-control.html');
+ const old=await content('index.html');
+ assert.match(old,/SCALP CITY LAB \/ SIMULATION ONLY/);
+ assert.match(old,/backtester-agent-ui\.js/);
+ assert.match(await content('journey-nav.js'),/Legacy research workstation/);
+});
+test('Mission Control retains actual research/evidence sources and no broker writes',async()=>{
+ const html=await content('mission-control.html');
  assert.match(html,/historical-lab-latest\.json/);
+ assert.match(html,/readHostingConnection/);
  assert.doesNotMatch(html,/APCA-API-SECRET-KEY|paperOrder\(|\/v2\/orders/);
-});
-
-test('current-stage handoff is visible and routes all steps without exposing trading authority',async()=>{
- const js=await readFile(new URL('journey-nav.js',root),'utf8');
- const css=await readFile(new URL('journey-nav.css',root),'utf8');
- const monitor=await readFile(new URL('training-monitor.html',root),'utf8');
- assert.match(js,/Continue to /);
- assert.match(js,/sc-journey-quick/);
- assert.match(js,/sc-journey-context/);
- assert.match(js,/training-monitor\.html/);
- assert.match(js,/if\(back\)panel\.append\(back\)/);
- assert.match(css,/\.sc-journey-quick/);
- assert.match(css,/\.sc-journey-next/);
- assert.match(monitor,/journey-nav\.js/);
- assert.match(monitor,/Next: Independent Qualification/);
- assert.doesNotMatch(js,/\/v2\/orders|APCA-API-SECRET-KEY/);
-});
-
-test('mobile launcher stays accessible and keeps contextual progression in the menu',async()=>{
- const css=await readFile(new URL('journey-nav.css',root),'utf8');
- const js=await readFile(new URL('journey-nav.js',root),'utf8');
- assert.match(css,/width:48px!important/);
- assert.match(css,/\.sc-journey-quick\{display:none!important\}/);
- assert.match(js,/setAttribute\('aria-label','Open Scalp City journey navigation'\)/);
- assert.match(js,/Training Monitor/);
- assert.match(js,/sc-journey-next/);
 });

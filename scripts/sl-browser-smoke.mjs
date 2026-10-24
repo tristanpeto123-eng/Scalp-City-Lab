@@ -13,7 +13,7 @@ const server=createServer(async(req,res)=>{
   if(!absolute.startsWith(base+'/'))throw Error('out of root');
   const bytes=await readFile(absolute);
   const ext=extname(absolute).toLowerCase();
-  res.setHeader('content-type',ext==='.mjs'||ext==='.js'?'text/javascript; charset=utf-8':ext==='.html'?'text/html; charset=utf-8':'application/octet-stream');
+  res.setHeader('content-type',ext==='.mjs'||ext==='.js'?'text/javascript; charset=utf-8':ext==='.html'?'text/html; charset=utf-8':ext==='.css'?'text/css; charset=utf-8':'application/octet-stream');
   res.end(bytes);
  }catch(error){res.statusCode=404;res.end('Not found');}
 });
@@ -42,6 +42,8 @@ try{
    page.on('response',r=>{if(r.status()>=400)errors.push('HTTP '+r.status()+' '+r.url())});
    await page.goto('http://127.0.0.1:'+port+'/sl-strategy.html',{waitUntil:'networkidle'});
    await page.waitForTimeout(1300);
+   assert.equal(await page.locator('#sc-global-navigation .sc-nav-area').count(),6,engine+' primary navigation incomplete');
+   assert.equal(await page.locator('#sc-global-navigation .sc-nav-tool').count(),2,engine+' research tools missing');
    const init=await page.locator('#fiveStatus').innerText();
    assert.ok(!init.includes('Checking for saved'),engine+' module never initialized: '+JSON.stringify(errors));
    assert.ok(!errors.length,engine+' boot console failures: '+JSON.stringify(errors));

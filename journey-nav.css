@@ -1,77 +1,38 @@
-/* Shared, accessible journey navigator; intentionally scoped from existing CSS. */
-.sc-journey-dock{position:fixed;z-index:10050;right:clamp(12px,2.4vw,32px);bottom:calc(92px + env(safe-area-inset-bottom,0px));color:#e8f4ff;font:500 13px/1.45 Inter,system-ui,sans-serif}
-.sc-journey-dock *{box-sizing:border-box}
-.sc-journey-trigger{background:linear-gradient(135deg,#c7a974,#e5ce99)!important;color:#0d1c2b!important;border:1px solid #f3dda8!important;box-shadow:0 8px 25px #0009;border-radius:30px!important;font:800 12px Inter,system-ui,sans-serif!important;letter-spacing:.025em!important;padding:11px 16px!important;cursor:pointer;display:flex;gap:9px;align-items:center}
-.sc-journey-trigger:focus-visible,.sc-journey-panel a:focus-visible,.sc-journey-close:focus-visible{outline:3px solid #a6fff1;outline-offset:3px}
-.sc-journey-trigger .sc-dot{height:8px;width:8px;background:#226c63;border-radius:50%;box-shadow:0 0 0 3px #226c632b}
-.sc-journey-panel{position:absolute;right:0;bottom:56px;width:min(355px,calc(100vw - 24px));max-height:min(620px,calc(100dvh - 115px));overflow:auto;border:1px solid #45627b;border-radius:18px;background:#0d2030f7;box-shadow:0 20px 65px #000b;padding:18px;backdrop-filter:blur(18px);color:#edf6ff;text-align:left}
-.sc-journey-panel[hidden]{display:none!important}
-.sc-journey-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.sc-journey-eyebrow{display:block;color:#c9aa74;letter-spacing:.14em;text-transform:uppercase;font-size:10px;font-weight:900}
-.sc-journey-name{font-weight:900;font-size:21px;letter-spacing:-.04em;margin:4px 0 6px}
-.sc-journey-close{background:#1b3244!important;color:#dceaf3!important;border:1px solid #4b6271!important;border-radius:9px!important;padding:5px 10px!important;cursor:pointer}
-.sc-journey-copy{margin:4px 0 15px;color:#b4ccdb;font-size:12px;line-height:1.55}
-.sc-journey-stages{display:grid;gap:7px;margin:0;padding:0;list-style:none}
-.sc-journey-stage{display:flex!important;gap:11px!important;padding:10px!important;border:1px solid #36546a!important;background:#172d3e!important;border-radius:11px!important;text-decoration:none!important;color:#d7e9f7!important;align-items:center}
-.sc-journey-stage:hover,.sc-journey-stage:focus{background:#234257!important;border-color:#8de1cf!important}
-.sc-journey-stage[aria-current="page"]{background:#234b51!important;border-color:#8ee7d3!important}
-.sc-stage-number{background:#2a4355;border:1px solid #537186;display:grid;place-items:center;border-radius:8px;min-width:30px;height:30px;font:800 12px ui-monospace,monospace}
-.sc-journey-stage strong{display:block;font-size:12px}
-.sc-journey-stage small{display:block;color:#a8c3d0;font-size:10px;margin-top:3px}
-.sc-journey-links{border-top:1px solid #345268;margin-top:13px;padding-top:12px;display:flex;gap:10px;flex-wrap:wrap}
-.sc-journey-links a{color:#a4e7db!important;text-decoration:underline!important;font-size:12px!important}
-@media(max-width:680px){.sc-journey-dock{right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px))}.sc-journey-trigger{font-size:11px!important;padding:10px 13px!important}.sc-journey-panel{max-height:calc(100dvh - 125px)}}
-@media(prefers-reduced-motion:no-preference){.sc-journey-panel{animation:sc-appear .15s ease-out}@keyframes sc-appear{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}}
-
-/* Float above interactive building selection in mobile Agent City. */
-@media(max-width:750px){body:has(#agentCityCanvas) .sc-journey-dock{bottom:calc(163px + env(safe-area-inset-bottom,0px))}}
-
-/* Persistent contextual next step + optional full journey map. */
-.sc-journey-dock{display:flex;flex-direction:column;align-items:flex-end;gap:7px}
-.sc-journey-quick{display:inline-flex;align-items:center;max-width:min(300px,calc(100vw - 32px));text-decoration:none!important;border:1px solid #6cafa7!important;border-radius:12px!important;padding:9px 12px!important;background:#0f3540ed!important;color:#c4f5ea!important;font:800 12px/1.3 Inter,system-ui,sans-serif!important;box-shadow:0 7px 22px #0009}
-.sc-journey-quick:hover,.sc-journey-next:hover{border-color:#ccf2dd!important;background:#1b4b55!important}
-.sc-journey-context{padding:12px 14px;margin:2px 0 13px;border:1px solid #416b71;border-radius:12px;background:#173640}
-.sc-journey-context strong{font-size:12px;color:#d8f7ec;display:block}
-.sc-journey-context p{color:#bad3dc;font-size:11px;margin:6px 0 0;line-height:1.5}
-.sc-journey-next{display:block!important;margin-top:13px;text-align:center;text-decoration:none!important;color:#112b31!important;background:#bcebdc!important;border:1px solid #bcebdc!important;padding:12px 14px!important;border-radius:10px!important;font-weight:900!important;font-size:12px!important}
-.sc-journey-back{display:block!important;margin-top:10px;color:#bad3dc!important;text-decoration:underline!important;font-size:12px!important}
-.sc-journey-panel{bottom:101px}
-@media(max-width:430px){
- .sc-journey-quick{font-size:11px!important;padding:8px 10px!important}
- .sc-journey-trigger{font-size:10px!important;padding:9px 12px!important}
- .sc-journey-panel{bottom:96px}
+/* Scalp City IA v2 shared navigation: only these scoped selectors own its UI. */
+#sc-global-navigation{box-sizing:border-box!important;position:relative;z-index:10010;background:#091d2bf5;color:#e7f4f4!important;border-bottom:1px solid #426774!important;padding:9px clamp(12px,3vw,36px)!important;margin:0!important;font:500 13px/1.45 Inter,system-ui,-apple-system,BlinkMacSystemFont,sans-serif!important;box-shadow:0 6px 20px #0003}
+#sc-global-navigation *{box-sizing:border-box!important}
+#sc-global-navigation .sc-nav-heading{display:flex;align-items:center;gap:14px;min-height:36px}
+#sc-global-navigation a{color:#d5e8ef!important;text-decoration:none!important;font-size:12px!important;letter-spacing:normal!important;white-space:normal}
+#sc-global-navigation .sc-nav-wordmark{font-size:12px!important;color:#f6d595!important;letter-spacing:.11em!important;font-weight:900!important;white-space:nowrap}
+#sc-global-navigation .sc-nav-context{font-size:11px;color:#accbd0;min-width:0}
+#sc-global-navigation .sc-nav-menu{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin-top:7px}
+#sc-global-navigation .sc-nav-areas{display:flex;gap:5px;flex-wrap:wrap}
+#sc-global-navigation .sc-nav-area,#sc-global-navigation .sc-nav-tool{display:inline-flex;align-items:center;min-height:37px;padding:8px 12px!important;border:1px solid #395b6d!important;border-radius:8px;background:#102b3c!important;color:#d5e8ef!important;font-weight:750;line-height:1.3}
+#sc-global-navigation .sc-nav-area[data-selected="true"]{color:#13252e!important;background:#b0e9d7!important;border-color:#b0e9d7!important}
+#sc-global-navigation .sc-nav-tools{display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-width:0}
+#sc-global-navigation .sc-nav-tools-label{color:#94b2c5;font-weight:850;font-size:11px}
+#sc-global-navigation .sc-nav-tool{background:#152b3b!important;border-color:#304f62!important;font-size:11px!important;padding:6px 9px!important;min-height:32px}
+#sc-global-navigation .sc-nav-tool[aria-current="page"]{outline:2px solid #e5c68b;outline-offset:-2px}
+#sc-global-navigation .sc-nav-purpose{color:#a6bdc9;font-size:11px}
+#sc-global-navigation .sc-nav-toggle{display:none;min-height:38px;margin:0 0 0 auto!important;padding:8px 12px!important;font:800 12px system-ui,sans-serif!important;background:#204353!important;border:1px solid #608a99!important;border-radius:9px;color:#e8fbf9!important;cursor:pointer}
+#sc-global-navigation a:focus-visible,#sc-global-navigation button:focus-visible{outline:3px solid #f3d38c!important;outline-offset:2px!important}
+.sc-retired-links{display:none!important}
+.sc-retired-evidence{display:none!important}
+.sc-evidence-owner{margin:16px auto;max-width:1150px;padding:12px 16px;border:1px solid #365b69;border-radius:11px;background:#102535;color:#bfdae5;font:13px/1.5 system-ui,sans-serif}
+.sc-evidence-owner .sc-evidence-link{color:#a4ecd3;text-decoration:underline;font-weight:800}
+@media(max-width:900px){
+ #sc-global-navigation .sc-nav-toggle{display:inline-flex!important;align-items:center}
+ #sc-global-navigation .sc-nav-menu{display:none!important}
+ #sc-global-navigation[data-expanded="true"] .sc-nav-menu{display:flex!important;flex-direction:column;align-items:stretch}
+ #sc-global-navigation .sc-nav-areas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+ #sc-global-navigation .sc-nav-area{justify-content:center;text-align:center}
+ #sc-global-navigation .sc-nav-tools{display:flex}
 }
-
-
-/* Consistent orientation strip in each primary Foundry room.
-   A position indicator, never a trading approval or progress claim. */
-.sc-workflow-rail{margin:14px auto 20px;max-width:1320px;padding:12px clamp(12px,2.5vw,24px);border:1px solid #425e72;border-radius:14px;background:#0d2233e8;color:#dceef4;font:500 12px/1.4 Inter,system-ui,sans-serif;box-shadow:0 9px 26px #0003;position:relative;z-index:6}
-.sc-workflow-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:11px}
-.sc-workflow-heading strong{font-weight:850;letter-spacing:.045em;color:#efdbb0}
-.sc-workflow-heading span{font-size:11px;color:#a6c4d0}
-.sc-workflow-track{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0;padding:0}
-.sc-workflow-track li{min-width:0}
-.sc-workflow-step{display:flex!important;gap:10px;align-items:center;min-height:61px;padding:9px 11px;border:1px solid #375667;border-radius:9px;text-decoration:none!important;background:#142d3c;color:#c4dce5!important;transition:background .16s ease,border-color .16s ease}
-.sc-workflow-step:hover,.sc-workflow-step:focus-visible{background:#214355;border-color:#95dbcd;outline-offset:2px}
-.sc-workflow-step[aria-current="page"]{border-color:#aedfcb!important;background:#24514b!important;color:#e5fff6!important;box-shadow:inset 0 0 0 1px #4b968b}
-.sc-workflow-num{flex:0 0 auto;font:800 12px ui-monospace,monospace;min-width:27px;text-align:center;padding:7px 5px;border-radius:7px;background:#2c4554;color:#e3d09d}
-.sc-workflow-labels{min-width:0}.sc-workflow-labels strong{display:block;font-size:12px;font-weight:850;line-height:1.25}.sc-workflow-labels small{display:block;font-size:10px;color:#b5ccd5;margin-top:4px;line-height:1.3}
-body > .sc-workflow-rail{margin:14px clamp(12px,4vw,42px) 20px;max-width:none}
-body:has(.sc-workflow-rail) .sc-journey-quick{display:none}
-body:has(.sc-workflow-rail) .sc-journey-panel{bottom:57px}
-@media(max-width:680px){.sc-workflow-rail{padding:11px;margin:12px 0 18px}.sc-workflow-heading{display:block}.sc-workflow-heading span{display:block;margin-top:3px}.sc-workflow-track{display:flex;overflow:auto;scroll-snap-type:x proximity;padding-bottom:3px}.sc-workflow-track li{flex:0 0 min(172px,67vw);scroll-snap-align:start}.sc-workflow-step{min-height:69px}.sc-workflow-labels small{font-size:10px}body > .sc-workflow-rail{margin:11px 13px 17px}}
-@media(prefers-reduced-motion:reduce){.sc-workflow-step{transition:none}}
-
-/* iPhone layout: preserve the new contextual journey inside the menu, but stop
-   its persistent large buttons obscuring forms and evidence panels. */
-@media(max-width:680px){
- .sc-journey-dock{right:8px;bottom:calc(82px + env(safe-area-inset-bottom,0px))}
- .sc-journey-quick{display:none!important}
- .sc-journey-trigger{width:48px!important;height:48px!important;min-width:48px!important;
-  min-height:48px!important;padding:0!important;display:grid!important;
-  place-items:center!important;font-size:0!important;border-radius:50%!important}
- .sc-journey-trigger .sc-dot{display:none!important}
- .sc-journey-trigger::after{content:'☰';font:900 22px/1 system-ui,sans-serif;color:#0d1c2b}
- .sc-journey-panel{bottom:57px;right:0;max-height:calc(100dvh - 166px)}
- body:not(:has(#agentCityCanvas)){padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))}
-}
+@media(max-width:500px){#sc-global-navigation .sc-nav-areas{grid-template-columns:repeat(2,minmax(0,1fr))}}
+#sc-global-navigation.sc-scene{position:fixed!important;top:calc(65px + env(safe-area-inset-top,0px));right:10px;left:auto;width:min(360px,calc(100vw - 20px));border:1px solid #51758b!important;border-radius:12px!important;padding:9px 11px!important;max-height:calc(100dvh - 84px);overflow:auto}
+#sc-global-navigation.sc-scene .sc-nav-toggle{display:inline-flex!important;align-items:center}
+#sc-global-navigation.sc-scene .sc-nav-context{display:none}
+#sc-global-navigation.sc-scene .sc-nav-menu{display:none!important}
+#sc-global-navigation.sc-scene[data-expanded="true"] .sc-nav-menu{display:flex!important;flex-direction:column;align-items:stretch}
+#sc-global-navigation.sc-scene .sc-nav-areas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(prefers-reduced-motion:reduce){#sc-global-navigation *{scroll-behavior:auto!important}}

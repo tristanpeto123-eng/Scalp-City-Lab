@@ -62,5 +62,6 @@ test('The newest Academy navigation survives the Teacher merge',async()=>{
  assert.match(html,/market-replay-5m\.html/);
  assert.match(html,/qualification-bridge\.js/);
  const nav=await read('journey-nav.css');
- assert.match(nav,/sc-journey/);
+ assert.match(nav,/sc-global-navigation/);
+ assert.match(nav,/sc-retired-evidence/);
 });
