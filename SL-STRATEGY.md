@@ -52,3 +52,20 @@ Start, run-one-cycle, pause, export and reset controls appear in section 4 of `s
 The baseline model is trained on historical data with an internal chronological split. Its research-only validation statistics are not an independently sealed holdout once models repeatedly retrain; only strictly forward, decision-frozen completed virtual outcomes can be scored as sequential prospective simulation. Virtual fills on delayed completed bars assume next-open execution that might not have been achievable in the live market.
 
 Run `node sl-loop-tests.mjs` for causal closed-bar streaming and state replay acceptance tests.
+
+## Model persistence and verifiable private backups
+
+A trained SL neural network **is actual JavaScript data**, not an HTML illustration. The entire `SL_5MIN_CAUSAL_LOOP_V1` checkpoint includes eight-neuron neural weight tensors (6-input/8-hidden/1-output), current threshold, the selected market, the latest completed candle and 28-bar overlap, pending/virtual positions, good/bad closed-trade examples, performance journal, feed state and incremental-learning revision count.
+
+**Existing (live):** Each finished loop cycle writes this checkpoint under `scalp-city-lab:sl:loop:v1:<market>:<symbol>:...` in the current browser's `localStorage`. This stays on the same browser across reloads but is NOT an off-device backup and may be lost when Safari website data is cleared, private browsing is used, storage quotas are exhausted or the device is replaced.
+
+**Model Vault (this change):** Section 4 adds:
+- Explicit browser read-after-write confirmation of weights, candle cursor, and good/bad memory.
+- Portable **Download model checkpoint** JSON containing saved neural weights, labelled examples, settings, updated model and SHA-256 integrity digest; **Restore model checkpoint** from Files with digest verification. The download is usable across devices.
+- Opt-in **verified private GitHub repository backup**: create a *new PRIVATE repository* (e.g. `private-sl-vault` under your GitHub account); provide its owner, repository and a fine-grained PAT with Content: Read/write on that repository only; click **Save + verify private cloud backup**. The system checks the repository is private, then PUTs `sl-learning/<market>/<symbol>/latest.json` in its default branch. Afterwards it GETs the file again and verifies its SHA-256 digest and revision. Successful API calls without a matching readback do NOT count as saved.
+- **Restore from private GitHub** verifies checksum, model structure and matching market/settings before an explicit user-confirmed replacement.
+- Optional **auto-backup** after new training cycles; a failure stops the loop instead of silently claiming the model is safely saved.
+
+**Safety:** The existing repositories `Scalp-City-Lab`, `Scalp-City-1`, `Scalp-City` and `Scalp-City-3D-UI-Test` are public and explicitly rejected as backup destinations. No learned trading strategies or trade journals are pushed to them. The user-entered GitHub PAT and Twelve Data key are used only in HTTP authorization headers, kept only in input/session memory (never exported, committed to the code repo, stored in localStorage or included in the model snapshot). The GitHub repository is created and kept private **by the user**; the app does not automatically provision one. GitHub API writes need network/CORS and adequate permissions. No browser control provides true iOS background execution; no broker order submission.
+
+**Acceptance:** `node sl-model-vault-tests.mjs` exercises SHA-256 integrity, serialization of real network weights and memory, private-only destination, credential exclusion, remote upload/readback, idempotence, stale-revision overwrite veto and remote restore.
