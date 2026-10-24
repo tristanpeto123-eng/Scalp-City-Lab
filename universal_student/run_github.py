@@ -36,16 +36,6 @@ def execute(*, target: str, source: str, episodes: int,
     if snapshot.get("symbol") != target or snapshot.get("timeframe") != "5Min":
         raise ValueError("Target source does not match the requested 5m market")
     validate_snapshot(snapshot)
-    source_path = seed_root / "models" / (source.replace("/", "-") + "-dqn.pt")
-    source_report = seed_root / "models" / (source.replace("/", "-") + "-dqn.json")
-    seed_manifest = json.loads(source_report.read_text())
-    source_sha = digest(source_path)
-    if (seed_manifest.get("symbol") != source or
-            seed_manifest.get("policySha256") != source_sha or
-            seed_manifest.get("modelType") != "DEEP_Q_NETWORK" or
-            seed_manifest.get("paperOrders") != 0 or
-            seed_manifest.get("liveOrders") != 0):
-        raise ValueError("Source model integrity or permissions failed")
     stem = target.replace("/", "-")
     target_dir = state_root / "universal-student-data" / "markets"
     model_dir = state_root / "universal-student-models"
@@ -60,6 +50,20 @@ def execute(*, target: str, source: str, episodes: int,
     old_generations = old["generations"] if old else []
     if len(old_generations) >= 100:
         raise ValueError("Generation limit reached: archive evidence before adding more")
+    # Once a target has its own generations, changing the source dropdown never
+    # replaces its established model lineage.
+    if old_generations:
+        source = old["sourceSymbol"]
+    source_path = seed_root / "models" / (source.replace("/", "-") + "-dqn.pt")
+    source_report = seed_root / "models" / (source.replace("/", "-") + "-dqn.json")
+    seed_manifest = json.loads(source_report.read_text())
+    source_sha = digest(source_path)
+    if (seed_manifest.get("symbol") != source or
+            seed_manifest.get("policySha256") != source_sha or
+            seed_manifest.get("modelType") != "DEEP_Q_NETWORK" or
+            seed_manifest.get("paperOrders") != 0 or
+            seed_manifest.get("liveOrders") != 0):
+        raise ValueError("Source model integrity or permissions failed")
     previous = model_dir / (stem + "-dqn.pt")
     if old_generations:
         if not previous.is_file() or digest(previous) != old_generations[-1].get("checkpointSha256"):
