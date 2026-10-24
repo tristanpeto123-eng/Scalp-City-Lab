@@ -7,6 +7,8 @@ on:
       - 'sl-5m.mjs'
       - 'sl-5m-tests.mjs'
       - 'sl-5m-ui-tests.mjs'
+      - 'sl-online-5m.mjs'
+      - 'sl-online-5m-tests.mjs'
       - 'sl-strategy.html'
       - '.github/workflows/sl-strategy-tests.yml'
   pull_request:
@@ -16,6 +18,8 @@ on:
       - 'sl-5m.mjs'
       - 'sl-5m-tests.mjs'
       - 'sl-5m-ui-tests.mjs'
+      - 'sl-online-5m.mjs'
+      - 'sl-online-5m-tests.mjs'
       - 'sl-strategy.html'
       - '.github/workflows/sl-strategy-tests.yml'
 jobs:
@@ -33,7 +37,9 @@ jobs:
           node sl-core-tests.mjs
           node sl-5m-tests.mjs
           node sl-5m-ui-tests.mjs
+          node sl-online-5m-tests.mjs
       - name: Verify read-only research module syntax
         run: |
           node --check sl-core.mjs
           node --check sl-5m.mjs
+          node --check sl-online-5m.mjs
