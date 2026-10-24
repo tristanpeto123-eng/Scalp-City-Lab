@@ -26,6 +26,12 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      - name: Fetch latest real DQN checkpoints for integration tests
+        uses: actions/checkout@v4
+        with:
+          ref: rl-learning-memory
+          path: rl-history
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -35,6 +41,21 @@ jobs:
           node --check student-progress.js
           node --check scripts/student-progress-browser-smoke.mjs
           node --test scripts/build-student-progress-tests.mjs
+      - name: Rebuild real progress against published Academy and RL records
+        run: |
+          node scripts/build-student-progress.mjs \
+            research-data/robot-academy.json \
+            research-data/training-monitor.json \
+            rl-history/rl-rapid/latest.json \
+            /tmp/student-progress-evidence.json
+          node --input-type=module <<'NODE'
+          import {readFile} from 'node:fs/promises';
+          const d=JSON.parse(await readFile('/tmp/student-progress-evidence.json','utf8'));
+          if(d.students.length!==10||d.summary.realBrokerOrders||d.summary.independentlyForwardVerified||
+            d.students.some(s=>s.rl.checkpoints.length<1||s.brokerOrders||s.forwardVerified))
+            throw Error('Real-data research gate failed');
+          console.log('REAL STUDENT PROGRESSION SOURCE CHECK: ten crypto models, zero broker orders');
+          NODE
       - name: Install browser harness
         run: npm install --no-save --no-audit --no-fund playwright@1.56.1
       - name: Install Chromium + Safari WebKit
