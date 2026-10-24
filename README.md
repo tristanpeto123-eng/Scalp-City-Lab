@@ -6,6 +6,8 @@ The Lab uses different IndexedDB/localStorage namespaces, a different PWA identi
 
 The existing 3D research room, six-strategy BT-01 backtester and browser optimizer are experimental software; the research results are **not evidence of live profitability**. The independent agent permission pipeline is a roadmap and design contract, not implemented runtime enforcement. **No live broker credentials or real-money trading allowed.**
 
+A separate experimental supervised-learning strategy, **SL**, is available at [SL Strategy](sl-strategy.html), with its own [research specification](SL-STRATEGY.md) and isolated memory. It is not a live or paper trader.
+
 See [Agent Workflow](WORKFLOW_V1.md) and [Roadmap](LAB_ROADMAP.md).
 
 ## Running Lab
