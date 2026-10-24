@@ -73,7 +73,12 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
     <label for="fiveSpeed">Replay speed<select id="fiveSpeed"><option value="1000">1 bar / second</option><option value="250">4 bars / second</option><option value="75">13 bars / second</option></select></label>
     <label for="fiveFile">5-minute CSV history<input id="fiveFile" type="file" accept=".csv,text/csv"></label>
   </div>
-  <p class="note">CSV headers: <code>time,open,high,low,close,volume</code> (volume optional). Times must be UTC or include an offset. Session gaps are recorded, never filled. Use XAUUSD, EURUSD or US100 data matching the selected market.</p>
+  <div class="five-layout" style="margin-top:14px">
+    <label for="fiveOnlineKey">Twelve Data API key (only for this browser session)<input id="fiveOnlineKey" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your personal API key"></label>
+    <div style="align-self:end"><button id="fiveOnlineLoad" class="secondary" type="button">Fetch 5m online</button></div>
+  </div>
+  <p class="note">Online market symbols: <b>XAUUSD</b> (provider XAU/USD), XAGUSD, EURUSD, GBPUSD, USDJPY, SPX or NDX. The key is sent to Twelve Data over HTTPS but is never saved in the app or repository. <strong>Gold/commodities require a paid Twelve Data data plan</strong>; indices may need entitlements. The online connection can fail due to browser CORS/network/provider limitations. <a href="https://twelvedata.com/pricing" target="_blank" rel="noopener noreferrer">Provider plans</a>.</p>
+  <p class="note">CSV fallback headers: <code>time,open,high,low,close,volume</code> (volume optional). UTC or explicit offset required. Session gaps are recorded, never filled. US100 is accepted by CSV but is <b>not</b> silently mapped to the separate NDX index for online loads.</p>
   <div class="five-actions">
     <button id="fiveBuild" class="secondary" type="button" disabled>Add 5m good / bad trades</button>
     <button id="fiveStart" class="secondary" type="button" disabled>Restart replay</button>
@@ -91,6 +96,7 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
 <script type="module">
 import {createSLMemory,recordSLTrade,validateSLMemory,slMemoryStats,trainSL,predictSL} from './sl-core.mjs';
 import {parseSLFiveMinuteCSV,buildSLFiveMinuteDataset} from './sl-5m.mjs';
+import {loadSLOnlineFiveMinute} from './sl-online-5m.mjs';
 const $=id=>document.getElementById(id), key=m=>'scalp-city-lab:sl:v1:'+m;
 let memory=createSLMemory('COMMODITIES'),models={};
 const market=()=>$('market').value;
@@ -111,7 +117,8 @@ $('demo').addEventListener('click',()=>{try{const z=new Uint32Array(1);crypto.ge
 /* Five-minute history is kept in memory for this page session only.
  * Labelled trade examples are saved to the per-market SL memory after user action. */
 let fiveBars=null, fiveSession=null, fiveIndex=0, fiveTimer=null;
-const FIVE_DEFAULT_SYMBOL={COMMODITIES:'XAUUSD',FOREX:'EURUSD',INDICES:'US100'};
+let fiveSource='USER_IMPORTED_UNVERIFIED_5MIN',fiveOnlineMeta=null,fiveFetching=false;
+const FIVE_DEFAULT_SYMBOL={COMMODITIES:'XAUUSD',FOREX:'EURUSD',INDICES:'SPX'};
 const fiveMessage=(message,error=false)=>{const el=$('fiveStatus');el.textContent=message;el.style.color=error?'#ffb9b7':'#b9ece0';};
 function stopFive(){
  if(fiveTimer!==null){clearInterval(fiveTimer);fiveTimer=null;}
@@ -119,12 +126,12 @@ function stopFive(){
 }
 function fiveButtons(){
  const ready=!!fiveSession,atEnd=ready&&fiveIndex>=fiveSession.bars.length-1;
- $('fiveBuild').disabled=!fiveBars;
+ $('fiveBuild').disabled=!fiveBars||fiveFetching;
  for(const id of ['fiveStart','fiveStep','fivePlay','fiveEnd'])$(id).disabled=!ready;
  if(ready){$('fiveStep').disabled=atEnd;$('fivePlay').disabled=atEnd;}
 }
 function resetFive(clearFile=true){
- stopFive();fiveBars=null;fiveSession=null;fiveIndex=0;fiveButtons();
+ stopFive();fiveBars=null;fiveSession=null;fiveIndex=0;fiveOnlineMeta=null;fiveSource='USER_IMPORTED_UNVERIFIED_5MIN';fiveButtons();
  if(clearFile)$('fiveFile').value='';
  $('fiveReplayStatus').textContent='5-minute replay idle.';
  const canvas=$('fiveChart'),ctx=canvas.getContext('2d');
@@ -181,17 +188,44 @@ $('fiveFile').addEventListener('change',async e=>{
   stopFive();fiveSession=null;fiveBars=null;fiveButtons();
   const file=e.target.files?.[0];if(!file)return;
   fiveBars=parseSLFiveMinuteCSV(await file.text());
+  fiveOnlineMeta=null;fiveSource='USER_IMPORTED_UNVERIFIED_5MIN';
   const gaps=fiveBars.reduce((s,b,i)=>s+(i>0&&Date.parse(b.t)-Date.parse(fiveBars[i-1].t)!==300000?1:0),0);
   fiveMessage('Imported '+fiveBars.length+' actual-recorded 5m rows (source unverified), '+gaps+' market-session gaps. Choose settings, then Add 5m good / bad trades.');
   fiveButtons();
  }catch(err){resetFive(false);fiveMessage(err.message,true);}
+});
+
+$('fiveOnlineLoad').addEventListener('click',async()=>{
+ if(fiveFetching)return;
+ const requestedMarket=market(),requestedSymbol=$('fiveSymbol').value.trim().toUpperCase();
+ const key=$('fiveOnlineKey').value;
+ if(!key.trim()){fiveMessage('Enter a personal Twelve Data API key to fetch online history.',true);return;}
+ fiveFetching=true;$('fiveOnlineLoad').disabled=true;$('fiveFile').disabled=true;
+ resetFive(false);
+ fiveMessage('Requesting provider-reported '+requestedSymbol+' 5-minute history over HTTPS…');
+ try{
+  const result=await loadSLOnlineFiveMinute({market:requestedMarket,symbol:requestedSymbol,apiKey:key});
+  if(market()!==requestedMarket||$('fiveSymbol').value.trim().toUpperCase()!==requestedSymbol)
+   throw Error('Market symbol changed during fetch; discard and reload.');
+  fiveBars=result.bars;fiveSource=result.source;fiveOnlineMeta=result;
+  fiveMessage('Loaded '+result.bars.length+' recorded '+result.symbol+' 5-minute candles from Twelve Data (provider reported, not broker verified). Latest '+fmtFiveDate(result.lastBar)+', gaps '+result.gaps+'. Tap Add 5m good / bad trades, then Train SL.');
+ }catch(err){
+  resetFive(false);
+  fiveMessage(err.message,true);
+ }finally{
+  fiveFetching=false;$('fiveOnlineLoad').disabled=false;$('fiveFile').disabled=false;fiveButtons();
+ }
 });
 $('fiveBuild').addEventListener('click',()=>{
  try{
   if(!fiveBars)throw Error('Import 5-minute history first');
   const symbol=$('fiveSymbol').value.trim().toUpperCase(),holdCandles=Number($('fiveHold').value);
   const sideCostBps=Number($('fiveCost').value),virtualNotionalGbp=Number($('fiveNotional').value);
+  if(fiveOnlineMeta&&(fiveOnlineMeta.market!==market()||fiveOnlineMeta.symbol!==symbol))
+    throw Error('Chart symbol/market changed since online fetch. Fetch the matching history again.');
   const dataset=buildSLFiveMinuteDataset({bars:fiveBars,market:market(),symbol,holdCandles,sideCostBps,virtualNotionalGbp});
+  dataset.feed=fiveSource;
+  dataset.onlineProvenance=fiveOnlineMeta?{symbol:fiveOnlineMeta.providerSymbol,lastBar:fiveOnlineMeta.lastBar,downloadedAt:fiveOnlineMeta.downloadedAt}:null;
   const known=new Set([...memory.good,...memory.bad].map(t=>t.id));
   const added=dataset.opportunities.map(x=>x.trade).filter(t=>!known.has(t.id));
   // Atomic validation: reject synthetic mixing or malformed duplicates before persisting anything.
@@ -201,7 +235,7 @@ $('fiveBuild').addEventListener('click',()=>{
   memory=merged;save();delete models[market()];refresh();
   $('output').textContent='5m data changed. Train SL to score the new historical examples.';
   fiveSession=dataset;fiveIndex=Math.min(28,dataset.bars.length-1);stopFive();drawFive();
-  fiveMessage(dataset.symbol+' 5m: '+dataset.opportunities.length+' candidate trades; '+added.length+' new labelled examples (modelled net GBP). '+dataset.gaps+' skipped session gaps. Now press Train SL.');
+  fiveMessage(dataset.symbol+' 5m ('+dataset.feed+'): '+dataset.opportunities.length+' candidate trades; '+added.length+' new labelled examples (modelled net GBP). '+dataset.gaps+' skipped session gaps. Now press Train SL.');
  }catch(err){fiveMessage(err.message,true)}
 });
 $('fiveStart').addEventListener('click',()=>{stopFive();if(!fiveSession)return;fiveIndex=Math.min(28,fiveSession.bars.length-1);drawFive()});

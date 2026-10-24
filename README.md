@@ -6,7 +6,7 @@ The Lab uses different IndexedDB/localStorage namespaces, a different PWA identi
 
 The existing 3D research room, six-strategy BT-01 backtester and browser optimizer are experimental software; the research results are **not evidence of live profitability**. The independent agent permission pipeline is a roadmap and design contract, not implemented runtime enforcement. **No live broker credentials or real-money trading allowed.**
 
-A separate experimental supervised-learning strategy, **SL**, is available at [SL Strategy](sl-strategy.html), with its own [research specification](SL-STRATEGY.md) and isolated memory. It includes a locally imported **five-minute OHLC research and candle-replay mode** for Commodities, Forex and Indices. It is not a live or paper trader.
+A separate experimental supervised-learning strategy, **SL**, is available at [SL Strategy](sl-strategy.html), with its own [research specification](SL-STRATEGY.md) and isolated memory. It includes five-minute research and candle replay for Commodities, Forex and Indices, with optional **Fetch 5m online** using a personal Twelve Data API key (gold/commodities require a suitable paid provider plan), plus CSV import fallback. It is not a live or paper trader.
 
 See [Agent Workflow](WORKFLOW_V1.md) and [Roadmap](LAB_ROADMAP.md).
 

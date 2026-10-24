@@ -6,6 +6,10 @@ assert.match(html,/id="fiveMinuteLab"/);
 assert.match(html,/sl-5m\.mjs/);
 assert.match(html,/id="fiveChart"/);
 assert.match(html,/id="fiveBuild"/);
+assert.match(html,/id="fiveOnlineKey"/);
+assert.match(html,/id="fiveOnlineLoad"/);
+assert.match(html,/sl-online-5m\.mjs/);
+assert.match(html,/Twelve Data/);
 const scripts=[...html.matchAll(/<script\b[^>]*type="module"[^>]*>([\s\S]*?)<\/script>/g)];
 assert.equal(scripts.length,1,'SL console has one inline module');
 const code=scripts[0][1];
@@ -18,5 +22,7 @@ for(const [,id] of code.matchAll(/\$\('([^']+)'\)/g)){
 }
 assert.match(code,/view=bars\.slice\(from,end\+1\)/,'replay chart draws only revealed bars');
 assert.match(code,/predictSL\(/,'neural policy integrated');
+assert.match(code,/loadSLOnlineFiveMinute\(/,'online provider loading wired to UI');
+assert.doesNotMatch(code,/localStorage\.setItem\([^\n]*fiveOnlineKey/,'never persist API key');
 assert.doesNotMatch(code,/fetch\(|WebSocket|sendOrder|placeOrder|tradeAPI/,'offline read-only UI');
-console.log('SL 5m UI checks passed: valid module JavaScript, working element references, future-candle masking, no order route');
+console.log('SL 5m UI checks passed: JS syntax, elements, hidden future bars, on-demand provider wired without persistent key, no order route');
