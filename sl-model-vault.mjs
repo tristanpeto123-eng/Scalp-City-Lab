@@ -150,9 +150,20 @@ export async function writePrivateSLVault({owner,repo,token,envelope,fetchImpl=f
     sha256:envelope.sha256,repository:owner+'/'+repo,revision:state.revisions};
  if(existing?.envelope.revision>envelope.revision)
   throw Error('Remote checkpoint is newer; refusing to overwrite learned weights');
- if(existing?.envelope.revision===envelope.revision&&
-    existing.envelope.sha256!==envelope.sha256)
-  throw Error('Remote revision conflicts with this device; restore/reconcile instead of overwriting');
+ if(existing){
+  const previous=existing.envelope.state;
+  const newerTime=Date.parse(state.cursor),previousTime=Date.parse(previous.cursor);
+  if(newerTime<previousTime)
+   throw Error('Remote checkpoint has a newer candle cursor; restore before overwriting');
+  if(newerTime===previousTime)
+   throw Error('Remote checkpoint has different weights at the same candle; restore/reconcile the model fork');
+  // If no model update occurred, the progress-only next-bar checkpoint must retain
+  // the previously read terminal bar. A missing overlap implies a fork or gap.
+  if(existing.envelope.revision===envelope.revision&&
+     !state.tail.some(b=>b.t===previous.cursor&&
+       JSON.stringify(b)===JSON.stringify(previous.lastBar)))
+   throw Error('Remote checkpoint cursor overlap could not be verified; restore and reconcile');
+ }
  const payload={branch:vault.branch,
   message:'checkpoint(sl): '+state.config.market+' '+state.config.symbol+' rev '+state.revisions,
   content:bytesB64(utf8.encode(JSON.stringify(envelope,null,2)))};
