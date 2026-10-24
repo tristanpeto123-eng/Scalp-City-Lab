@@ -1,0 +1,5067 @@
+{
+  "schema": "SCALP_STUDENT_PROGRESS_V1",
+  "generatedAt": "2026-10-24T17:10:22.930Z",
+  "academySnapshotAt": "2026-10-24T16:55:14.055Z",
+  "rlSnapshotAt": "2026-10-24T16:36:18.048883+00:00",
+  "markets": [
+    "COMMODITIES",
+    "FOREX",
+    "INDICES",
+    "EQUITIES",
+    "CRYPTO"
+  ],
+  "specializations": [
+    {
+      "market": "COMMODITIES",
+      "symbol": "XAUUSD",
+      "storage": "LOCAL_SL_CHECKPOINT_ONLY"
+    },
+    {
+      "market": "FOREX",
+      "symbol": "EURUSD",
+      "storage": "LOCAL_SL_CHECKPOINT_ONLY"
+    },
+    {
+      "market": "INDICES",
+      "symbol": "SPX",
+      "storage": "LOCAL_SL_CHECKPOINT_ONLY"
+    },
+    {
+      "market": "EQUITIES",
+      "storage": "NOT_ACTIVATED"
+    }
+  ],
+  "students": [
+    {
+      "id": "CRYPTO:BTC/USD",
+      "market": "CRYPTO",
+      "symbol": "BTC/USD",
+      "name": "BTC",
+      "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
+      "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
+      "research": {
+        "experiments": 49,
+        "independentWindows": 2,
+        "configurations": 101,
+        "historicalTrainingGrade": 24,
+        "historicalCandidateNetGbp": -1.6,
+        "historicalCandidateTrades": 25,
+        "xp": 0,
+        "status": "DAILY_EXPERIMENT_CAP",
+        "latestBatchEvaluations": 0,
+        "lastBatchNewTrainingCandles": 0,
+        "lessons": [
+          {
+            "run": 1,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 1,
+            "trainingNetGbp": -2.7312,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 2,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 1,
+            "trainingNetGbp": -2.7312,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 3,
+            "trainedThrough": "2026-09-11T22:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 4,
+            "trainedThrough": "2026-09-12T00:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 5,
+            "trainedThrough": "2026-09-12T15:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 6,
+            "trainedThrough": "2026-09-12T18:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 7,
+            "trainedThrough": "2026-09-12T20:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 8,
+            "trainedThrough": "2026-09-12T22:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 9,
+            "trainedThrough": "2026-09-13T00:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 10,
+            "trainedThrough": "2026-09-13T05:00:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 11,
+            "trainedThrough": "2026-09-13T10:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 12,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 13,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 4,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 14,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 5,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 15,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 3,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 16,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 17,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 18,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 19,
+            "trainedThrough": "2026-09-13T17:00:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 20,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 21,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 22,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 23,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 24,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 25,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 26,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 27,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 28,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 29,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 30,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 31,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 32,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 33,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 34,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 35,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 36,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 37,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 38,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 39,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 40,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 41,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 42,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 43,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 44,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 45,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 46,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 47,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 48,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 49,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          }
+        ]
+      },
+      "rl": {
+        "generatedAt": "2026-10-24T16:36:18.048883+00:00",
+        "cumulativeGradientUpdates": 116677,
+        "gradientUpdatesThisRun": 3847,
+        "newTrainingTailCandles": 59,
+        "decisionsThisRun": 15450,
+        "profitDevelopmentGatePassed": false,
+        "checkpoints": [
+          {
+            "observedAt": "2026-10-24T16:36:18.048883+00:00",
+            "modelSha256": "5b0b27f00307f1b3b85c0b3ff839a568fd2edc90fa1a29545966a5c2a5413551",
+            "cumulativeGradientUpdates": 116677,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 59,
+            "sameWindowNetVirtual": 0.1343,
+            "sameWindowStressNetVirtual": -0.3889,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          }
+        ]
+      },
+      "blockers": [
+        "ACADEMY_DAILY_EXPERIMENT_CAP",
+        "NO_NEW_INDEPENDENT_ACADEMY_CANDLES",
+        "RL_PROFIT_DEVELOPMENT_GATE_FAILED",
+        "NO_VERIFIED_FORWARD_PAPER_RESULTS"
+      ],
+      "researchProgressOnly": true,
+      "forwardVerified": false,
+      "brokerOrders": 0,
+      "admittedForTrading": false
+    },
+    {
+      "id": "CRYPTO:ETH/USD",
+      "market": "CRYPTO",
+      "symbol": "ETH/USD",
+      "name": "ETH",
+      "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
+      "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
+      "research": {
+        "experiments": 49,
+        "independentWindows": 2,
+        "configurations": 95,
+        "historicalTrainingGrade": 8.7,
+        "historicalCandidateNetGbp": -8.1098,
+        "historicalCandidateTrades": 46,
+        "xp": 0,
+        "status": "DAILY_EXPERIMENT_CAP",
+        "latestBatchEvaluations": 0,
+        "lastBatchNewTrainingCandles": 0,
+        "lessons": [
+          {
+            "run": 1,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 2,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 3,
+            "trainedThrough": "2026-09-11T22:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 4,
+            "trainedThrough": "2026-09-12T00:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 5,
+            "trainedThrough": "2026-09-12T15:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 6,
+            "trainedThrough": "2026-09-12T18:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 7,
+            "trainedThrough": "2026-09-12T20:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 8,
+            "trainedThrough": "2026-09-12T22:30:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 9,
+            "trainedThrough": "2026-09-13T00:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 10,
+            "trainedThrough": "2026-09-13T05:00:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 11,
+            "trainedThrough": "2026-09-13T10:30:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 12,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 13,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 14,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 15,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 16,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 17,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 18,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 19,
+            "trainedThrough": "2026-09-13T17:00:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 20,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 21,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 22,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 23,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 24,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 25,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 26,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 27,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 28,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 29,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 30,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 31,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 32,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 33,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 34,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 35,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 36,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 37,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 38,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 39,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 40,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 41,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 42,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 43,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 44,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 45,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 46,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 47,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 48,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 49,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          }
+        ]
+      },
+      "rl": {
+        "generatedAt": "2026-10-24T16:36:18.048883+00:00",
+        "cumulativeGradientUpdates": 116677,
+        "gradientUpdatesThisRun": 3847,
+        "newTrainingTailCandles": 59,
+        "decisionsThisRun": 15450,
+        "profitDevelopmentGatePassed": false,
+        "checkpoints": [
+          {
+            "observedAt": "2026-10-24T16:36:18.048883+00:00",
+            "modelSha256": "e4d993b7e708ae7381c3301fbc642d90937de448f51d447634283512aff20331",
+            "cumulativeGradientUpdates": 116677,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 59,
+            "sameWindowNetVirtual": -0.9423,
+            "sameWindowStressNetVirtual": -1.4506,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          }
+        ]
+      },
+      "blockers": [
+        "ACADEMY_DAILY_EXPERIMENT_CAP",
+        "NO_NEW_INDEPENDENT_ACADEMY_CANDLES",
+        "RL_PROFIT_DEVELOPMENT_GATE_FAILED",
+        "NO_VERIFIED_FORWARD_PAPER_RESULTS"
+      ],
+      "researchProgressOnly": true,
+      "forwardVerified": false,
+      "brokerOrders": 0,
+      "admittedForTrading": false
+    },
+    {
+      "id": "CRYPTO:SOL/USD",
+      "market": "CRYPTO",
+      "symbol": "SOL/USD",
+      "name": "SOL",
+      "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
+      "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
+      "research": {
+        "experiments": 49,
+        "independentWindows": 2,
+        "configurations": 88,
+        "historicalTrainingGrade": 60.87,
+        "historicalCandidateNetGbp": -0.79,
+        "historicalCandidateTrades": 23,
+        "xp": 0,
+        "status": "DAILY_EXPERIMENT_CAP",
+        "latestBatchEvaluations": 0,
+        "lastBatchNewTrainingCandles": 0,
+        "lessons": [
+          {
+            "run": 1,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -7.645,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 2,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -7.645,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 3,
+            "trainedThrough": "2026-09-11T22:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 4,
+            "trainedThrough": "2026-09-12T00:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 5,
+            "trainedThrough": "2026-09-12T15:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 6,
+            "trainedThrough": "2026-09-12T18:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 7,
+            "trainedThrough": "2026-09-12T20:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 8,
+            "trainedThrough": "2026-09-12T22:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 9,
+            "trainedThrough": "2026-09-13T00:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 10,
+            "trainedThrough": "2026-09-13T05:00:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 11,
+            "trainedThrough": "2026-09-13T10:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 12,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 13,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 4,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 14,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 4,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 15,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 3,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 16,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 17,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 18,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 19,
+            "trainedThrough": "2026-09-13T17:00:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 20,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 21,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 22,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 23,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 24,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 25,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 26,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 27,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 28,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 29,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 30,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 31,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 32,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 33,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 34,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 35,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 36,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 37,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 38,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 39,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 40,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 41,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 42,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 43,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 44,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 45,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 46,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 47,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 48,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 49,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          }
+        ]
+      },
+      "rl": {
+        "generatedAt": "2026-10-24T16:36:18.048883+00:00",
+        "cumulativeGradientUpdates": 116677,
+        "gradientUpdatesThisRun": 3847,
+        "newTrainingTailCandles": 59,
+        "decisionsThisRun": 15450,
+        "profitDevelopmentGatePassed": false,
+        "checkpoints": [
+          {
+            "observedAt": "2026-10-24T16:36:18.048883+00:00",
+            "modelSha256": "f38b925fef2edf60bc46d63a6796b40551ca4ebddb2582ccc26c725e07f376ce",
+            "cumulativeGradientUpdates": 116677,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 59,
+            "sameWindowNetVirtual": -3.3918,
+            "sameWindowStressNetVirtual": -5.851,
+            "sameWindowImproved": true,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          }
+        ]
+      },
+      "blockers": [
+        "ACADEMY_DAILY_EXPERIMENT_CAP",
+        "NO_NEW_INDEPENDENT_ACADEMY_CANDLES",
+        "RL_PROFIT_DEVELOPMENT_GATE_FAILED",
+        "NO_VERIFIED_FORWARD_PAPER_RESULTS"
+      ],
+      "researchProgressOnly": true,
+      "forwardVerified": false,
+      "brokerOrders": 0,
+      "admittedForTrading": false
+    },
+    {
+      "id": "CRYPTO:XRP/USD",
+      "market": "CRYPTO",
+      "symbol": "XRP/USD",
+      "name": "XRP",
+      "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
+      "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
+      "research": {
+        "experiments": 49,
+        "independentWindows": 2,
+        "configurations": 104,
+        "historicalTrainingGrade": 62.5,
+        "historicalCandidateNetGbp": -1.32,
+        "historicalCandidateTrades": 24,
+        "xp": 0,
+        "status": "DAILY_EXPERIMENT_CAP",
+        "latestBatchEvaluations": 0,
+        "lastBatchNewTrainingCandles": 0,
+        "lessons": [
+          {
+            "run": 1,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 1,
+            "trainingNetGbp": -3.3635,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 2,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 1,
+            "trainingNetGbp": -3.3635,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 3,
+            "trainedThrough": "2026-09-11T22:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 4,
+            "trainedThrough": "2026-09-12T00:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 5,
+            "trainedThrough": "2026-09-12T15:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 6,
+            "trainedThrough": "2026-09-12T18:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 7,
+            "trainedThrough": "2026-09-12T20:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 8,
+            "trainedThrough": "2026-09-12T22:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 9,
+            "trainedThrough": "2026-09-13T00:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 10,
+            "trainedThrough": "2026-09-13T05:00:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 11,
+            "trainedThrough": "2026-09-13T10:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 12,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 13,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 4,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 14,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 4,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 15,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 3,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 16,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 17,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 18,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 19,
+            "trainedThrough": "2026-09-13T17:00:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 20,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 21,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 22,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 23,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 24,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 25,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 26,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 27,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 28,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 29,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 30,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 31,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 32,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 33,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 34,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 35,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 36,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 37,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 38,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 39,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 40,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 41,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 42,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 43,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 44,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 45,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 46,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 47,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 48,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 49,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          }
+        ]
+      },
+      "rl": {
+        "generatedAt": "2026-10-24T16:36:18.048883+00:00",
+        "cumulativeGradientUpdates": 116677,
+        "gradientUpdatesThisRun": 3847,
+        "newTrainingTailCandles": 59,
+        "decisionsThisRun": 15450,
+        "profitDevelopmentGatePassed": false,
+        "checkpoints": [
+          {
+            "observedAt": "2026-10-24T16:36:18.048883+00:00",
+            "modelSha256": "1778ba46ce22475372da02c0a13d3e7d5fbb42e0d13f764f0bb5c0557ccf78ce",
+            "cumulativeGradientUpdates": 116677,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 59,
+            "sameWindowNetVirtual": -0.6088,
+            "sameWindowStressNetVirtual": -2.2729,
+            "sameWindowImproved": true,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          }
+        ]
+      },
+      "blockers": [
+        "ACADEMY_DAILY_EXPERIMENT_CAP",
+        "NO_NEW_INDEPENDENT_ACADEMY_CANDLES",
+        "RL_PROFIT_DEVELOPMENT_GATE_FAILED",
+        "NO_VERIFIED_FORWARD_PAPER_RESULTS"
+      ],
+      "researchProgressOnly": true,
+      "forwardVerified": false,
+      "brokerOrders": 0,
+      "admittedForTrading": false
+    },
+    {
+      "id": "CRYPTO:ADA/USD",
+      "market": "CRYPTO",
+      "symbol": "ADA/USD",
+      "name": "ADA",
+      "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
+      "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
+      "research": {
+        "experiments": 49,
+        "independentWindows": 2,
+        "configurations": 98,
+        "historicalTrainingGrade": 52,
+        "historicalCandidateNetGbp": -0.53,
+        "historicalCandidateTrades": 25,
+        "xp": 0,
+        "status": "DAILY_EXPERIMENT_CAP",
+        "latestBatchEvaluations": 0,
+        "lastBatchNewTrainingCandles": 0,
+        "lessons": [
+          {
+            "run": 1,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 3,
+            "trainingNetGbp": -4.1385,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 2,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 3,
+            "trainingNetGbp": -4.1385,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 3,
+            "trainedThrough": "2026-09-11T22:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 4,
+            "trainedThrough": "2026-09-12T00:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 5,
+            "trainedThrough": "2026-09-12T15:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 6,
+            "trainedThrough": "2026-09-12T18:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 7,
+            "trainedThrough": "2026-09-12T20:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 8,
+            "trainedThrough": "2026-09-12T22:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 9,
+            "trainedThrough": "2026-09-13T00:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 10,
+            "trainedThrough": "2026-09-13T05:00:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 11,
+            "trainedThrough": "2026-09-13T10:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 12,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 13,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 4,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 14,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 5,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 15,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 3,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 16,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 17,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 18,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 19,
+            "trainedThrough": "2026-09-13T17:00:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 20,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 21,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 22,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 23,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 24,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 25,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 26,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 27,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 28,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 29,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 30,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 31,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 32,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 33,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 34,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 35,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 36,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 37,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 38,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 39,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 40,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 41,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 42,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 43,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 44,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 45,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 46,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 47,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 48,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 49,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          }
+        ]
+      },
+      "rl": {
+        "generatedAt": "2026-10-24T16:36:18.048883+00:00",
+        "cumulativeGradientUpdates": 116677,
+        "gradientUpdatesThisRun": 3847,
+        "newTrainingTailCandles": 59,
+        "decisionsThisRun": 15450,
+        "profitDevelopmentGatePassed": false,
+        "checkpoints": [
+          {
+            "observedAt": "2026-10-24T16:36:18.048883+00:00",
+            "modelSha256": "7d964d791fbf3747fefb2f57b7f016b54858b7f877bf9aa96637011a00cbbd32",
+            "cumulativeGradientUpdates": 116677,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 59,
+            "sameWindowNetVirtual": -6.292,
+            "sameWindowStressNetVirtual": -7.8165,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "DRAWDOWN_EXCEEDS_LIMIT",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          }
+        ]
+      },
+      "blockers": [
+        "ACADEMY_DAILY_EXPERIMENT_CAP",
+        "NO_NEW_INDEPENDENT_ACADEMY_CANDLES",
+        "RL_PROFIT_DEVELOPMENT_GATE_FAILED",
+        "NO_VERIFIED_FORWARD_PAPER_RESULTS"
+      ],
+      "researchProgressOnly": true,
+      "forwardVerified": false,
+      "brokerOrders": 0,
+      "admittedForTrading": false
+    },
+    {
+      "id": "CRYPTO:AVAX/USD",
+      "market": "CRYPTO",
+      "symbol": "AVAX/USD",
+      "name": "AVAX",
+      "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
+      "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
+      "research": {
+        "experiments": 49,
+        "independentWindows": 2,
+        "configurations": 100,
+        "historicalTrainingGrade": 25,
+        "historicalCandidateNetGbp": -3.6783,
+        "historicalCandidateTrades": 20,
+        "xp": 0,
+        "status": "DAILY_EXPERIMENT_CAP",
+        "latestBatchEvaluations": 0,
+        "lastBatchNewTrainingCandles": 0,
+        "lessons": [
+          {
+            "run": 1,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 2,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 3,
+            "trainedThrough": "2026-09-11T22:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 4,
+            "trainedThrough": "2026-09-12T00:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 5,
+            "trainedThrough": "2026-09-12T15:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 6,
+            "trainedThrough": "2026-09-12T18:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 7,
+            "trainedThrough": "2026-09-12T20:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 8,
+            "trainedThrough": "2026-09-12T22:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 9,
+            "trainedThrough": "2026-09-13T00:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 10,
+            "trainedThrough": "2026-09-13T05:00:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 11,
+            "trainedThrough": "2026-09-13T10:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 12,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 13,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 5,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 14,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 15,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 16,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 17,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 18,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 19,
+            "trainedThrough": "2026-09-13T17:00:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 20,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 21,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 22,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 23,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 24,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 25,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 26,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 27,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 28,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 29,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 30,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 31,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 32,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 33,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 34,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 35,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 36,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 37,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 38,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 39,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 40,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 41,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 42,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 43,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 44,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 45,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 46,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 47,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 48,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 49,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          }
+        ]
+      },
+      "rl": {
+        "generatedAt": "2026-10-24T16:36:18.048883+00:00",
+        "cumulativeGradientUpdates": 116677,
+        "gradientUpdatesThisRun": 3847,
+        "newTrainingTailCandles": 59,
+        "decisionsThisRun": 15450,
+        "profitDevelopmentGatePassed": false,
+        "checkpoints": [
+          {
+            "observedAt": "2026-10-24T16:36:18.048883+00:00",
+            "modelSha256": "dbf8bcf3d8e7670e581b3c8cdcc61ed082b535f72052134584a9bb25acf9fec3",
+            "cumulativeGradientUpdates": 116677,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 59,
+            "sameWindowNetVirtual": -4.3793,
+            "sameWindowStressNetVirtual": -5.345,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "DRAWDOWN_EXCEEDS_LIMIT",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          }
+        ]
+      },
+      "blockers": [
+        "ACADEMY_DAILY_EXPERIMENT_CAP",
+        "NO_NEW_INDEPENDENT_ACADEMY_CANDLES",
+        "RL_PROFIT_DEVELOPMENT_GATE_FAILED",
+        "NO_VERIFIED_FORWARD_PAPER_RESULTS"
+      ],
+      "researchProgressOnly": true,
+      "forwardVerified": false,
+      "brokerOrders": 0,
+      "admittedForTrading": false
+    },
+    {
+      "id": "CRYPTO:LINK/USD",
+      "market": "CRYPTO",
+      "symbol": "LINK/USD",
+      "name": "LINK",
+      "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
+      "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
+      "research": {
+        "experiments": 49,
+        "independentWindows": 2,
+        "configurations": 101,
+        "historicalTrainingGrade": 52,
+        "historicalCandidateNetGbp": -2.24,
+        "historicalCandidateTrades": 25,
+        "xp": 0,
+        "status": "DAILY_EXPERIMENT_CAP",
+        "latestBatchEvaluations": 0,
+        "lastBatchNewTrainingCandles": 0,
+        "lessons": [
+          {
+            "run": 1,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 3,
+            "trainingNetGbp": -2.2907,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 2,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 3,
+            "trainingNetGbp": -2.2907,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 3,
+            "trainedThrough": "2026-09-11T22:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 4,
+            "trainedThrough": "2026-09-12T00:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 5,
+            "trainedThrough": "2026-09-12T15:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 6,
+            "trainedThrough": "2026-09-12T18:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 7,
+            "trainedThrough": "2026-09-12T20:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 8,
+            "trainedThrough": "2026-09-12T22:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 9,
+            "trainedThrough": "2026-09-13T00:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 10,
+            "trainedThrough": "2026-09-13T05:00:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 11,
+            "trainedThrough": "2026-09-13T10:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 12,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 13,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 4,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 14,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 15,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 16,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 17,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 18,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 19,
+            "trainedThrough": "2026-09-13T17:00:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 20,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 21,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 22,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 23,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 24,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 25,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 26,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 27,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 28,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 29,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 30,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 31,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 32,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 33,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 34,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 35,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 36,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 37,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 38,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 39,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 40,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 41,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 42,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 43,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 44,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 45,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 46,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 47,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 48,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 49,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          }
+        ]
+      },
+      "rl": {
+        "generatedAt": "2026-10-24T16:36:18.048883+00:00",
+        "cumulativeGradientUpdates": 116677,
+        "gradientUpdatesThisRun": 3847,
+        "newTrainingTailCandles": 59,
+        "decisionsThisRun": 15450,
+        "profitDevelopmentGatePassed": false,
+        "checkpoints": [
+          {
+            "observedAt": "2026-10-24T16:36:18.048883+00:00",
+            "modelSha256": "6591e2a23a0b2bb355a958409df88196204449a9255f384a89526b073a5c3af2",
+            "cumulativeGradientUpdates": 116677,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 59,
+            "sameWindowNetVirtual": -3.872,
+            "sameWindowStressNetVirtual": -5.0973,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "DRAWDOWN_EXCEEDS_LIMIT",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          }
+        ]
+      },
+      "blockers": [
+        "ACADEMY_DAILY_EXPERIMENT_CAP",
+        "NO_NEW_INDEPENDENT_ACADEMY_CANDLES",
+        "RL_PROFIT_DEVELOPMENT_GATE_FAILED",
+        "NO_VERIFIED_FORWARD_PAPER_RESULTS"
+      ],
+      "researchProgressOnly": true,
+      "forwardVerified": false,
+      "brokerOrders": 0,
+      "admittedForTrading": false
+    },
+    {
+      "id": "CRYPTO:DOGE/USD",
+      "market": "CRYPTO",
+      "symbol": "DOGE/USD",
+      "name": "DOGE",
+      "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
+      "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
+      "research": {
+        "experiments": 49,
+        "independentWindows": 2,
+        "configurations": 111,
+        "historicalTrainingGrade": 44,
+        "historicalCandidateNetGbp": -1.7,
+        "historicalCandidateTrades": 25,
+        "xp": 0,
+        "status": "DAILY_EXPERIMENT_CAP",
+        "latestBatchEvaluations": 0,
+        "lastBatchNewTrainingCandles": 0,
+        "lessons": [
+          {
+            "run": 1,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 3,
+            "trainingNetGbp": -2.9599,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 2,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 3,
+            "trainingNetGbp": -2.9599,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 3,
+            "trainedThrough": "2026-09-11T22:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 4,
+            "trainedThrough": "2026-09-12T00:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 5,
+            "trainedThrough": "2026-09-12T15:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 6,
+            "trainedThrough": "2026-09-12T18:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 7,
+            "trainedThrough": "2026-09-12T20:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 8,
+            "trainedThrough": "2026-09-12T22:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 9,
+            "trainedThrough": "2026-09-13T00:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 10,
+            "trainedThrough": "2026-09-13T05:00:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 11,
+            "trainedThrough": "2026-09-13T10:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 12,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 13,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 4,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 14,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 4,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 15,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 2,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 16,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 17,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 18,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 19,
+            "trainedThrough": "2026-09-13T17:00:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 20,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 21,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 22,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 23,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 24,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 25,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 26,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 27,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 28,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 29,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 30,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 31,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 32,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 33,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 34,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 35,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 36,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 37,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 38,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 39,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 40,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 41,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 42,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 43,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 44,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 45,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 46,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 47,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 48,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 49,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          }
+        ]
+      },
+      "rl": {
+        "generatedAt": "2026-10-24T16:36:18.048883+00:00",
+        "cumulativeGradientUpdates": 116677,
+        "gradientUpdatesThisRun": 3847,
+        "newTrainingTailCandles": 59,
+        "decisionsThisRun": 15450,
+        "profitDevelopmentGatePassed": false,
+        "checkpoints": [
+          {
+            "observedAt": "2026-10-24T16:36:18.048883+00:00",
+            "modelSha256": "509ffec91eb7de24f7a863f64c8c934189645003b0773a7b21cbf1014002761b",
+            "cumulativeGradientUpdates": 116677,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 59,
+            "sameWindowNetVirtual": -2.5458,
+            "sameWindowStressNetVirtual": -4.0076,
+            "sameWindowImproved": true,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          }
+        ]
+      },
+      "blockers": [
+        "ACADEMY_DAILY_EXPERIMENT_CAP",
+        "NO_NEW_INDEPENDENT_ACADEMY_CANDLES",
+        "RL_PROFIT_DEVELOPMENT_GATE_FAILED",
+        "NO_VERIFIED_FORWARD_PAPER_RESULTS"
+      ],
+      "researchProgressOnly": true,
+      "forwardVerified": false,
+      "brokerOrders": 0,
+      "admittedForTrading": false
+    },
+    {
+      "id": "CRYPTO:LTC/USD",
+      "market": "CRYPTO",
+      "symbol": "LTC/USD",
+      "name": "LTC",
+      "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
+      "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
+      "research": {
+        "experiments": 49,
+        "independentWindows": 2,
+        "configurations": 115,
+        "historicalTrainingGrade": 65.22,
+        "historicalCandidateNetGbp": -0.48,
+        "historicalCandidateTrades": 23,
+        "xp": 0,
+        "status": "DAILY_EXPERIMENT_CAP",
+        "latestBatchEvaluations": 0,
+        "lastBatchNewTrainingCandles": 0,
+        "lessons": [
+          {
+            "run": 1,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 1,
+            "trainingNetGbp": -3.0533,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 2,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 1,
+            "trainingNetGbp": -3.0533,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 3,
+            "trainedThrough": "2026-09-11T22:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 4,
+            "trainedThrough": "2026-09-12T00:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 5,
+            "trainedThrough": "2026-09-12T15:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 6,
+            "trainedThrough": "2026-09-12T18:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 7,
+            "trainedThrough": "2026-09-12T20:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 8,
+            "trainedThrough": "2026-09-12T22:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 9,
+            "trainedThrough": "2026-09-13T00:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 10,
+            "trainedThrough": "2026-09-13T05:00:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 11,
+            "trainedThrough": "2026-09-13T10:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 12,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 13,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 4,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 14,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 4,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 15,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 2,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 16,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 17,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 18,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 19,
+            "trainedThrough": "2026-09-13T17:00:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 20,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 21,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 22,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 23,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 24,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 25,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 26,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 27,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 28,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 29,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 30,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 31,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 32,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 33,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 34,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 35,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 36,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 37,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 38,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 39,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 40,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 41,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 42,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 43,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 44,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 45,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 46,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 47,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 48,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 49,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          }
+        ]
+      },
+      "rl": {
+        "generatedAt": "2026-10-24T16:36:18.048883+00:00",
+        "cumulativeGradientUpdates": 116677,
+        "gradientUpdatesThisRun": 3847,
+        "newTrainingTailCandles": 59,
+        "decisionsThisRun": 15450,
+        "profitDevelopmentGatePassed": false,
+        "checkpoints": [
+          {
+            "observedAt": "2026-10-24T16:36:18.048883+00:00",
+            "modelSha256": "00094d44ea3f81c1ab19504cc4af640ca15c90b1efba3f3ba60a7645d5b41d21",
+            "cumulativeGradientUpdates": 116677,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 59,
+            "sameWindowNetVirtual": -0.0175,
+            "sameWindowStressNetVirtual": -0.4096,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          }
+        ]
+      },
+      "blockers": [
+        "ACADEMY_DAILY_EXPERIMENT_CAP",
+        "NO_NEW_INDEPENDENT_ACADEMY_CANDLES",
+        "RL_PROFIT_DEVELOPMENT_GATE_FAILED",
+        "NO_VERIFIED_FORWARD_PAPER_RESULTS"
+      ],
+      "researchProgressOnly": true,
+      "forwardVerified": false,
+      "brokerOrders": 0,
+      "admittedForTrading": false
+    },
+    {
+      "id": "CRYPTO:BCH/USD",
+      "market": "CRYPTO",
+      "symbol": "BCH/USD",
+      "name": "BCH",
+      "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
+      "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
+      "research": {
+        "experiments": 49,
+        "independentWindows": 2,
+        "configurations": 100,
+        "historicalTrainingGrade": 46.67,
+        "historicalCandidateNetGbp": -4.03,
+        "historicalCandidateTrades": 30,
+        "xp": 0,
+        "status": "DAILY_EXPERIMENT_CAP",
+        "latestBatchEvaluations": 0,
+        "lastBatchNewTrainingCandles": 0,
+        "lessons": [
+          {
+            "run": 1,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -4.4285,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 2,
+            "trainedThrough": "2026-08-15T21:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -4.4285,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 3,
+            "trainedThrough": "2026-09-11T22:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": true,
+            "researchXp": 0
+          },
+          {
+            "run": 4,
+            "trainedThrough": "2026-09-12T00:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 5,
+            "trainedThrough": "2026-09-12T15:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 6,
+            "trainedThrough": "2026-09-12T18:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 7,
+            "trainedThrough": "2026-09-12T20:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 8,
+            "trainedThrough": "2026-09-12T22:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 9,
+            "trainedThrough": "2026-09-13T00:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 10,
+            "trainedThrough": "2026-09-13T05:00:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 11,
+            "trainedThrough": "2026-09-13T10:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 12,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 13,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 4,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 14,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 5,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 15,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 3,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 16,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 17,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 18,
+            "trainedThrough": "2026-09-13T13:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 19,
+            "trainedThrough": "2026-09-13T17:00:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 20,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 21,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 22,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 23,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 24,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 25,
+            "trainedThrough": "2026-09-15T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 26,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 27,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 28,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 29,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 30,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 31,
+            "trainedThrough": "2026-09-15T21:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 32,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 33,
+            "trainedThrough": "2026-09-16T05:00:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 34,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 35,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 36,
+            "trainedThrough": "2026-09-16T21:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 37,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 38,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 39,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 40,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 41,
+            "trainedThrough": "2026-09-17T17:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 42,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 43,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 44,
+            "trainedThrough": "2026-09-17T21:30:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 45,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 46,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 47,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 48,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 49,
+            "trainedThrough": "2026-09-18T04:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          }
+        ]
+      },
+      "rl": {
+        "generatedAt": "2026-10-24T16:36:18.048883+00:00",
+        "cumulativeGradientUpdates": 116677,
+        "gradientUpdatesThisRun": 3847,
+        "newTrainingTailCandles": 59,
+        "decisionsThisRun": 15450,
+        "profitDevelopmentGatePassed": false,
+        "checkpoints": [
+          {
+            "observedAt": "2026-10-24T16:36:18.048883+00:00",
+            "modelSha256": "079fbab6521f159a7d6f38b2effa0d599593b85b9aad625857df23d054383ba4",
+            "cumulativeGradientUpdates": 116677,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 59,
+            "sameWindowNetVirtual": -0.8065,
+            "sameWindowStressNetVirtual": -2.2868,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          }
+        ]
+      },
+      "blockers": [
+        "ACADEMY_DAILY_EXPERIMENT_CAP",
+        "NO_NEW_INDEPENDENT_ACADEMY_CANDLES",
+        "RL_PROFIT_DEVELOPMENT_GATE_FAILED",
+        "NO_VERIFIED_FORWARD_PAPER_RESULTS"
+      ],
+      "researchProgressOnly": true,
+      "forwardVerified": false,
+      "brokerOrders": 0,
+      "admittedForTrading": false
+    }
+  ],
+  "summary": {
+    "pupils": 10,
+    "cappedAcademyStudents": 10,
+    "rlUpdatedPupils": 10,
+    "rlProfitGatePasses": 0,
+    "newIndependentAcademyCandles": 0,
+    "independentlyForwardVerified": 0,
+    "realBrokerOrders": 0,
+    "caution": "Historical research and same-window DQN improvements are NOT prospective forward trading results."
+  }
+}
