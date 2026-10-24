@@ -33,7 +33,7 @@ record=confirmSLHourlySuccess(record,market,symbol,{now:now+2000});
 const due=planSLHourlySync({market,symbol,record,checkpoint,now:now+SL_HOURLY_MS});
 assert.equal(due.due,true);
 assert.equal(due.outputsize,SL_INCREMENTAL_BARS);
-assert.equal(due.refreshMode,'OVERLAPPING_150_BARS');
+assert.equal(due.refreshMode,'OVERLAPPING_180_BARS');
 const next=recordSLHourlyAttempt(record,market,symbol,{now:now+SL_HOURLY_MS});
 assert.equal(next.totalAttempts,2);
 const delayed=planSLHourlySync({market,symbol,record,checkpoint,now:now+9*SL_HOURLY_MS});
