@@ -24,7 +24,10 @@ function configOf(o){
   !numeric(virtualNotionalGbp)||virtualNotionalGbp<50||virtualNotionalGbp>1000000||
   !SL_PAPER_POLICIES.includes(executionPolicy))
   throw Error('Invalid SL loop market, symbol or virtual trading settings');
- return {market,symbol,holdCandles,sideCostBps,virtualNotionalGbp,executionPolicy};
+ // Do not add a default-only field to legacy live-loop checkpoints: the UI
+ // compares the saved config to existing field-only settings.
+ return {market,symbol,holdCandles,sideCostBps,virtualNotionalGbp,
+  ...(executionPolicy==='EXPLORE_ALL'?{executionPolicy}: {})};
 }
 function sameBar(a,b){
  return !!a&&!!b&&['t','o','h','l','c','v'].every(k=>a[k]===b[k]);
