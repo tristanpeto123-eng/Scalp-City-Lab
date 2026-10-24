@@ -15,6 +15,8 @@ on:
       - 'sl-model-vault-tests.mjs'
       - 'sl-hourly-sync.mjs'
       - 'sl-hourly-sync-tests.mjs'
+      - 'sl-chart-cache.mjs'
+      - 'sl-chart-cache-tests.mjs'
       - 'sl-strategy.html'
       - '.github/workflows/sl-strategy-tests.yml'
   pull_request:
@@ -32,6 +34,8 @@ on:
       - 'sl-model-vault-tests.mjs'
       - 'sl-hourly-sync.mjs'
       - 'sl-hourly-sync-tests.mjs'
+      - 'sl-chart-cache.mjs'
+      - 'sl-chart-cache-tests.mjs'
       - 'sl-strategy.html'
       - '.github/workflows/sl-strategy-tests.yml'
 jobs:
@@ -53,6 +57,7 @@ jobs:
           node sl-loop-tests.mjs
           node sl-model-vault-tests.mjs
           node sl-hourly-sync-tests.mjs
+          node sl-chart-cache-tests.mjs
       - name: Verify read-only research module syntax
         run: |
           node --check sl-core.mjs
@@ -61,3 +66,4 @@ jobs:
           node --check sl-loop.mjs
           node --check sl-model-vault.mjs
           node --check sl-hourly-sync.mjs
+          node --check sl-chart-cache.mjs
