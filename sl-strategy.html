@@ -24,6 +24,14 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
 .warning{border-left:3px solid #eacb88;background:#26313b;padding:12px 16px;color:#efdeb8}
 #message{color:#aedcdb}footer{font-size:12px;color:#9db7c5;margin-top:20px}
 @media(max-width:720px){.grid{grid-template-columns:1fr}}
+
+.five-layout{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.five-layout label{margin:5px 0 0}
+#fiveChart{display:block;width:100%;height:auto;background:#091c2b;border:1px solid #365768;border-radius:10px;margin-top:12px}
+.five-actions{display:flex;flex-wrap:wrap;align-items:center}
+#fiveStatus,#fiveReplayStatus{font-size:13px;color:#b6d4df;white-space:pre-wrap}
+@media(max-width:650px){.five-layout{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.five-layout{grid-template-columns:1fr}}
 </style></head>
 <body><main>
 <header><a href="./strategy-validation.html">← Research Desk</a><b class="sub">SL / SEPARATE STRATEGY · RESEARCH ONLY</b><a href="./robot-academy.html">Robot Academy ↗</a></header>
@@ -53,10 +61,36 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
 <input id="probe" value="[0.7,0.25,0.1,0.1,0,0.5]"><button id="predict" class="secondary">Score setup</button>
 <pre id="prediction">No prediction.</pre>
 </section></div>
+
+<section class="panel" id="fiveMinuteLab" style="margin-top:15px" aria-labelledby="fiveTitle">
+  <h2 id="fiveTitle">3 / 5-minute SL training &amp; replay</h2>
+  <p>Import <b>actual recorded 5-minute OHLC bars</b> for the selected market. SL will turn non-overlapping, predeclared next-open trades into profitable (good) and losing (bad) examples. All trading outcomes are simulated, not broker fills.</p>
+  <div class="five-layout">
+    <label for="fiveSymbol">Chart symbol<input id="fiveSymbol" value="XAUUSD" maxlength="24" autocomplete="off"></label>
+    <label for="fiveHold">Hold period (5m bars)<input id="fiveHold" type="number" min="1" max="24" value="3"></label>
+    <label for="fiveCost">Cost per side (basis points)<input id="fiveCost" type="number" min="0" max="100" step=".5" value="4"></label>
+    <label for="fiveNotional">Virtual GBP notional<input id="fiveNotional" type="number" min="50" max="1000000" value="1000"></label>
+    <label for="fiveSpeed">Replay speed<select id="fiveSpeed"><option value="1000">1 bar / second</option><option value="250">4 bars / second</option><option value="75">13 bars / second</option></select></label>
+    <label for="fiveFile">5-minute CSV history<input id="fiveFile" type="file" accept=".csv,text/csv"></label>
+  </div>
+  <p class="note">CSV headers: <code>time,open,high,low,close,volume</code> (volume optional). Times must be UTC or include an offset. Session gaps are recorded, never filled. Use XAUUSD, EURUSD or US100 data matching the selected market.</p>
+  <div class="five-actions">
+    <button id="fiveBuild" class="secondary" type="button" disabled>Add 5m good / bad trades</button>
+    <button id="fiveStart" class="secondary" type="button" disabled>Restart replay</button>
+    <button id="fiveStep" class="secondary" type="button" disabled>Next 5m candle</button>
+    <button id="fivePlay" class="secondary" type="button" disabled>Play</button>
+    <button id="fiveEnd" class="secondary" type="button" disabled>Last 5m candle</button>
+  </div>
+  <p id="fiveStatus" role="status">No 5-minute history imported. Import a matching market CSV to begin.</p>
+  <canvas id="fiveChart" width="900" height="320" aria-label="Five-minute candle-by-candle historical replay showing no future bars"></canvas>
+  <p id="fiveReplayStatus" role="status">5-minute replay idle.</p>
+  <p class="note">The SL decision shown during replay is a post-training historical illustration. It may include in-sample periods. Only the separate untouched historical test score is intended as the held-out measurement. No paper or live orders are sent. The <a href="./market-replay-5m.html">existing crypto 5m Deep RL replay</a> remains a separate system.</p>
+</section>
 <footer>SL is distinct from Scalp City's existing strategies. Outputs are historical research, not account P&L. No actual paper/live orders or promotion rights are implemented.</footer>
 </main>
 <script type="module">
 import {createSLMemory,recordSLTrade,validateSLMemory,slMemoryStats,trainSL,predictSL} from './sl-core.mjs';
+import {parseSLFiveMinuteCSV,buildSLFiveMinuteDataset} from './sl-5m.mjs';
 const $=id=>document.getElementById(id), key=m=>'scalp-city-lab:sl:v1:'+m;
 let memory=createSLMemory('COMMODITIES'),models={};
 const market=()=>$('market').value;
@@ -73,5 +107,120 @@ $('export').addEventListener('click',()=>{const url=URL.createObjectURL(new Blob
 $('file').addEventListener('change',async e=>{try{const file=e.target.files?.[0];if(!file)return;const m=validateSLMemory(JSON.parse(await file.text()));if(m.market!==market())throw Error('Wrong market');memory=m;delete models[market()];save();refresh();say('Memory restored. Train SL to evaluate.')}catch(err){say(err.message,true)}finally{e.target.value=''}});
 $('clear').addEventListener('click',()=>{if(!confirm('Delete selected market local SL memory? Export it first if needed.'))return;memory=createSLMemory(market());delete models[market()];save();refresh();$('output').textContent='Untrained';say('Memory cleared')});
 $('demo').addEventListener('click',()=>{try{const z=new Uint32Array(1);crypto.getRandomValues(z);let seed=z[0];const rnd=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296};let d=createSLMemory(market());for(let i=0;i<120;i++){const f=Array.from({length:6},()=>rnd()*2-1);const edge=f[0]*.55+f[1]*.4+f[5]*.35+(.5-rnd())*.95;const at=new Date(Date.UTC(2025,0,i+1,1));d=recordSLTrade(d,{id:'SYNTH-'+z[0]+'-'+i,market:market(),source:'SYNTHETIC_DEMO',openedAt:at.toISOString(),closedAt:new Date(at.getTime()+3600000).toISOString(),entryFeatures:f,netPnlGbp:(edge>0?1:-1)*(3+rnd()*30)})}memory=d;delete models[market()];save();refresh();$('output').textContent='SYNTHETIC example; click Train SL';say('Fresh SYNTHETIC examples created, not real market performance.')}catch(e){say(e.message,true)}});
+
+/* Five-minute history is kept in memory for this page session only.
+ * Labelled trade examples are saved to the per-market SL memory after user action. */
+let fiveBars=null, fiveSession=null, fiveIndex=0, fiveTimer=null;
+const FIVE_DEFAULT_SYMBOL={COMMODITIES:'XAUUSD',FOREX:'EURUSD',INDICES:'US100'};
+const fiveMessage=(message,error=false)=>{const el=$('fiveStatus');el.textContent=message;el.style.color=error?'#ffb9b7':'#b9ece0';};
+function stopFive(){
+ if(fiveTimer!==null){clearInterval(fiveTimer);fiveTimer=null;}
+ $('fivePlay').textContent='Play';
+}
+function fiveButtons(){
+ const ready=!!fiveSession,atEnd=ready&&fiveIndex>=fiveSession.bars.length-1;
+ $('fiveBuild').disabled=!fiveBars;
+ for(const id of ['fiveStart','fiveStep','fivePlay','fiveEnd'])$(id).disabled=!ready;
+ if(ready){$('fiveStep').disabled=atEnd;$('fivePlay').disabled=atEnd;}
+}
+function resetFive(clearFile=true){
+ stopFive();fiveBars=null;fiveSession=null;fiveIndex=0;fiveButtons();
+ if(clearFile)$('fiveFile').value='';
+ $('fiveReplayStatus').textContent='5-minute replay idle.';
+ const canvas=$('fiveChart'),ctx=canvas.getContext('2d');
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+function fmtFiveDate(t){
+ return new Date(t).toLocaleString('en-GB',{timeZone:'UTC',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})+' UTC';
+}
+function drawFive(){
+ const canvas=$('fiveChart'),ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
+ ctx.clearRect(0,0,w,h);
+ ctx.fillStyle='#091c2b';ctx.fillRect(0,0,w,h);
+ if(!fiveSession)return;
+ const bars=fiveSession.bars,end=Math.max(0,Math.min(fiveIndex,bars.length-1));
+ const from=Math.max(0,end-78),view=bars.slice(from,end+1);
+ const hi=Math.max(...view.map(x=>x.h)),lo=Math.min(...view.map(x=>x.l));
+ const span=hi-lo||hi*.001||1,left=18,right=w-20,top=24,bottom=h-28;
+ ctx.strokeStyle='#28465b';ctx.lineWidth=1;
+ for(let j=0;j<=4;j++){
+  const y=top+(bottom-top)*j/4;ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(right,y);ctx.stroke();
+ }
+ const yFor=v=>top+(hi-v)/span*(bottom-top);
+ const space=(right-left)/view.length;
+ view.forEach((b,j)=>{
+  const x=left+(j+.5)*space,up=b.c>=b.o;
+  ctx.strokeStyle=up?'#77dfbf':'#f19b9b';ctx.fillStyle=ctx.strokeStyle;ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(x,yFor(b.h));ctx.lineTo(x,yFor(b.l));ctx.stroke();
+  const bodyTop=Math.min(yFor(b.o),yFor(b.c));
+  ctx.fillRect(x-Math.max(1,space*.3),bodyTop,Math.max(2,space*.6),Math.max(1,Math.abs(yFor(b.c)-yFor(b.o))));
+ });
+ ctx.font='12px system-ui';ctx.fillStyle='#b5d0db';
+ ctx.fillText('5Min | '+fiveSession.symbol+' | '+fmtFiveDate(bars[end].t),left,15);
+ ctx.fillText('Visible candles '+(from+1)+'–'+(end+1)+' of '+bars.length,left,h-9);
+ const finished=fiveSession.opportunities.filter(x=>x.exitIndex<=end);
+ let selected=0,pnl=0,lastDecision='Untrained — train SL to score 5m candidates';
+ const model=models[market()];
+ if(model){
+  for(const x of finished){
+   const pred=predictSL(model,x.trade.entryFeatures,market());
+   if(pred.researchDecision==='SELECT'){selected++;pnl+=x.trade.netPnlGbp;}
+  }
+  const latest=fiveSession.opportunities.find(x=>x.signalIndex===end);
+  lastDecision=latest?'SL research decision: '+predictSL(model,latest.trade.entryFeatures,market()).researchDecision:'No candidate at this candle';
+ }
+ $('fiveReplayStatus').textContent='Revealed '+(end+1)+' / '+bars.length+' completed 5m candles | '+finished.length+' simulated completed opportunities | '+lastDecision+(model?' | selected '+selected+' | illustrative net £'+pnl.toFixed(2):'')+' | No future bars displayed or broker orders sent.';
+ fiveButtons();
+}
+$('market').addEventListener('change',()=>{
+ $('fiveSymbol').value=FIVE_DEFAULT_SYMBOL[market()]||'XAUUSD';
+ resetFive();fiveMessage('Market changed. Import matching 5-minute data for '+market()+'.');
+});
+$('fiveFile').addEventListener('change',async e=>{
+ try{
+  stopFive();fiveSession=null;fiveBars=null;fiveButtons();
+  const file=e.target.files?.[0];if(!file)return;
+  fiveBars=parseSLFiveMinuteCSV(await file.text());
+  const gaps=fiveBars.reduce((s,b,i)=>s+(i>0&&Date.parse(b.t)-Date.parse(fiveBars[i-1].t)!==300000?1:0),0);
+  fiveMessage('Imported '+fiveBars.length+' actual-recorded 5m rows (source unverified), '+gaps+' market-session gaps. Choose settings, then Add 5m good / bad trades.');
+  fiveButtons();
+ }catch(err){resetFive(false);fiveMessage(err.message,true);}
+});
+$('fiveBuild').addEventListener('click',()=>{
+ try{
+  if(!fiveBars)throw Error('Import 5-minute history first');
+  const symbol=$('fiveSymbol').value.trim().toUpperCase(),holdCandles=Number($('fiveHold').value);
+  const sideCostBps=Number($('fiveCost').value),virtualNotionalGbp=Number($('fiveNotional').value);
+  const dataset=buildSLFiveMinuteDataset({bars:fiveBars,market:market(),symbol,holdCandles,sideCostBps,virtualNotionalGbp});
+  const known=new Set([...memory.good,...memory.bad].map(t=>t.id));
+  const added=dataset.opportunities.map(x=>x.trade).filter(t=>!known.has(t.id));
+  // Atomic validation: reject synthetic mixing or malformed duplicates before persisting anything.
+  const merged=validateSLMemory({...memory,
+   good:[...memory.good,...added.filter(t=>t.netPnlGbp>0)],
+   bad:[...memory.bad,...added.filter(t=>t.netPnlGbp<0)]});
+  memory=merged;save();delete models[market()];refresh();
+  $('output').textContent='5m data changed. Train SL to score the new historical examples.';
+  fiveSession=dataset;fiveIndex=Math.min(28,dataset.bars.length-1);stopFive();drawFive();
+  fiveMessage(dataset.symbol+' 5m: '+dataset.opportunities.length+' candidate trades; '+added.length+' new labelled examples (modelled net GBP). '+dataset.gaps+' skipped session gaps. Now press Train SL.');
+ }catch(err){fiveMessage(err.message,true)}
+});
+$('fiveStart').addEventListener('click',()=>{stopFive();if(!fiveSession)return;fiveIndex=Math.min(28,fiveSession.bars.length-1);drawFive()});
+$('fiveStep').addEventListener('click',()=>{if(!fiveSession)return;fiveIndex=Math.min(fiveIndex+1,fiveSession.bars.length-1);drawFive()});
+$('fiveEnd').addEventListener('click',()=>{stopFive();if(!fiveSession)return;fiveIndex=fiveSession.bars.length-1;drawFive()});
+$('fivePlay').addEventListener('click',()=>{
+ if(fiveTimer!==null){stopFive();return}
+ if(!fiveSession)return;
+ $('fivePlay').textContent='Pause';
+ fiveTimer=setInterval(()=>{
+  if(!fiveSession||fiveIndex>=fiveSession.bars.length-1){stopFive();drawFive();return;}
+  fiveIndex++;drawFive();
+ },Number($('fiveSpeed').value));
+});
+$('fiveSpeed').addEventListener('change',()=>{if(fiveTimer!==null){stopFive();$('fivePlay').click()}});
+$('train').addEventListener('click',()=>{if(fiveSession)drawFive()});
+$('clear').addEventListener('click',()=>{if(fiveSession)drawFive()});
+$('file').addEventListener('change',()=>{if(fiveSession)queueMicrotask(drawFive)});
+$('demo').addEventListener('click',()=>{if(fiveSession)queueMicrotask(drawFive)});
+
 load();
 </script></body></html>
