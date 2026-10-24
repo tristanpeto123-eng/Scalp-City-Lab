@@ -7,8 +7,8 @@
  *
  * No paper/live brokerage, no implied continuous unattended service.
  */
-import {createSLMemory,validateSLMemory,trainSL,predictSL,slMemoryStats,updateSLModelAfterClose} from './sl-core.mjs?slboot=20261024r2';
-import {buildSLFiveMinuteDataset,validateSLFiveMinuteBars,slFiveMinuteSignal,SL_FIVE_MIN_MS} from './sl-5m.mjs?slboot=20261024r2';
+import {createSLMemory,validateSLMemory,trainSL,predictSL,slMemoryStats,updateSLModelAfterClose} from './sl-core.mjs?slboot=20261024r3';
+import {buildSLFiveMinuteDataset,validateSLFiveMinuteBars,slFiveMinuteSignal,SL_FIVE_MIN_MS} from './sl-5m.mjs?slboot=20261024r3';
 
 export const SL_LOOP_SCHEMA='SL_5MIN_CAUSAL_LOOP_V1';
 export const SL_PAPER_ORDER_LIMIT=1500;
