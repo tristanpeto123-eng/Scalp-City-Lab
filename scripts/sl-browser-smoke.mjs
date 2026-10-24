@@ -23,6 +23,18 @@ try{
  for(const [engine,browserType] of [['chromium',chromium],['webkit',webkit]]){
   const browser=await browserType.launch({headless:true});
   try{
+   // Probe the currently published site, not just local browser simulation.
+   const published=await browser.newPage();
+   const publishedErrors=[];
+   published.on('pageerror',e=>publishedErrors.push('JS: '+e.message));
+   published.on('console',m=>{if(m.type()==='error')publishedErrors.push('console: '+m.text())});
+   try{
+    await published.goto('https://tristanpeto123-eng.github.io/Scalp-City-Lab/sl-strategy.html?startup_probe=20261024',{waitUntil:'networkidle',timeout:30000});
+    await published.waitForTimeout(1500);
+    const status=await published.locator('#fiveStatus').innerText();
+    console.log(engine+' published page status '+status.slice(0,280)+'; errors '+JSON.stringify(publishedErrors).slice(0,800));
+    assert.ok(!status.includes('Checking for saved'),engine+' PUBLISHED page module never initialized: '+JSON.stringify(publishedErrors));
+   }finally{await published.close()}
    const page=await browser.newPage();
    const errors=[];
    page.on('pageerror',e=>errors.push('PAGE ERROR: '+e.message));
