@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#081426"><title>Universal Student · Scalp City Academy</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,sans-serif;color:#edf7ff;background:#081426}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#174054,#081426 68%);min-height:100vh}
+main{max-width:1040px;margin:auto;padding:18px 15px 60px}
+a{color:#8be7cf}header{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+h1{font-size:clamp(1.9rem,7vw,3.5rem);margin:12px 0 5px;letter-spacing:-.05em}
+h1 span{color:#8ce6ce}.muted{color:#adbed1}p{line-height:1.5}
+nav{display:flex;gap:8px;flex-wrap:wrap}.link{display:inline-flex;align-items:center;padding:9px 13px;color:#e5f8f9;text-decoration:none;background:#162e45;border:1px solid #426c83;border-radius:11px;font-size:.84rem;font-weight:750}
+.card{border:1px solid #36546c;background:linear-gradient(150deg,#152940,#0e2135);border-radius:20px;padding:18px;margin-top:16px}
+.eyebrow{font-size:.74rem;font-weight:900;letter-spacing:.16em;color:#95ced2}.title{font-size:1.25rem;font-weight:840;margin:7px 0 10px}
+.stage{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.robot{width:90px;height:94px;flex-shrink:0;background:linear-gradient(#62d8d5,#3d99ac);border:4px solid #c8f9f1;border-radius:26px;position:relative;box-shadow:0 0 36px #30d9ba33}
+.robot:before{content:"";display:block;background:#183348;width:10px;height:13px;border-radius:50%;position:absolute;left:20px;top:31px;box-shadow:33px 0 #183348}
+.robot:after{content:"UNIVERSAL 01";display:block;color:#0c3042;font-size:.55rem;font-weight:900;position:absolute;top:61px;left:0;right:0;text-align:center}
+.tag{display:inline-block;padding:6px 9px;border:1px solid #566c77;border-radius:20px;color:#cde0ea;background:#192d42;font-size:.71rem;font-weight:850}
+.tag.gold{border-color:#b49255;color:#ffdc98}.tag.aqua{border-color:#427e71;color:#9ce7d5}
+form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:15px}
+label{display:block;font-size:.82rem;color:#cde0ee;font-weight:780}
+select{font:inherit;width:100%;min-height:46px;margin-top:6px;border-radius:11px;background:#0b1c30;color:#fff;border:1px solid #53738c;padding:9px}
+button,.button{appearance:none;font:inherit;border-radius:12px;background:#87ddc8;color:#0b2732;border:0;padding:12px 15px;font-weight:850;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
+button.secondary,.button.secondary{color:#d6f3fd;background:#213f55;border:1px solid #50718a}
+button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #ffe3a4;outline-offset:2px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.actions>*{flex:1 1 160px}
+.mini{font-size:.78rem;color:#aebfd1}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}
+.metric{background:#0c1e30;padding:12px;border:1px solid #39536b;border-radius:12px}
+.metric strong{display:block;font-size:1.25rem;margin-top:6px}.metric small{color:#aac0d1}
+svg{display:block;width:100%;height:auto;background:#0a1b30;border-radius:14px;border:1px solid #2c5264}
+.legend{display:flex;gap:15px;flex-wrap:wrap;font-size:.79rem;color:#afc8d9}.legend b{display:inline-block;width:16px;height:3px;vertical-align:middle;margin-right:6px}
+.notice{background:#152b3d;padding:11px 13px;border-left:3px solid #b7a26f;border-radius:8px;margin:13px 0;font-size:.86rem}
+#status{font-weight:750}
+#chartEmpty{text-align:center;color:#adc5d9;padding:15px}
+ol{padding-left:22px;line-height:1.65;color:#c0d3df}li{margin-bottom:6px}
+footer{color:#90a8bf;font-size:.77rem;margin-top:28px}
+@media(max-width:660px){form{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding:12px 12px 60px}.card{padding:14px}h1{font-size:2.3rem}}
+</style></head>
+<body><main>
+<header><div class="eyebrow">SCALP CITY / ACADEMY / RESEARCH</div>
+<nav><a class="link" href="./robot-academy.html">← Academy</a><a class="link" href="./student-progress.html">Student Progress ↗</a></nav></header>
+<h1>UNIVERSAL <span>STUDENT</span></h1>
+<p class="muted">One robot, separate learning memories for every supported market. Transfer a saved neural model, retrain against that market's historical data, and compare each generation. No live or paper orders.</p>
+<section class="card" aria-labelledby="robotTitle">
+<div class="stage"><div class="robot" aria-hidden="true"></div><div style="flex:1">
+<div class="eyebrow" id="robotTitle">STUDENT ID: UNIVERSAL-01</div>
+<div class="title">Cross-market transfer learner</div>
+<span class="tag aqua">DQN · 5-minute historical data</span> <span class="tag gold">Not graduated</span>
+<p class="mini">Seeds from an existing GitHub-saved, trained crypto DQN checkpoint. This is a <strong>different model family</strong> from the earlier XAUUSD Conv1D ZIP; that ZIP has not been installed into this GitHub workflow.</p>
+</div></div>
+<form id="controls">
+<label>Market for student to train on
+<select id="market" name="market">
+<option>BTC/USD</option><option>ETH/USD</option><option>SOL/USD</option><option>XRP/USD</option><option>ADA/USD</option><option>AVAX/USD</option><option>LINK/USD</option><option>DOGE/USD</option><option>LTC/USD</option><option>BCH/USD</option>
+</select></label>
+<label>Import source checkpoint from
+<select id="source" name="source">
+<option>BTC/USD</option><option>ETH/USD</option><option>SOL/USD</option><option>XRP/USD</option><option>ADA/USD</option><option>AVAX/USD</option><option>LINK/USD</option><option>DOGE/USD</option><option>LTC/USD</option><option>BCH/USD</option>
+</select></label>
+</form>
+<div class="actions"><button type="button" id="train">Train via GitHub ↗</button><button class="secondary" type="button" id="refresh">Reload progress</button></div>
+<div class="notice" id="status" role="status" aria-live="polite">Checking saved research history…</div>
+<div class="mini">Training runs on GitHub Actions using a real saved checkpoint and completed historical candles. The first generation transfers weights; later generations continue only that market's own saved student. Selecting a different source afterward will not overwrite its lineage.</div>
+</section>
+<section class="card" aria-labelledby="resultsTitle">
+<div class="eyebrow">RECORDED LEARNING / HISTORICAL RESEARCH ONLY</div><h2 class="title" id="resultsTitle">Student progression</h2>
+<div class="metrics">
+<div class="metric"><small>Generations</small><strong id="generations">—</strong></div>
+<div class="metric"><small>Last development net</small><strong id="net">—</strong></div>
+<div class="metric"><small>Stress net</small><strong id="stress">—</strong></div>
+<div class="metric"><small>Development closes</small><strong id="trades">—</strong></div>
+</div>
+<svg id="progressChart" viewBox="0 0 660 244" role="img" aria-label="Net research profitability by saved generation" hidden></svg>
+<div id="chartEmpty">No verified saved generations for this market yet.</div>
+<p class="legend"><span><b style="background:#7ed9c6"></b>Modeled net GBP</span><span><b style="background:#f2c982"></b>Double-cost stress</span><span><b style="background:#86a1b8"></b>Zero line</span></p>
+<p class="mini">Plots compare different historical development experiments; overlapping windows are not independent validation. P&L is hypothetical using £50 virtual capital, not your account balance.</p>
+<div id="details" class="mini"></div>
+</section>
+<section class="card" id="instructions">
+<div class="eyebrow">RUN FROM YOUR IPHONE</div><h2 class="title">Start a training generation</h2>
+<ol><li>Choose the target market and source model above.</li><li>Tap <strong>Train via GitHub</strong>, then sign in to GitHub if prompted.</li><li>Open <strong>Run workflow</strong>, select <strong>main</strong>, and enter the same target/source. Leave episodes at 3.</li><li>Tap <strong>Run workflow</strong>. When the run finishes, return here and press <strong>Reload progress</strong>.</li></ol>
+<p class="mini">The browser page cannot securely start an authenticated GitHub Actions run without a sign-in backend. It opens GitHub's own authenticated workflow controls instead; no personal access token is requested or stored here.</p>
+<a class="link" href="https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/universal-student.yml" target="_blank" rel="noopener noreferrer">View GitHub training workflow ↗</a>
+</section>
+<footer>Simulation/research only • no broker credentials • no automatic promotion • XAUUSD, forex and indices require a compatible vetted data/weight adapter before they can train in this lane.</footer>
+</main>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const root='https://raw.githubusercontent.com/tristanpeto123-eng/Scalp-City-Lab/universal-student-memory/universal-student-data/markets/';
+const link='https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/workflows/universal-student.yml';
+const sym=()=> $('market').value;
+const safe=s=>encodeURIComponent(s.replace('/','-'));
+const money=n=>Number.isFinite(n)?(n<0?'−£':'£')+Math.abs(n).toFixed(2):'—';
+let currentRequest=0;
+function draw(rows){
+ const svg=$('progressChart'), w=660,h=244, pad={left:62,right:30,top:18,bottom:38};
+ const normal=rows.map(x=>x.developmentNetGbp),stress=rows.map(x=>x.developmentStressNetGbp);
+ const nums=[0,...normal,...stress].filter(Number.isFinite), ymin=Math.min(...nums),ymax=Math.max(...nums);
+ const span=Math.max(0.05,ymax-ymin),lo=ymin-span*.15,hi=ymax+span*.15;
+ const x=i=>pad.left+(w-pad.left-pad.right)*(rows.length===1?.5:i/(rows.length-1));
+ const y=v=>pad.top+(h-pad.top-pad.bottom)*(hi-v)/(hi-lo);
+ svg.replaceChildren();
+ const make=(name,attrs)=>{const el=document.createElementNS('http://www.w3.org/2000/svg',name);
+ Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,String(v)));svg.append(el);return el};
+ const label=(x,y,t)=>{const e=make('text',{x,y,fill:'#b9cbda','font-size':12,'text-anchor':'end'});e.textContent=t;return e};
+ for(let i=0;i<=4;i++){const val=lo+(hi-lo)*i/4;const yy=y(val);make('line',{x1:pad.left,y1:yy,x2:w-pad.right,y2:yy,stroke:Math.abs(val)<.00001?'#91b1b9':'#335066','stroke-dasharray':Math.abs(val)<.00001?'5 4':'2 5'});label(pad.left-7,yy+4,money(val));}
+ const curve=(numbers,color)=>{if(numbers.some(v=>!Number.isFinite(v)))return;
+  make('polyline',{points:numbers.map((v,i)=>x(i)+','+y(v)).join(' '),fill:'none',stroke:color,'stroke-width':3,'stroke-linejoin':'round'});
+  numbers.forEach((v,i)=>{const e=make('circle',{cx:x(i),cy:y(v),r:4,fill:color});const tooltip=document.createElementNS('http://www.w3.org/2000/svg','title');tooltip.textContent='Generation '+(i+1)+': '+money(v);e.append(tooltip);});};
+ curve(normal,'#7ed9c6');curve(stress,'#f2c982');
+ const axis=make('text',{x:w/2,y:h-10,fill:'#a5bacb','font-size':12,'text-anchor':'middle'});
+ axis.textContent='Saved training generations ('+rows.length+')';
+ svg.hidden=false;$('chartEmpty').hidden=true;
+}
+function empty(msg){$('generations').textContent='—';$('net').textContent='—';$('stress').textContent='—';$('trades').textContent='—';
+ $('progressChart').hidden=true;$('chartEmpty').hidden=false;$('chartEmpty').textContent=msg;$('details').textContent='';}
+async function refresh(){
+ const id=++currentRequest;const market=sym();$('status').textContent='Checking saved research for '+market+'…';empty('Reading research memory…');
+ try{
+  const res=await fetch(root+safe(market)+'.json?cache='+Date.now(),{cache:'no-store'});
+  if(!res.ok)throw new Error(res.status===404?'NO_SAVED_GENERATIONS':'RESEARCH_DATA_UNAVAILABLE');
+  const data=await res.json();if(id!==currentRequest)return;
+  if(data.schema!=='SCALP_UNIVERSAL_STUDENT_RESEARCH_V1'||data.targetSymbol!==market||
+     data.brokerOrders!==0||data.liveOrders!==0||data.officialGrade!==null||
+     !Array.isArray(data.generations)||data.generations.length>100||
+     data.generations.some((g,i)=>g.generation!==i+1||g.targetSymbol!==market||
+       !Number.isFinite(g.developmentNetGbp)||!Number.isFinite(g.developmentStressNetGbp)))throw new Error('UNTRUSTED_RESEARCH_FORMAT');
+  const rows=data.generations;const last=rows.at(-1);
+  if(!last)throw new Error('NO_SAVED_GENERATIONS');
+  $('generations').textContent=rows.length;$('net').textContent=money(last.developmentNetGbp);
+  $('stress').textContent=money(last.developmentStressNetGbp);
+  $('trades').textContent=last.developmentTrades??'—';
+  $('details').textContent='First source model: '+data.sourceSymbol+' · Learner: '+data.modelFamily+
+      ' · Last checkpoint: '+last.checkpointSha256.slice(0,12)+'… · Research only, not a forward-paper grade.';
+  $('status').textContent=market+': '+rows.length+' saved research generation(s). Historical performance only.';
+  draw(rows);
+ }catch(e){if(id!==currentRequest)return;
+  const missing=String(e.message).includes('NO_SAVED_GENERATIONS');
+  $('status').textContent=missing?'No recorded Universal Student training for '+market+' yet.':
+    'Unable to verify saved history ('+String(e.message).slice(0,80)+'). No performance is assumed.';
+  empty(missing?'Start its first training generation using GitHub.':'History unavailable: no simulated values will be invented.');
+ }
+}
+$('refresh').addEventListener('click',refresh);
+$('market').addEventListener('change',refresh);
+$('source').addEventListener('change',()=>{});
+$('train').addEventListener('click',()=>{
+ const target=sym(),source=$('source').value;
+ $('status').textContent='On GitHub choose target '+target+', source '+source+', episodes 3, then Run workflow. Return to Reload progress after the run succeeds.';
+ window.open(link,'_blank','noopener,noreferrer');
+});
+refresh();
+})();
+</script></body></html>
