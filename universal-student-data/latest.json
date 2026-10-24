@@ -1,6 +1,7 @@
 {
   "schema": "SCALP_UNIVERSAL_STUDENT_INDEX_V1",
   "markets": [
+    "SOL/USD",
     "XRP/USD"
   ],
   "paperOrders": 0,
