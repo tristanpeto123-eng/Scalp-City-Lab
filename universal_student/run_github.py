@@ -39,8 +39,6 @@ def execute(*, target: str, source: str, episodes: int,
     stem = target.replace("/", "-")
     target_dir = state_root / "universal-student-data" / "markets"
     model_dir = state_root / "universal-student-models"
-    target_dir.mkdir(parents=True, exist_ok=True)
-    model_dir.mkdir(parents=True, exist_ok=True)
     history_path = target_dir / (stem + ".json")
     old = json.loads(history_path.read_text()) if history_path.exists() else None
     if old and (old.get("schema") != SCHEMA or old.get("targetSymbol") != target or
@@ -64,6 +62,8 @@ def execute(*, target: str, source: str, episodes: int,
             seed_manifest.get("paperOrders") != 0 or
             seed_manifest.get("liveOrders") != 0):
         raise ValueError("Source model integrity or permissions failed")
+    target_dir.mkdir(parents=True, exist_ok=True)
+    model_dir.mkdir(parents=True, exist_ok=True)
     previous = model_dir / (stem + "-dqn.pt")
     if old_generations:
         if not previous.is_file() or digest(previous) != old_generations[-1].get("checkpointSha256"):
