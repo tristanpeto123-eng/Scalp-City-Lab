@@ -7,7 +7,7 @@
  *
  * No paper/live brokerage, no implied continuous unattended service.
  */
-import {createSLMemory,validateSLMemory,trainSL,predictSL,slMemoryStats} from './sl-core.mjs';
+import {createSLMemory,validateSLMemory,trainSL,predictSL,slMemoryStats,updateSLModelAfterClose} from './sl-core.mjs';
 import {buildSLFiveMinuteDataset,validateSLFiveMinuteBars,slFiveMinuteSignal,SL_FIVE_MIN_MS} from './sl-5m.mjs';
 
 export const SL_LOOP_SCHEMA='SL_5MIN_CAUSAL_LOOP_V1';
@@ -49,6 +49,8 @@ function ensureLoop(state){
  const conf=configOf(state.config);
  const m=validateSLMemory(state.memory);
  if(m.market!==conf.market)throw Error('SL loop memory has a different market');
+ if(state.model?.strategy!=='SL'||state.model?.market!==conf.market||
+    state.model?.activatedForTrading!==false)throw Error('SL loop model/checkpoint mismatch');
  return conf;
 }
 /** Seed only from pre-existing fully completed bars. The historical test is NOT forward proof. */
@@ -65,9 +67,11 @@ export function initializeSLLoop({bars,market,symbol,holdCandles=3,sideCostBps=4
  }
  memory=validateSLMemory(memory);
  const trained=trainingWithStatus(memory);
+ const magnitudes=[...memory.good,...memory.bad].map(t=>Math.abs(t.netPnlGbp)).sort((a,b)=>a-b);
+ const referenceGbp=magnitudes[Math.floor(magnitudes.length/2)]||5;
  const lastBar=historical.bars.at(-1);
  const pending=intentFor(historical.bars,historical.bars.length-1,trained.model,market);
- const state={schema:SL_LOOP_SCHEMA,config,memory,cursor:lastBar.t,lastBar,
+ const state={schema:SL_LOOP_SCHEMA,config,memory,model:trained.model,referenceGbp,cursor:lastBar.t,lastBar,
   pending,position:null,tail:historical.bars.slice(-28).map(b=>({...b})),
   cycles:0,newCandles:0,closedCandidates:0,executedTrades:0,
   selectedNetPnlGbp:0,counterfactualCount:0,revisions:0,
@@ -79,6 +83,8 @@ export function initializeSLLoop({bars,market,symbol,holdCandles=3,sideCostBps=4
 }
 function cloneState(st){
  return {...st,config:{...st.config},memory:validateSLMemory(st.memory),
+  model:{...st.model,weights:{w1:st.model.weights.w1.map(r=>[...r]),
+    w2:[...st.model.weights.w2],b1:[...st.model.weights.b1],b2:st.model.weights.b2}},
   lastBar:{...st.lastBar},tail:st.tail.map(b=>({...b})),pending:st.pending?{...st.pending,entryFeatures:[...st.pending.entryFeatures]}:null,
   position:st.position?{...st.position,entryFeatures:[...st.position.entryFeatures]}:null,
   events:[...st.events]};
@@ -97,9 +103,9 @@ function processClosed(state,pos,b,model){
   const pile=pnl>0?'good':'bad';
   state.memory[pile].push(trade);
   state.counterfactualCount++;
-  // Training only observes a closed outcome, after the frozen decision.
-  const trained=trainingWithStatus(state.memory);
-  model=trained.model;state.revisions++;
+  // Incremental update consumes THIS closed outcome immediately, never a future bar.
+  model=updateSLModelAfterClose(model,trade,{referenceGbp:state.referenceGbp});
+  state.model=model;state.revisions++;
  }
  state.closedCandidates++;
  if(pos.execute){
@@ -135,7 +141,7 @@ export function advanceSLLoop(checkpoint,bars,{now=Date.now()}={}){
  const future=all.slice(cursorIndex+1);
  if(future.length>750)throw Error('SL loop missed over 750 candles. Restart with explicit baseline review.');
  const current=cloneState(checkpoint);
- let model=trainSL(current.memory).model;
+ let model=current.model;
  const begin=current.closedCandidates;
  for(let i=cursorIndex+1;i<all.length;i++){
   const candle=all[i],previous=all[i-1];
