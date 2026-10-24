@@ -2,7 +2,7 @@
   "schema": "SCALP_HISTORICAL_WALK_FORWARD_V1",
   "mode": "OFFLINE_HISTORICAL_DEVELOPMENT",
   "source": "PUBLISHED_HISTORICAL_15MIN_CANDLES",
-  "researchSnapshotDate": "2026-10-24T04:46:22.404Z",
+  "researchSnapshotDate": "2026-10-24T11:13:56.534Z",
   "tenPupils": 10,
   "policy": {
     "source": "PUBLISHED_HISTORICAL_15MIN_CANDLES",
@@ -24,18 +24,18 @@
     {
       "symbol": "BTC/USD",
       "snapshotSource": "ALPACA_KRAKEN_US_US-1",
-      "snapshotAt": "2026-10-24T04:46:22.404Z",
-      "snapshotSha": "e4d7ca65977a8adbc1ffa1b82c30a84e086277f98dab70eb0ad92834e2ba6dc2",
+      "snapshotAt": "2026-10-24T11:13:56.534Z",
+      "snapshotSha": "d5025b04b46fd1b23f4f59416ebee2fc85ced788670bda95b3aab1731bbef266",
       "historicalCandles": 5759,
       "developmentFoldCount": 3,
       "disjointDevelopmentFolds": true,
       "developmentWindow": {
-        "start": "2026-08-25T05:00:00.000Z",
-        "end": "2026-10-12T04:45:00.000Z"
+        "start": "2026-08-25T11:15:00.000Z",
+        "end": "2026-10-12T11:00:00.000Z"
       },
       "heldOutQuarantine": {
-        "start": "2026-10-12T04:45:00.000Z",
-        "end": "2026-10-24T04:45:00.000Z",
+        "start": "2026-10-12T11:00:00.000Z",
+        "end": "2026-10-24T11:00:00.000Z",
         "candles": 1152,
         "usedForModelSelection": false,
         "admissionsAllowed": false
@@ -48,10 +48,10 @@
           "buyBelow": 27,
           "sellAbove": 65
         },
-        "normalNetAcrossDisjointFolds": -0.45,
-        "stressedNetAcrossDisjointFolds": -2.04,
+        "normalNetAcrossDisjointFolds": -0.51,
+        "stressedNetAcrossDisjointFolds": -2.08,
         "profitableFolds": 0,
-        "researchRankScore": -2.04,
+        "researchRankScore": -2.08,
         "note": "Disjoint development folds are historical research, not broker fills or untouched admission evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -63,18 +63,18 @@
     {
       "symbol": "ETH/USD",
       "snapshotSource": "ALPACA_KRAKEN_US_US-1",
-      "snapshotAt": "2026-10-24T04:46:22.404Z",
-      "snapshotSha": "975ade28d849bc91ad708d25729fcc267b6fb6e26551df1b7f6050dfa8a07513",
+      "snapshotAt": "2026-10-24T11:13:56.534Z",
+      "snapshotSha": "48b6ca33b1933f231687ecc5e6a05736d95c795916ebe66523e0e33bd7939e51",
       "historicalCandles": 5759,
       "developmentFoldCount": 3,
       "disjointDevelopmentFolds": true,
       "developmentWindow": {
-        "start": "2026-08-25T05:00:00.000Z",
-        "end": "2026-10-12T04:45:00.000Z"
+        "start": "2026-08-25T11:15:00.000Z",
+        "end": "2026-10-12T11:00:00.000Z"
       },
       "heldOutQuarantine": {
-        "start": "2026-10-12T04:45:00.000Z",
-        "end": "2026-10-24T04:45:00.000Z",
+        "start": "2026-10-12T11:00:00.000Z",
+        "end": "2026-10-24T11:00:00.000Z",
         "candles": 1152,
         "usedForModelSelection": false,
         "admissionsAllowed": false
@@ -86,10 +86,10 @@
           "lookback": 20,
           "exitLookback": 11
         },
-        "normalNetAcrossDisjointFolds": -3.11,
-        "stressedNetAcrossDisjointFolds": -5.05,
+        "normalNetAcrossDisjointFolds": -2.95,
+        "stressedNetAcrossDisjointFolds": -4.84,
         "profitableFolds": 0,
-        "researchRankScore": -5.05,
+        "researchRankScore": -4.84,
         "note": "Disjoint development folds are historical research, not broker fills or untouched admission evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -101,18 +101,18 @@
     {
       "symbol": "SOL/USD",
       "snapshotSource": "ALPACA_KRAKEN_US_US-1",
-      "snapshotAt": "2026-10-24T04:46:22.404Z",
-      "snapshotSha": "487d09ab8eff33e043ab97505dd4d0a6ff92d4d05d712613193c89477ea15c15",
+      "snapshotAt": "2026-10-24T11:13:56.534Z",
+      "snapshotSha": "be94d1179bc5937a154f22d4ce955be8c049c7952ec203dccf3b4c2b0bfee78e",
       "historicalCandles": 5759,
       "developmentFoldCount": 3,
       "disjointDevelopmentFolds": true,
       "developmentWindow": {
-        "start": "2026-08-25T05:00:00.000Z",
-        "end": "2026-10-12T04:45:00.000Z"
+        "start": "2026-08-25T11:15:00.000Z",
+        "end": "2026-10-12T11:00:00.000Z"
       },
       "heldOutQuarantine": {
-        "start": "2026-10-12T04:45:00.000Z",
-        "end": "2026-10-24T04:45:00.000Z",
+        "start": "2026-10-12T11:00:00.000Z",
+        "end": "2026-10-24T11:00:00.000Z",
         "candles": 1152,
         "usedForModelSelection": false,
         "admissionsAllowed": false
@@ -125,7 +125,7 @@
           "buyBelow": 28,
           "sellAbove": 56
         },
-        "normalNetAcrossDisjointFolds": -0.95,
+        "normalNetAcrossDisjointFolds": -1.05,
         "stressedNetAcrossDisjointFolds": -1.79,
         "profitableFolds": 0,
         "researchRankScore": -1.79,
@@ -140,18 +140,18 @@
     {
       "symbol": "XRP/USD",
       "snapshotSource": "ALPACA_KRAKEN_US_US-1",
-      "snapshotAt": "2026-10-24T04:46:22.404Z",
-      "snapshotSha": "184e92757f22c0d102efbdb6351a5bebe68b9b4890ab487f4e991c327154258d",
+      "snapshotAt": "2026-10-24T11:13:56.534Z",
+      "snapshotSha": "a2f6d0c7d0a1970fdd16e50fcf41a00477c83f287d05a0a339022a90f028a575",
       "historicalCandles": 5759,
       "developmentFoldCount": 3,
       "disjointDevelopmentFolds": true,
       "developmentWindow": {
-        "start": "2026-08-25T05:00:00.000Z",
-        "end": "2026-10-12T04:45:00.000Z"
+        "start": "2026-08-25T11:15:00.000Z",
+        "end": "2026-10-12T11:00:00.000Z"
       },
       "heldOutQuarantine": {
-        "start": "2026-10-12T04:45:00.000Z",
-        "end": "2026-10-24T04:45:00.000Z",
+        "start": "2026-10-12T11:00:00.000Z",
+        "end": "2026-10-24T11:00:00.000Z",
         "candles": 1152,
         "usedForModelSelection": false,
         "admissionsAllowed": false
@@ -164,7 +164,7 @@
           "buyBelow": 27,
           "sellAbove": 60
         },
-        "normalNetAcrossDisjointFolds": -1.05,
+        "normalNetAcrossDisjointFolds": -1.06,
         "stressedNetAcrossDisjointFolds": -2.29,
         "profitableFolds": 0,
         "researchRankScore": -2.29,
@@ -179,18 +179,18 @@
     {
       "symbol": "ADA/USD",
       "snapshotSource": "ALPACA_KRAKEN_US_US-1",
-      "snapshotAt": "2026-10-24T04:46:22.404Z",
-      "snapshotSha": "411541469c53029e1869a5d19f4855cf21e21bb8d33d1dcf7cdebb50d5965ea4",
+      "snapshotAt": "2026-10-24T11:13:56.534Z",
+      "snapshotSha": "129d3d5e384a9262db88f38f922b2256d930cd2c554ea52a70747d9f8f149c96",
       "historicalCandles": 5759,
       "developmentFoldCount": 3,
       "disjointDevelopmentFolds": true,
       "developmentWindow": {
-        "start": "2026-08-25T05:00:00.000Z",
-        "end": "2026-10-12T04:45:00.000Z"
+        "start": "2026-08-25T11:15:00.000Z",
+        "end": "2026-10-12T11:00:00.000Z"
       },
       "heldOutQuarantine": {
-        "start": "2026-10-12T04:45:00.000Z",
-        "end": "2026-10-24T04:45:00.000Z",
+        "start": "2026-10-12T11:00:00.000Z",
+        "end": "2026-10-24T11:00:00.000Z",
         "candles": 1152,
         "usedForModelSelection": false,
         "admissionsAllowed": false
@@ -203,10 +203,10 @@
           "buyBelow": 28,
           "sellAbove": 60
         },
-        "normalNetAcrossDisjointFolds": 0.74,
-        "stressedNetAcrossDisjointFolds": -1.64,
+        "normalNetAcrossDisjointFolds": 0.83,
+        "stressedNetAcrossDisjointFolds": -1.56,
         "profitableFolds": 0,
-        "researchRankScore": -1.64,
+        "researchRankScore": -1.56,
         "note": "Disjoint development folds are historical research, not broker fills or untouched admission evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -218,18 +218,18 @@
     {
       "symbol": "AVAX/USD",
       "snapshotSource": "ALPACA_KRAKEN_US_US-1",
-      "snapshotAt": "2026-10-24T04:46:22.404Z",
-      "snapshotSha": "a477e29ec78b403025ae795d0d55143933d0480c31549fcc2c7c46f669982cec",
+      "snapshotAt": "2026-10-24T11:13:56.534Z",
+      "snapshotSha": "e1a9183d1d56ec5977c8fdf024db1d38bed0260659a28a65da69ae887e442949",
       "historicalCandles": 5759,
       "developmentFoldCount": 3,
       "disjointDevelopmentFolds": true,
       "developmentWindow": {
-        "start": "2026-08-25T05:00:00.000Z",
-        "end": "2026-10-12T04:45:00.000Z"
+        "start": "2026-08-25T11:15:00.000Z",
+        "end": "2026-10-12T11:00:00.000Z"
       },
       "heldOutQuarantine": {
-        "start": "2026-10-12T04:45:00.000Z",
-        "end": "2026-10-24T04:45:00.000Z",
+        "start": "2026-10-12T11:00:00.000Z",
+        "end": "2026-10-24T11:00:00.000Z",
         "candles": 1152,
         "usedForModelSelection": false,
         "admissionsAllowed": false
@@ -242,10 +242,10 @@
           "buyBelow": 23,
           "sellAbove": 60
         },
-        "normalNetAcrossDisjointFolds": 0.98,
-        "stressedNetAcrossDisjointFolds": -0.62,
+        "normalNetAcrossDisjointFolds": 0.84,
+        "stressedNetAcrossDisjointFolds": -0.64,
         "profitableFolds": 1,
-        "researchRankScore": -0.61,
+        "researchRankScore": -0.63,
         "note": "Disjoint development folds are historical research, not broker fills or untouched admission evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -257,18 +257,18 @@
     {
       "symbol": "LINK/USD",
       "snapshotSource": "ALPACA_KRAKEN_US_US-1",
-      "snapshotAt": "2026-10-24T04:46:22.404Z",
-      "snapshotSha": "024ee5e553bc6aa883e0b1a27e28d33cb5fa0875fd02c22d3278458edcf9301c",
+      "snapshotAt": "2026-10-24T11:13:56.534Z",
+      "snapshotSha": "267c473bc527358fc313471e8b07f49363c961f6af4657845c4f06ccb192bd17",
       "historicalCandles": 5759,
       "developmentFoldCount": 3,
       "disjointDevelopmentFolds": true,
       "developmentWindow": {
-        "start": "2026-08-25T05:00:00.000Z",
-        "end": "2026-10-12T04:45:00.000Z"
+        "start": "2026-08-25T11:15:00.000Z",
+        "end": "2026-10-12T11:00:00.000Z"
       },
       "heldOutQuarantine": {
-        "start": "2026-10-12T04:45:00.000Z",
-        "end": "2026-10-24T04:45:00.000Z",
+        "start": "2026-10-12T11:00:00.000Z",
+        "end": "2026-10-24T11:00:00.000Z",
         "candles": 1152,
         "usedForModelSelection": false,
         "admissionsAllowed": false
@@ -278,13 +278,13 @@
         "parameters": {
           "family": "rsi_reversion",
           "period": 14,
-          "buyBelow": 32,
-          "sellAbove": 60
+          "buyBelow": 28,
+          "sellAbove": 56
         },
-        "normalNetAcrossDisjointFolds": 0.83,
-        "stressedNetAcrossDisjointFolds": -0.89,
+        "normalNetAcrossDisjointFolds": -0.4,
+        "stressedNetAcrossDisjointFolds": -1,
         "profitableFolds": 1,
-        "researchRankScore": -0.88,
+        "researchRankScore": -0.99,
         "note": "Disjoint development folds are historical research, not broker fills or untouched admission evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -296,18 +296,18 @@
     {
       "symbol": "DOGE/USD",
       "snapshotSource": "ALPACA_KRAKEN_US_US-1",
-      "snapshotAt": "2026-10-24T04:46:22.404Z",
-      "snapshotSha": "e2a0cfebfb2a2671ce88c6de381efcf4fb534232b76bb77e58ec8604d2ea7ce2",
+      "snapshotAt": "2026-10-24T11:13:56.534Z",
+      "snapshotSha": "a668d25c4749d5a9d51c456f84cc246097e74a14a261018f4987b665be491e5f",
       "historicalCandles": 5759,
       "developmentFoldCount": 3,
       "disjointDevelopmentFolds": true,
       "developmentWindow": {
-        "start": "2026-08-25T05:00:00.000Z",
-        "end": "2026-10-12T04:45:00.000Z"
+        "start": "2026-08-25T11:15:00.000Z",
+        "end": "2026-10-12T11:00:00.000Z"
       },
       "heldOutQuarantine": {
-        "start": "2026-10-12T04:45:00.000Z",
-        "end": "2026-10-24T04:45:00.000Z",
+        "start": "2026-10-12T11:00:00.000Z",
+        "end": "2026-10-24T11:00:00.000Z",
         "candles": 1152,
         "usedForModelSelection": false,
         "admissionsAllowed": false
@@ -320,10 +320,10 @@
           "buyBelow": 32,
           "sellAbove": 65
         },
-        "normalNetAcrossDisjointFolds": -0.08,
-        "stressedNetAcrossDisjointFolds": -2.56,
+        "normalNetAcrossDisjointFolds": 0.05,
+        "stressedNetAcrossDisjointFolds": -2.53,
         "profitableFolds": 1,
-        "researchRankScore": -2.55,
+        "researchRankScore": -2.52,
         "note": "Disjoint development folds are historical research, not broker fills or untouched admission evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -335,18 +335,18 @@
     {
       "symbol": "LTC/USD",
       "snapshotSource": "ALPACA_KRAKEN_US_US-1",
-      "snapshotAt": "2026-10-24T04:46:22.404Z",
-      "snapshotSha": "8fd84f32ac7dcb4aa6b39acc7ce50b533796c3cae4a268ec13f319ac257244ca",
+      "snapshotAt": "2026-10-24T11:13:56.534Z",
+      "snapshotSha": "f95ebcf80b31b714655aacd21040d83ed690023fe4b68fc0dd03f7dd3bf0549a",
       "historicalCandles": 5759,
       "developmentFoldCount": 3,
       "disjointDevelopmentFolds": true,
       "developmentWindow": {
-        "start": "2026-08-25T05:00:00.000Z",
-        "end": "2026-10-12T04:45:00.000Z"
+        "start": "2026-08-25T11:15:00.000Z",
+        "end": "2026-10-12T11:00:00.000Z"
       },
       "heldOutQuarantine": {
-        "start": "2026-10-12T04:45:00.000Z",
-        "end": "2026-10-24T04:45:00.000Z",
+        "start": "2026-10-12T11:00:00.000Z",
+        "end": "2026-10-24T11:00:00.000Z",
         "candles": 1152,
         "usedForModelSelection": false,
         "admissionsAllowed": false
@@ -359,10 +359,10 @@
           "buyBelow": 32,
           "sellAbove": 65
         },
-        "normalNetAcrossDisjointFolds": 0.52,
-        "stressedNetAcrossDisjointFolds": -1.9,
+        "normalNetAcrossDisjointFolds": 0.72,
+        "stressedNetAcrossDisjointFolds": -1.83,
         "profitableFolds": 1,
-        "researchRankScore": -1.89,
+        "researchRankScore": -1.82,
         "note": "Disjoint development folds are historical research, not broker fills or untouched admission evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -374,18 +374,18 @@
     {
       "symbol": "BCH/USD",
       "snapshotSource": "ALPACA_KRAKEN_US_US-1",
-      "snapshotAt": "2026-10-24T04:46:22.404Z",
-      "snapshotSha": "459316e1b2f67bdfe45a1a5dd4ca2d6c56a4d0f4753a12fae875b0a50f61d936",
+      "snapshotAt": "2026-10-24T11:13:56.534Z",
+      "snapshotSha": "d31a27187027af192ed81bbb92a088d8a99f3fe23e73ab6a8839c742e5c631c9",
       "historicalCandles": 5759,
       "developmentFoldCount": 3,
       "disjointDevelopmentFolds": true,
       "developmentWindow": {
-        "start": "2026-08-25T05:00:00.000Z",
-        "end": "2026-10-12T04:45:00.000Z"
+        "start": "2026-08-25T11:15:00.000Z",
+        "end": "2026-10-12T11:00:00.000Z"
       },
       "heldOutQuarantine": {
-        "start": "2026-10-12T04:45:00.000Z",
-        "end": "2026-10-24T04:45:00.000Z",
+        "start": "2026-10-12T11:00:00.000Z",
+        "end": "2026-10-24T11:00:00.000Z",
         "candles": 1152,
         "usedForModelSelection": false,
         "admissionsAllowed": false
@@ -399,9 +399,9 @@
           "sellAbove": 55
         },
         "normalNetAcrossDisjointFolds": 1.47,
-        "stressedNetAcrossDisjointFolds": -0.38,
+        "stressedNetAcrossDisjointFolds": -0.55,
         "profitableFolds": 1,
-        "researchRankScore": -0.37,
+        "researchRankScore": -0.54,
         "note": "Disjoint development folds are historical research, not broker fills or untouched admission evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
