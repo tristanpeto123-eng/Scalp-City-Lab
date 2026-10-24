@@ -67,6 +67,36 @@ jobs:
           python-version: '3.11'
       - run: node --test universal-student-tests.mjs
       - run: python -m unittest universal_student.test_run_github -v
+      - uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
+        with:
+          ref: rl-5m-data
+          path: universal-data-input
+          sparse-checkout: snapshots
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
+        with:
+          ref: rl-learning-memory
+          path: universal-seed-input
+          sparse-checkout: models
+          persist-credentials: false
+      - name: REAL cross-market trained-checkpoint smoke — read-only
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m pip install 'numpy>=1.26,<3' 'torch>=2.3,<3'
+          python -m universal_student.run_github --target ETH/USD --source BTC/USD --episodes 1 \
+            --data-root universal-data-input --seed-root universal-seed-input --state-root universal-smoke-output
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("universal-smoke-output/universal-student-data/markets/ETH-USD.json")
+          j=json.loads(p.read_text())
+          assert j["sourceSymbol"]=="BTC/USD" and j["targetSymbol"]=="ETH/USD"
+          assert j["brokerOrders"]==0 and j["liveOrders"]==0 and j["officialGrade"] is None
+          assert len(j["generations"])==1
+          print("REAL_DQN_CROSS_MARKET_SMOKE_PASS")
+          PY
   research:
     needs: checker
     if: github.event_name == 'workflow_dispatch' && github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
