@@ -32,6 +32,14 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
 #fiveStatus,#fiveReplayStatus{font-size:13px;color:#b6d4df;white-space:pre-wrap}
 @media(max-width:650px){.five-layout{grid-template-columns:1fr 1fr}}
 @media(max-width:420px){.five-layout{grid-template-columns:1fr}}
+
+.loop-stages{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:15px 0}
+.loop-stages div{background:#102f3c;border:1px solid #3d6c75;border-radius:10px;text-align:center;padding:12px 4px;font-weight:800;font-size:13px}
+.loop-stages small{display:block;color:#aacdd0;font-size:10px}
+#loopEvents{list-style:none;max-height:240px;overflow:auto;padding:0;margin:14px 0}
+#loopEvents li{border-bottom:1px solid #315465;padding:7px 0;font:12px/1.6 ui-monospace,monospace;overflow-wrap:anywhere}
+.loop-stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:650px){.loop-stages,.loop-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style></head>
 <body><main>
 <header><a href="./strategy-validation.html">← Research Desk</a><b class="sub">SL / SEPARATE STRATEGY · RESEARCH ONLY</b><a href="./robot-academy.html">Robot Academy ↗</a></header>
@@ -91,12 +99,41 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
   <p id="fiveReplayStatus" role="status">5-minute replay idle.</p>
   <p class="note">The SL decision shown during replay is a post-training historical illustration. It may include in-sample periods. Only the separate untouched historical test score is intended as the held-out measurement. No paper or live orders are sent. The <a href="./market-replay-5m.html">existing crypto 5m Deep RL replay</a> remains a separate system.</p>
 </section>
+
+<section class="panel" id="slCycleLab" style="margin-top:15px" aria-labelledby="loopTitle">
+ <h2 id="loopTitle">4 / Continuous SL learning loop</h2>
+ <p>Load chart data → virtual next-open trade → close and score → teach good/bad memory → retrain → check the next completed 5m bar. Decisions are frozen <b>before</b> future outcomes are known. Each completed candle is processed once.</p>
+ <p class="warning"><b>Simulation only.</b> This loop has no broker orders. It runs only while this browser page remains open and awake. Closing Safari, iOS suspending the page, losing your network connection or API credits stops or delays it. A new provider request consumes API credits; no key is persisted. Never interpret simulated results as broker profit.</p>
+ <div class="loop-stages" aria-label="SL closed learning cycle">
+  <div>01 <small>Load 5m candles</small></div>
+  <div>02 <small>Simulate trades</small></div>
+  <div>03 <small>Record good / bad</small></div>
+  <div>04 <small>Retrain + repeat</small></div>
+ </div>
+ <div class="five-actions">
+  <button id="loopStart" type="button">Start learning loop</button>
+  <button id="loopOnce" type="button" class="secondary">Run one cycle</button>
+  <button id="loopPause" type="button" class="secondary" disabled>Pause loop</button>
+  <button id="loopExport" type="button" class="secondary">Export loop journal</button>
+  <button id="loopReset" type="button" class="secondary">Reset loop baseline</button>
+ </div>
+ <p id="loopState" role="status">Loop idle. Enter Twelve Data key above, then Start learning loop.</p>
+ <div class="statgrid loop-stats">
+  <div><small>New 5m candles</small><strong id="loopCandles">0</strong></div>
+  <div><small>Virtual trade closes</small><strong id="loopCloses">0</strong></div>
+  <div><small>Good / bad memories</small><strong id="loopPiles">0 / 0</strong></div>
+  <div><small>Selected simulated net</small><strong id="loopNet">£0.00</strong></div>
+ </div>
+ <p class="note" id="loopMeta">Checkpoint saved locally only. No automatic broker execution or verified forward paper grading.</p>
+ <h3>Latest cycle events</h3><ol id="loopEvents" aria-label="Simulation and training cycle events"><li>No cycles yet.</li></ol>
+</section>
 <footer>SL is distinct from Scalp City's existing strategies. Outputs are historical research, not account P&L. No actual paper/live orders or promotion rights are implemented.</footer>
 </main>
 <script type="module">
 import {createSLMemory,recordSLTrade,validateSLMemory,slMemoryStats,trainSL,predictSL} from './sl-core.mjs';
 import {parseSLFiveMinuteCSV,buildSLFiveMinuteDataset} from './sl-5m.mjs';
 import {loadSLOnlineFiveMinute} from './sl-online-5m.mjs';
+import {initializeSLLoop,advanceSLLoop,SL_LOOP_SCHEMA} from './sl-loop.mjs';
 const $=id=>document.getElementById(id), key=m=>'scalp-city-lab:sl:v1:'+m;
 let memory=createSLMemory('COMMODITIES'),models={};
 const market=()=>$('market').value;
@@ -256,5 +293,149 @@ $('clear').addEventListener('click',()=>{if(fiveSession)drawFive()});
 $('file').addEventListener('change',()=>{if(fiveSession)queueMicrotask(drawFive)});
 $('demo').addEventListener('click',()=>{if(fiveSession)queueMicrotask(drawFive)});
 
-load();
+
+/* 5m SL loop runs in this foreground browser session only.
+ * localStorage checkpoints contain simulated trades/models but NEVER API keys.
+ */
+let learningLoopActive=false,learningLoopBusy=false,learningLoopTimer=null,learningLoopState=null;
+const loopConf=()=>({
+ market:market(),symbol:$('fiveSymbol').value.trim().toUpperCase(),
+ holdCandles:Number($('fiveHold').value),sideCostBps:Number($('fiveCost').value),
+ virtualNotionalGbp:Number($('fiveNotional').value)
+});
+const loopKey=conf=>'scalp-city-lab:sl:loop:v1:'+[
+ conf.market,conf.symbol,conf.holdCandles,conf.sideCostBps,conf.virtualNotionalGbp
+].join(':');
+const loopMessage=(msg,error=false)=>{
+ $('loopState').textContent=msg;$('loopState').style.color=error?'#ffb9b7':'#abefce';
+};
+function loopControls(){
+ $('loopStart').disabled=learningLoopActive||learningLoopBusy;
+ $('loopOnce').disabled=learningLoopActive||learningLoopBusy;
+ $('loopPause').disabled=!learningLoopActive;
+ for(const id of ['market','fiveSymbol','fiveHold','fiveCost','fiveNotional','fiveOnlineLoad','fiveFile','fiveBuild']){
+  $(id).disabled=learningLoopActive;
+ }
+}
+function loopStop(message='Learning loop paused; checkpoint retained.'){
+ learningLoopActive=false;
+ if(learningLoopTimer!==null){clearTimeout(learningLoopTimer);learningLoopTimer=null;}
+ loopControls();loopMessage(message);
+}
+function loopPrint(){
+ const s=learningLoopState;
+ $('loopCandles').textContent=s?.newCandles??0;
+ $('loopCloses').textContent=s?.executedTrades??0;
+ $('loopPiles').textContent=s?(s.memory.good.length+' / '+s.memory.bad.length):'0 / 0';
+ $('loopNet').textContent='£'+(s?.selectedNetPnlGbp||0).toFixed(2);
+ $('loopMeta').textContent=s?
+  s.config.market+' · '+s.config.symbol+' · '+s.status+
+  ' · latest processed '+new Date(s.cursor).toLocaleString('en-GB',{timeZone:'UTC'})+
+  ' UTC · '+s.cycles+' refresh cycles · '+s.revisions+' feedback training revisions · '+s.counterfactualCount+
+  ' labelled (including unexecuted alternatives). No broker fills.'
+  :'No local loop checkpoint for current market/symbol/settings.';
+ const lines=s?.events||[];
+ const node=$('loopEvents');node.replaceChildren();
+ if(!lines.length){const li=document.createElement('li');li.textContent='No cycle results yet.';node.append(li);}
+ for(const x of lines){
+  const li=document.createElement('li');
+  li.textContent=x.time+'  '+x.message;
+  node.appendChild(li);
+ }
+}
+function loopRead(){
+ const raw=localStorage.getItem(loopKey(loopConf()));
+ if(!raw)return null;
+ const state=JSON.parse(raw);
+ if(state?.schema!==SL_LOOP_SCHEMA||JSON.stringify(state.config)!==JSON.stringify(loopConf()))
+  throw Error('Saved loop checkpoint is incompatible with the current symbol and settings');
+ return state;
+}
+function loopSave(s){
+ localStorage.setItem(loopKey(s.config),JSON.stringify(s));
+ learningLoopState=s;loopPrint();
+}
+async function loopCycle(){
+ if(learningLoopBusy)return;
+ if(!$('fiveOnlineKey').value.trim())throw Error('Enter your own Twelve Data key above before looping.');
+ learningLoopBusy=true;loopControls();
+ const conf=loopConf(),key=$('fiveOnlineKey').value;
+ try{
+  loopMessage('Step 1/4: fetching completed '+conf.symbol+' 5-minute market candles…');
+  const feed=await loadSLOnlineFiveMinute({...conf,apiKey:key,outputsize:5000});
+  // A user may pause while the network request is in flight.
+  if(!learningLoopActive&&loopManualCancelled)return;
+  const saved=loopRead();
+  const result=saved?advanceSLLoop(saved,feed.bars):initializeSLLoop({...conf,bars:feed.bars});
+  const st={...result.state,feed:feed.source};
+  loopSave(st);
+  if(result.result==='UNCHANGED_NO_NEW_LEARNING')
+   loopMessage('No new completed 5m candle. Model unchanged; old data not relearned.');
+  else if(result.result==='BASELINE_CAPTURE_NO_NEW_FORWARD_TRADES')
+   loopMessage('Baseline created from historical '+conf.symbol+' candles. Frozen model prepared for later simulated next-open trades.');
+  else
+   loopMessage('Cycle complete: '+result.newCandles+' new candles, '+result.newClosed+
+    ' completed simulated candidate trades; good/bad feedback and model retraining recorded. Next refresh will use new completed candles.');
+ }finally{learningLoopBusy=false;loopControls();}
+}
+let loopManualCancelled=false;
+function loopSchedule(){
+ if(!learningLoopActive)return;
+ const now=Date.now();
+ // One request shortly after each 5-minute candle closes; no sub-minute polling.
+ const due=Math.ceil(now/300000)*300000+45000;
+ const ms=Math.max(10000,due-now);
+ learningLoopTimer=setTimeout(async()=>{
+  learningLoopTimer=null;
+  if(!learningLoopActive)return;
+  try{await loopCycle();if(learningLoopActive)loopSchedule();}
+  catch(err){loopStop('Loop halted: '+err.message+' Check provider/data and restart manually.');}
+ },ms);
+ $('loopState').textContent+=' Next fetch scheduled after the next 5m close.';
+}
+$('loopStart').addEventListener('click',async()=>{
+ if(learningLoopActive||learningLoopBusy)return;
+ learningLoopActive=true;loopManualCancelled=false;loopControls();
+ try{await loopCycle();if(learningLoopActive)loopSchedule();}
+ catch(err){loopStop('Loop halted: '+err.message);}
+});
+$('loopOnce').addEventListener('click',async()=>{
+ if(learningLoopActive||learningLoopBusy)return;
+ loopManualCancelled=false;
+ try{await loopCycle();}catch(err){loopMessage('Cycle blocked: '+err.message,true);}
+});
+$('loopPause').addEventListener('click',()=>{
+ loopManualCancelled=true;loopStop('Paused: no further market-data requests. In-flight results will be discarded.');
+});
+$('loopExport').addEventListener('click',()=>{
+ try{
+  const s=loopRead();
+  if(!s)throw Error('No loop history for this market yet.');
+  const blob=new Blob([JSON.stringify(s,null,2)],{type:'application/json'});
+  const link=document.createElement('a'),url=URL.createObjectURL(blob);
+  link.href=url;link.download='sl-loop-'+s.config.symbol.toLowerCase()+'-journal.json';
+  link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ }catch(err){loopMessage(err.message,true);}
+});
+$('loopReset').addEventListener('click',()=>{
+ if(learningLoopBusy){loopMessage('Pause and let the current fetch finish before resetting.',true);return;}
+ if(!confirm('Reset this SL loop research baseline and its local good/bad memory? Export first if needed.'))return;
+ loopStop('Loop reset for selected market. Other Scalp City strategies untouched.');
+ localStorage.removeItem(loopKey(loopConf()));learningLoopState=null;loopPrint();
+});
+$('market').addEventListener('change',()=>{
+ loopStop('Market changed; loop is paused.');learningLoopState=null;loopPrint();
+});
+for(const id of ['fiveSymbol','fiveHold','fiveCost','fiveNotional'])
+ $(id).addEventListener('change',()=>{
+  loopStop('SL loop settings changed; prior checkpoint retained under previous settings.');
+  learningLoopState=null;loopPrint();
+ });
+function loopRestore(){
+ try{learningLoopState=loopRead();loopPrint();
+  if(learningLoopState)loopMessage('Saved SL loop checkpoint found. Enter API key and press Start learning loop to resume.');
+ }catch(err){loopMessage('Saved loop needs review: '+err.message,true);}
+ loopControls();
+}
+load();loopRestore();
 </script></body></html>
