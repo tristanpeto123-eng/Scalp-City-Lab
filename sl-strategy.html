@@ -105,6 +105,7 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
  <h2 id="loopTitle">4 / Continuous SL learning loop</h2>
  <p>Load chart data → virtual next-open trade → close and score → teach good/bad memory → retrain → check the next completed 5m bar. Decisions are frozen <b>before</b> future outcomes are known. Each completed candle is processed once.</p>
  <p class="warning"><b>Simulation only.</b> This loop has no broker orders. It runs only while this browser page remains open and awake. Closing Safari, iOS suspending the page, losing your network connection or API credits stops or delays it. A new provider request consumes API credits; no key is persisted. Never interpret simulated results as broker profit.</p>
+ <p class="note"><b>Basic 8 credit saver:</b> one SL loop time-series request per market symbol every 60 minutes, not every 5 minutes. Twelve Data charges 1 credit per symbol per request regardless of returned bars (up to 5,000). Initial training loads 5,000 candles; routine batches cover 150 candles (~12.5 trading hours). Estimate: 24 credits per day per student, 72 credits per day for three students, excluding manual requests. Twelve Data Basic 8 quota: 800/day, 8/min. Gold requires separate provider entitlement.</p>
  <div class="loop-stages" aria-label="SL closed learning cycle">
   <div>01 <small>Load 5m candles</small></div>
   <div>02 <small>Simulate trades</small></div>
@@ -120,6 +121,7 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
  </div>
  <p id="loopState" role="status">Loop idle. Enter Twelve Data key above, then Start learning loop.</p>
  <p id="loopLocalStatus" role="status">Local checkpoint: not yet verified.</p>
+ <p id="loopQuota" role="status">Hourly sync: 1 request per hour per symbol; initial history up to 5,000 bars, subsequent batches 150 bars.</p>
  <div class="statgrid loop-stats">
   <div><small>New 5m candles</small><strong id="loopCandles">0</strong></div>
   <div><small>Virtual trade closes</small><strong id="loopCloses">0</strong></div>
@@ -153,6 +155,7 @@ import {parseSLFiveMinuteCSV,buildSLFiveMinuteDataset} from './sl-5m.mjs';
 import {loadSLOnlineFiveMinute} from './sl-online-5m.mjs';
 import {initializeSLLoop,advanceSLLoop,SL_LOOP_SCHEMA} from './sl-loop.mjs';
 import {createSLVaultEnvelope,verifySLVaultEnvelope,writePrivateSLVault,readPrivateSLVault} from './sl-model-vault.mjs';
+import {slSyncKey,slReadSyncState,planSLHourlySync,recordSLHourlyAttempt,confirmSLHourlySuccess} from './sl-hourly-sync.mjs';
 const $=id=>document.getElementById(id), key=m=>'scalp-city-lab:sl:v1:'+m;
 let memory=createSLMemory('COMMODITIES'),models={};
 const market=()=>$('market').value;
@@ -325,6 +328,17 @@ const loopConf=()=>({
 const loopKey=conf=>'scalp-city-lab:sl:loop:v1:'+[
  conf.market,conf.symbol,conf.holdCandles,conf.sideCostBps,conf.virtualNotionalGbp
 ].join(':');
+function loopPollRecord(conf=loopConf()){
+ return slReadSyncState(localStorage.getItem(slSyncKey(conf.market,conf.symbol)),conf.market,conf.symbol);
+}
+function loopPollStatus(conf=loopConf(),checkpoint=learningLoopState){
+ const record=loopPollRecord(conf);
+ const plan=planSLHourlySync({market:conf.market,symbol:conf.symbol,record,checkpoint,now:Date.now()});
+ const due=plan.due?'ready now':'next eligible fetch '+new Date(plan.nextDueAt).toLocaleString('en-GB');
+ $('loopQuota').textContent='Hourly sync '+due+' · '+plan.refreshMode+
+  ' · 1 credit per symbol/request · '+record.totalAttempts+' attempted requests from this browser (not provider total).';
+ return plan;
+}
 const loopMessage=(msg,error=false)=>{
  $('loopState').textContent=msg;$('loopState').style.color=error?'#ffb9b7':'#abefce';
 };
@@ -418,45 +432,56 @@ async function loopCycle(){
  learningLoopBusy=true;loopControls();
  const conf=loopConf(),key=$('fiveOnlineKey').value;
  try{
-  loopMessage('Step 1/4: fetching completed '+conf.symbol+' 5-minute market candles…');
-  const feed=await loadSLOnlineFiveMinute({...conf,apiKey:key,outputsize:5000});
-  // A user may pause while the network request is in flight.
+  const checkpoint=loopRead();
+  const previous=loopPollRecord(conf);
+  const plan=planSLHourlySync({market:conf.market,symbol:conf.symbol,record:previous,checkpoint,now:Date.now()});
+  if(!plan.due){
+   loopMessage('Hourly credit guard active: next eligible fetch '+new Date(plan.nextDueAt).toLocaleString('en-GB')+'. Saved model unchanged.');
+   loopPollStatus(conf,checkpoint);return;
+  }
+  const pollKey=slSyncKey(conf.market,conf.symbol);
+  // Persist an attempt BEFORE the request; failures must not permit immediate retry.
+  const attempt=recordSLHourlyAttempt(previous,conf.market,conf.symbol,{now:Date.now()});
+  const value=JSON.stringify(attempt);
+  localStorage.setItem(pollKey,value);
+  if(localStorage.getItem(pollKey)!==value)throw Error('Hourly API request guard could not persist');
+  loopMessage('Step 1/4: downloading '+plan.outputsize+'-bar '+conf.symbol+' batch; about 1 API credit…');
+  const feed=await loadSLOnlineFiveMinute({...conf,apiKey:key,outputsize:plan.outputsize});
+  localStorage.setItem(pollKey,JSON.stringify(confirmSLHourlySuccess(attempt,conf.market,conf.symbol,{now:Date.now()})));
+  loopPollStatus(conf,checkpoint);
   if(!learningLoopActive&&loopManualCancelled)return;
-  if(JSON.stringify(loopConf())!==JSON.stringify(conf))
-   throw Error('Loop settings changed while fetching; discard provider response.');
-  const saved=loopRead();
-  const result=saved?advanceSLLoop(saved,feed.bars):initializeSLLoop({...conf,bars:feed.bars});
-  const st={...result.state,feed:feed.source};
-  loopSave(st);loopDraw(feed.bars,conf.symbol);
-  if($('vaultAuto').checked){
-   $('vaultStatus').textContent='Saving trained model to private GitHub…';
+  if(JSON.stringify(loopConf())!==JSON.stringify(conf))throw Error('Symbol/settings changed during fetch; discard data.');
+  const result=checkpoint?advanceSLLoop(checkpoint,feed.bars):initializeSLLoop({...conf,bars:feed.bars});
+  const state={...result.state,feed:feed.source};
+  loopSave(state);loopDraw(feed.bars,conf.symbol);
+  if($('vaultAuto').checked&&result.result!=='UNCHANGED_NO_NEW_LEARNING'){
+   $('vaultStatus').textContent='Backing up trained weights to private GitHub…';
    const saved=await backupToVault();
    $('vaultStatus').textContent='REMOTE MODEL VERIFIED: '+saved.repository+
     ' · revision '+saved.revision+' · SHA-256 '+saved.sha256.slice(0,16)+'…';
   }
   if(result.result==='UNCHANGED_NO_NEW_LEARNING')
-   loopMessage('No new completed 5m candle. Model unchanged; old data not relearned.');
+   loopMessage('No new 5m candles. No duplicate learning. Next hourly check.');
   else if(result.result==='BASELINE_CAPTURE_NO_NEW_FORWARD_TRADES')
-   loopMessage('Baseline created from historical '+conf.symbol+' candles. Frozen model prepared for later simulated next-open trades.');
+   loopMessage('Initial historical baseline learned from '+feed.bars.length+' candles. Waiting for new completed bars; next hourly check.');
   else
-   loopMessage('Cycle complete: '+result.newCandles+' new candles, '+result.newClosed+
-    ' completed simulated candidate trades; good/bad feedback and model retraining recorded. Next refresh will use new completed candles.');
+   loopMessage('Hourly learning cycle complete: '+result.newCandles+' fresh 5m candles; '+
+    result.newClosed+' closed simulated candidates; labels, model weights and journal saved.');
  }finally{learningLoopBusy=false;loopControls();}
 }
 let loopManualCancelled=false;
 function loopSchedule(){
  if(!learningLoopActive)return;
- const now=Date.now();
- // One request shortly after each 5-minute candle closes; no sub-minute polling.
- const due=Math.ceil(now/300000)*300000+45000;
- const ms=Math.max(10000,due-now);
+ const plan=loopPollStatus();
+ const dueAt=Date.parse(plan.nextDueAt)+45000;
+ const ms=Math.max(5000,dueAt-Date.now());
  learningLoopTimer=setTimeout(async()=>{
   learningLoopTimer=null;
   if(!learningLoopActive)return;
   try{await loopCycle();if(learningLoopActive)loopSchedule();}
-  catch(err){loopStop('Loop halted: '+err.message+' Check provider/data and restart manually.');}
+  catch(err){loopStop('Loop halted: '+err.message+' Review provider/data before restarting.');}
  },ms);
- $('loopState').textContent+=' Next fetch scheduled after the next 5m close.';
+ $('loopState').textContent+=' Next hourly check '+new Date(dueAt).toLocaleString('en-GB')+'.';
 }
 $('loopStart').addEventListener('click',async()=>{
  if(learningLoopActive||learningLoopBusy)return;
@@ -575,4 +600,5 @@ $('vaultFile').addEventListener('change',async e=>{
  finally{e.target.value='';}
 });
 load();loopRestore();
+try{loopPollStatus();}catch(err){$('loopQuota').textContent='Hourly quota record requires attention: '+err.message;}
 </script></body></html>
