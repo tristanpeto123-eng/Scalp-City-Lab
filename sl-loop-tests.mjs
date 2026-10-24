@@ -54,8 +54,6 @@ assert.ok(after.state.revisions>2);
 assert.equal(after.state.newCandles,23);
 assert.equal(after.state.closedCandidates,
  after.state.counterfactualCount,'all nonzero virtual outcomes labelled');
-assert.equal(after.state.executedTrades,after.state.events.filter(x=>x.message.includes('SIM EXECUTED')).length>0
-  ?after.state.executedTrades:after.state.executedTrades); // count from checkpoint below
 assert.ok(after.state.executedTrades<=after.state.closedCandidates);
 assert.equal(after.state.memory.good.length+after.state.memory.bad.length,
   initialN+after.state.counterfactualCount);
@@ -74,7 +72,7 @@ const weekend=[...bars,future[0],{...future[1],t:new Date(Date.parse(future[1].t
 assert.throws(()=>advanceSLLoop(first.state,weekend,{now}),/open virtual position spans/);
 assert.throws(()=>initializeSLLoop({bars,market:'CRYPTO',symbol:'BTCUSD',now}),/Invalid SL loop/);
 const mutated=future.map(x=>({...x}));
-mutated[1].o+=5;mutated[1].h=Math.max(mutated[1].h,mutated[1].o+.1);
+mutated[2].o+=5;mutated[2].h=Math.max(mutated[2].h,mutated[2].o+.1);
 const changed=advanceSLLoop(first.state,[...bars,...mutated.slice(0,3)],{now});
 assert.equal(first.state.position.entryPrice,future[0].o,'prior execution price frozen');
 assert.equal(changed.state.memory.good.length+changed.state.memory.bad.length,initialN+1,
