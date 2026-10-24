@@ -6,7 +6,8 @@ import json
 import re
 from pathlib import Path
 
-from rl.dqn_experiment import SYMBOLS, run, validate_snapshot
+SYMBOLS = ('BTC/USD','ETH/USD','SOL/USD','XRP/USD','ADA/USD',
+           'AVAX/USD','LINK/USD','DOGE/USD','LTC/USD','BCH/USD')
 
 SCHEMA = "SCALP_UNIVERSAL_STUDENT_RESEARCH_V1"
 REPO = "tristanpeto123-eng/Scalp-City-Lab"
@@ -24,6 +25,7 @@ def market_file(symbol: str) -> str:
 
 def execute(*, target: str, source: str, episodes: int,
             data_root: str, seed_root: str, state_root: str) -> dict:
+    from rl.dqn_experiment import run, validate_snapshot
     if target not in SYMBOLS or source not in SYMBOLS:
         raise ValueError("Supported target/source must be from the Academy's 10 crypto pairs")
     if not isinstance(episodes, int) or not 1 <= episodes <= 10:
