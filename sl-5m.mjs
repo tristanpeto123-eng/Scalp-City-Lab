@@ -3,7 +3,7 @@
  * Read-only research lane. It never fetches credentials or places orders.
  * Both the labels and executions below are modeled counterfactuals.
  */
-import {SL_ACTIVE_MARKETS, SL_FEATURES} from './sl-core.mjs';
+import {SL_ACTIVE_MARKETS, SL_FEATURES} from './sl-core.mjs?slboot=20261024r2';
 
 export const SL_FIVE_MIN_MS = 300000;
 export const SL_FIVE_MIN_VERSION = 'SL_5MIN_HISTORICAL_V1';
