@@ -7,8 +7,8 @@
  *
  * No paper/live brokerage, no implied continuous unattended service.
  */
-import {createSLMemory,validateSLMemory,trainSL,predictSL,slMemoryStats,updateSLModelAfterClose} from './sl-core.mjs';
-import {buildSLFiveMinuteDataset,validateSLFiveMinuteBars,slFiveMinuteSignal,SL_FIVE_MIN_MS} from './sl-5m.mjs';
+import {createSLMemory,validateSLMemory,trainSL,predictSL,slMemoryStats,updateSLModelAfterClose} from './sl-core.mjs?slboot=20261024r2';
+import {buildSLFiveMinuteDataset,validateSLFiveMinuteBars,slFiveMinuteSignal,SL_FIVE_MIN_MS} from './sl-5m.mjs?slboot=20261024r2';
 
 export const SL_LOOP_SCHEMA='SL_5MIN_CAUSAL_LOOP_V1';
 const iso=t=>new Date(t).toISOString();

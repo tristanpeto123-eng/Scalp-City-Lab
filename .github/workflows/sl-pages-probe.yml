@@ -1,0 +1,28 @@
+name: SL Pages module MIME and delivery probe
+on:
+  pull_request:
+    paths:
+      - 'sl-strategy.html'
+      - '.github/workflows/sl-pages-probe.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deployed-mime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check current deployed GitHub Pages module responses
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://tristanpeto123-eng.github.io/Scalp-City-Lab'
+          for file in sl-strategy.html sl-core.mjs sl-5m.mjs sl-online-5m.mjs sl-loop.mjs sl-model-vault.mjs sl-hourly-sync.mjs sl-chart-cache.mjs; do
+            echo "$file:"
+            curl -sSLI --connect-timeout 10 --max-time 20 "$base/$file" | grep -iE '^HTTP/|^content-type:|^cache-control:' | tail -5 || true
+            mime=$(curl -fsSLI --connect-timeout 10 --max-time 20 "$base/$file" | grep -i '^content-type:' | tail -1 | tr -d '\r' | tr '[:upper:]' '[:lower:]')
+            if [[ "$file" == *.mjs && "$mime" != *javascript* ]]; then
+              echo "::error::GitHub Pages does not serve $file as executable JavaScript: $mime"
+              exit 1
+            fi
+          done

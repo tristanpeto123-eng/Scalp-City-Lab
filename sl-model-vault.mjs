@@ -5,8 +5,8 @@
  * Callers provide a fine-grained token at runtime; neither token nor provider
  * key is ever included in the envelope, URL, localStorage, or commit body.
  */
-import {SL_LOOP_SCHEMA} from './sl-loop.mjs';
-import {validateSLMemory,SL_FEATURES,predictSL} from './sl-core.mjs';
+import {SL_LOOP_SCHEMA} from './sl-loop.mjs?slboot=20261024r2';
+import {validateSLMemory,SL_FEATURES,predictSL} from './sl-core.mjs?slboot=20261024r2';
 export const SL_VAULT_SCHEMA='SL_MODEL_VAULT_V1';
 const CREDENTIAL_FIELD=/^(?:api[-_]?key|token|secret|password|authorization|credential|private[-_]?key)$/i;
 const ascii=/^[A-Za-z0-9_.-]+$/;

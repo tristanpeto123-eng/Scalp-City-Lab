@@ -151,14 +151,38 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
 </section>
 <footer>SL is distinct from Scalp City's existing strategies. Outputs are historical research, not account P&L. No actual paper/live orders or promotion rights are implemented.</footer>
 </main>
+<script>
+/* Runs without ES-module imports so failures cannot leave inert buttons unexplained. */
+(()=>{
+ const status=document.getElementById('fiveStatus');
+ const errorLine=document.getElementById('fiveCacheStatus');
+ const flag=()=>window.__slAppStarted===true;
+ const show=message=>{
+  if(flag())return;
+  if(status)status.textContent='SL could not start: '+message;
+  if(errorLine)errorLine.textContent='Startup diagnostic: '+message+' — no data or saved model was deleted.';
+ };
+ window.addEventListener('error',event=>{
+  if(!flag()){
+   const path=event.target?.getAttribute?.('src');
+   const explanation=event.message||('JavaScript module failed to load'+(path?' ('+path+')':''));
+   show(explanation);
+  }
+ },true);
+ window.addEventListener('unhandledrejection',event=>{
+  if(!flag())show(String(event.reason?.message||'Uncaught asynchronous startup error'));
+ });
+ setTimeout(()=>{if(!flag())show('JavaScript module did not initialise. Open in Safari and reload; contact developer with this message.');},8000);
+})();
+</script>
 <script type="module">
-import {createSLMemory,recordSLTrade,validateSLMemory,slMemoryStats,trainSL,predictSL} from './sl-core.mjs';
-import {parseSLFiveMinuteCSV,buildSLFiveMinuteDataset} from './sl-5m.mjs';
-import {loadSLOnlineFiveMinute} from './sl-online-5m.mjs';
-import {initializeSLLoop,advanceSLLoop,SL_LOOP_SCHEMA} from './sl-loop.mjs';
-import {createSLVaultEnvelope,verifySLVaultEnvelope,writePrivateSLVault,readPrivateSLVault} from './sl-model-vault.mjs';
-import {slSyncKey,slReadSyncState,planSLHourlySync,recordSLHourlyAttempt,confirmSLHourlySuccess} from './sl-hourly-sync.mjs';
-import {saveSLChartCache,loadSLChartCache} from './sl-chart-cache.mjs';
+import {createSLMemory,recordSLTrade,validateSLMemory,slMemoryStats,trainSL,predictSL} from './sl-core.mjs?slboot=20261024r2';
+import {parseSLFiveMinuteCSV,buildSLFiveMinuteDataset} from './sl-5m.mjs?slboot=20261024r2';
+import {loadSLOnlineFiveMinute} from './sl-online-5m.mjs?slboot=20261024r2';
+import {initializeSLLoop,advanceSLLoop,SL_LOOP_SCHEMA} from './sl-loop.mjs?slboot=20261024r2';
+import {createSLVaultEnvelope,verifySLVaultEnvelope,writePrivateSLVault,readPrivateSLVault} from './sl-model-vault.mjs?slboot=20261024r2';
+import {slSyncKey,slReadSyncState,planSLHourlySync,recordSLHourlyAttempt,confirmSLHourlySuccess} from './sl-hourly-sync.mjs?slboot=20261024r2';
+import {saveSLChartCache,loadSLChartCache} from './sl-chart-cache.mjs?slboot=20261024r2';
 const $=id=>document.getElementById(id), key=m=>'scalp-city-lab:sl:v1:'+m;
 let memory=createSLMemory('COMMODITIES'),models={};
 const market=()=>$('market').value;
@@ -591,11 +615,13 @@ $('loopReset').addEventListener('click',()=>{
 });
 $('market').addEventListener('change',()=>{
  loopStop('Market changed; loop is paused.');learningLoopState=null;loopPrint();
+ loopRestore();
 });
 for(const id of ['fiveSymbol','fiveHold','fiveCost','fiveNotional'])
  $(id).addEventListener('change',()=>{
   loopStop('SL loop settings changed; prior checkpoint retained under previous settings.');
   learningLoopState=null;loopPrint();
+  loopRestore();
  });
 function loopRestore(){
  try{learningLoopState=loopRead();loopPrint();
@@ -675,6 +701,6 @@ $('vaultFile').addEventListener('change',async e=>{
  }catch(err){$('vaultStatus').textContent='IMPORT ERROR: '+err.message;}
  finally{e.target.value='';}
 });
-load();loopRestore();restoreFiveHistory();
+load();loopRestore();restoreFiveHistory();window.__slAppStarted=true;
 try{loopPollStatus();}catch(err){$('loopQuota').textContent='Hourly quota record requires attention: '+err.message;}
 </script></body></html>
