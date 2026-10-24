@@ -28,6 +28,7 @@ const api=async(url,opts)=>{
  const info=url.endsWith('/repos/tristanpeto123-eng/private-sl-vault');
  if(info)return {status:200,ok:true,json:async()=>({private:true,visibility:'private',default_branch:'main'})};
  if(url.includes('/contents/')){
+  if(url.includes('/FOREX/EURUSD/'))return {status:404,ok:false,json:async()=>({message:'Not Found'})};
   if(opts.method==='PUT'){
    const body=JSON.parse(opts.body);
    assert.equal(body.branch,'main');
