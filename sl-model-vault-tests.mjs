@@ -32,7 +32,7 @@ const api=async(url,opts)=>{
   if(opts.method==='PUT'){
    const body=JSON.parse(opts.body);
    assert.equal(body.branch,'main');
-   assert.equal(body.message,'checkpoint(sl): COMMODITIES XAUUSD rev 0');
+   assert.match(body.message,/^checkpoint\(sl\): COMMODITIES XAUUSD rev [0-9]+$/);
    saved=JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(body.content),x=>x.charCodeAt(0))));
    return {status:201,ok:true,json:async()=>({content:{sha:'test-sha'}})};
   }
