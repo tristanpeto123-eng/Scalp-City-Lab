@@ -119,6 +119,7 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
   <button id="loopReset" type="button" class="secondary">Reset loop baseline</button>
  </div>
  <p id="loopState" role="status">Loop idle. Enter Twelve Data key above, then Start learning loop.</p>
+ <p id="loopLocalStatus" role="status">Local checkpoint: not yet verified.</p>
  <div class="statgrid loop-stats">
   <div><small>New 5m candles</small><strong id="loopCandles">0</strong></div>
   <div><small>Virtual trade closes</small><strong id="loopCloses">0</strong></div>
@@ -127,6 +128,21 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
  </div>
  <p class="note" id="loopMeta">Checkpoint saved locally only. No automatic broker execution or verified forward paper grading.</p>
  <canvas id="loopChart" width="900" height="260" role="img" aria-label="Last completed online 5-minute OHLC candles only"></canvas>
+ <h3>Model vault &amp; verification</h3>
+ <p class="note">Your SL weights, memory, and progress already save locally on this device. For an off-device backup, use a <b>separate PRIVATE GitHub repository</b> and a fine-grained repository-limited token. Do not use the public Scalp City repositories; never paste a token in a shared screenshot.</p>
+ <div class="five-layout">
+  <label for="vaultOwner">GitHub vault owner<input id="vaultOwner" value="tristanpeto123-eng" autocomplete="off"></label>
+  <label for="vaultRepo">Private vault repository<input id="vaultRepo" placeholder="private-sl-vault" autocomplete="off"></label>
+  <label for="vaultToken">Fine-grained token (session only)<input id="vaultToken" type="password" autocomplete="off" spellcheck="false" placeholder="Contents: Read and write"></label>
+ </div>
+ <label style="margin:12px 0"><input id="vaultAuto" type="checkbox" style="width:auto;vertical-align:middle"> Automatically verify a PRIVATE GitHub backup after each completed loop cycle</label>
+ <div class="five-actions">
+  <button id="vaultSave" type="button" class="secondary">Save + verify private cloud backup</button>
+  <button id="vaultRestore" type="button" class="secondary">Restore from private GitHub</button>
+  <button id="vaultDownload" type="button" class="secondary">Download model checkpoint</button>
+ </div>
+ <label for="vaultFile">Restore model checkpoint JSON from Files<input id="vaultFile" type="file" accept=".json,application/json"></label>
+ <p id="vaultStatus" role="status">Cloud vault not configured. Local browser checkpoint only.</p>
  <h3>Latest cycle events</h3><ol id="loopEvents" aria-label="Simulation and training cycle events"><li>No cycles yet.</li></ol>
 </section>
 <footer>SL is distinct from Scalp City's existing strategies. Outputs are historical research, not account P&L. No actual paper/live orders or promotion rights are implemented.</footer>
@@ -136,6 +152,7 @@ import {createSLMemory,recordSLTrade,validateSLMemory,slMemoryStats,trainSL,pred
 import {parseSLFiveMinuteCSV,buildSLFiveMinuteDataset} from './sl-5m.mjs';
 import {loadSLOnlineFiveMinute} from './sl-online-5m.mjs';
 import {initializeSLLoop,advanceSLLoop,SL_LOOP_SCHEMA} from './sl-loop.mjs';
+import {createSLVaultEnvelope,verifySLVaultEnvelope,writePrivateSLVault,readPrivateSLVault} from './sl-model-vault.mjs';
 const $=id=>document.getElementById(id), key=m=>'scalp-city-lab:sl:v1:'+m;
 let memory=createSLMemory('COMMODITIES'),models={};
 const market=()=>$('market').value;
@@ -378,8 +395,22 @@ function loopRead(){
  return state;
 }
 function loopSave(s){
- localStorage.setItem(loopKey(s.config),JSON.stringify(s));
+ const key=loopKey(s.config),value=JSON.stringify(s);
+ localStorage.setItem(key,value);
+ // An explicit read-after-write distinguishes actual persisted weights from UI-only state.
+ const copied=localStorage.getItem(key);
+ if(copied!==value)throw Error('SL model checkpoint could not be read back from local browser storage');
+ const recovered=JSON.parse(copied);
+ if(recovered.model?.weights?.w1?.length!==8||
+    recovered.memory?.good?.length!==s.memory.good.length||
+    recovered.memory?.bad?.length!==s.memory.bad.length||
+    recovered.cursor!==s.cursor)
+  throw Error('SL local checkpoint neural weights or memories failed validation');
  learningLoopState=s;loopPrint();
+ $('loopLocalStatus').textContent='LOCAL CHECKPOINT VERIFIED: '+s.config.symbol+
+  ' · neural weights: '+s.model.weights.w1.length+' hidden units · '+s.memory.good.length+
+  ' good / '+s.memory.bad.length+' bad · revision '+s.revisions+
+  ' · '+new Date().toLocaleString('en-GB');
 }
 async function loopCycle(){
  if(learningLoopBusy)return;
@@ -397,6 +428,12 @@ async function loopCycle(){
   const result=saved?advanceSLLoop(saved,feed.bars):initializeSLLoop({...conf,bars:feed.bars});
   const st={...result.state,feed:feed.source};
   loopSave(st);loopDraw(feed.bars,conf.symbol);
+  if($('vaultAuto').checked){
+   $('vaultStatus').textContent='Saving trained model to private GitHub…';
+   const saved=await backupToVault();
+   $('vaultStatus').textContent='REMOTE MODEL VERIFIED: '+saved.repository+
+    ' · revision '+saved.revision+' · SHA-256 '+saved.sha256.slice(0,16)+'…';
+  }
   if(result.result==='UNCHANGED_NO_NEW_LEARNING')
    loopMessage('No new completed 5m candle. Model unchanged; old data not relearned.');
   else if(result.result==='BASELINE_CAPTURE_NO_NEW_FORWARD_TRADES')
@@ -461,9 +498,81 @@ for(const id of ['fiveSymbol','fiveHold','fiveCost','fiveNotional'])
  });
 function loopRestore(){
  try{learningLoopState=loopRead();loopPrint();
-  if(learningLoopState)loopMessage('Saved SL loop checkpoint found. Enter API key and press Start learning loop to resume.');
+  if(learningLoopState){
+   loopMessage('Saved SL loop checkpoint found. Enter API key and press Start learning loop to resume.');
+   const s=learningLoopState;
+   $('loopLocalStatus').textContent='LOCAL MODEL FOUND: '+s.config.symbol+' · '+s.revisions+
+    ' neural feedback revisions · '+s.memory.good.length+' good / '+s.memory.bad.length+
+    ' bad labels · '+s.cursor+' last candle.';
+  }else $('loopLocalStatus').textContent='No local model checkpoint found for current symbol/settings.';
  }catch(err){loopMessage('Saved loop needs review: '+err.message,true);}
  loopControls();
 }
+/* Remote backup only works with a user-created private repo and session-only PAT. */
+const vaultCredentials=()=>({
+ owner:$('vaultOwner').value.trim(),
+ repo:$('vaultRepo').value.trim(),
+ token:$('vaultToken').value
+});
+let vaultBusy=false;
+async function backupToVault(){
+ const checkpoint=loopRead();
+ if(!checkpoint)throw Error('No local SL checkpoint exists. Run a learning cycle first.');
+ const envelope=await createSLVaultEnvelope(checkpoint);
+ return writePrivateSLVault({...vaultCredentials(),envelope});
+}
+async function vaultAction(work){
+ if(vaultBusy)return;
+ vaultBusy=true;for(const id of ['vaultSave','vaultRestore'])$(id).disabled=true;
+ try{return await work();}
+ catch(err){$('vaultStatus').textContent='VAULT ERROR: '+err.message;throw err;}
+ finally{vaultBusy=false;for(const id of ['vaultSave','vaultRestore'])$(id).disabled=false;}
+}
+$('vaultSave').addEventListener('click',async()=>{
+ try{await vaultAction(async()=>{
+  const saved=await backupToVault();
+  $('vaultStatus').textContent='REMOTE VERIFIED: '+saved.repository+
+   ', neural revision '+saved.revision+', SHA-256 '+saved.sha256+
+   (saved.changed?' — committed and read back.':' — identical copy already stored.');
+ });}catch{}
+});
+async function replaceFromEnvelope(envelope){
+ const state=await verifySLVaultEnvelope(envelope);
+ const current=loopConf();
+ if(JSON.stringify(state.config)!==JSON.stringify(current))
+  throw Error('Checkpoint settings do not match selected market/symbol/cost/holding period. Select the saved settings first.');
+ if(learningLoopActive||learningLoopBusy)throw Error('Pause SL learning before restoring a model.');
+ if(!confirm('Overwrite the local SL loop checkpoint with this verified model? Export current state first if needed.'))return;
+ loopSave(state);
+ loopRestore();
+ $('vaultStatus').textContent='RESTORED VERIFIED: '+state.config.symbol+' · neural weights and trade memory recovered · revision '+state.revisions;
+}
+$('vaultRestore').addEventListener('click',async()=>{
+ try{await vaultAction(async()=>{
+  const conf=loopConf();
+  const envelope=await readPrivateSLVault({...vaultCredentials(),market:conf.market,symbol:conf.symbol});
+  await replaceFromEnvelope(envelope);
+ });}catch{}
+});
+$('vaultDownload').addEventListener('click',async()=>{
+ try{
+  const state=loopRead();if(!state)throw Error('Run at least one learning cycle first.');
+  const envelope=await createSLVaultEnvelope(state);
+  const blob=new Blob([JSON.stringify(envelope,null,2)],{type:'application/json'});
+  const link=document.createElement('a'),url=URL.createObjectURL(blob);
+  link.href=url;link.download='sl-model-'+envelope.symbol.toLowerCase()+'-rev-'+envelope.revision+'.json';
+  link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  $('vaultStatus').textContent='PORTABLE MODEL EXPORTED: '+envelope.symbol+' · revision '+envelope.revision+
+   ' · SHA-256 '+envelope.sha256+' (save downloaded file somewhere safe).';
+ }catch(err){$('vaultStatus').textContent='EXPORT ERROR: '+err.message;}
+});
+$('vaultFile').addEventListener('change',async e=>{
+ try{
+  const file=e.target.files?.[0];if(!file)return;
+  if(file.size>5500000)throw Error('Model file exceeds size limit.');
+  await replaceFromEnvelope(JSON.parse(await file.text()));
+ }catch(err){$('vaultStatus').textContent='IMPORT ERROR: '+err.message;}
+ finally{e.target.value='';}
+});
 load();loopRestore();
 </script></body></html>
