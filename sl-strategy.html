@@ -107,6 +107,7 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
  <p>Load chart data → virtual next-open trade → close and score → teach good/bad memory → retrain → check the next completed 5m bar. Decisions are frozen <b>before</b> future outcomes are known. Each completed candle is processed once.</p>
  <p class="warning"><b>Simulation only.</b> This loop has no broker orders. It runs only while this browser page remains open and awake. Closing Safari, iOS suspending the page, losing your network connection or API credits stops or delays it. A new provider request consumes API credits; no key is persisted. Never interpret simulated results as broker profit.</p>
  <p class="note"><b>Basic 8 credit saver:</b> one SL loop time-series request per market symbol every 60 minutes, not every 5 minutes. Twelve Data charges 1 credit per symbol per request regardless of returned bars (up to 5,000). Initial training loads 5,000 candles; routine batches cover 150 candles (~12.5 trading hours). Estimate: 24 credits per day per student, 72 credits per day for three students, excluding manual requests. Twelve Data Basic 8 quota: 800/day, 8/min. Gold requires separate provider entitlement.</p>
+ <p class="note"><b>Two ways to learn:</b> Import a 5m CSV and tap <b>Process loaded 5m candles</b> to create or advance a saved local neural model without spending provider credits. For repeated hourly downloads, enter your Twelve Data key and tap <b>Start learning loop</b>. Each imported chart is saved to this device for reopening; historical baseline trades are not forward-paper results.</p>
  <div class="loop-stages" aria-label="SL closed learning cycle">
   <div>01 <small>Load 5m candles</small></div>
   <div>02 <small>Simulate trades</small></div>
@@ -115,7 +116,7 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
  </div>
  <div class="five-actions">
   <button id="loopStart" type="button">Start learning loop</button>
-  <button id="loopOnce" type="button" class="secondary">Run one cycle</button>
+  <button id="loopOnce" type="button" class="secondary">Process loaded 5m candles</button>
   <button id="loopPause" type="button" class="secondary" disabled>Pause loop</button>
   <button id="loopExport" type="button" class="secondary">Export loop journal</button>
   <button id="loopReset" type="button" class="secondary">Reset loop baseline</button>
@@ -518,6 +519,32 @@ async function loopCycle(){
     result.newClosed+' closed simulated candidates; labels, model weights and journal saved.');
  }finally{learningLoopBusy=false;loopControls();}
 }
+async function loopProcessImported(){
+ if(learningLoopActive||learningLoopBusy)return;
+ learningLoopBusy=true;loopControls();
+ const conf=loopConf();
+ try{
+  const choice=currentFiveSelection();
+  if(JSON.stringify({market:conf.market,symbol:conf.symbol})!==JSON.stringify(choice))
+   throw Error('Selected loop market/symbol does not match the chart');
+  const record=await loadSLChartCache(choice);
+  if(!record)throw Error('No saved raw 5-minute candles for '+conf.symbol+
+   '. Import a CSV or fetch online data first; saved good/bad trade memory is not a candle chart.');
+  const checkpoint=loopRead();
+  const result=checkpoint?advanceSLLoop(checkpoint,record.bars):
+   initializeSLLoop({...conf,bars:record.bars});
+  loopSave({...result.state,feed:record.source});
+  loopDraw(record.bars,conf.symbol);
+  if(result.result==='UNCHANGED_NO_NEW_LEARNING')
+   loopMessage('Chart and saved neural model are already up to date — no duplicate training. Import newer candles for another cycle.');
+  else if(result.result==='BASELINE_CAPTURE_NO_NEW_FORWARD_TRADES')
+   loopMessage('Local learning baseline SAVED from '+record.count+
+    ' imported 5m candles. Model weights and trade memory verified in this browser. Import newer bars to produce future simulated feedback.');
+  else
+   loopMessage('Imported chart feedback SAVED: '+result.newCandles+' new closed candles, '+
+    result.newClosed+' virtual candidates with newly learned outcomes. No API credits spent.');
+ }finally{learningLoopBusy=false;loopControls();}
+}
 let loopManualCancelled=false;
 function loopSchedule(){
  if(!learningLoopActive)return;
@@ -541,7 +568,7 @@ $('loopStart').addEventListener('click',async()=>{
 $('loopOnce').addEventListener('click',async()=>{
  if(learningLoopActive||learningLoopBusy)return;
  loopManualCancelled=false;
- try{await loopCycle();}catch(err){loopMessage('Cycle blocked: '+err.message,true);}
+ try{await loopProcessImported();}catch(err){loopMessage('Imported chart cycle blocked: '+err.message,true);}
 });
 $('loopPause').addEventListener('click',()=>{
  loopManualCancelled=true;loopStop('Paused: no further market-data requests. In-flight results will be discarded.');
@@ -648,6 +675,6 @@ $('vaultFile').addEventListener('change',async e=>{
  }catch(err){$('vaultStatus').textContent='IMPORT ERROR: '+err.message;}
  finally{e.target.value='';}
 });
-load();loopRestore();
+load();loopRestore();restoreFiveHistory();
 try{loopPollStatus();}catch(err){$('loopQuota').textContent='Hourly quota record requires attention: '+err.message;}
 </script></body></html>
