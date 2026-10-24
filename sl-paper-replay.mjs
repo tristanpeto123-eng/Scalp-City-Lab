@@ -4,8 +4,8 @@
  * sequentially, freeze decisions before seeing their exits, and learn after
  * simulated closes. This never sends orders to a broker.
  */
-import {validateSLFiveMinuteBars} from './sl-5m.mjs';
-import {initializeSLLoop,advanceSLLoop,SL_PAPER_POLICIES} from './sl-loop.mjs';
+import {validateSLFiveMinuteBars} from './sl-5m.mjs?slboot=20261024r3';
+import {initializeSLLoop,advanceSLLoop,SL_PAPER_POLICIES} from './sl-loop.mjs?slboot=20261024r3';
 
 export const SL_REPLAY_VERSION='SL_WALK_FORWARD_PAPER_V1';
 export function runSLHistoricalPaperReplay({
