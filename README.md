@@ -15,3 +15,5 @@ Once GitHub Actions bootstrap passes, enable Pages using Settings → Pages → 
 
 ## Development rule
 No automatic deployment or promotion into Scalp-City-1. Release candidates require independent validation, risk checks and human review. The Lab workflow never touches the original repository.
+
+**SL historical chart imports now persist locally**: after importing a 5-minute CSV or fetching a permitted online symbol, the candles are saved to IndexedDB and reloaded by market/symbol. Section 4 can use **Process loaded 5m candles** without an API key for a single simulation/training cycle. Automated online loop fetches are credit-guarded to once an hour per symbol with up to 5,000 bootstrap/180 incremental candles; real broker trading is disabled. Model backup remains a separate explicit private GitHub vault process.
