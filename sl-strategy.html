@@ -201,13 +201,13 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
 })();
 </script>
 <script type="module">
-import {createSLMemory,recordSLTrade,validateSLMemory,slMemoryStats,trainSL,predictSL} from './sl-core.mjs?slboot=20261024r2';
-import {parseSLFiveMinuteCSV,buildSLFiveMinuteDataset} from './sl-5m.mjs?slboot=20261024r2';
-import {loadSLOnlineFiveMinute} from './sl-online-5m.mjs?slboot=20261024r2';
-import {initializeSLLoop,advanceSLLoop,SL_LOOP_SCHEMA} from './sl-loop.mjs?slboot=20261024r2';
-import {createSLVaultEnvelope,verifySLVaultEnvelope,writePrivateSLVault,readPrivateSLVault} from './sl-model-vault.mjs?slboot=20261024r2';
-import {slSyncKey,slReadSyncState,planSLHourlySync,recordSLHourlyAttempt,confirmSLHourlySuccess} from './sl-hourly-sync.mjs?slboot=20261024r2';
-import {saveSLChartCache,loadSLChartCache} from './sl-chart-cache.mjs?slboot=20261024r2';
+import {createSLMemory,recordSLTrade,validateSLMemory,slMemoryStats,trainSL,predictSL} from './sl-core.mjs?slboot=20261024r3';
+import {parseSLFiveMinuteCSV,buildSLFiveMinuteDataset} from './sl-5m.mjs?slboot=20261024r3';
+import {loadSLOnlineFiveMinute} from './sl-online-5m.mjs?slboot=20261024r3';
+import {initializeSLLoop,advanceSLLoop,SL_LOOP_SCHEMA} from './sl-loop.mjs?slboot=20261024r3';
+import {createSLVaultEnvelope,verifySLVaultEnvelope,writePrivateSLVault,readPrivateSLVault} from './sl-model-vault.mjs?slboot=20261024r3';
+import {slSyncKey,slReadSyncState,planSLHourlySync,recordSLHourlyAttempt,confirmSLHourlySuccess} from './sl-hourly-sync.mjs?slboot=20261024r3';
+import {saveSLChartCache,loadSLChartCache} from './sl-chart-cache.mjs?slboot=20261024r3';
 import {initSLPaperUI,renderSLPaperLive} from './sl-paper-ui.mjs?slboot=20261024r3';
 const $=id=>document.getElementById(id), key=m=>'scalp-city-lab:sl:v1:'+m;
 let memory=createSLMemory('COMMODITIES'),models={};
