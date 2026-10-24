@@ -4,12 +4,16 @@ on:
     paths:
       - 'sl-core.mjs'
       - 'sl-core-tests.mjs'
+      - 'sl-5m.mjs'
+      - 'sl-5m-tests.mjs'
       - 'sl-strategy.html'
       - '.github/workflows/sl-strategy-tests.yml'
   pull_request:
     paths:
       - 'sl-core.mjs'
       - 'sl-core-tests.mjs'
+      - 'sl-5m.mjs'
+      - 'sl-5m-tests.mjs'
       - 'sl-strategy.html'
       - '.github/workflows/sl-strategy-tests.yml'
 jobs:
@@ -23,6 +27,10 @@ jobs:
         with:
           node-version: '22'
       - name: Check neural strategy tests
-        run: node sl-core-tests.mjs
+        run: |
+          node sl-core-tests.mjs
+          node sl-5m-tests.mjs
       - name: Verify read-only research module syntax
-        run: node --check sl-core.mjs
+        run: |
+          node --check sl-core.mjs
+          node --check sl-5m.mjs
