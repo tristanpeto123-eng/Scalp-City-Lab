@@ -1,0 +1,43 @@
+name: Student Observatory — Checker and Safari browser
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'student-progress.html'
+      - 'student-progress.js'
+      - 'research-data/student-progression.json'
+      - 'scripts/build-student-progress.mjs'
+      - 'scripts/build-student-progress-tests.mjs'
+      - 'scripts/student-progress-browser-smoke.mjs'
+      - '.github/workflows/student-progression-tests.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'student-progress.html'
+      - 'student-progress.js'
+      - 'scripts/build-student-progress.mjs'
+      - '.github/workflows/student-progression-tests.yml'
+permissions:
+  contents: read
+jobs:
+  checker:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source schema and no-trading checks
+        run: |
+          node --check scripts/build-student-progress.mjs
+          node --check student-progress.js
+          node --check scripts/student-progress-browser-smoke.mjs
+          node --test scripts/build-student-progress-tests.mjs
+      - name: Install browser harness
+        run: npm install --no-save --no-audit --no-fund playwright@1.56.1
+      - name: Install Chromium + Safari WebKit
+        run: npx playwright install --with-deps chromium webkit
+      - name: Test real source graph and browser-local SL checkpoints
+        run: node scripts/student-progress-browser-smoke.mjs
