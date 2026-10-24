@@ -29,10 +29,10 @@ function csvFields(line){
 }
 function utcTime(input){
  const v=String(input??'').trim();
- // A timestamp without a zone is interpreted as UTC, never as browser local time.
- const t=/^\d{4}-\d\d-\d\d(?:T| )\d\d:\d\d(?::\d\d(?:\.\d{1,3})?)?(?:Z|[+-]\d\d:?\d\d)?$/i.test(v)
-  ? (/[Zz]$|[+-]\d\d:?\d\d$/.test(v)?v.replace(' ','T'):v.replace(' ','T')+'Z')
-  : v;
+ // Without a timezone, explicitly interpret an ISO-like timestamp as UTC.
+ if(!/^\d{4}-\d\d-\d\d(?:T| )\d\d:\d\d(?::\d\d(?:\.\d{1,3})?)?(?:Z|[+-]\d\d:?\d\d)?$/i.test(v))
+  throw Error('SL 5m CSV requires ISO dates with UTC or explicit offsets');
+ const t=/[Zz]$|[+-]\d\d:?\d\d$/.test(v)?v.replace(' ','T'):v.replace(' ','T')+'Z';
  const ms=Date.parse(t);
  if(!Number.isFinite(ms)) throw Error('SL 5m data requires valid UTC/ISO candle timestamps');
  return new Date(ms).toISOString();
