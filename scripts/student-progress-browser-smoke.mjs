@@ -13,7 +13,7 @@ const server=createServer(async(req,res)=>{
   if(!full.startsWith(base+'/'))throw Error('Outside root');
   const bytes=await readFile(full);
   const ext=extname(full).toLowerCase();
-  res.writeHead(200,{'Content-Type':ext==='.js'||ext==='.mjs'?'text/javascript; charset=utf-8':ext==='.json'?'application/json; charset=utf-8':'text/html; charset=utf-8'});
+  res.writeHead(200,{'Content-Type':ext==='.js'||ext==='.mjs'?'text/javascript; charset=utf-8':ext==='.json'?'application/json; charset=utf-8':ext==='.css'?'text/css; charset=utf-8':'text/html; charset=utf-8'});
   res.end(bytes);
  }catch{res.writeHead(404);res.end('Not found')}
 });
