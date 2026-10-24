@@ -66,5 +66,5 @@ const gapBars=bars.map((b,i)=>i>=650?{...b,t:new Date(Date.parse(b.t)+86400000).
 const gapDS=buildSLFiveMinuteDataset({bars:gapBars,market:'COMMODITIES',symbol:'XAUUSD'});
 assert.equal(gapDS.gaps,1);
 assert.ok(gapDS.opportunities.every(o=>o.exitIndex<650||o.signalIndex>=675),'no trade crosses gap or insufficient new warmup');
-assert.throws(()=>validateSLFiveMinuteBars(bars.map((b,i)=>i===0?{...b,t:new Date(Date.now()+86400000).toISOString()}:b)),/unordered|future/);
+assert.throws(()=>validateSLFiveMinuteBars(bars.map(b=>({...b,t:new Date(Date.parse(b.t)+10*365*86400000).toISOString()}))),/future/);
 console.log('SL 5m checks passed: authentic CSV ingestion, 5m grid, gap reset, causal features, next-open fills, cost-aware labels, 3 market students, holdout, no orders');
