@@ -1,0 +1,28 @@
+name: SL strategy tests
+on:
+  push:
+    paths:
+      - 'sl-core.mjs'
+      - 'sl-core-tests.mjs'
+      - 'sl-strategy.html'
+      - '.github/workflows/sl-strategy-tests.yml'
+  pull_request:
+    paths:
+      - 'sl-core.mjs'
+      - 'sl-core-tests.mjs'
+      - 'sl-strategy.html'
+      - '.github/workflows/sl-strategy-tests.yml'
+jobs:
+  sl-checker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check neural strategy tests
+        run: node sl-core-tests.mjs
+      - name: Verify read-only research module syntax
+        run: node --check sl-core.mjs

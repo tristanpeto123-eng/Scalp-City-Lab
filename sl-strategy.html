@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scalp City · SL Strategy</title>
+<style>
+:root{color-scheme:dark;background:#081625;color:#e7f5f8;font:15px/1.5 system-ui}*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 85% 0%,#145255,transparent 60%),#081625}
+main{max-width:1000px;margin:auto;padding:25px 16px 60px}a{color:#a4e8e2}
+h1{font-size:clamp(36px,6vw,60px);letter-spacing:-.05em;line-height:1.04;margin:24px 0 9px}h1 span{color:#a0e7d9}
+header{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+p,small{color:#b6cbd7}.sub{font-size:12px;color:#f1d291;letter-spacing:.12em;font-weight:850}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+.panel{border:1px solid #3e6072;background:#112939;border-radius:16px;padding:19px;min-width:0}
+h2{font-size:20px;margin:0 0 12px}
+label{display:block;font-size:12px;font-weight:800;color:#c8dce7;margin:13px 0 6px}
+textarea,input,select{width:100%;padding:11px;border:1px solid #4c7685;border-radius:9px;background:#091e30;color:#e8f9fa;font:inherit}
+textarea{height:160px;font:12px/1.5 ui-monospace,monospace}
+button{margin:8px 7px 0 0;background:#e0d194;color:#13242c;border:0;padding:11px 13px;border-radius:9px;font-weight:850;cursor:pointer}
+button.secondary{background:#204753;border:1px solid #56909b;color:#d6faf6}
+button:focus-visible,a:focus-visible{outline:3px solid #ffe3a3;outline-offset:3px}
+.statgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0}
+.statgrid div{background:#0d2030;border:1px solid #365768;border-radius:9px;padding:12px}
+.statgrid small{display:block;font-size:11px}.statgrid strong{font-size:24px}
+pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;max-height:470px;overflow:auto}
+.warning{border-left:3px solid #eacb88;background:#26313b;padding:12px 16px;color:#efdeb8}
+#message{color:#aedcdb}footer{font-size:12px;color:#9db7c5;margin-top:20px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}}
+</style></head>
+<body><main>
+<header><a href="./strategy-validation.html">← Research Desk</a><b class="sub">SL / SEPARATE STRATEGY · RESEARCH ONLY</b><a href="./robot-academy.html">Robot Academy ↗</a></header>
+<h1>SL <span>Supervised Learning</span></h1>
+<p>Independent profit-first neural strategy. Good pile = profitable completed trades; bad pile = losing trades. Magnitude of net £ results influences how strongly each example teaches the network.</p>
+<p class="warning">Only research. No broker execution, live prices or verified success rates. All six input features must be known <b>before trade entry</b>. Historical results are not future returns.</p>
+<div class="grid">
+<section class="panel"><h2>1 / Memory</h2>
+<label for="market">Market student</label>
+<select id="market"><option value="COMMODITIES">Commodities · active</option><option value="FOREX">Forex · active</option><option value="INDICES">Indices · active</option><option disabled>Equities · later</option><option disabled>Crypto · later</option></select>
+<p><small>Good/bad memory and neural network are isolated per market. Saves to this device only; export to keep a copy.</small></p>
+<div class="statgrid"><div><small>Good pile</small><strong id="good">0</strong></div><div><small>Bad pile</small><strong id="bad">0</strong></div><div><small>Total net £</small><strong id="net">0</strong></div></div>
+<label for="input">Import completed candidates (JSON object or array)</label>
+<textarea id="input" spellcheck="false" placeholder='[{"id":"X1","market":"COMMODITIES","source":"HISTORICAL_RESEARCH","openedAt":"2025-01-01T01:00:00Z","closedAt":"2025-01-01T02:00:00Z","entryFeatures":[0.2,-0.3,0.1,0,0.5,0.8],"netPnlGbp":14.5}]'></textarea>
+<p><small>Feature order: trend, momentum, volatility, relativeVolume, distanceFromLevel, entrySignal. Each normalised to -1…1. netPnlGbp must include costs.</small></p>
+<button id="add">Add trades</button><button class="secondary" id="demo">New synthetic demo</button>
+<button class="secondary" id="export">Export memory</button>
+<label for="file">Restore saved SL memory file</label><input id="file" type="file" accept=".json,application/json">
+<p><small>Restore and demo each replace selected market memory. Historical records cannot mix with synthetic records.</small></p>
+</section>
+<section class="panel"><h2>2 / Train & examine</h2>
+<p>6→8→1 tanh/sigmoid network. 60% chronological training; 20% threshold selection by net £; 20% untouched historical test. Split-boundary overlapping trades are purged.</p>
+<button id="train">Train SL</button><button id="clear" class="secondary">Clear market memory</button>
+<p id="message" role="status">SL is untrained. Load 40+ candidate trades or generate a synthetic demo.</p>
+<h3>Evaluation</h3><pre id="output">No training result.</pre>
+<h3>Test one setup</h3><label for="probe">Six pre-entry features</label>
+<input id="probe" value="[0.7,0.25,0.1,0.1,0,0.5]"><button id="predict" class="secondary">Score setup</button>
+<pre id="prediction">No prediction.</pre>
+</section></div>
+<footer>SL is distinct from Scalp City's existing strategies. Outputs are historical research, not account P&L. No actual paper/live orders or promotion rights are implemented.</footer>
+</main>
+<script type="module">
+import {createSLMemory,recordSLTrade,validateSLMemory,slMemoryStats,trainSL,predictSL} from './sl-core.mjs';
+const $=id=>document.getElementById(id), key=m=>'scalp-city-lab:sl:v1:'+m;
+let memory=createSLMemory('COMMODITIES'),models={};
+const market=()=>$('market').value;
+function say(m,error=false){$('message').textContent=m;$('message').style.color=error?'#ffb9b7':'#aff0cd'}
+function save(){localStorage.setItem(key(market()),JSON.stringify(memory))}
+function refresh(){const s=slMemoryStats(memory);$('good').textContent=s.good;$('bad').textContent=s.bad;$('net').textContent=s.netPnlGbp.toFixed(2)}
+function load(){try{const raw=localStorage.getItem(key(market()));memory=raw?validateSLMemory(JSON.parse(raw)):createSLMemory(market());if(memory.market!==market())throw Error('Stored market mismatch');say('Loaded '+market()+' memory')}catch(e){memory=createSLMemory(market());say(e.message,true)}refresh();$('output').textContent='No model trained in this page session';$('prediction').textContent='No prediction'}
+function apply(records){let next=memory;for(const t of records)next=recordSLTrade(next,t);memory=next;delete models[market()];save();refresh();say('Recorded '+records.length+' labelled trades. Retrain before predictions.')}
+$('market').addEventListener('change',load);
+$('add').addEventListener('click',()=>{try{const value=JSON.parse($('input').value),records=Array.isArray(value)?value:[value];if(!records.length)throw Error('Empty list');apply(records)}catch(e){say(e.message,true)}});
+$('train').addEventListener('click',()=>{try{const t=trainSL(memory);models[market()]=t.model;$('output').textContent=JSON.stringify({strategy:'SL',source:t.report.source,market:t.report.market,entryThreshold:t.model.threshold,training:t.report.train,validation:t.report.validation,unseenTest:t.report.test,purged:t.report.purged,validationResults:t.report.validationResults,unseenHistoricalTest:t.report.heldOutResults,limitations:t.report.limitations,brokerOrdersAllowed:false},null,2);say('Trained. Historical research only; no live profit has been shown.')}catch(e){say(e.message,true)}});
+$('predict').addEventListener('click',()=>{try{if(!models[market()])throw Error('Train this market first');$('prediction').textContent=JSON.stringify(predictSL(models[market()],JSON.parse($('probe').value),market()),null,2)}catch(e){$('prediction').textContent=e.message}});
+$('export').addEventListener('click',()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(memory,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='sl-'+market().toLowerCase()+'-memory.json';a.click();URL.revokeObjectURL(url)});
+$('file').addEventListener('change',async e=>{try{const file=e.target.files?.[0];if(!file)return;const m=validateSLMemory(JSON.parse(await file.text()));if(m.market!==market())throw Error('Wrong market');memory=m;delete models[market()];save();refresh();say('Memory restored. Train SL to evaluate.')}catch(err){say(err.message,true)}finally{e.target.value=''}});
+$('clear').addEventListener('click',()=>{if(!confirm('Delete selected market local SL memory? Export it first if needed.'))return;memory=createSLMemory(market());delete models[market()];save();refresh();$('output').textContent='Untrained';say('Memory cleared')});
+$('demo').addEventListener('click',()=>{try{const z=new Uint32Array(1);crypto.getRandomValues(z);let seed=z[0];const rnd=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296};let d=createSLMemory(market());for(let i=0;i<120;i++){const f=Array.from({length:6},()=>rnd()*2-1);const edge=f[0]*.55+f[1]*.4+f[5]*.35+(.5-rnd())*.95;const at=new Date(Date.UTC(2025,0,i+1,1));d=recordSLTrade(d,{id:'SYNTH-'+z[0]+'-'+i,market:market(),source:'SYNTHETIC_DEMO',openedAt:at.toISOString(),closedAt:new Date(at.getTime()+3600000).toISOString(),entryFeatures:f,netPnlGbp:(edge>0?1:-1)*(3+rnd()*30)})}memory=d;delete models[market()];save();refresh();$('output').textContent='SYNTHETIC example; click Train SL';say('Fresh SYNTHETIC examples created, not real market performance.')}catch(e){say(e.message,true)}});
+load();
+</script></body></html>
