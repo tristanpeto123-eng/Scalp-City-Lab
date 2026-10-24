@@ -104,7 +104,9 @@ const base=[
 ].map(([symbol,name,color],id)=>({id,symbol,name,color,trades:null,wins:null,source:'UNVERIFIED',net:null,drawdown:null,champion:null}));
 let scout={id:10,symbol:'XAUUSD',name:'Scout + Strategist',color:'#f6c985',modelId:'XAU-SCST-01',
   trades:null,wins:null,source:'UNREGISTERED',net:null,drawdown:null,champion:null};
-let pupils=[...base.map(x=>({...x})),scout],demo=false,selected=0,lessonNo=0,research=null,researchError=null,liveGrades=new Map(),teacherError=null;
+const universal={id:11,symbol:'UNIVERSAL-01',name:'Universal Student',color:'#75dbbd',modelId:'UNIVERSAL-01',
+  trades:null,wins:null,source:'RESEARCH_STUDENT_UNGRADED',net:null,drawdown:null,champion:null};
+let pupils=[...base.map(x=>({...x})),scout,universal],demo=false,selected=0,lessonNo=0,research=null,researchError=null,liveGrades=new Map(),teacherError=null;
 const $=id=>document.getElementById(id);
 const grade=p=>p.trades===null||p.trades<1?null:Math.min(10,Math.floor(((p.source==='HISTORICAL_TRAINING_RESEARCH'?p.trainingWinRatePct:p.wins/p.trades*100)+1e-8)/10));
 const percent=p=>p.trades===null||p.trades<1?null:p.source==='HISTORICAL_TRAINING_RESEARCH'?p.trainingWinRatePct:100*p.wins/p.trades;
@@ -180,7 +182,8 @@ function render(){
    const link=document.createElement('a');link.href=route;link.textContent=name+' ↗';
    link.style.marginRight='14px';actionLinks.append(link);
  }
- if(p.modelId){actionLinks.replaceChildren();const a=document.createElement('a');a.href='#scout-publisher';a.textContent='Publish / examine checkpoint ↗';actionLinks.append(a);}
+ if(p.modelId==='XAU-SCST-01'){actionLinks.replaceChildren();const a=document.createElement('a');a.href='#scout-publisher';a.textContent='Publish / examine checkpoint ↗';actionLinks.append(a);}
+  if(p.modelId==='UNIVERSAL-01'){actionLinks.replaceChildren();const a=document.createElement('a');a.href='./universal-student.html';a.textContent='Train / inspect Universal-01 ↗';actionLinks.append(a);}
  report.append(actionLinks);
  const subtitle=document.createElement('p');subtitle.className='note';
  subtitle.textContent=p.source==='LOCAL_RESEARCH_EXAM'?'LOCAL FROZEN-TRACE RESEARCH EXAM · UNVERIFIED':demo?'SIMULATED PUPIL · NOT REAL TRADES':p.source==='HISTORICAL_TRAINING_RESEARCH'?'HISTORICAL TRAINING REPLAY · PROVISIONAL':confirmed(p)?'VERIFIED FORWARD-PAPER RECORD':'NO VERIFIED OUTCOMES';
@@ -317,7 +320,7 @@ function historicalPupils(){
    trainingBehavior:item.trainingBehavior,
    generations:item.generations
   };
- }).concat(scout);
+ }).concat(scout,universal);
 }
 let researchRequest=0;
 async function loadResearch(refresh=false){
@@ -342,7 +345,7 @@ async function loadResearch(refresh=false){
   if(serial!==researchRequest)return;
   research=null;
   researchError='Historical research unavailable: '+String(e.message||e)+'. No invented grades are substituted.';
-  if(!demo){pupils=[...base.map(p=>({...p})),scout];render();}
+  if(!demo){pupils=[...base.map(p=>({...p})),scout,universal];render();}
  }
 }
 
@@ -419,7 +422,7 @@ $('demo').onclick=()=>{demo=true;lessonNo=0;
  net:i===7?-3.60:Math.round((scores[i]-55)*13)/100,
  drawdown:Math.round((i+1)*91)/100,
  champion:{name:i%2?'RSI pullback (demo)':'EMA crossover (demo)'},
- source:'FICTIONAL_DEMO'})).concat(scout);render();};
+ source:'FICTIONAL_DEMO'})).concat(scout,universal);render();};
 $('lesson').onclick=()=>{if(!demo)return;lessonNo++;
  // Deterministic demonstration, not a simulated forecast or market model.
  for(const p of pupils){if(p.modelId)continue;const old=grade(p);
