@@ -1,0 +1,32 @@
+name: Unified Academy and Scout-Strategist Checker
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'academy-common-exam.mjs'
+      - 'academy-common-exam-tests.mjs'
+      - 'academy-unified-ui.mjs'
+      - 'robot-academy.html'
+      - 'UNIFIED-ACADEMY-ARCHITECTURE.md'
+      - '.github/workflows/unified-academy-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  common-exam:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check student adapter and common examiner syntax
+        run: |
+          node --check academy-common-exam.mjs
+          node --check academy-unified-ui.mjs
+          node --check academy-common-exam-tests.mjs
+      - name: Common-exam parity, fail-closed research and legacy crypto classroom tests
+        run: |
+          node --test academy-common-exam-tests.mjs
+          node --test robot-academy-tests.mjs
