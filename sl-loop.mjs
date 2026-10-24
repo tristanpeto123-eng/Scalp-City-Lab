@@ -44,7 +44,8 @@ function trainingWithStatus(memory){
 }
 function ensureLoop(state){
  if(!state||state.schema!==SL_LOOP_SCHEMA||!state.config||!state.cursor||
-   !state.lastBar||!Array.isArray(state.events)||!state.memory)throw Error('Invalid SL loop checkpoint');
+   !state.lastBar||!Array.isArray(state.tail)||state.tail.length<25||
+   !Array.isArray(state.events)||!state.memory)throw Error('Invalid SL loop checkpoint');
  const conf=configOf(state.config);
  const m=validateSLMemory(state.memory);
  if(m.market!==conf.market)throw Error('SL loop memory has a different market');
@@ -67,7 +68,8 @@ export function initializeSLLoop({bars,market,symbol,holdCandles=3,sideCostBps=4
  const lastBar=historical.bars.at(-1);
  const pending=intentFor(historical.bars,historical.bars.length-1,trained.model,market);
  const state={schema:SL_LOOP_SCHEMA,config,memory,cursor:lastBar.t,lastBar,
-  pending,position:null,cycles:0,newCandles:0,closedCandidates:0,executedTrades:0,
+  pending,position:null,tail:historical.bars.slice(-28).map(b=>({...b})),
+  cycles:0,newCandles:0,closedCandidates:0,executedTrades:0,
   selectedNetPnlGbp:0,counterfactualCount:0,revisions:0,
   status:'BASELINE_TRAINED_WAITING_FOR_NEW_BARS',
   feed:'USER_OR_PROVIDER_REPORTED_UNVERIFIED',events:[]};
@@ -77,7 +79,7 @@ export function initializeSLLoop({bars,market,symbol,holdCandles=3,sideCostBps=4
 }
 function cloneState(st){
  return {...st,config:{...st.config},memory:validateSLMemory(st.memory),
-  lastBar:{...st.lastBar},pending:st.pending?{...st.pending,entryFeatures:[...st.pending.entryFeatures]}:null,
+  lastBar:{...st.lastBar},tail:st.tail.map(b=>({...b})),pending:st.pending?{...st.pending,entryFeatures:[...st.pending.entryFeatures]}:null,
   position:st.position?{...st.position,entryFeatures:[...st.position.entryFeatures]}:null,
   events:[...st.events]};
 }
@@ -121,6 +123,12 @@ export function advanceSLLoop(checkpoint,bars,{now=Date.now()}={}){
  if(cursorIndex<0)throw Error('SL loop source continuity lost: prior last candle missing. Do not restart on fabricated new history.');
  if(!sameBar(all[cursorIndex],checkpoint.lastBar))
   throw Error('SL loop source revised a previously observed completed candle; refusing silent retraining');
+ const byTime=new Map(all.map(b=>[b.t,b]));
+ for(const old of checkpoint.tail){
+  const current=byTime.get(old.t);
+  if(!current||!sameBar(old,current))
+   throw Error('SL loop source revised or lost an overlapping completed candle; refusing silent retraining');
+ }
  if(cursorIndex===all.length-1)
   return {state:checkpoint,result:'UNCHANGED_NO_NEW_LEARNING',newCandles:0,newClosed:0,
     model:null,stats:slMemoryStats(checkpoint.memory)};
@@ -156,6 +164,7 @@ export function advanceSLLoop(checkpoint,bars,{now=Date.now()}={}){
   if(!current.position&&!current.pending)
    current.pending=intentFor(all,i,model,conf.market);
   current.cursor=candle.t;current.lastBar={...candle};
+  current.tail=all.slice(Math.max(0,i-27),i+1).map(b=>({...b}));
   current.newCandles++;
  }
  current.cycles++;
