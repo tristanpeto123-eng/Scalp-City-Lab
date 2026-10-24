@@ -1,0 +1,39 @@
+{
+  "schema": "SCALP_UNIVERSAL_STUDENT_RESEARCH_V1",
+  "studentId": "UNIVERSAL-01",
+  "targetSymbol": "XRP/USD",
+  "modelFamily": "DEEP_Q_NETWORK_9_64_64_2",
+  "sourceSymbol": "SOL/USD",
+  "sourcePolicy": "EXISTING_SAVED_CRYPTO_DQN_NOT_XAU_CONV1D",
+  "status": "HISTORICAL_RESEARCH_ONLY",
+  "note": "Cross-market seeding is not an independent forward holdout; past-only replay, no orders.",
+  "brokerOrders": 0,
+  "liveOrders": 0,
+  "officialGrade": null,
+  "generations": [
+    {
+      "generation": 1,
+      "sourceSymbol": "SOL/USD",
+      "targetSymbol": "XRP/USD",
+      "seedOrigin": "TRANSFER_SEED",
+      "parentCheckpointSha256": "f38b925fef2edf60bc46d63a6796b40551ca4ebddb2582ccc26c725e07f376ce",
+      "checkpointSha256": "f1e125c0fb1c866142d64d79bd177d45b5032b2aff9925a0c710599486e797ec",
+      "targetDataSha256": "5fa5bcde8dddc9e767dbe9ce03a4f3840cad95fb3e16c37a978e9285606f9067",
+      "episodes": 3,
+      "gradientUpdates": 3847,
+      "virtualTrainingClosedTrades": 1827,
+      "developmentNetGbp": -2.9374,
+      "developmentStressNetGbp": -3.5807,
+      "preTrainingDevelopmentNetGbp": -4.1005,
+      "developmentDeltaGbp": 1.1631,
+      "developmentTrades": 3,
+      "developmentWinRatePct": 0.0,
+      "developmentDrawdownPct": 6.0995,
+      "timeframe": "5Min",
+      "separateForwardEvidence": false,
+      "holdoutTouched": false,
+      "brokerOrders": 0,
+      "liveOrders": 0
+    }
+  ]
+}

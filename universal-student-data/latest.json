@@ -1,0 +1,8 @@
+{
+  "schema": "SCALP_UNIVERSAL_STUDENT_INDEX_V1",
+  "markets": [
+    "XRP/USD"
+  ],
+  "paperOrders": 0,
+  "liveOrders": 0
+}
