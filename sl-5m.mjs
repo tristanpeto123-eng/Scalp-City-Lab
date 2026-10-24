@@ -9,7 +9,6 @@ export const SL_FIVE_MIN_MS = 300000;
 export const SL_FIVE_MIN_VERSION = 'SL_5MIN_HISTORICAL_V1';
 const FIN = n => typeof n === 'number' && Number.isFinite(n);
 const clip = n => Math.max(-1,Math.min(1,n));
-const min = (a,b) => Math.min(a,b);
 const round = n => Math.round((n + Number.EPSILON)*100)/100;
 const fields = ['time','open','high','low','close'];
 const aliases = {
@@ -64,8 +63,8 @@ export function validateSLFiveMinuteBars(input,{now=Date.now()}={}){
   const b=input[i],t=Date.parse(b?.t),o=Number(b?.o),h=Number(b?.h),l=Number(b?.l),
    c=Number(b?.c),v=(b?.v===null||b?.v===undefined||b?.v==='')?null:Number(b.v);
   if(!Number.isFinite(t)||t%SL_FIVE_MIN_MS!==0||
-     ![o,h,l,c].every(FIN)||min(o,h,l,c)<=0||
-     h<Math.max(o,c,l)||l>min(o,c,h)|| (v!==null&&(!FIN(v)||v<0)))
+     ![o,h,l,c].every(FIN)||Math.min(o,h,l,c)<=0||
+     h<Math.max(o,c,l)||l>Math.min(o,c,h)|| (v!==null&&(!FIN(v)||v<0)))
     throw Error('SL 5m invalid candle at row '+(i+1));
   if(i){
    const gap=t-Date.parse(bars[i-1].t);
