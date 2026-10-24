@@ -1,7 +1,7 @@
 {
   "schema": "SCALP_STUDENT_PROGRESS_V1",
-  "generatedAt": "2026-10-24T16:42:26.786Z",
-  "academySnapshotAt": "2026-10-24T13:33:19.434Z",
+  "generatedAt": "2026-10-24T17:10:22.930Z",
+  "academySnapshotAt": "2026-10-24T16:55:14.055Z",
   "rlSnapshotAt": "2026-10-24T16:36:18.048883+00:00",
   "markets": [
     "COMMODITIES",
@@ -38,7 +38,7 @@
       "symbol": "BTC/USD",
       "name": "BTC",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-24T13:33:19.434Z",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
       "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
       "research": {
         "experiments": 49,
@@ -538,7 +538,7 @@
       "symbol": "ETH/USD",
       "name": "ETH",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-24T13:33:19.434Z",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
       "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
       "research": {
         "experiments": 49,
@@ -1040,7 +1040,7 @@
       "symbol": "SOL/USD",
       "name": "SOL",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-24T13:33:19.434Z",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
       "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
       "research": {
         "experiments": 49,
@@ -1542,7 +1542,7 @@
       "symbol": "XRP/USD",
       "name": "XRP",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-24T13:33:19.434Z",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
       "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
       "research": {
         "experiments": 49,
@@ -2044,7 +2044,7 @@
       "symbol": "ADA/USD",
       "name": "ADA",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-24T13:33:19.434Z",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
       "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
       "research": {
         "experiments": 49,
@@ -2547,7 +2547,7 @@
       "symbol": "AVAX/USD",
       "name": "AVAX",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-24T13:33:19.434Z",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
       "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
       "research": {
         "experiments": 49,
@@ -3050,7 +3050,7 @@
       "symbol": "LINK/USD",
       "name": "LINK",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-24T13:33:19.434Z",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
       "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
       "research": {
         "experiments": 49,
@@ -3553,7 +3553,7 @@
       "symbol": "DOGE/USD",
       "name": "DOGE",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-24T13:33:19.434Z",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
       "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
       "research": {
         "experiments": 49,
@@ -4055,7 +4055,7 @@
       "symbol": "LTC/USD",
       "name": "LTC",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-24T13:33:19.434Z",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
       "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
       "research": {
         "experiments": 49,
@@ -4557,7 +4557,7 @@
       "symbol": "BCH/USD",
       "name": "BCH",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-24T13:33:19.434Z",
+      "publishedAcademyAt": "2026-10-24T16:55:14.055Z",
       "latestHistoricalTrainingEnd": "2026-09-18T04:45:00.000Z",
       "research": {
         "experiments": 49,
