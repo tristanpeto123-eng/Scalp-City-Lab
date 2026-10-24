@@ -87,6 +87,8 @@ const duplicates={
  'teacher-console.html':['header.top > nav'],
  'trading-floor.html':['body > header nav'],
  'training-monitor.html':['main > nav[aria-label="Training monitor routes"]'],
+ 'sl-strategy.html':['main > header a'],
+ 'market-replay-5m.html':['main > header a'],
  'student-progress.html':['nav.backlinks'],
  'universal-student.html':['main > header nav'],
  'robot-observer.html':['nav[aria-label="Navigation"]'],
