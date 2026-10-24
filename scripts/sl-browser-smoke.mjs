@@ -13,7 +13,7 @@ const server=createServer(async(req,res)=>{
   if(!absolute.startsWith(base+'/'))throw Error('out of root');
   const bytes=await readFile(absolute);
   const ext=extname(absolute).toLowerCase();
-  res.setHeader('content-type',ext==='.mjs'||ext==='.js'?'text/javascript; charset=utf-8':ext==='.html'?'text/html; charset=utf-8':'application/octet-stream');
+  res.setHeader('content-type',ext==='.mjs'||ext==='.js'?'text/javascript; charset=utf-8':ext==='.html'?'text/html; charset=utf-8':ext==='.css'?'text/css; charset=utf-8':'application/octet-stream');
   res.end(bytes);
  }catch(error){res.statusCode=404;res.end('Not found');}
 });
