@@ -148,3 +148,19 @@ export function buildSLFiveMinuteDataset({
   holdCandles,sideCostBps,virtualNotionalGbp,
   explanation:'Past closed-bar inputs; following-open simulated fills; net GBP notional with both-side modeled costs. Historical research only.'};
 }
+
+
+/**
+ * A signal computed at the CLOSE of candle i using bars <= i only.
+ * The caller must verify market history is chronologically validated and completed.
+ * An overnight/session gap invalidates warmup rather than backfilling imagined bars.
+ */
+export function slFiveMinuteSignal(bars,i){
+ if(!Array.isArray(bars)||!Number.isInteger(i)||i<25||i>=bars.length)return null;
+ for(let j=i-24;j<=i;j++)
+  if(Date.parse(bars[j].t)-Date.parse(bars[j-1].t)!==SL_FIVE_MIN_MS)return null;
+ const side=bars[i].c>=bars[i-3].c?1:-1;
+ const entryFeatures=featuresAt(bars,i,side);
+ if(entryFeatures.some(x=>!FIN(x)||x< -1||x>1))throw Error('Invalid causal SL feature');
+ return {signalTime:bars[i].t,entryAt:new Date(Date.parse(bars[i].t)+SL_FIVE_MIN_MS).toISOString(),side,entryFeatures};
+}

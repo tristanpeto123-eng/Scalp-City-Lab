@@ -149,3 +149,48 @@ export function predictSL(model, entryFeatures, market=model?.market) {
   return {strategy:'SL',market,profitWeightedScore:Math.round(p*10000)/10000,
     researchDecision:p>=model.threshold?'SELECT':'SKIP', brokerOrderAllowed:false};
 }
+
+/**
+ * Real feedback for a FUTURE completed simulated opportunity.
+ * Updates a frozen, research-only model after the outcome closes. Unlike the
+ * fixed historical 60/20/20 experiment, the newest closed trade is included
+ * immediately instead of languishing in the shifting sealed 20% tail.
+ * An existing historical validation threshold stays frozen; the only honest
+ * prospective score is performance logged before these feedback updates.
+ */
+export function updateSLModelAfterClose(model, trade, {referenceGbp=5,
+ learningRate=.012, iterations=12}={}){
+ if(!model||model.strategy!=='SL'||model.version!==SL_VERSION||
+   model.activatedForTrading!==false||!SL_ACTIVE_MARKETS.includes(model.market)||
+   !finite(referenceGbp)||referenceGbp<=0||
+   !finite(learningRate)||learningRate<=0||learningRate>.25||
+   !Number.isInteger(iterations)||iterations<1||iterations>1000)
+  throw Error('Invalid SL incremental learning model/controls');
+ const t=checkedTrade(trade,model.market);
+ if(!model.weights||!Array.isArray(model.weights.w1)||model.weights.w1.length!==8||
+  !Array.isArray(model.weights.w2)||model.weights.w2.length!==8||
+  !Array.isArray(model.weights.b1)||model.weights.b1.length!==8||
+  !finite(model.weights.b2)||!finite(model.threshold))
+  throw Error('Invalid SL neural-network weights');
+ const w={w1:model.weights.w1.map(row=>[...row]),b1:[...model.weights.b1],
+   w2:[...model.weights.w2],b2:model.weights.b2};
+ if(w.w1.some(row=>row.length!==SL_FEATURES.length||!row.every(finite))||
+  !w.w2.every(finite)||!w.b1.every(finite))
+  throw Error('Invalid SL learning tensor');
+ const target=t.netPnlGbp>0?1:0;
+ const weight=Math.min(4,Math.max(.25,Math.abs(t.netPnlGbp)/referenceGbp));
+ for(let n=0;n<iterations;n++){
+  const {p,h}=forward(w,t.entryFeatures);
+  const delta=(p-target)*weight;
+  const previous=[...w.w2];
+  for(let j=0;j<8;j++)w.w2[j]-=learningRate*delta*h[j];
+  w.b2-=learningRate*delta;
+  for(let j=0;j<8;j++){
+   const dz=delta*previous[j]*(1-h[j]*h[j]);
+   for(let k=0;k<SL_FEATURES.length;k++)w.w1[j][k]-=learningRate*dz*t.entryFeatures[k];
+   w.b1[j]-=learningRate*dz;
+  }
+ }
+ return {...model,weights:w,trainedThrough:t.closedAt,
+  incrementalUpdates:(model.incrementalUpdates||0)+1};
+}
