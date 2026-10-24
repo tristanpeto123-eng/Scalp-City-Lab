@@ -2,7 +2,7 @@
   "name": "Scalp City Lab — Simulation Only",
   "short_name": "Scalp Lab",
   "description": "Isolated research and simulation environment; no live trading",
-  "start_url": "./",
+  "start_url": "./mission-control.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#03020a",
