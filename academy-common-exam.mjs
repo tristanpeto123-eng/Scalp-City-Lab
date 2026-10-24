@@ -30,6 +30,16 @@ function inspectSubmission(s) {
   must(checkpoint&&typeof checkpoint==='object'&&!Array.isArray(checkpoint),'Trained checkpoint required');
   must(typeof checkpoint.architecture==='string'&&checkpoint.architecture.length>=3,'Checkpoint architecture required');
   must(checkpoint.state&&typeof checkpoint.state==='object'&&Object.keys(checkpoint.state).length>0,'Nonempty model state required');
+  // Do not accept placeholder strings or metadata alone as an actual parameter checkpoint.
+  let numericParameters=0,visited=0;
+  const scan=value=>{
+    if(++visited>250000)throw Error('ACADEMY: oversized model structure');
+    if(typeof value==='number'){must(finite(value),'Non-finite checkpoint parameter');numericParameters++;return;}
+    if(Array.isArray(value)){for(const child of value)scan(child);return;}
+    if(value&&typeof value==='object'){for(const child of Object.values(value))scan(child);}
+  };
+  scan(checkpoint.state);
+  must(numericParameters>=3,'Trained checkpoint must contain numeric model parameters');
   const checkpointSize=key(checkpoint).length;
   must(checkpointSize>=60&&checkpointSize<=2000000,'Checkpoint missing or exceeds 2 MB');
   const cutoff=ms(m.trainedThroughUtc);
