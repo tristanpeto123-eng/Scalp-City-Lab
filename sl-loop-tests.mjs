@@ -39,6 +39,7 @@ assert.equal(first.state.position.entryPrice,future[0].o);
 assert.equal(first.state.position.entryAt,future[0].t);
 assert.equal(first.state.selectedNetPnlGbp,0);
 assert.equal(first.state.memory.good.length+first.state.memory.bad.length,initialN);
+assert.deepEqual(first.state.model,bootstrap.state.model,'unclosed opportunity cannot train model');
 const same=advanceSLLoop(first.state,[...bars,future[0]],{now});
 assert.equal(same.result,'UNCHANGED_NO_NEW_LEARNING');
 assert.equal(same.newClosed,0);
@@ -47,6 +48,9 @@ const next=advanceSLLoop(first.state,[...bars,...future.slice(0,3)],{now});
 assert.equal(next.newClosed,1);
 assert.equal(next.state.closedCandidates,1);
 assert.equal(next.state.revisions,1);
+assert.equal(next.state.model.incrementalUpdates,1,'fresh closed trade immediately teaches neural model');
+assert.notDeepEqual(next.state.model.weights,first.state.model.weights,
+ 'model must update rather than only shift historical validation partitions');
 assert.equal(next.state.memory.good.length+next.state.memory.bad.length,initialN+1);
 const after=advanceSLLoop(next.state,[...bars,...future.slice(0,23)],{now});
 assert.ok(after.state.closedCandidates>2);
@@ -59,6 +63,7 @@ assert.equal(after.state.memory.good.length+after.state.memory.bad.length,
   initialN+after.state.counterfactualCount);
 assert.equal(after.state.lastBar.t,future.at(-1).t);
 assert.equal(after.state.status,'AWAITING_MORE_COMPLETED_BARS');
+assert.equal(after.state.model.incrementalUpdates,after.state.counterfactualCount);
 assert.ok(!JSON.stringify(after.state).includes('apikey'));
 const restored=JSON.parse(JSON.stringify(after.state));
 assert.deepEqual(advanceSLLoop(restored,[...bars,...future],{now}).state,restored);
