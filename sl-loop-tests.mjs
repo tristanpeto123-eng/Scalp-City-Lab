@@ -66,6 +66,10 @@ const revised=[...bars,...future.slice(0,1)].map(x=>({...x}));
 revised.at(-1).c+=1;
 revised.at(-1).h=Math.max(revised.at(-1).h,revised.at(-1).c);
 await assert.rejects(async()=>advanceSLLoop(first.state,revised,{now}),/source revised/);
+const oldEdited=[...bars,...future.slice(0,1)].map(x=>({...x}));
+oldEdited[oldEdited.length-3].c+=.01;
+oldEdited[oldEdited.length-3].h=Math.max(oldEdited[oldEdited.length-3].h,oldEdited[oldEdited.length-3].c+.1);
+assert.throws(()=>advanceSLLoop(first.state,oldEdited,{now}),/revised or lost an overlapping/);
 assert.throws(()=>advanceSLLoop(after.state,[...bars.slice(0,1100),...future.slice(0,10)],{now}),
  /source continuity|unordered/);
 const weekend=[...bars,future[0],{...future[1],t:new Date(Date.parse(future[1].t)+86400000).toISOString()}];
