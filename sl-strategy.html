@@ -51,7 +51,7 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
 <section class="panel"><h2>1 / Memory</h2>
 <label for="market">Market student</label>
 <select id="market"><option value="COMMODITIES">Commodities · active</option><option value="FOREX">Forex · active</option><option value="INDICES">Indices · active</option><option disabled>Equities · later</option><option disabled>Crypto · later</option></select>
-<p><small>Good/bad memory and neural network are isolated per market. Saves to this device only; export to keep a copy.</small></p>
+<p><small>Good/bad training examples, 5-minute chart candles and the loop's trained neural weights are three different saved datasets. Chart history must match the selected market/symbol. The neural loop model is saved separately from the research Train SL button.</small></p>
 <div class="statgrid"><div><small>Good pile</small><strong id="good">0</strong></div><div><small>Bad pile</small><strong id="bad">0</strong></div><div><small>Total net £</small><strong id="net">0</strong></div></div>
 <label for="input">Import completed candidates (JSON object or array)</label>
 <textarea id="input" spellcheck="false" placeholder='[{"id":"X1","market":"COMMODITIES","source":"HISTORICAL_RESEARCH","openedAt":"2025-01-01T01:00:00Z","closedAt":"2025-01-01T02:00:00Z","entryFeatures":[0.2,-0.3,0.1,0,0.5,0.8],"netPnlGbp":14.5}]'></textarea>
@@ -95,7 +95,8 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
     <button id="fivePlay" class="secondary" type="button" disabled>Play</button>
     <button id="fiveEnd" class="secondary" type="button" disabled>Last 5m candle</button>
   </div>
-  <p id="fiveStatus" role="status">No 5-minute history imported. Import a matching market CSV to begin.</p>
+  <p id="fiveStatus" role="status">Checking for saved 5-minute chart candles…</p>
+  <p id="fiveCacheStatus" role="status">Chart cache: checking local device storage.</p>
   <canvas id="fiveChart" width="900" height="320" aria-label="Five-minute candle-by-candle historical replay showing no future bars"></canvas>
   <p id="fiveReplayStatus" role="status">5-minute replay idle.</p>
   <p class="note">The SL decision shown during replay is a post-training historical illustration. It may include in-sample periods. Only the separate untouched historical test score is intended as the held-out measurement. No paper or live orders are sent. The <a href="./market-replay-5m.html">existing crypto 5m Deep RL replay</a> remains a separate system.</p>
@@ -156,6 +157,7 @@ import {loadSLOnlineFiveMinute} from './sl-online-5m.mjs';
 import {initializeSLLoop,advanceSLLoop,SL_LOOP_SCHEMA} from './sl-loop.mjs';
 import {createSLVaultEnvelope,verifySLVaultEnvelope,writePrivateSLVault,readPrivateSLVault} from './sl-model-vault.mjs';
 import {slSyncKey,slReadSyncState,planSLHourlySync,recordSLHourlyAttempt,confirmSLHourlySuccess} from './sl-hourly-sync.mjs';
+import {saveSLChartCache,loadSLChartCache} from './sl-chart-cache.mjs';
 const $=id=>document.getElementById(id), key=m=>'scalp-city-lab:sl:v1:'+m;
 let memory=createSLMemory('COMMODITIES'),models={};
 const market=()=>$('market').value;
@@ -179,6 +181,43 @@ let fiveBars=null, fiveSession=null, fiveIndex=0, fiveTimer=null;
 let fiveSource='USER_IMPORTED_UNVERIFIED_5MIN',fiveOnlineMeta=null,fiveFetching=false;
 const FIVE_DEFAULT_SYMBOL={COMMODITIES:'XAUUSD',FOREX:'EURUSD',INDICES:'SPX'};
 const fiveMessage=(message,error=false)=>{const el=$('fiveStatus');el.textContent=message;el.style.color=error?'#ffb9b7':'#b9ece0';};
+const currentFiveSelection=()=>({market:market(),symbol:$('fiveSymbol').value.trim().toUpperCase()});
+function useCachedFive(record,label='Loaded'){
+ fiveBars=record.bars;
+ fiveSource=record.source;
+ fiveOnlineMeta=record.providerSymbol?{market:record.market,symbol:record.symbol,
+  providerSymbol:record.providerSymbol,lastBar:record.lastBar,downloadedAt:record.cachedAt}:null;
+ fiveSession=null;
+ fiveButtons();
+ $('fiveCacheStatus').textContent='SAVED CHART VERIFIED: '+record.count+' recorded 5-minute candles for '+
+  record.symbol+' · last '+fmtFiveDate(record.lastBar)+' · '+record.source+
+  ' · this device only';
+ fiveMessage(label+' '+record.count+' recorded 5m candles for '+record.symbol+
+  '. Tap Add 5m good / bad trades to train historical research, or Process imported candles once in the learning loop.');
+}
+let fiveRestoreSerial=0;
+async function restoreFiveHistory(){
+ const serial=++fiveRestoreSerial,choice=currentFiveSelection();
+ fiveMessage('Checking saved chart history for '+choice.symbol+'…');
+ try{
+  const record=await loadSLChartCache(choice);
+  if(serial!==fiveRestoreSerial||JSON.stringify(choice)!==JSON.stringify(currentFiveSelection()))return;
+  if(record)useCachedFive(record,'Restored');
+  else{
+   fiveBars=null;fiveSession=null;fiveOnlineMeta=null;fiveButtons();
+   const count=memory.good.length+memory.bad.length;
+   $('fiveCacheStatus').textContent='No chart candles saved for '+choice.symbol+
+    '. '+count+' good/bad examples saved in separate training memory.';
+   fiveMessage(count?
+    'Your '+count+' saved trade examples are intact, but raw 5m chart candles were not retained by the previous version. Import/fetch the chart once; future imports will persist.':
+    'No recorded 5m chart candles saved for '+choice.symbol+'. Import CSV or use Fetch 5m online.');
+  }
+ }catch(err){
+  if(serial!==fiveRestoreSerial)return;
+  $('fiveCacheStatus').textContent='CHART CACHE ERROR: '+err.message;
+  fiveMessage('Unable to restore saved 5m candles: '+err.message,true);
+ }
+}
 function stopFive(){
  if(fiveTimer!==null){clearInterval(fiveTimer);fiveTimer=null;}
  $('fivePlay').textContent='Play';
@@ -238,39 +277,49 @@ function drawFive(){
  $('fiveReplayStatus').textContent='Revealed '+(end+1)+' / '+bars.length+' completed 5m candles | '+finished.length+' simulated completed opportunities | '+lastDecision+(model?' | selected '+selected+' | illustrative net £'+pnl.toFixed(2):'')+' | No future bars displayed or broker orders sent.';
  fiveButtons();
 }
+
 $('market').addEventListener('change',()=>{
  $('fiveSymbol').value=FIVE_DEFAULT_SYMBOL[market()]||'XAUUSD';
- resetFive();fiveMessage('Market changed. Import matching 5-minute data for '+market()+'.');
+ resetFive();restoreFiveHistory();
+});
+$('fiveSymbol').addEventListener('change',()=>{
+ resetFive();restoreFiveHistory();
 });
 $('fiveFile').addEventListener('change',async e=>{
+ const choice=currentFiveSelection(),file=e.target.files?.[0];
+ if(!file)return;
  try{
-  stopFive();fiveSession=null;fiveBars=null;fiveButtons();
-  const file=e.target.files?.[0];if(!file)return;
-  fiveBars=parseSLFiveMinuteCSV(await file.text());
-  fiveOnlineMeta=null;fiveSource='USER_IMPORTED_UNVERIFIED_5MIN';
-  const gaps=fiveBars.reduce((s,b,i)=>s+(i>0&&Date.parse(b.t)-Date.parse(fiveBars[i-1].t)!==300000?1:0),0);
-  fiveMessage('Imported '+fiveBars.length+' actual-recorded 5m rows (source unverified), '+gaps+' market-session gaps. Choose settings, then Add 5m good / bad trades.');
-  fiveButtons();
- }catch(err){resetFive(false);fiveMessage(err.message,true);}
+  fiveMessage('Reading and validating imported 5m candles…');
+  const parsed=parseSLFiveMinuteCSV(await file.text());
+  if(JSON.stringify(choice)!==JSON.stringify(currentFiveSelection()))
+   throw Error('Market or symbol changed while importing; select a new file.');
+  const record=await saveSLChartCache({...choice,bars:parsed,source:'USER_IMPORTED_UNVERIFIED_5MIN'});
+  if(JSON.stringify(choice)!==JSON.stringify(currentFiveSelection()))return;
+  stopFive();fiveIndex=0;
+  useCachedFive(record,'Imported and SAVED');
+ }catch(err){
+  fiveMessage('CSV import failed — '+err.message,true);
+  $('fiveCacheStatus').textContent='No new chart saved; existing saved trades and chart cache were not deleted.';
+ }finally{e.target.value=''}
 });
 
 $('fiveOnlineLoad').addEventListener('click',async()=>{
  if(fiveFetching)return;
- const requestedMarket=market(),requestedSymbol=$('fiveSymbol').value.trim().toUpperCase();
- const key=$('fiveOnlineKey').value;
- if(!key.trim()){fiveMessage('Enter a personal Twelve Data API key to fetch online history.',true);return;}
+ const choice=currentFiveSelection(),apiKey=$('fiveOnlineKey').value;
+ if(!apiKey.trim()){fiveMessage('Enter a personal Twelve Data API key to fetch online history.',true);return;}
  fiveFetching=true;$('fiveOnlineLoad').disabled=true;$('fiveFile').disabled=true;
- resetFive(false);
- fiveMessage('Requesting provider-reported '+requestedSymbol+' 5-minute history over HTTPS…');
+ fiveMessage('Downloading '+choice.symbol+' 5-minute candles from Twelve Data…');
  try{
-  const result=await loadSLOnlineFiveMinute({market:requestedMarket,symbol:requestedSymbol,apiKey:key});
-  if(market()!==requestedMarket||$('fiveSymbol').value.trim().toUpperCase()!==requestedSymbol)
-   throw Error('Market symbol changed during fetch; discard and reload.');
-  fiveBars=result.bars;fiveSource=result.source;fiveOnlineMeta=result;
-  fiveMessage('Loaded '+result.bars.length+' recorded '+result.symbol+' 5-minute candles from Twelve Data (provider reported, not broker verified). Latest '+fmtFiveDate(result.lastBar)+', gaps '+result.gaps+'. Tap Add 5m good / bad trades, then Train SL.');
+  const result=await loadSLOnlineFiveMinute({...choice,apiKey});
+  if(JSON.stringify(choice)!==JSON.stringify(currentFiveSelection()))
+   throw Error('Market or symbol changed during fetch; response ignored.');
+  const record=await saveSLChartCache({...choice,bars:result.bars,source:result.source,
+    providerSymbol:result.providerSymbol});
+  if(JSON.stringify(choice)!==JSON.stringify(currentFiveSelection()))return;
+  stopFive();fiveIndex=0;
+  useCachedFive(record,'Fetched and SAVED');
  }catch(err){
-  resetFive(false);
-  fiveMessage(err.message,true);
+  fiveMessage('ONLINE FETCH FAILED: '+err.message+' Existing cached candles were not erased.',true);
  }finally{
   fiveFetching=false;$('fiveOnlineLoad').disabled=false;$('fiveFile').disabled=false;fiveButtons();
  }
