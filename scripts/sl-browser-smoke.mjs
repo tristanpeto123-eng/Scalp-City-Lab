@@ -42,6 +42,8 @@ try{
    page.on('response',r=>{if(r.status()>=400)errors.push('HTTP '+r.status()+' '+r.url())});
    await page.goto('http://127.0.0.1:'+port+'/sl-strategy.html',{waitUntil:'networkidle'});
    await page.waitForTimeout(1300);
+   assert.equal(await page.locator('#sc-global-navigation .sc-nav-area').count(),6,engine+' primary navigation incomplete');
+   assert.equal(await page.locator('#sc-global-navigation .sc-nav-tool').count(),2,engine+' research tools missing');
    const init=await page.locator('#fiveStatus').innerText();
    assert.ok(!init.includes('Checking for saved'),engine+' module never initialized: '+JSON.stringify(errors));
    assert.ok(!errors.length,engine+' boot console failures: '+JSON.stringify(errors));
