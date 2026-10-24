@@ -66,10 +66,12 @@ await assert.rejects(writePrivateSLVault({...cfg,repo:'Scalp-City-Lab',envelope:
 const publicFetch=async()=>({status:200,ok:true,json:async()=>({private:false,visibility:'public',default_branch:'main'})});
 await assert.rejects(checkPrivateSLVault({...cfg,repo:'public-vault',fetchImpl:publicFetch}),/not private/);
 await assert.rejects(readPrivateSLVault({...cfg,market:'FOREX',symbol:'EURUSD'}),/No SL model checkpoint/);
-const changedState={...state,revisions:1};
+const nextBar={...state.lastBar,t:new Date(Date.parse(state.cursor)+300000).toISOString()};
+const changedState={...state,revisions:1,cursor:nextBar.t,lastBar:nextBar,
+ tail:[...state.tail.slice(1),nextBar]};
 const newer=await createSLVaultEnvelope(changedState,{now:now+5000});
 assert.equal((await writePrivateSLVault({...cfg,envelope:newer})).changed,true);
 await assert.rejects(writePrivateSLVault({...cfg,envelope:env}),/newer/);
 const conflict=await createSLVaultEnvelope({...changedState,selectedNetPnlGbp:5},{now:now+6000});
-await assert.rejects(writePrivateSLVault({...cfg,envelope:conflict}),/conflicts/);
+await assert.rejects(writePrivateSLVault({...cfg,envelope:conflict}),/different weights|model fork/);
 console.log('SL MODEL VAULT PASS: native weights saved, integrity verified, private repo lock, token never stored, remote readback, latest revision, conflict gate, downloadable restore');
