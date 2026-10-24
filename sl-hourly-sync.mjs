@@ -54,7 +54,7 @@ export function planSLHourlySync({
   SL_INCREMENTAL_BARS:SL_FULL_BOOTSTRAP_BARS;
  return {due:delayMs===0,delayMs,nextDueAt:new Date(now+delayMs).toISOString(),
   outputsize,estimatedCredits:SL_EXPECTED_CREDITS_PER_CALL,
-  refreshMode:outputsize===SL_INCREMENTAL_BARS?'OVERLAPPING_150_BARS':'CATCHUP_5000_BARS',
+  refreshMode:outputsize===SL_INCREMENTAL_BARS?'OVERLAPPING_180_BARS':'CATCHUP_5000_BARS',
   hourlyMinimumMs:SL_HOURLY_MS};
 }
 export function recordSLHourlyAttempt(record,market,symbol,{now=Date.now(),success=false}={}){
