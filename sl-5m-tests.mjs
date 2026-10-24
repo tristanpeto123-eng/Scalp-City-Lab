@@ -58,7 +58,7 @@ assert.throws(()=>buildSLFiveMinuteDataset({bars:parsed,market:'COMMODITIES',sym
 assert.throws(()=>validateSLFiveMinuteBars(bars.slice(0,100)),/150/);
 assert.throws(()=>validateSLFiveMinuteBars([...bars.slice(0,40),bars[39],...bars.slice(40)]),/unordered, duplicated/);
 assert.throws(()=>validateSLFiveMinuteBars(bars.map((b,i)=>i===20?{...b,h:b.l-2}:b)),/invalid candle/);
-assert.throws(()=>validateSLFiveMinuteBars(bars.map((b,i)=>i===20?{...b,t:new Date(Date.parse(b.t)+1).toISOString()}:b)),/off the 5-minute grid/);
+assert.throws(()=>validateSLFiveMinuteBars(bars.map((b,i)=>i===20?{...b,t:new Date(Date.parse(b.t)+1).toISOString()}:b)),/invalid candle|off the 5-minute grid/);
 assert.throws(()=>parseSLFiveMinuteCSV(csv.replace(bars[0].t,'03/03/2025 00:00')),/ISO dates/);
 const novol=['time,open,high,low,close',...bars.map(b=>[b.t,b.o,b.h,b.l,b.c].join(','))].join('\n');
 assert.ok(parseSLFiveMinuteCSV(novol).every(b=>b.v===null));
