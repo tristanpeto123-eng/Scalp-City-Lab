@@ -615,11 +615,13 @@ $('loopReset').addEventListener('click',()=>{
 });
 $('market').addEventListener('change',()=>{
  loopStop('Market changed; loop is paused.');learningLoopState=null;loopPrint();
+ loopRestore();
 });
 for(const id of ['fiveSymbol','fiveHold','fiveCost','fiveNotional'])
  $(id).addEventListener('change',()=>{
   loopStop('SL loop settings changed; prior checkpoint retained under previous settings.');
   learningLoopState=null;loopPrint();
+  loopRestore();
  });
 function loopRestore(){
  try{learningLoopState=loopRead();loopPrint();
