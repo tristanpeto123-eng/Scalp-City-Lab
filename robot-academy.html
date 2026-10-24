@@ -320,7 +320,7 @@ function historicalPupils(){
    trainingBehavior:item.trainingBehavior,
    generations:item.generations
   };
- }).concat(scout,universal);
+ }).concat(scout).concat(universal);
 }
 let researchRequest=0;
 async function loadResearch(refresh=false){
@@ -422,7 +422,7 @@ $('demo').onclick=()=>{demo=true;lessonNo=0;
  net:i===7?-3.60:Math.round((scores[i]-55)*13)/100,
  drawdown:Math.round((i+1)*91)/100,
  champion:{name:i%2?'RSI pullback (demo)':'EMA crossover (demo)'},
- source:'FICTIONAL_DEMO'})).concat(scout,universal);render();};
+ source:'FICTIONAL_DEMO'})).concat(scout).concat(universal);render();};
 $('lesson').onclick=()=>{if(!demo)return;lessonNo++;
  // Deterministic demonstration, not a simulated forecast or market model.
  for(const p of pupils){if(p.modelId)continue;const old=grade(p);
