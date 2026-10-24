@@ -78,7 +78,10 @@ assert.throws(()=>advanceSLLoop(first.state,oldEdited,{now}),/revised or lost an
 assert.throws(()=>advanceSLLoop(after.state,[...bars.slice(0,1100),...future.slice(0,10)],{now}),
  /source continuity|unordered/);
 const weekend=[...bars,future[0],{...future[1],t:new Date(Date.parse(future[1].t)+86400000).toISOString()}];
-assert.throws(()=>advanceSLLoop(first.state,weekend,{now}),/open virtual position spans/);
+const gapResult=advanceSLLoop(first.state,weekend,{now});
+assert.equal(gapResult.state.position,null,'position canceled across market gap, no imaginary close');
+assert.equal(gapResult.state.closedCandidates,0,'gap must not manufacture a winner or loser');
+assert.equal(gapResult.state.revisions,0,'gap must not train on an invented fill');
 assert.throws(()=>initializeSLLoop({bars,market:'CRYPTO',symbol:'BTCUSD',now}),/Invalid SL loop/);
 const mutated=future.map(x=>({...x}));
 mutated[2].o+=5;mutated[2].h=Math.max(mutated[2].h,mutated[2].o+.1);

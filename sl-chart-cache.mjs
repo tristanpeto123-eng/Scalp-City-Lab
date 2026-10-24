@@ -5,8 +5,8 @@
  * IndexedDB persists across normal same-origin page reloads; it is NOT
  * an off-device backup. Never store provider keys, private PATs or secrets.
  */
-import {validateSLFiveMinuteBars} from './sl-5m.mjs?slboot=20261024r2';
-import {SL_ACTIVE_MARKETS} from './sl-core.mjs?slboot=20261024r2';
+import {validateSLFiveMinuteBars} from './sl-5m.mjs?slboot=20261024r3';
+import {SL_ACTIVE_MARKETS} from './sl-core.mjs?slboot=20261024r3';
 
 export const SL_CHART_CACHE_SCHEMA='SL_LOCAL_5M_CHART_V1';
 const DATABASE='scalp-city-sl-chart-history';

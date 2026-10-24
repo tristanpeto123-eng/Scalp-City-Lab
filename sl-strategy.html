@@ -37,6 +37,11 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
 .loop-stages div{background:#102f3c;border:1px solid #3d6c75;border-radius:10px;text-align:center;padding:12px 4px;font-weight:800;font-size:13px}
 .loop-stages small{display:block;color:#aacdd0;font-size:10px}
 #loopChart{width:100%;height:auto;background:#091c2b;border:1px solid #365768;border-radius:10px;margin:12px 0}
+.paper-ledger{width:100%;overflow-x:auto;margin:12px 0}
+.paper-ledger table{border-collapse:collapse;min-width:690px;width:100%;font:12px/1.6 ui-monospace,monospace}
+.paper-ledger th,.paper-ledger td{padding:9px 8px;text-align:left;border-bottom:1px solid #355366;white-space:nowrap}
+.paper-ledger th{color:#c6e5e9;background:#102c3a}
+.paper-profit{color:#a5f5b0}.paper-loss{color:#ffaaa8}
 #loopEvents{list-style:none;max-height:240px;overflow:auto;padding:0;margin:14px 0}
 #loopEvents li{border-bottom:1px solid #315465;padding:7px 0;font:12px/1.6 ui-monospace,monospace;overflow-wrap:anywhere}
 .loop-stats{grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -132,6 +137,26 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
  </div>
  <p class="note" id="loopMeta">Checkpoint saved locally only. No automatic broker execution or verified forward paper grading.</p>
  <canvas id="loopChart" width="900" height="260" role="img" aria-label="Last completed online 5-minute OHLC candles only"></canvas>
+ <h3>Virtual paper-trade ledger</h3>
+ <p class="note"><b>Not broker orders.</b> The learning loop only opens a virtual position once a new recorded candle arrives after a signal. The initial CSV load builds the neural baseline; it does not place historical orders.</p>
+ <p id="livePaperStatus" role="status">No forward simulated positions. Import newer candles to process virtual fills.</p>
+ <div class="paper-ledger"><table aria-label="Forward virtual paper trades"><thead><tr><th>Entered (UTC)</th><th>Side</th><th>Decision</th><th>Entry</th><th>Exit</th><th>Status</th><th>Net GBP</th></tr></thead><tbody id="livePaperRows"></tbody></table></div>
+ <h3>Historical paper trading — walk-forward replay</h3>
+ <p class="note">Run a complete simulated trading experiment using the candles already imported. SL trains only on the earlier 60%, then opens and closes virtual positions sequentially on the later 40%. This is historical research, not forward/live paper trading. Results are saved separately from the ongoing SL model.</p>
+ <label for="paperPolicy">Trade selection
+ <select id="paperPolicy"><option value="EXPLORE_ALL">Explore all eligible signals (virtual orders)</option><option value="SL_SELECTED">Only model-selected signals</option></select></label>
+ <div class="five-actions">
+  <button id="paperReplay" type="button">Run historical paper trades</button>
+  <button id="paperExport" type="button" class="secondary">Export paper ledger</button>
+ </div>
+ <p id="paperStatus" role="status">No historical paper trades run yet. Import a 5-minute CSV to begin.</p>
+ <div class="statgrid loop-stats">
+  <div><small>Virtual closes</small><strong id="paperClosed">0</strong></div>
+  <div><small>Model-selected closes</small><strong id="paperSelected">0</strong></div>
+  <div><small>Exploration closes</small><strong id="paperExplore">0</strong></div>
+  <div><small>Simulated net GBP</small><strong id="paperNet">£0.00</strong></div>
+ </div>
+ <div class="paper-ledger"><table aria-label="Historical simulated paper orders"><thead><tr><th>Entered (UTC)</th><th>Side</th><th>Decision</th><th>Entry</th><th>Exit</th><th>Status</th><th>Net GBP</th></tr></thead><tbody id="paperRows"></tbody></table></div>
  <h3>Model vault &amp; verification</h3>
  <p class="note">Your SL weights, memory, and progress already save locally on this device. For an off-device backup, use a <b>separate PRIVATE GitHub repository</b> and a fine-grained repository-limited token. Do not use the public Scalp City repositories; never paste a token in a shared screenshot.</p>
  <div class="five-layout">
@@ -176,13 +201,14 @@ pre{background:#081d2c;border:1px solid #355968;border-radius:9px;padding:13px;w
 })();
 </script>
 <script type="module">
-import {createSLMemory,recordSLTrade,validateSLMemory,slMemoryStats,trainSL,predictSL} from './sl-core.mjs?slboot=20261024r2';
-import {parseSLFiveMinuteCSV,buildSLFiveMinuteDataset} from './sl-5m.mjs?slboot=20261024r2';
-import {loadSLOnlineFiveMinute} from './sl-online-5m.mjs?slboot=20261024r2';
-import {initializeSLLoop,advanceSLLoop,SL_LOOP_SCHEMA} from './sl-loop.mjs?slboot=20261024r2';
-import {createSLVaultEnvelope,verifySLVaultEnvelope,writePrivateSLVault,readPrivateSLVault} from './sl-model-vault.mjs?slboot=20261024r2';
-import {slSyncKey,slReadSyncState,planSLHourlySync,recordSLHourlyAttempt,confirmSLHourlySuccess} from './sl-hourly-sync.mjs?slboot=20261024r2';
-import {saveSLChartCache,loadSLChartCache} from './sl-chart-cache.mjs?slboot=20261024r2';
+import {createSLMemory,recordSLTrade,validateSLMemory,slMemoryStats,trainSL,predictSL} from './sl-core.mjs?slboot=20261024r3';
+import {parseSLFiveMinuteCSV,buildSLFiveMinuteDataset} from './sl-5m.mjs?slboot=20261024r3';
+import {loadSLOnlineFiveMinute} from './sl-online-5m.mjs?slboot=20261024r3';
+import {initializeSLLoop,advanceSLLoop,SL_LOOP_SCHEMA} from './sl-loop.mjs?slboot=20261024r3';
+import {createSLVaultEnvelope,verifySLVaultEnvelope,writePrivateSLVault,readPrivateSLVault} from './sl-model-vault.mjs?slboot=20261024r3';
+import {slSyncKey,slReadSyncState,planSLHourlySync,recordSLHourlyAttempt,confirmSLHourlySuccess} from './sl-hourly-sync.mjs?slboot=20261024r3';
+import {saveSLChartCache,loadSLChartCache} from './sl-chart-cache.mjs?slboot=20261024r3';
+import {initSLPaperUI,renderSLPaperLive} from './sl-paper-ui.mjs?slboot=20261024r3';
 const $=id=>document.getElementById(id), key=m=>'scalp-city-lab:sl:v1:'+m;
 let memory=createSLMemory('COMMODITIES'),models={};
 const market=()=>$('market').value;
@@ -454,6 +480,7 @@ function loopDraw(bars,symbol){
  ctx.fillText('Past '+shown.length+' completed candles only · virtual research',left,canvas.height-8);
 }
 function loopPrint(){
+ renderSLPaperLive(learningLoopState);
  const s=learningLoopState;
  $('loopCandles').textContent=s?.newCandles??0;
  $('loopCloses').textContent=s?.executedTrades??0;
@@ -701,6 +728,8 @@ $('vaultFile').addEventListener('change',async e=>{
  }catch(err){$('vaultStatus').textContent='IMPORT ERROR: '+err.message;}
  finally{e.target.value='';}
 });
-load();loopRestore();restoreFiveHistory();window.__slAppStarted=true;
+load();loopRestore();restoreFiveHistory();
+initSLPaperUI({getConfig:loopConf,isLoopBusy:()=>learningLoopActive||learningLoopBusy,getLoop:()=>learningLoopState});
+window.__slAppStarted=true;
 try{loopPollStatus();}catch(err){$('loopQuota').textContent='Hourly quota record requires attention: '+err.message;}
 </script></body></html>

@@ -7,21 +7,27 @@
  *
  * No paper/live brokerage, no implied continuous unattended service.
  */
-import {createSLMemory,validateSLMemory,trainSL,predictSL,slMemoryStats,updateSLModelAfterClose} from './sl-core.mjs?slboot=20261024r2';
-import {buildSLFiveMinuteDataset,validateSLFiveMinuteBars,slFiveMinuteSignal,SL_FIVE_MIN_MS} from './sl-5m.mjs?slboot=20261024r2';
+import {createSLMemory,validateSLMemory,trainSL,predictSL,slMemoryStats,updateSLModelAfterClose} from './sl-core.mjs?slboot=20261024r3';
+import {buildSLFiveMinuteDataset,validateSLFiveMinuteBars,slFiveMinuteSignal,SL_FIVE_MIN_MS} from './sl-5m.mjs?slboot=20261024r3';
 
 export const SL_LOOP_SCHEMA='SL_5MIN_CAUSAL_LOOP_V1';
+export const SL_PAPER_ORDER_LIMIT=1500;
+export const SL_PAPER_POLICIES=Object.freeze(['SL_SELECTED','EXPLORE_ALL']);
 const iso=t=>new Date(t).toISOString();
 const numeric=n=>typeof n==='number'&&Number.isFinite(n);
 function configOf(o){
- const {market,symbol,holdCandles=3,sideCostBps=4,virtualNotionalGbp=1000}=o||{};
+ const {market,symbol,holdCandles=3,sideCostBps=4,virtualNotionalGbp=1000,executionPolicy='SL_SELECTED'}=o||{};
  if(!['COMMODITIES','FOREX','INDICES'].includes(market)||
   typeof symbol!=='string'||!/^[A-Z0-9._/-]{2,24}$/.test(symbol)||
   !Number.isInteger(holdCandles)||holdCandles<1||holdCandles>24||
   !numeric(sideCostBps)||sideCostBps<0||sideCostBps>100||
-  !numeric(virtualNotionalGbp)||virtualNotionalGbp<50||virtualNotionalGbp>1000000)
+  !numeric(virtualNotionalGbp)||virtualNotionalGbp<50||virtualNotionalGbp>1000000||
+  !SL_PAPER_POLICIES.includes(executionPolicy))
   throw Error('Invalid SL loop market, symbol or virtual trading settings');
- return {market,symbol,holdCandles,sideCostBps,virtualNotionalGbp};
+ // Do not add a default-only field to legacy live-loop checkpoints: the UI
+ // compares the saved config to existing field-only settings.
+ return {market,symbol,holdCandles,sideCostBps,virtualNotionalGbp,
+  ...(executionPolicy==='EXPLORE_ALL'?{executionPolicy}: {})};
 }
 function sameBar(a,b){
  return !!a&&!!b&&['t','o','h','l','c','v'].every(k=>a[k]===b[k]);
@@ -32,11 +38,14 @@ function snapshot(bars,now){
 function logEvent(state,message){
  state.events=[{time:new Date().toISOString(),message},...state.events].slice(0,35);
 }
-function intentFor(bars,i,model,market){
+function intentFor(bars,i,model,market,policy='SL_SELECTED'){
  const signal=slFiveMinuteSignal(bars,i);
  if(!signal)return null;
  const p=predictSL(model,signal.entryFeatures,market);
- return {...signal,execute:p.researchDecision==='SELECT',score:p.profitWeightedScore};
+ const selected=p.researchDecision==='SELECT';
+ const reason=selected?'MODEL':policy==='EXPLORE_ALL'?'EXPLORATION':'REJECTED';
+ return {...signal,selectedByModel:selected,execute:reason!=='REJECTED',
+  executionReason:reason,score:p.profitWeightedScore,threshold:model.threshold};
 }
 function trainingWithStatus(memory){
  const t=trainSL(memory);
@@ -46,6 +55,9 @@ function ensureLoop(state){
  if(!state||state.schema!==SL_LOOP_SCHEMA||!state.config||!state.cursor||
    !state.lastBar||!Array.isArray(state.tail)||state.tail.length<25||
    !Array.isArray(state.events)||!state.memory)throw Error('Invalid SL loop checkpoint');
+ if(state.paperOrders!==undefined&&(!Array.isArray(state.paperOrders)||
+    state.paperOrders.length>SL_PAPER_ORDER_LIMIT))
+  throw Error('Invalid paper trade ledger');
  const conf=configOf(state.config);
  const m=validateSLMemory(state.memory);
  if(m.market!==conf.market)throw Error('SL loop memory has a different market');
@@ -55,8 +67,8 @@ function ensureLoop(state){
 }
 /** Seed only from pre-existing fully completed bars. The historical test is NOT forward proof. */
 export function initializeSLLoop({bars,market,symbol,holdCandles=3,sideCostBps=4,
- virtualNotionalGbp=1000,now=Date.now()}={}){
- const config=configOf({market,symbol,holdCandles,sideCostBps,virtualNotionalGbp});
+ virtualNotionalGbp=1000,executionPolicy='SL_SELECTED',now=Date.now()}={}){
+ const config=configOf({market,symbol,holdCandles,sideCostBps,virtualNotionalGbp,executionPolicy});
  const historical=buildSLFiveMinuteDataset({bars,...config,now});
  let memory=createSLMemory(market);
  // Limit expensive training/reviews while leaving checkpoint bounded.
@@ -70,11 +82,12 @@ export function initializeSLLoop({bars,market,symbol,holdCandles=3,sideCostBps=4
  const magnitudes=[...memory.good,...memory.bad].map(t=>Math.abs(t.netPnlGbp)).sort((a,b)=>a-b);
  const referenceGbp=magnitudes[Math.floor(magnitudes.length/2)]||5;
  const lastBar=historical.bars.at(-1);
- const pending=intentFor(historical.bars,historical.bars.length-1,trained.model,market);
+ const pending=intentFor(historical.bars,historical.bars.length-1,trained.model,market,executionPolicy);
  const state={schema:SL_LOOP_SCHEMA,config,memory,model:trained.model,referenceGbp,cursor:lastBar.t,lastBar,
   pending,position:null,tail:historical.bars.slice(-28).map(b=>({...b})),
   cycles:0,newCandles:0,closedCandidates:0,executedTrades:0,
-  selectedNetPnlGbp:0,counterfactualCount:0,revisions:0,
+  selectedNetPnlGbp:0,paperNetPnlGbp:0,counterfactualCount:0,revisions:0,
+  paperOrders:[],paperSkipped:0,paperCancelled:0,
   status:'BASELINE_TRAINED_WAITING_FOR_NEW_BARS',
   feed:'USER_OR_PROVIDER_REPORTED_UNVERIFIED',events:[]};
  logEvent(state,'Baseline: '+historical.bars.length+' completed 5m bars; trained on '+memory.good.length+' good and '+memory.bad.length+' bad historical candidates. No forward claims.');
@@ -87,6 +100,9 @@ function cloneState(st){
     w2:[...st.model.weights.w2],b1:[...st.model.weights.b1],b2:st.model.weights.b2}},
   lastBar:{...st.lastBar},tail:st.tail.map(b=>({...b})),pending:st.pending?{...st.pending,entryFeatures:[...st.pending.entryFeatures]}:null,
   position:st.position?{...st.position,entryFeatures:[...st.position.entryFeatures]}:null,
+  paperOrders:(st.paperOrders||[]).map(o=>({...o})),
+  paperNetPnlGbp:st.paperNetPnlGbp??st.selectedNetPnlGbp,
+  paperSkipped:st.paperSkipped??0,paperCancelled:st.paperCancelled??0,
   events:[...st.events]};
 }
 function processClosed(state,pos,b,model){
@@ -110,9 +126,18 @@ function processClosed(state,pos,b,model){
  state.closedCandidates++;
  if(pos.execute){
   state.executedTrades++;
-  state.selectedNetPnlGbp=Math.round((state.selectedNetPnlGbp+pnl)*1000000)/1000000;
- }
- logEvent(state,(pos.execute?'SIM EXECUTED':'SIM SKIPPED')+
+  state.paperNetPnlGbp=Math.round((state.paperNetPnlGbp+pnl)*1000000)/1000000;
+  if(pos.executionReason!=='EXPLORATION')
+   state.selectedNetPnlGbp=Math.round((state.selectedNetPnlGbp+pnl)*1000000)/1000000;
+  const order=(state.paperOrders||[]).find(o=>o.id===pos.paperOrderId&&o.status==='OPEN');
+  if(!order)throw Error('Virtual paper order went missing before exit; stopping without fabricated P&L');
+  order.status='CLOSED';
+  order.exitPrice=b.o;order.exitedAt=b.t;
+  order.grossGbp=conf.virtualNotionalGbp*pos.side*(b.o/pos.entryPrice-1);
+  order.costGbp=conf.virtualNotionalGbp*2*conf.sideCostBps/10000;
+  order.netPnlGbp=pnl;
+ }else state.paperSkipped=(state.paperSkipped||0)+1;
+ logEvent(state,(pos.execute?'PAPER CLOSED':'SIM SKIPPED')+
   ' '+(pnl>=0?'+':'')+pnl.toFixed(2)+' GBP virtual candidate at '+b.t+
   (pos.execute?' (included in selected P&L)':' (counterfactual; not account P&L)'));
  return model;
@@ -147,7 +172,16 @@ export function advanceSLLoop(checkpoint,bars,{now=Date.now()}={}){
   const candle=all[i],previous=all[i-1];
   const continuous=Date.parse(candle.t)-Date.parse(previous.t)===SL_FIVE_MIN_MS;
   if(!continuous){
-   if(current.position)throw Error('SL loop open virtual position spans a market session gap. Paused; manual restart required.');
+   if(current.position){
+    // There is no defensible next-open fill across a session closure. Cancel
+    // the unresolved virtual position and do NOT create fake P&L or a label.
+    if(current.position.execute){
+     const order=(current.paperOrders||[]).find(o=>o.id===current.position.paperOrderId&&o.status==='OPEN');
+     if(order){order.status='CANCELLED';order.reason='MARKET_GAP_NO_EXIT_FILL';current.paperCancelled++;}
+    }
+    logEvent(current,'Session gap: virtual position cancelled (no invented exit price or training label).');
+    current.position=null;
+   }
    if(current.pending){logEvent(current,'Discarded pending signal across a market session gap.');current.pending=null;}
   }
   if(current.position && Date.parse(candle.t)>=Date.parse(current.position.exitAt)){
@@ -161,14 +195,28 @@ export function advanceSLLoop(checkpoint,bars,{now=Date.now()}={}){
     throw Error('SL loop pending entry cannot execute without the next five-minute bar.');
    current.position={...current.pending,entryPrice:candle.o,
     exitAt:iso(Date.parse(candle.t)+conf.holdCandles*SL_FIVE_MIN_MS)};
-   logEvent(current,(current.position.execute?'SIM ENTER':'SIM SKIP')+
+   if(current.position.execute){
+    const id='PAPER|'+conf.symbol+'|'+candle.t;
+    if((current.paperOrders||[]).some(o=>o.id===id))throw Error('Duplicate paper order');
+    current.position.paperOrderId=id;
+    current.paperOrders.push({
+     id,market:conf.market,symbol:conf.symbol,side:current.position.side===1?'LONG':'SHORT',
+     selection:current.position.executionReason||'MODEL',
+     score:current.position.score,threshold:current.position.threshold,
+     signalTime:current.position.signalTime,entryAt:candle.t,entryPrice:candle.o,
+     plannedExitAt:current.position.exitAt,status:'OPEN',notionalGbp:conf.virtualNotionalGbp,
+     costBpsPerSide:conf.sideCostBps
+    });
+    if(current.paperOrders.length>SL_PAPER_ORDER_LIMIT)current.paperOrders.shift();
+   }
+   logEvent(current,(current.position.execute?'PAPER OPEN':'SIM SKIP')+
       ' '+(current.position.side===1?'LONG':'SHORT')+
       ' at next bar open '+candle.t+'; frozen score '+current.position.score);
    current.pending=null;
   }
   // Even with an active opportunity, no new signals are generated until exit.
   if(!current.position&&!current.pending)
-   current.pending=intentFor(all,i,model,conf.market);
+   current.pending=intentFor(all,i,model,conf.market,conf.executionPolicy);
   current.cursor=candle.t;current.lastBar={...candle};
   current.tail=all.slice(Math.max(0,i-27),i+1).map(b=>({...b}));
   current.newCandles++;

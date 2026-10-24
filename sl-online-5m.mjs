@@ -3,7 +3,7 @@
  * The user's API key exists only in the page's password field and request header.
  * No stored key, no broker credentials, no server-side credentials and no orders.
  */
-import {validateSLFiveMinuteBars,SL_FIVE_MIN_MS} from './sl-5m.mjs?slboot=20261024r2';
+import {validateSLFiveMinuteBars,SL_FIVE_MIN_MS} from './sl-5m.mjs?slboot=20261024r3';
 
 export const SL_ONLINE_FEED_VERSION='SL_TWELVEDATA_5MIN_V1';
 const INSTRUMENTS=Object.freeze({

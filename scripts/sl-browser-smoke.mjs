@@ -64,10 +64,23 @@ try{
    await page.locator('#loopOnce').click();
    await page.waitForFunction(()=>document.querySelector('#loopLocalStatus')?.textContent?.includes('LOCAL CHECKPOINT VERIFIED'),null,{timeout:25000});
    assert.ok((await page.locator('#loopState').innerText()).includes('SAVED'),engine+' no checkpoint');
+   await page.locator('#paperReplay').click();
+   await page.waitForFunction(()=>document.querySelector('#paperStatus')?.textContent?.includes('HISTORICAL SIMULATION'),null,{timeout:35000});
+   const n=Number(await page.locator('#paperClosed').innerText());
+   assert.ok(n>0,engine+' historical paper replay generated no executed virtual closes');
+   assert.ok(await page.locator('#paperRows tr').count()>0,engine+' paper ledger empty');
    await page.reload({waitUntil:'networkidle'});
    await page.locator('#market').selectOption('FOREX');
    await page.waitForFunction(()=>document.querySelector('#fiveCacheStatus')?.textContent?.includes('SAVED CHART VERIFIED'),null,{timeout:12000});
-   assert.ok((await page.locator('#loopLocalStatus').innerText()).includes('MODEL FOUND'),engine+' model missing after refresh');
+   await page.waitForFunction(()=>document.querySelector('#loopLocalStatus')?.textContent?.includes('MODEL FOUND'),
+    null,{timeout:10000}).catch(async()=>{
+      throw Error(engine+' model missing after refresh; actual status: '+
+        await page.locator('#loopLocalStatus').innerText()+
+        '; loop state: '+await page.locator('#loopState').innerText()+
+        '; errors: '+JSON.stringify(errors));
+    });
+   await page.waitForFunction(()=>Number(document.querySelector('#paperClosed')?.textContent)>0,null,{timeout:10000});
+   assert.ok(Number(await page.locator('#paperClosed').innerText())>0,engine+' historical paper ledger not persisted');
    assert.ok(!errors.length,engine+' errors: '+JSON.stringify(errors));
    console.log(engine+' PASS: module executed, imported CSV persisted, chart reloaded, loop model trained and persisted, no console errors');
   }finally{await browser.close()}
