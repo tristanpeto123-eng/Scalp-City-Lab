@@ -75,14 +75,14 @@ input[type=number]{background:#0d2135;border:1px solid #436785;border-radius:8px
 @media(max-width:540px){.rooms{grid-template-columns:repeat(2,minmax(0,1fr))}.room{min-height:114px}.shell{padding:14px}.panel{padding:12px}.pupils{grid-template-columns:1fr 1fr}.school-sign{flex-wrap:wrap}}
 </style></head><body><div class="shell">
 <header class="head"><div><div class="brand">SCALP CITY / THE FOUNDRY</div><h1>ROBOT <span>ACADEMY</span></h1></div><nav style="display:flex;gap:9px;flex-wrap:wrap"><a class="back" href="./mission-control.html">Mission Control ↗</a><a class="back" href="./neo-lab.html" class="back">Meet NEO ↗</a><a class="back" href="./market-replay-5m.html" class="back">Watch 5-Minute Replay ↗</a><a class="back" href="./robot-observer.html">Watch Autonomous Pupils ↗</a><a class="back" href="./training-monitor.html">Training Monitor ↗</a><a class="back" href="./teacher-console.html">Teacher’s Office ↗</a><a class="back" href="./strategy-validation.html">← Strategy Validation</a></nav></header>
-<p class="subtitle">Every crypto chart has its own little robot pupil. Every 10 percentage points of <em>observed</em> winning trades unlocks the next classroom. Learning must be measured, not imagined.</p>
+<p class="subtitle">All trading candidates belong to one Academy. Ten crypto pupils and the Scout + Strategist XAUUSD student share a classroom and examination contract. Every 10 percentage points of <em>observed</em> winning trades unlocks the next classroom. Learning must be measured, not imagined.</p>
 <section class="hero"><div><strong>THE SCHOOL OF MARKET INTELLIGENCE</strong><h2>Train. Test. Graduate.</h2><p>Grades describe win rates only—not real profit, intelligence, or trading readiness. A robot can get a high grade and still lose money.</p>
 <div class="controls"><button class="btn primary" id="demo">Explore simulated classroom</button><button class="btn" id="lesson" disabled>Simulate a training lesson</button><button class="btn" id="reset">Show actual status</button><button class="btn" id="refreshHistory">Reload research history</button><button class="btn" id="refreshTeacher">Check signed Teacher results</button><a class="btn" style="text-decoration:none" href="./teacher-console.html">Visit Teacher’s Office ↗</a><span class="status" id="status">TRAINING RESEARCH · UNVERIFIED</span></div>
 <p class="note" id="modeNote">No verified forward-paper results are connected. Historical training records will load separately and are always provisional. Demo mode is fictional.</p></div></section>
 <div class="school-layout"><main class="panel"><div class="school-sign"><strong>🏫 THE ACADEMY</strong><span id="headcount">10 pupils · 0 verified graduates</span></div><h2 class="section-title">Classrooms</h2><p class="section-note">Classrooms show the research grade of each pair’s strongest available historical training strategy. Research grades are <strong>provisional</strong>. Independently signed forward-paper grades supersede research only after evidence verification. A 100% training win rate is not financial graduation.</p><div class="rooms" id="rooms"></div>
 <div class="track" id="track"></div><p class="explain">GRADE 0 = 0–9.9%; GRADE 1 = 10–19.9%; … GRADE 8 = 80–89.9%; GRADE 9 = 90–99.9%; GRADE 10 = 100%. A minimum sample of 30 independently verified closed trades is required before a grade is recorded as confirmed. Otherwise the grade is provisional.</p>
 </main>
-<aside class="panel"><h2 class="section-title">Meet the pupils <span style="font-size:.75rem;color:#91afc5">⌁ 10 pairs</span></h2><div class="pupils" id="pupils"></div>
+<aside class="panel"><h2 class="section-title">Meet the pupils <span style="font-size:.75rem;color:#91afc5">⌁ Unified roster</span></h2><div class="pupils" id="pupils"></div>
 <div class="report" id="report" aria-live="polite"></div></aside></div>
 <section id="qualification-bridge" aria-label="Independent historical Teacher qualification"><h2>Independent historical screening</h2><p>Checking read-only Teacher historical report…</p></section>
 <p class="note" style="margin-top:22px">Academy v0.2 · Actual GitHub-saved historical TRAINING records are shown as provisional research classrooms. Historical results do not establish predictive learning, forward performance, or a profitable champion. Fictional demo lessons remain separate; no broker orders, withdrawals, funded trading or claims of 80% performance. Production grades require authenticated, uniquely timestamped forward-paper trades and checked accounting.</p>
@@ -96,7 +96,9 @@ const base=[
  ['LINK/USD','Link','#f3ae82'],['DOGE/USD','Doge','#e3d78f'],['LTC/USD','Lite','#abc4f4'],
  ['BCH/USD','Cash','#ddafef']
 ].map(([symbol,name,color],id)=>({id,symbol,name,color,trades:null,wins:null,source:'UNVERIFIED',net:null,drawdown:null,champion:null}));
-let pupils=base.map(x=>({...x})),demo=false,selected=0,lessonNo=0,research=null,researchError=null,liveGrades=new Map(),teacherError=null;
+let scout={id:10,symbol:'XAUUSD',name:'Scout + Strategist',color:'#f6c985',modelId:'XAU-SCST-01',
+  trades:null,wins:null,source:'UNREGISTERED',net:null,drawdown:null,champion:null};
+let pupils=[...base.map(x=>({...x})),scout],demo=false,selected=0,lessonNo=0,research=null,researchError=null,liveGrades=new Map(),teacherError=null;
 const $=id=>document.getElementById(id);
 const grade=p=>p.trades===null||p.trades<1?null:Math.min(10,Math.floor(((p.source==='HISTORICAL_TRAINING_RESEARCH'?p.trainingWinRatePct:p.wins/p.trades*100)+1e-8)/10));
 const percent=p=>p.trades===null||p.trades<1?null:p.source==='HISTORICAL_TRAINING_RESEARCH'?p.trainingWinRatePct:100*p.wins/p.trades;
@@ -113,7 +115,7 @@ function robot(p){const node=document.createElement('div');
 function render(){
  const overall=pupils.filter(p=>confirmed(p)).length;
  const provisional=pupils.filter(p=>p.source==='HISTORICAL_TRAINING_RESEARCH'&&grade(p)!==null).length;
- $('headcount').textContent='10 pupils · '+provisional+' provisional research grades · '+overall+' verified';
+ $('headcount').textContent=pupils.length+' pupils · '+provisional+' historical research grades · '+overall+' verified paper grades';
  $('status').textContent=demo?'DEMO MODE · FICTIONAL STATS':research?
   'HISTORICAL TRAINING · '+overall+' VERIFIED FORWARD GRADES':'AWAITING RESEARCH · '+overall+' VERIFIED GRADES';
  $('modeNote').textContent=demo?
@@ -156,6 +158,12 @@ function render(){
  const p=pupils[selected],v=percent(p),g=grade(p);
  const report=$('report');report.replaceChildren();
  const h=document.createElement('h3');h.textContent=p.name+' — '+p.symbol;report.append(h);
+ if(p.modelId){
+  const ver=document.createElement('p');ver.className='note';
+  ver.textContent='Student '+p.modelId+' · '+(p.version?'Model '+p.version+' · '+p.modelSha256?.slice(0,16):'Awaiting a frozen trained checkpoint')+
+    '. This shares the Academy common examination rules but remains ineligible for broker-paper grading without independently reproduced decisions and authenticated evidence.';
+  report.append(ver);
+ }
  const actionLinks=document.createElement('p');actionLinks.className='note';
  for(const [name,route] of [
   ['Teacher examination','./teacher-console.html?pupil='+encodeURIComponent(p.symbol.replace('/',''))],
@@ -166,9 +174,10 @@ function render(){
    const link=document.createElement('a');link.href=route;link.textContent=name+' ↗';
    link.style.marginRight='14px';actionLinks.append(link);
  }
+ if(p.modelId){actionLinks.replaceChildren();const a=document.createElement('a');a.href='#scout-publisher';a.textContent='Publish / examine checkpoint ↗';actionLinks.append(a);}
  report.append(actionLinks);
  const subtitle=document.createElement('p');subtitle.className='note';
- subtitle.textContent=demo?'SIMULATED PUPIL · NOT REAL TRADES':p.source==='HISTORICAL_TRAINING_RESEARCH'?'HISTORICAL TRAINING REPLAY · PROVISIONAL':confirmed(p)?'VERIFIED FORWARD-PAPER RECORD':'NO VERIFIED OUTCOMES';
+ subtitle.textContent=p.source==='LOCAL_RESEARCH_EXAM'?'LOCAL FROZEN-TRACE RESEARCH EXAM · UNVERIFIED':demo?'SIMULATED PUPIL · NOT REAL TRADES':p.source==='HISTORICAL_TRAINING_RESEARCH'?'HISTORICAL TRAINING REPLAY · PROVISIONAL':confirmed(p)?'VERIFIED FORWARD-PAPER RECORD':'NO VERIFIED OUTCOMES';
  report.append(subtitle);
  const metrics=document.createElement('div');metrics.className='metric-grid';
  for(const [label,val] of [['Win rate',v===null?'—':v.toFixed(1)+'%'],['Classroom',gradeText(p)],[confirmed(p)?'Verified paper closes':'Training closes',p.trades===null?'—':String(p.trades)],['Net profit'+(demo?' (FICTIONAL)':p.source==='HISTORICAL_TRAINING_RESEARCH'?' (training candidate)':''),money(p.net)],['Max drawdown',Number.isFinite(p.drawdown)?p.drawdown.toFixed(2)+'%':'—'],['Status',confirmed(p)?'Confirmed':v===null?'Awaiting evidence':'Provisional']]){
@@ -302,7 +311,7 @@ function historicalPupils(){
    trainingBehavior:item.trainingBehavior,
    generations:item.generations
   };
- });
+ }).concat(scout);
 }
 let researchRequest=0;
 async function loadResearch(refresh=false){
@@ -327,7 +336,7 @@ async function loadResearch(refresh=false){
   if(serial!==researchRequest)return;
   research=null;
   researchError='Historical research unavailable: '+String(e.message||e)+'. No invented grades are substituted.';
-  if(!demo){pupils=base.map(p=>({...p}));render();}
+  if(!demo){pupils=[...base.map(p=>({...p})),scout];render();}
  }
 }
 
@@ -404,10 +413,10 @@ $('demo').onclick=()=>{demo=true;lessonNo=0;
  net:i===7?-3.60:Math.round((scores[i]-55)*13)/100,
  drawdown:Math.round((i+1)*91)/100,
  champion:{name:i%2?'RSI pullback (demo)':'EMA crossover (demo)'},
- source:'FICTIONAL_DEMO'}));render();};
+ source:'FICTIONAL_DEMO'})).concat(scout);render();};
 $('lesson').onclick=()=>{if(!demo)return;lessonNo++;
  // Deterministic demonstration, not a simulated forecast or market model.
- for(const p of pupils){const old=grade(p);
+ for(const p of pupils){if(p.modelId)continue;const old=grade(p);
   const gain=((lessonNo+p.id*3)%4===0)?10:((lessonNo+p.id)%3===0)?5:0;
   p.wins=Math.min(p.trades,p.wins+gain);if(grade(p)>old&&p.id===selected)graduate(p);}
  render();};
@@ -434,9 +443,23 @@ window.RobotAcademy={
 
  }
 };
+window.addEventListener('academy:scout-status',event=>{
+ const r=event.detail;
+ if(r===null){scout={...scout,trades:null,wins:null,net:null,drawdown:null,source:'UNREGISTERED',version:null,modelSha256:null};}
+ else if(r&&r.id==='XAU-SCST-01'&&r.source==='LOCAL_RESEARCH_EXAM'&&
+    Number.isInteger(r.trades)&&r.trades>=0&&Number.isInteger(r.wins)&&
+    r.wins>=0&&r.wins<=r.trades&&Number.isFinite(r.net)&&
+    Number.isFinite(r.drawdown)&&r.drawdown>=0&&r.drawdown<=100&&
+    /^[a-f0-9]{64}$/.test(r.modelSha256||'')){
+   scout={...scout,trades:r.trades,wins:r.wins,net:r.net,drawdown:r.drawdown,
+     source:'LOCAL_RESEARCH_EXAM',version:String(r.version||'unversioned').slice(0,55),
+     modelSha256:r.modelSha256,champion:null,qualified:false};
+ }
+ if(!demo){pupils=historicalPupils();render();}
+});
 render();
 loadResearch();
 loadTeacherGrades();
 })();
 </script><script src="./journey-nav.js" defer></script>
-<script type="module" src="./teacher/qualification-bridge.js"></script></body></html>
+<script type="module" src="./teacher/qualification-bridge.js"></script><script type="module" src="./academy-unified-ui.mjs"></script></body></html>
