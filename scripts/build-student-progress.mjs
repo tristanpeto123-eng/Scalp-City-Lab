@@ -153,6 +153,11 @@ async function main(){
  const [academy,monitor,rl]=await Promise.all([academyPath,monitorPath,rlPath].map(async p=>JSON.parse(await readFile(p,'utf8'))));
  let previous=null;
  try{previous=JSON.parse(await readFile(outputPath,'utf8'))}catch(e){if(e.code!=='ENOENT')throw e}
+ if(previous&&previous.academySnapshotAt===monitor.publishedAt&&
+    previous.rlSnapshotAt===rl.generatedAt){
+  console.log('STUDENT_PROGRESSION_NO_NEW_SOURCE_EVIDENCE');
+  return;
+ }
  const result=buildStudentProgress({academy,monitor,rl,previous});
  await mkdir(path.dirname(outputPath),{recursive:true});
  await writeFile(outputPath,JSON.stringify(result,null,2)+'\n');
