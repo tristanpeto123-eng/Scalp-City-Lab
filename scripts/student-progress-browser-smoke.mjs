@@ -26,6 +26,14 @@ try{
    const issues=[];page.on('pageerror',e=>issues.push(e.message));
    page.on('console',msg=>{if(msg.type()==='error')issues.push(msg.text())});
    await page.goto('http://127.0.0.1:'+server.address().port+'/student-progress.html',{waitUntil:'networkidle'});
+   await page.waitForSelector('#sc-global-navigation');
+   assert.equal(await page.locator('#sc-global-navigation .sc-nav-area').count(),6);
+   const toggle=page.locator('#sc-global-navigation .sc-nav-toggle');
+   await toggle.click();
+   assert.equal(await page.locator('#sc-global-navigation').getAttribute('data-expanded'),'true');
+   assert.equal(await page.locator('#sc-global-navigation .sc-nav-tool').count(),6);
+   await page.keyboard.press('Escape');
+   assert.equal(await page.locator('#sc-global-navigation').getAttribute('data-expanded'),'false');
    await page.waitForFunction(()=>document.querySelector('#statStudents')?.textContent==='10',null,{timeout:12000});
    assert.equal(await page.locator('#statStudents').innerText(),'10');
    assert.equal(await page.locator('#statForward').innerText(),'0');
