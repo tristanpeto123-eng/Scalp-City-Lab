@@ -1,0 +1,34 @@
+name: Academy - Contextual Price Level Model V2 (No Broker)
+on:
+  pull_request:
+    paths:
+      - 'academy/price-level-intelligence.mjs'
+      - 'academy/price-level-intelligence-v2.mjs'
+      - 'academy/price-level-intelligence-v2-tests.mjs'
+      - 'academy/PRICE-LEVEL-INTELLIGENCE-V2.md'
+      - 'scripts/research-contextual-levels.mjs'
+      - '.github/workflows/academy-price-level-intelligence-v2.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contextual-pli-synthetic-checker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax, causal and market-safety tests
+        run: |
+          node --check academy/price-level-intelligence.mjs
+          node --check academy/price-level-intelligence-v2.mjs
+          node --check scripts/research-contextual-levels.mjs
+          node --test academy/price-level-intelligence-tests.mjs academy/price-level-intelligence-v2-tests.mjs
+      - name: Assert offline-only entrypoints
+        run: |
+          if grep -Ei '(process\.env\.(BROKER|OANDA|ALPACA)|placeOrder\(|createOrder\()' academy/price-level-intelligence-v2.mjs; then exit 1; fi
+          echo 'PLI_V2_RESEARCH_ONLY - NO LIVE OR PAPER ORDERS'
