@@ -1,0 +1,22 @@
+name: Academy - XAUUSD Coverage Audit
+on:
+  pull_request:
+    paths:
+      - 'academy/xau-coverage-audit*'
+      - '.github/workflows/academy-xau-coverage.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run historical coverage integrity tests
+        run: node --test academy/xau-coverage-audit-tests.mjs
