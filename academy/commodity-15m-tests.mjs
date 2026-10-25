@@ -17,7 +17,7 @@ const csv=['time,open,high,low,close',...bars.map(b=>[b.t,b.o,b.h,b.l,b.c].join(
 test('15Min original gold and silver candles stay on 15Min grid',()=>{
  const source=parseDiscoveryCSV(csv,{timeframe:'15Min'});
  assert.equal(source.length,bars.length);
- assert.throws(()=>parseDiscoveryCSV(csv,{timeframe:'5Min'}),/Unordered|duplicate|Invalid|5Min|off|completed|interval/i);
+ assert.throws(()=>parseDiscoveryCSV(csv,{timeframe:'5Min'}),/15Min|Unordered|duplicate|Invalid|5Min|off|completed|interval/i);
 });
 test('Teacher uses separate gold/silver models on same native timeframe',()=>{
  const gold=discoverOpportunities({bars,symbol:'XAUUSD',timeframe:'15Min'});
@@ -61,4 +61,13 @@ test('separate source import creates immutable manifest and a blocked broker che
   assert.equal(model.enabledForBroker,false);
   await assert.rejects(importCommodityTrainingSet(src,{symbol:'XAUUSD',outputDir:output}),/EEXIST/);
  }finally{await rm(dir,{recursive:true,force:true});}
+});
+test('accepts a provider datetime column without rebasing timestamps',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'academy-xag-'));
+ try { const source=join(dir,'silver.csv'); await writeFile(source,csv.replace('time,open','datetime,open'));
+ const result=await importCommodityTrainingSet(source,{symbol:'XAGUSD',outputDir:join(dir,'out'),origin:'PUBLIC_SAMPLE_UNVERIFIED'});
+ assert.equal(result.manifest.sourceOrigin,'PUBLIC_SAMPLE_UNVERIFIED');
+ assert.equal(result.manifest.symbol,'XAGUSD');
+ assert.equal(result.manifest.timeframe,'15Min');
+ } finally {await rm(dir,{recursive:true,force:true});}
 });
