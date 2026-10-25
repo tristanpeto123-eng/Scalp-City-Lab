@@ -30,17 +30,17 @@ GitHub branches are references, **not** verified off-device backups of private s
 | ID | Assertion | Current finding |
 |---|---|---|
 | G0-01 | Pinned Lab and stable commit SHAs recorded | OBSERVED |
-| G0-02 | Branch isolated from stable and starts at pinned Lab SHA | OBSERVED (confirm branch ref read-back) |
-| G0-03 | Full source and external model/journal inventory | OPEN |
-| G0-04 | Source repository backup created and checksum verified | OPEN |
+| G0-02 | Branch isolated from stable and starts at pinned Lab SHA | PASS — readback and CI branch-diff gate |
+| G0-03 | Full source and external model/journal inventory | PARTIAL — six memory/data branch refs identified; local browser and private memory not inventoried |
+| G0-04 | Source repository backup created and checksum verified | PARTIAL — pinned Git source restored and SHA-compared in CI; NO independent durable/offsite backup verified |
 | G0-05 | Private model and training-memory backups verified by restore | OPEN |
-| G0-06 | Relevant CI suites green on exact pinned SHA | OPEN (Pages success only identified) |
+| G0-06 | Relevant CI suites green on exact pinned SHA | PASS for unchanged functional code on branch HEAD 77558d8352ba6b983bf412d9b6473b9316833adf; source-diff gate verifies all changes from pinned baseline are documentation + G0 workflow |
 | G0-07 | Student views, CSV import and model persistence browser smoke tested | OPEN |
 | G0-08 | No broker order or promotion permission changed | OBSERVED from documentation-only actions; recheck on release |
-| G0-09 | Tested rollback procedure with recoverable prior version | OPEN |
+| G0-09 | Tested rollback procedure with recoverable prior version | PARTIAL — immutable source recovery in clean scratch passed; persistent service, model and deployment rollbacks untested |
 | G0-10 | Checker signs off G0 after source and backups reconciled | BLOCKED |
 
-**G0 cannot pass until G0-03 through G0-09 are evidenced.** A build badge alone is insufficient.
+**G0 overall result: BLOCKED / NOT PASSED.** Private student/model backup and restore, offsite source backup, browser checks and deployment rollback are outstanding. A build badge alone is insufficient.
 
 ## Preservation / rollback rules
 1. Keep the stable repository and its current model data untouched.
@@ -58,3 +58,14 @@ GitHub branches are references, **not** verified off-device backups of private s
 - Different-revision Price Level checker: https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/40230058419
 
 Prepared for the owner and Checker review. **No claim of completed G0 or profitable trading.**
+
+
+## G0 execution addendum — 25 October 2026
+- GitHub Actions run: https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/40231754227
+- Exact workflow SHA: `77558d8352ba6b983bf412d9b6473b9316833adf`
+- Job `source-restore`: PASS. Full pinned git tree was extracted to a clean scratch directory; README.md, app.js, sl-core.mjs and academy-common-exam.mjs were compared byte-for-byte with immutable source commit. The workflow's allowed-path diff verifies this branch has changed **only** audit docs and the read-only workflow.
+- Job `offline-regression`: PASS. SL core/5m/loop/vault/cache, Academy/common exam, XAUUSD discovery/Teacher, student progress and paper-broker **mock** safety tests completed. These tests do not establish market profitability or real broker order safety.
+- Separate bootstrap job on same commit: https://github.com/tristanpeto123-eng/Scalp-City-Lab/actions/runs/40231757958 (PASS).
+- GitHub branch metadata confirmed existing `scalp-learning-memory`, `rl-learning-memory`, `neo-learning-memory`, `rl-5m-data`, `paper-sandbox-models`, and `universal-student-memory`. Heads observed at audit time, respectively: `2ee3a532a02f10000ca90432a3a895e0dde6fd5f`, `9b00c1c17fadda0b537c454830f77c18b5a716b9`, `9c0d8b3d474f2d11b688adb0552bc63b47fb2b37`, `88f45a981840215bb8754e0fa711a19f72289b0c`, `152bcb3e36e6c9104b38de7c8a613201d0f0d7d3`, and `a4771ba474b5b7136078c1c28e6835c182f5a7bb`. These are **reference pointers, not authenticated backups**, and can move with scheduled training jobs. The repository is PUBLIC, including its branches; review confidentiality before placing learned model data there.
+- Separately, SL checkpoints may exist only in the user's browser local storage. Neither GitHub nor this audit has recovered them. Their export, secure backup and isolated restore must be operator verified.
+- The audit accessed metadata, test logs and already-public source only, **not private credentials or user-local model checkpoints**.
