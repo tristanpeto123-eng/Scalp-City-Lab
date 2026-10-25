@@ -6,6 +6,8 @@ on:
       - 'academy/price-level-intelligence-tests.mjs'
       - 'academy/PRICE-LEVEL-INTELLIGENCE.md'
       - 'academy/student-skill-contract.mjs'
+      - 'academy/commodity-15m-tests.mjs'
+      - 'scripts/import-commodity-training-set.mjs'
       - 'scripts/research-price-levels.mjs'
       - '.github/workflows/academy-price-level-intelligence.yml'
   workflow_dispatch:
@@ -26,7 +28,7 @@ jobs:
         run: |
           node --check academy/price-level-intelligence.mjs
           node --check scripts/research-price-levels.mjs
-          node --test academy/price-level-intelligence-tests.mjs academy/student-skill-contract-tests.mjs
+          node --test academy/price-level-intelligence-tests.mjs academy/commodity-15m-tests.mjs academy/student-skill-contract-tests.mjs
       - name: Prove broker credentials are not present in PLI source
         run: |
           if grep -Ei '(process\.env\.(BROKER|OANDA|ALPACA)|placeOrder\(|createOrder\()' academy/price-level-intelligence.mjs; then exit 1; fi
