@@ -34,3 +34,20 @@ test('real market gaps are counted and never fabricated',()=>{
  assert.equal(manifest.rows,N-100);
  assert.equal(manifest.gaps,1);
 });
+test('CLI writes both separate outputs with readback',async()=>{
+ const {mkdtemp,writeFile,readFile,rm}=await import('node:fs/promises');
+ const {tmpdir}=await import('node:os');
+ const {join}=await import('node:path');
+ const {runXauIntake}=await import('../scripts/intake-xau-sample.mjs');
+ const dir=await mkdtemp(join(tmpdir(),'academy-intake-'));
+ try{
+  const original=join(dir,'source.csv'),normal=join(dir,'normalised.csv'),manifest=join(dir,'manifest.json');
+  await writeFile(original,raw);
+  const result=await runXauIntake(original,normal,manifest);
+  assert.equal(result.brokerOrders,0);
+  assert.equal(result.bars,N);
+  assert.ok((await readFile(normal,'utf8')).startsWith('time,open,high,low,close,volume\n'));
+  const source=JSON.parse(await readFile(manifest,'utf8'));
+  assert.equal(source.rawSha256,result.rawSha256);
+ } finally {await rm(dir,{recursive:true,force:true});}
+});
