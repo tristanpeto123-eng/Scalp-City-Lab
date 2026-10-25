@@ -8,14 +8,16 @@ const ok=Number.isFinite,clip=n=>Math.max(-1,Math.min(1,n));
 export function validateDiscoveryBars(input,{now=Date.now(),timeframe='5Min'}={}){
  const intervalMs=cadence(timeframe);
  if(!Array.isArray(input)||input.length<150||input.length>150000)throw Error('Need 150–150000 completed '+timeframe+' candles');
- let gaps=0,last=-Infinity;const bars=input.map((b,i)=>{
+ let gaps=0,last=-Infinity,observedFiveMin=0,observedFifteenMin=0;const bars=input.map((b,i)=>{
   const t=Date.parse(b.t);
   if(!ok(t)||t%intervalMs||!['o','h','l','c'].every(k=>typeof b[k]==='number'&&ok(b[k]))||
      Math.min(b.o,b.h,b.l,b.c)<=0||b.h<Math.max(b.o,b.c,b.l)||b.l>Math.min(b.o,b.c,b.h)||
      (b.v!=null&&(!ok(b.v)||b.v<0)))throw Error('Invalid candle '+i);
-  if(i){if(t-last<intervalMs||(t-last)%intervalMs)throw Error('Unordered or duplicate candles');if(t-last>intervalMs)gaps++;}
+  if(i){const distance=t-last;if(distance<intervalMs||distance%intervalMs)throw Error('Unordered or duplicate candles');if(distance>intervalMs)gaps++;if(distance===FIVE_MINUTES)observedFiveMin++;if(distance===FIFTEEN_MINUTES)observedFifteenMin++;}
   last=t;return {t:new Date(t).toISOString(),o:b.o,h:b.h,l:b.l,c:b.c,v:b.v??null};
  });
+ if(timeframe==='5Min'&&observedFiveMin===0&&observedFifteenMin>input.length*.55)
+  throw Error('15Min dataset cannot be treated as genuine 5Min candles');
  if(last+intervalMs>now-30000)throw Error('Last candle incomplete or future');
  return {bars,gaps};
 }
