@@ -56,6 +56,14 @@ test('separate source import creates immutable manifest and a blocked broker che
   assert.equal(r.manifest.timeframe,'15Min');
   assert.equal(r.manifest.brokerOrders,0);
   assert.equal(r.manifest.sealedTestEvaluated,false);
+  assert.equal(r.manifest.priceLevelIntelligence.finalTestEvaluated,false);
+  assert.equal(r.manifest.priceLevelIntelligence.brokerEligible,false);
+  assert.ok(r.manifest.priceLevelIntelligence.fitSignalGroups>=0);
+  const pliModel=JSON.parse(await readFile(join(output,r.manifest.experimentId+'-pli-model.json'),'utf8'));
+  const pliReport=JSON.parse(await readFile(join(output,r.manifest.experimentId+'-pli-report.json'),'utf8'));
+  assert.equal(pliModel.symbol,'XAUUSD');
+  assert.equal(pliModel.enabledForBroker,false);
+  assert.equal(pliReport.data.sealedTestEvaluated,false);
   const file=join(output,r.manifest.experimentId+'-checkpoint.json');
   const model=JSON.parse(await readFile(file,'utf8'));
   assert.equal(model.enabledForBroker,false);

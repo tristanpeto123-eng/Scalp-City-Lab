@@ -6,6 +6,7 @@ import {createHash} from 'node:crypto';
 import {resolve,join} from 'node:path';
 import {parseDiscoveryCSV,discoverOpportunities} from '../academy/opportunity-discovery.mjs';
 import {trainAcademyTeacher} from '../academy/teacher-training.mjs';
+import {researchLevelTransitions} from '../academy/price-level-intelligence.mjs';
 export const TRAINING_SET_SCHEMA='ACADEMY_COMMODITY_SET_V1';
 export async function importCommodityTrainingSet(inputPath,{symbol,outputDir,origin='USER_SUPPLIED_UNVERIFIED'}={}){
  if(!inputPath||!outputDir||!['XAUUSD','XAGUSD'].includes(symbol))throw Error('Usage: node scripts/import-commodity-training-set.mjs <XAUUSD|XAGUSD> <15min.csv> <output-dir>');
@@ -20,6 +21,8 @@ export async function importCommodityTrainingSet(inputPath,{symbol,outputDir,ori
  const discovery={...discoverOpportunities({bars,symbol,timeframe:'15Min'}),
   sourceSha256:digest,sourceOrigin:origin};
  const {checkpoint,report}=trainAcademyTeacher(discovery);
+ // Shared PLI is a separate per-market, training-only evidence stream; the legacy Teacher weights are unchanged.
+ const pli=researchLevelTransitions({bars,symbol,timeframe:'15Min',sourceSha256:digest});
  if(checkpoint.symbol!==symbol||checkpoint.timeframe!=='15Min'||checkpoint.enabledForBroker!==false||
     report.independentFinalTestEvaluated!==false||report.verifiedForwardGrades!==0||report.paperOrders!==0)
   throw Error('Checker: market separation or trading safety violated');
@@ -35,6 +38,10 @@ export async function importCommodityTrainingSet(inputPath,{symbol,outputDir,ori
   reportSha256:report.checkpointSha256,virtualTradingOnly:true,brokerOrders:0,
   researchModelType:'LEGACY_NEURAL_BASELINE',
   studentSkillsContractVersion:report.studentSkillAudit.schema,
+  priceLevelIntelligence:{schema:pli.report.schema,modelSha256:pli.report.modelSha256,
+   sourceSha256:digest,fitSignalGroups:pli.report.learning.fitSignalGroups,
+   development:pli.report.development,abstained:pli.report.learning.abstained,
+   finalTestEvaluated:false,brokerEligible:false},
   studentMissingSkillIds:report.studentSkillAudit.missingSkillIds,
   studentSkillQualified:report.studentSkillAudit.fullSkillStackImplemented,
   independentExamEligible:report.studentSkillAudit.independentExamEligible,
@@ -51,9 +58,13 @@ export async function importCommodityTrainingSet(inputPath,{symbol,outputDir,ori
  await writeFile(prefix+'-manifest.json',JSON.stringify(manifest,null,2)+'\n',{flag:'wx'});
  await writeFile(prefix+'-teacher-report.json',JSON.stringify(report,null,2)+'\n',{flag:'wx'});
  await writeFile(prefix+'-checkpoint.json',JSON.stringify(checkpoint,null,2)+'\n',{flag:'wx'});
+ await writeFile(prefix+'-pli-report.json',JSON.stringify(pli.report,null,2)+'\n',{flag:'wx'});
+ await writeFile(prefix+'-pli-model.json',JSON.stringify(pli.model,null,2)+'\n',{flag:'wx'});
+ await writeFile(prefix+'-pli-memory.json',JSON.stringify(pli.memory,null,2)+'\n',{flag:'wx'});
  return {manifest,development:report.development,
   developmentProfitGatePassed:report.developmentProfitGatePassed,
-  checkpointSha256:report.checkpointSha256};
+  checkpointSha256:report.checkpointSha256,pliDevelopment:pli.report.development,
+  pliAbstained:pli.report.learning.abstained};
 }
 if(process.argv[1]&&resolve(process.argv[1])===resolve(new URL(import.meta.url).pathname))
  importCommodityTrainingSet(process.argv[3],{symbol:process.argv[2],outputDir:process.argv[4],

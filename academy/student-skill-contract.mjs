@@ -28,7 +28,7 @@ export const STUDENT_SKILL_REGISTRY=Object.freeze([
  {id:'SCOUT_REGIME',name:'Scout A: directional, volatility, quality and chop regimes',owner:'Scout A',scope:'shared',status:'PARTIAL',
   evidence:'One candle-window heuristic labels regimes; no independent ADX/DI, ATR, chop, compression, transitions or calibrated regime skill'},
  {id:'PRICE_LEVELS',name:'Price Level Intelligence: zones, transitions and sweeps',owner:'Price Level Intelligence',scope:'shared',status:'PARTIAL',
-  evidence:'Single relative position within 24-bar high/low exists, not persistent zones, liquidity sweeps, break/retest or destinations'},
+  evidence:'Offline callable PLI engine now maps causal ATR zones, rejection/breakout/sweep/retest, per-market transition memory, and next-zone virtual targets; still not independently validated or integrated into full neural admission/execution'},
  {id:'SCOUT_EXPECTANCY',name:'Scout B: cost-adjusted independent trade expectancy',owner:'Scout B',scope:'per_student',status:'NOT_IMPLEMENTED',
   evidence:'Classification probability is not calibrated expected GBP returns and is not an independent Scout assessment'},
  {id:'STRATEGIST',name:'Strategist: thesis, choice of entry, TP/SL and invalidation',owner:'Strategist',scope:'per_student',status:'NOT_IMPLEMENTED',
