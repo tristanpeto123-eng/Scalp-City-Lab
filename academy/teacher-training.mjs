@@ -1,5 +1,6 @@
 /** Academy Teacher v1: isolated offline historical neural training. NO broker integration. */
 import {createHash} from 'node:crypto';
+import {studentSkillContract,assertStudentQualified} from './student-skill-contract.mjs';
 export const TEACHER_SCHEMA='ACADEMY_TEACHER_RESEARCH_V1';
 const finite=Number.isFinite;
 const hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
@@ -75,8 +76,11 @@ function momentumReference(g){
  }
  return {selectedTrades:n,netGbp:Number(net.toFixed(6)),stressNetGbp:Number(stress.toFixed(6))};
 }
-export function trainAcademyTeacher(discovery,{seed=20261025,epochs=65,learningRate=.012}={}){
+export function trainAcademyTeacher(discovery,{seed=20261025,epochs=65,learningRate=.012,requireFullSkillStack=false}={}){
  const split=validate(discovery);
+ const skillContract=studentSkillContract({symbol:discovery.symbol,timeframe:discovery.timeframe});
+ // Full agent training and admission must never silently fall back to legacy classifier code.
+ if(requireFullSkillStack)assertStudentQualified(skillContract,{purpose:'FULL_SKILL_STACK_TRAINING'});
  if(!Number.isInteger(seed)||seed<0||!Number.isInteger(epochs)||epochs<1||epochs>500||
  !finite(learningRate)||learningRate<=0||learningRate>.05)throw Error('Invalid Teacher training controls');
  const all=groups(split.TRAIN),cut=Math.floor(.8*all.length),tune=all.slice(cut),dev=groups(split.DEVELOPMENT);
@@ -120,6 +124,9 @@ export function trainAcademyTeacher(discovery,{seed=20261025,epochs=65,learningR
  const checkpoint={schema:'ACADEMY_TEACHER_MODEL_V1',symbol:discovery.symbol,timeframe:discovery.timeframe,market:'COMMODITIES',
   architecture:'9x12x1_TANH_SIGMOID',weights:w,threshold,trainedThrough:fitting.at(-1).at(-1).closedAt,
   enabledForBroker:false,state:'RESEARCH_CHECKPOINT_NOT_APPROVED',
+  studentSkillContractVersion:skillContract.schema,
+  researchArchitecture:skillContract.architecture,
+  qualifiedAgent:false,skillStackImplemented:false,
   inputNames:['trend','momentum','volatility','relativeVolume','distanceFromLevel','side','holdCandles','stopBps','takeBps']};
  const checkpointSha256=hash(checkpoint),score=evaluate(w,dev,threshold),baseline=momentumReference(dev),
   tuning=evaluate(w,tune,threshold);
@@ -132,8 +139,12 @@ export function trainAcademyTeacher(discovery,{seed=20261025,epochs=65,learningR
   internalTuning:{netGbp:tuning.netGbp,stressNetGbp:tuning.stressNetGbp,selectedTrades:tuning.selectedTrades},
   development:score,comparison:{cashNetGbp:0,momentumBaseline:baseline},
   developmentProfitGatePassed:score.selectedTrades>=10&&score.netGbp>0&&score.stressNetGbp>0&&score.netGbp>baseline.netGbp,
+  studentSkillAudit:skillContract,studentGraduationGatePassed:false,
+  specialistAgentQualified:false,brokerPaperEligible:false,
   verifiedForwardGrades:0,paperOrders:0,liveOrders:0,automaticPromotion:false,independentFinalTestEvaluated:false,
-  warnings:['Offline outcomes are unverified correlated historical counterfactuals','Development is not authenticated forward-paper evidence',
+  warnings:['This is an old-style neural baseline; all requested specialist skills are NOT integrated',
+   'Skill-based graduation is blocked until each skill is implemented and independently tested',
+   'Offline outcomes are unverified correlated historical counterfactuals','Development is not authenticated forward-paper evidence',
    'Sealed final 20% of price history was never scored','No broker orders or automatic model deployment']};
  return {checkpoint,report};
 }
