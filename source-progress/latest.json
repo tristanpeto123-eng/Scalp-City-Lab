@@ -1,91 +1,91 @@
 {
   "schema": "SCALP_VERIFIED_SOURCE_TAIL_V1",
-  "generatedAt": "2026-10-25T04:50:14.483Z",
+  "generatedAt": "2026-10-25T11:39:46.136Z",
   "timeframe": "5Min",
   "symbols": [
     {
       "symbol": "BTC/USD",
       "state": "VERIFIED_NEW_SOURCE_TAIL",
-      "newTailCandles": 95,
-      "previousEnd": "2026-10-24T20:45:00Z",
-      "currentEnd": "2026-10-25T04:40:00Z",
-      "overlap": 8543
+      "newTailCandles": 82,
+      "previousEnd": "2026-10-25T04:40:00Z",
+      "currentEnd": "2026-10-25T11:30:00Z",
+      "overlap": 8557
     },
     {
       "symbol": "ETH/USD",
       "state": "VERIFIED_NEW_SOURCE_TAIL",
-      "newTailCandles": 95,
-      "previousEnd": "2026-10-24T20:45:00Z",
-      "currentEnd": "2026-10-25T04:40:00Z",
-      "overlap": 8543
+      "newTailCandles": 82,
+      "previousEnd": "2026-10-25T04:40:00Z",
+      "currentEnd": "2026-10-25T11:30:00Z",
+      "overlap": 8557
     },
     {
       "symbol": "SOL/USD",
       "state": "VERIFIED_NEW_SOURCE_TAIL",
-      "newTailCandles": 95,
-      "previousEnd": "2026-10-24T20:45:00Z",
-      "currentEnd": "2026-10-25T04:40:00Z",
-      "overlap": 8543
+      "newTailCandles": 82,
+      "previousEnd": "2026-10-25T04:40:00Z",
+      "currentEnd": "2026-10-25T11:30:00Z",
+      "overlap": 8557
     },
     {
       "symbol": "XRP/USD",
       "state": "VERIFIED_NEW_SOURCE_TAIL",
-      "newTailCandles": 95,
-      "previousEnd": "2026-10-24T20:45:00Z",
-      "currentEnd": "2026-10-25T04:40:00Z",
-      "overlap": 8543
+      "newTailCandles": 82,
+      "previousEnd": "2026-10-25T04:40:00Z",
+      "currentEnd": "2026-10-25T11:30:00Z",
+      "overlap": 8557
     },
     {
       "symbol": "ADA/USD",
       "state": "VERIFIED_NEW_SOURCE_TAIL",
-      "newTailCandles": 95,
-      "previousEnd": "2026-10-24T20:45:00Z",
-      "currentEnd": "2026-10-25T04:40:00Z",
-      "overlap": 8543
+      "newTailCandles": 82,
+      "previousEnd": "2026-10-25T04:40:00Z",
+      "currentEnd": "2026-10-25T11:30:00Z",
+      "overlap": 8557
     },
     {
       "symbol": "AVAX/USD",
       "state": "VERIFIED_NEW_SOURCE_TAIL",
-      "newTailCandles": 95,
-      "previousEnd": "2026-10-24T20:45:00Z",
-      "currentEnd": "2026-10-25T04:40:00Z",
-      "overlap": 8543
+      "newTailCandles": 82,
+      "previousEnd": "2026-10-25T04:40:00Z",
+      "currentEnd": "2026-10-25T11:30:00Z",
+      "overlap": 8557
     },
     {
       "symbol": "LINK/USD",
       "state": "VERIFIED_NEW_SOURCE_TAIL",
-      "newTailCandles": 95,
-      "previousEnd": "2026-10-24T20:45:00Z",
-      "currentEnd": "2026-10-25T04:40:00Z",
-      "overlap": 8543
+      "newTailCandles": 82,
+      "previousEnd": "2026-10-25T04:40:00Z",
+      "currentEnd": "2026-10-25T11:30:00Z",
+      "overlap": 8557
     },
     {
       "symbol": "DOGE/USD",
       "state": "VERIFIED_NEW_SOURCE_TAIL",
-      "newTailCandles": 95,
-      "previousEnd": "2026-10-24T20:45:00Z",
-      "currentEnd": "2026-10-25T04:40:00Z",
-      "overlap": 8543
+      "newTailCandles": 82,
+      "previousEnd": "2026-10-25T04:40:00Z",
+      "currentEnd": "2026-10-25T11:30:00Z",
+      "overlap": 8557
     },
     {
       "symbol": "LTC/USD",
       "state": "VERIFIED_NEW_SOURCE_TAIL",
-      "newTailCandles": 95,
-      "previousEnd": "2026-10-24T20:45:00Z",
-      "currentEnd": "2026-10-25T04:40:00Z",
-      "overlap": 8543
+      "newTailCandles": 82,
+      "previousEnd": "2026-10-25T04:40:00Z",
+      "currentEnd": "2026-10-25T11:30:00Z",
+      "overlap": 8557
     },
     {
       "symbol": "BCH/USD",
       "state": "VERIFIED_NEW_SOURCE_TAIL",
-      "newTailCandles": 95,
-      "previousEnd": "2026-10-24T20:45:00Z",
-      "currentEnd": "2026-10-25T04:40:00Z",
-      "overlap": 8543
+      "newTailCandles": 82,
+      "previousEnd": "2026-10-25T04:40:00Z",
+      "currentEnd": "2026-10-25T11:30:00Z",
+      "overlap": 8557
     }
   ],
   "brokerOrders": 0,
   "liveOrders": 0,
-  "newSourceTailCandles": 950,
+  "newSourceTailCandles": 820,
   "caution": "New source bars alone are not proof of training consumption or predictive improvement"
 }
