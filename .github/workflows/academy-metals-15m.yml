@@ -4,7 +4,7 @@ on:
     paths:
       - 'academy/opportunity-discovery.mjs'
       - 'academy/teacher-training.mjs'
-      - 'academy/commodity-15m-tests.mjs'
+      - 'academy/commodity-15m-tests.mjs academy/student-skill-contract-tests.mjs'
       - 'scripts/import-commodity-training-set.mjs'
       - '.github/workflows/academy-metals-15m.yml'
   workflow_dispatch:
