@@ -4,7 +4,7 @@ import {resolve,dirname} from 'node:path';
 import {intakeXauSample} from '../academy/source-intake.mjs';
 export async function runXauIntake(rawFile,normalisedCsv,manifestFile){
  if(!rawFile||!normalisedCsv||!manifestFile)throw Error('Usage: node scripts/intake-xau-sample.mjs <source.csv> <normalised.csv> <provenance.json>');
- const paths=[rawFile,normalisedCsv,manifestFile].map(resolve);
+ const paths=[rawFile,normalisedCsv,manifestFile].map(p=>resolve(p));
  if(new Set(paths).size!==3)throw Error('Source and output paths must be different');
  const {csv,manifest}=intakeXauSample(await readFile(paths[0],'utf8'));
  await mkdir(dirname(paths[1]),{recursive:true});
