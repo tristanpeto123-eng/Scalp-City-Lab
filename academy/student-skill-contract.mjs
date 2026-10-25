@@ -93,7 +93,11 @@ export function studentSkillContract({symbol,timeframe}={}){
  * produce statistics while the profile remains unqualified for promotion.
  */
 export function assertStudentQualified(contract,{purpose='EXAMINATION'}={}){
+ const canonical=studentSkillContract({symbol:contract?.symbol,timeframe:contract?.timeframe});
  if(!contract||contract.schema!==STUDENT_SKILL_CONTRACT_VERSION||
+   !canonical.fullSkillStackImplemented||!canonical.qualifyingTraining||
+   !canonical.independentExamEligible||!canonical.tradingFloorAppointmentEligible||
+   canonical.missingSkillIds.length!==0||
    contract.fullSkillStackImplemented!==true||contract.qualifyingTraining!==true||
    contract.independentExamEligible!==true||contract.tradingFloorAppointmentEligible!==true||
    contract.missingSkillIds?.length!==0)
