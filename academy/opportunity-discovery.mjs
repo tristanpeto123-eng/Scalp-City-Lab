@@ -1,21 +1,26 @@
 /** Academy XAUUSD historical candidate discovery. Offline research only: no broker I/O. */
 export const DISCOVERY_SCHEMA='ACADEMY_OPPORTUNITY_DISCOVERY_V1';
 export const FIVE_MINUTES=300000;
+export const FIFTEEN_MINUTES=900000;
+export const COMMODITY_TIMEFRAMES=Object.freeze({FiveMin:FIVE_MINUTES,FiveMinute:FIVE_MINUTES,'5Min':FIVE_MINUTES,'15Min':FIFTEEN_MINUTES});
+const cadence=tf=>{if(!['5Min','15Min'].includes(tf))throw Error('Unsupported market timeframe');return COMMODITY_TIMEFRAMES[tf]};
 const ok=Number.isFinite,clip=n=>Math.max(-1,Math.min(1,n));
-export function validateDiscoveryBars(input,{now=Date.now()}={}){
- if(!Array.isArray(input)||input.length<150||input.length>150000)throw Error('Need 150–150000 completed 5m candles');
+export function validateDiscoveryBars(input,{now=Date.now(),timeframe='5Min'}={}){
+ const intervalMs=cadence(timeframe);
+ if(!Array.isArray(input)||input.length<150||input.length>150000)throw Error('Need 150–150000 completed '+timeframe+' candles');
  let gaps=0,last=-Infinity;const bars=input.map((b,i)=>{
   const t=Date.parse(b.t);
-  if(!ok(t)||t%FIVE_MINUTES||!['o','h','l','c'].every(k=>typeof b[k]==='number'&&ok(b[k]))||
+  if(!ok(t)||t%intervalMs||!['o','h','l','c'].every(k=>typeof b[k]==='number'&&ok(b[k]))||
      Math.min(b.o,b.h,b.l,b.c)<=0||b.h<Math.max(b.o,b.c,b.l)||b.l>Math.min(b.o,b.c,b.h)||
      (b.v!=null&&(!ok(b.v)||b.v<0)))throw Error('Invalid candle '+i);
-  if(i){if(t-last<FIVE_MINUTES||(t-last)%FIVE_MINUTES)throw Error('Unordered or duplicate candles');if(t-last>FIVE_MINUTES)gaps++;}
+  if(i){if(t-last<intervalMs||(t-last)%intervalMs)throw Error('Unordered or duplicate candles');if(t-last>intervalMs)gaps++;}
   last=t;return {t:new Date(t).toISOString(),o:b.o,h:b.h,l:b.l,c:b.c,v:b.v??null};
  });
- if(last+FIVE_MINUTES>now-30000)throw Error('Last candle incomplete or future');
+ if(last+intervalMs>now-30000)throw Error('Last candle incomplete or future');
  return {bars,gaps};
 }
-export function parseDiscoveryCSV(csv){
+export function parseDiscoveryCSV(csv,{timeframe='5Min'}={}){
+ cadence(timeframe);
  if(typeof csv!=='string'||csv.length>45000000)throw Error('Invalid CSV size');
  const lines=csv.replace(/^\uFEFF/,'').trim().split(/\r?\n/);
  if(lines.length<151||lines.length>150001)throw Error('Insufficient CSV candles');
@@ -31,7 +36,7 @@ export function parseDiscoveryCSV(csv){
   const v=index[5]<0||x[index[5]]===''?null:Number(x[index[5]]);
   return {t,...Object.fromEntries(['o','h','l','c'].map((k,j)=>[k,nums[j]])),v};
  });
- return validateDiscoveryBars(bars).bars;
+ return validateDiscoveryBars(bars,{timeframe}).bars;
 }
 function inputs(b,i,side){
  const p=b.slice(i-24,i),cur=b[i],v=p.filter(x=>x.v>0),mean=v.length?v.reduce((s,x)=>s+x.v,0)/v.length:0;
@@ -55,20 +60,21 @@ function virtualExit(b,at,side,hold,stopBps,takeBps){
  }
  return {price:b[at+hold].o,index:at+hold,reason:'TIME_EXIT'};
 }
-export function discoverOpportunities({bars,symbol='XAUUSD',virtualNotionalGbp=1000,sideCostBps=8,
+export function discoverOpportunities({bars,symbol='XAUUSD',timeframe='5Min',virtualNotionalGbp=1000,sideCostBps=8,
  stressSideCostBps=16,scenarios=[{holdCandles:3,stopBps:35,takeBps:70},{holdCandles:6,stopBps:55,takeBps:110}],now=Date.now()}={}){
- if(symbol!=='XAUUSD')throw Error('XAUUSD only in v1');
+ if(!['XAUUSD','XAGUSD'].includes(symbol))throw Error('Only XAUUSD and XAGUSD commodity specialists supported');
+ const intervalMs=cadence(timeframe);
  if(!ok(virtualNotionalGbp)||virtualNotionalGbp<50||!ok(sideCostBps)||sideCostBps<0||
     !ok(stressSideCostBps)||stressSideCostBps<sideCostBps||stressSideCostBps>200)throw Error('Invalid costs');
  if(!Array.isArray(scenarios)||!scenarios.length||scenarios.length>8||scenarios.some(s=>
    !Number.isInteger(s.holdCandles)||s.holdCandles<1||s.holdCandles>24||!ok(s.stopBps)||s.stopBps<=0||
    !ok(s.takeBps)||s.takeBps<=0))throw Error('Invalid scenarios');
- const src=validateDiscoveryBars(bars,{now}),b=src.bars,train=Math.floor(b.length*.6),end=Math.floor(b.length*.8);
+ const src=validateDiscoveryBars(bars,{now,timeframe}),b=src.bars,train=Math.floor(b.length*.6),end=Math.floor(b.length*.8);
  const maxHold=Math.max(...scenarios.map(s=>s.holdCandles)),opportunities=[];
  for(let i=25;i+1+maxHold<end;i+=maxHold+1){
   const final=i+1+maxHold,phase=i<train?'TRAIN':'DEVELOPMENT';
   if(phase==='TRAIN'&&final>=train)continue;
-  let valid=true;for(let j=i-23;j<=final;j++)if(Date.parse(b[j].t)-Date.parse(b[j-1].t)!==FIVE_MINUTES){valid=false;break;}
+  let valid=true;for(let j=i-23;j<=final;j++)if(Date.parse(b[j].t)-Date.parse(b[j-1].t)!==intervalMs){valid=false;break;}
   if(!valid)continue;
   for(const s of scenarios)for(const side of [1,-1]){
    const ex=virtualExit(b,i+1,side,s.holdCandles,s.stopBps,s.takeBps),f=inputs(b,i,side);
@@ -83,7 +89,7 @@ export function discoverOpportunities({bars,symbol='XAUUSD',virtualNotionalGbp=1
     label,binaryLabel:label==='NEUTRAL'?null:label==='GOOD'?1:0,isCounterfactual:true});
   }
  }
- return {schema:DISCOVERY_SCHEMA,status:'HISTORICAL_RESEARCH_ONLY',symbol,timeframe:'5Min',
+ return {schema:DISCOVERY_SCHEMA,status:'HISTORICAL_RESEARCH_ONLY',symbol,timeframe,
   parameters:{virtualNotionalGbp,sideCostBps,stressSideCostBps,scenarios},
   dataset:{firstCandle:b[0].t,lastCandle:b.at(-1).t,totalCandles:b.length,gaps:src.gaps,
    sealedTestStart:b[end].t,sealedTestCandles:b.length-end,sealedTestEvaluated:false},
