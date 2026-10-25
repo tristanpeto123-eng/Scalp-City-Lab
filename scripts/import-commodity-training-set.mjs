@@ -12,7 +12,9 @@ export async function importCommodityTrainingSet(inputPath,{symbol,outputDir,ori
  if(!['USER_SUPPLIED_UNVERIFIED','PUBLIC_SAMPLE_UNVERIFIED'].includes(origin))throw Error('Unknown source provenance');
  const source=resolve(inputPath),out=resolve(outputDir);
  if(source===out||out.startsWith(source+'/'))throw Error('Output cannot overwrite data input');
- const csv=await readFile(source,'utf8'),digest=createHash('sha256').update(csv).digest('hex');
+ const raw=await readFile(source,'utf8');
+ const digest=createHash('sha256').update(raw).digest('hex');
+ const csv=raw.replace(/^(\uFEFF)?datetime,/i,'time,');
  const bars=parseDiscoveryCSV(csv,{timeframe:'15Min'});
  const first=Date.parse(bars[0].t),last=Date.parse(bars.at(-1).t);
  const discovery={...discoverOpportunities({bars,symbol,timeframe:'15Min'}),
