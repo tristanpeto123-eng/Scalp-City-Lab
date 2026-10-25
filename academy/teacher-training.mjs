@@ -22,18 +22,19 @@ function forward(w,x){
 }
 export function predictTeacher(checkpoint,candidate){
  if(checkpoint?.schema!=='ACADEMY_TEACHER_MODEL_V1'||checkpoint?.enabledForBroker!==false)throw Error('Invalid research checkpoint');
+ if(candidate?.symbol!==checkpoint.symbol)throw Error('Wrong commodity checkpoint for candidate');
  return forward(checkpoint.weights,inputs(candidate)).p;
 }
 function validate(r){
  if(!r||r.schema!=='ACADEMY_OPPORTUNITY_DISCOVERY_V1'||r.status!=='HISTORICAL_RESEARCH_ONLY'||
- r.symbol!=='XAUUSD'||r.dataset?.sealedTestEvaluated!==false||!r.dataset.sealedTestStart||
+ !['XAUUSD','XAGUSD'].includes(r.symbol)||!['5Min','15Min'].includes(r.timeframe)||r.dataset?.sealedTestEvaluated!==false||!r.dataset.sealedTestStart||
  r.brokerOrders!==0||r.modelPromotions!==0||r.verifiedForwardGrades!==0||
  !Array.isArray(r.opportunities)||r.opportunities.length<60)throw Error('Requires offline Discovery with sealed test');
  const split={TRAIN:[],DEVELOPMENT:[]},seen=new Set();
  for(const c of r.opportunities){
   const label=c.netPnlGbp>1e-8?'GOOD':c.netPnlGbp< -1e-8?'BAD':'NEUTRAL';
   if(!c||!['TRAIN','DEVELOPMENT'].includes(c.phase)||!c.groupId||!c.id||seen.has(c.id)||
-   !['LONG','SHORT'].includes(c.side)||!finite(c.netPnlGbp)||!finite(c.stressNetPnlGbp)||
+   c.symbol!==r.symbol||c.market!=='COMMODITIES'||!['LONG','SHORT'].includes(c.side)||!finite(c.netPnlGbp)||!finite(c.stressNetPnlGbp)||
    c.stressNetPnlGbp>c.netPnlGbp+1e-7||c.label!==label||
    c.binaryLabel!==(label==='GOOD'?1:label==='BAD'?0:null)||c.isCounterfactual!==true||
    !(Date.parse(c.signalAt)<Date.parse(c.openedAt))||
@@ -116,13 +117,13 @@ export function trainAcademyTeacher(discovery,{seed=20261025,epochs=65,learningR
   .filter(s=>s.selectedTrades>=8&&s.netGbp>0&&s.stressNetGbp>0)
   .sort((a,b)=>b.stressNetGbp-a.stressNetGbp||b.netGbp-a.netGbp||b.threshold-a.threshold);
  const threshold=options[0]?.threshold??1.01; // Abstain if no profitable training-only threshold.
- const checkpoint={schema:'ACADEMY_TEACHER_MODEL_V1',symbol:'XAUUSD',market:'COMMODITIES',
+ const checkpoint={schema:'ACADEMY_TEACHER_MODEL_V1',symbol:discovery.symbol,timeframe:discovery.timeframe,market:'COMMODITIES',
   architecture:'9x12x1_TANH_SIGMOID',weights:w,threshold,trainedThrough:fitting.at(-1).at(-1).closedAt,
   enabledForBroker:false,state:'RESEARCH_CHECKPOINT_NOT_APPROVED',
   inputNames:['trend','momentum','volatility','relativeVolume','distanceFromLevel','side','holdCandles','stopBps','takeBps']};
  const checkpointSha256=hash(checkpoint),score=evaluate(w,dev,threshold),baseline=momentumReference(dev),
   tuning=evaluate(w,tune,threshold);
- const report={schema:TEACHER_SCHEMA,status:'HISTORICAL_DEVELOPMENT_ONLY',
+ const report={schema:TEACHER_SCHEMA,status:'HISTORICAL_DEVELOPMENT_ONLY',symbol:discovery.symbol,timeframe:discovery.timeframe,
   sourceSha256:discovery.sourceSha256??null,
   discoveryDigest:hash({dataset:discovery.dataset,parameters:discovery.parameters,opportunities:discovery.opportunities}),
   checkpointSha256,groups:{fit:fitting.length,tune:tune.length,development:dev.length},
