@@ -32,7 +32,7 @@ function regimeAt(b,i,atr){
  return vol>.008?'VOLATILE':efficiency>.38?'DIRECTIONAL':efficiency<.13?'CHOPPY':'RANGING';
 }
 /** Confirmed pivots: right-hand confirmation bars MUST already be closed. */
-function levelsAt(b,i,{lookback=192,pivotWidth=2,atrMultiplier=.25}={}){
+export function levelsAt(b,i,{lookback=192,pivotWidth=2,atrMultiplier=.25}={}){
  if(i<80||i>=b.length)throw Error('Need >=80 historical closed bars at signal');
  const atr=atrAt(b,i);if(!finite(atr)||atr<=0)return {levels:[],atr:0,regime:'UNKNOWN'};
  const eps=atr*atrMultiplier,start=Math.max(pivotWidth,i-lookback),raw=[];
@@ -72,7 +72,7 @@ export function mapKeyLevels({bars,signalIndex,symbol='XAUUSD',timeframe='15Min'
  return {schema:PLI_SCHEMA,status:'RESEARCH_ONLY',symbol,timeframe,signalAt:b[i].t,
   ...data,brokerOrders:0,usesFutureCandles:false};
 }
-function createSetups(b,i,zones,atr,regime){
+export function createSetups(b,i,zones,atr,regime){
  const c=b[i],prev=b[i-1],proposals=[],costBuffer=atr*.28;
  if(regime==='CHOPPY'||regime==='UNKNOWN')return [];
  for(const z of zones){
@@ -137,7 +137,7 @@ export function suggestLevelSetups({bars,symbol='XAUUSD',timeframe='15Min',check
  });
  return {...mapped,setups};
 }
-function simulate(b,i,s,{holdBars,sideCostBps,stressSideCostBps,notionalGbp,timeframeMs}){
+export function simulate(b,i,s,{holdBars,sideCostBps,stressSideCostBps,notionalGbp,timeframeMs}){
  const side=s.side==='LONG'?1:-1,entryBar=b[i+1];
  if(!entryBar||Date.parse(entryBar.t)-Date.parse(b[i].t)!==timeframeMs)return null;
  const entry=entryBar.o,risk=side*(entry-s.stop),reward=side*(s.target-entry);
@@ -166,7 +166,7 @@ function simulate(b,i,s,{holdBars,sideCostBps,stressSideCostBps,notionalGbp,time
   netGbp:round(net),stressNetGbp:round(stress),mfe:round(maximumFavourable),mae:round(maximumAdverse),
   outcome:net>1e-8?'GOOD':net< -1e-8?'BAD':'NEUTRAL',actualRR:round(reward/risk)};
 }
-function summarize(rows){
+export function summarize(rows){
  let net=0,stress=0,wins=0,losses=0,profit=0,loss=0,peak=0,maxDrawdown=0;
  for(const r of rows){net+=r.netGbp;stress+=r.stressNetGbp;
   if(r.netGbp>0){wins++;profit+=r.netGbp;}else if(r.netGbp<0){losses++;loss-=r.netGbp;}
@@ -186,7 +186,7 @@ function choose(candidates,statistics,minSamples,minProbability){
   .sort((a,b)=>((statistics[b.pattern+'|'+b.regime].wins+1)/(statistics[b.pattern+'|'+b.regime].n+2))*b.indicativeRR-
                     ((statistics[a.pattern+'|'+a.regime].wins+1)/(statistics[a.pattern+'|'+a.regime].n+2))*a.indicativeRR||a.id.localeCompare(b.id))[0]??null;
 }
-function nonoverlap(rows){
+export function nonoverlap(rows){
  const selected=[];let until=-1;
  for(const row of rows){if(row.i<=until)continue;selected.push(row);until=row.closeIndex;}
  return selected;
