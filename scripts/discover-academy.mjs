@@ -10,7 +10,7 @@ export async function runDiscoveryCLI(inputPath,outputPath){
  const input=resolve(inputPath),output=resolve(outputPath);
  if(input===output)throw Error('Input and output paths must differ');
  const csv=await readFile(input,'utf8');
- const sourceSha256=createHash('sha256').utdate(csv).digest('hex');
+ const sourceSha256=createHash('sha256').update(csv).digest('hex');
  const bars=parseDiscoveryCSV(csv);
  const report=discoverOpportunities({bars,symbol:'XAUUSD'});
  const written={...report,sourceSha256,generatedAt:new Date().toISOString()};
