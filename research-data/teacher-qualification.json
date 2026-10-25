@@ -1,7 +1,7 @@
 {
   "schema": "TEACHER_PUBLIC_HISTORICAL_SCREEN_V1",
   "source": "INDEPENDENT_HISTORICAL_SCREEN_NO_PAPER_ORDERS",
-  "checkedAt": "2026-10-25T19:19:07.296Z",
+  "checkedAt": "2026-10-25T21:55:34.630Z",
   "lastResearchTrainingEnd": "2026-09-19T11:30:00.000Z",
   "academySourceSha256": "ff5e7118b99bffa3e8e2307404866d9727c6ae6a8fcd003eb1bb6a8918bd1ebb",
   "memorySourceSha256": "5ad950f86b9548ef842fc8aeb9acf7d491aa9a4856f2349c090aaa0c78224935",
