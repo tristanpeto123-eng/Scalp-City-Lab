@@ -1,0 +1,70 @@
+name: Academy - Keyless XAUUSD Historical Research
+on:
+  pull_request:
+    paths:
+      - 'academy/source-intake*'
+      - 'scripts/intake-xau-sample.mjs'
+      - 'scripts/discover-academy.mjs'
+      - '.github/workflows/academy-keyless-xau.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: academy-keyless-xau-research
+  cancel-in-progress: false
+jobs:
+  source-backed-check:
+    if: github.repository == 'tristanpeto123-eng/Scalp-City-Lab'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Checker - source intake, discovery, Teacher
+        run: |
+          node --test academy/source-intake-tests.mjs academy/opportunity-discovery-tests.mjs academy/teacher-training-tests.mjs
+          node --check scripts/intake-xau-sample.mjs
+          node --check scripts/discover-academy.mjs
+          node --check scripts/train-academy.mjs
+      - name: Fetch public sample without credentials
+        run: |
+          curl --fail --location --silent --show-error \
+            --retry 3 --retry-all-errors --connect-timeout 15 --max-time 120 \
+            "https://raw.githubusercontent.com/getdata-finance/xauusd-5m-ohlcv-metals-historical-data/main/XAUUSD_5m.csv" \
+            --output /tmp/academy-xau-public-sample.csv
+      - name: Record provenance and normalise source
+        run: node scripts/intake-xau-sample.mjs /tmp/academy-xau-public-sample.csv /tmp/academy-xau-normalized.csv /tmp/academy-xau-provenance.json
+      - name: Offline Discovery then immutable neural Teacher
+        run: |
+          node scripts/discover-academy.mjs /tmp/academy-xau-normalized.csv /tmp/academy-xau-discovery.json
+          node scripts/train-academy.mjs /tmp/academy-xau-discovery.json /tmp/academy-xau-research
+      - name: Checker - no independent grade, broker orders or final holdout reuse
+        run: |
+          node --input-type=module <<'NODE'
+          import {readdirSync,readFileSync} from 'node:fs';
+          const dir='/tmp/academy-xau-research';
+          const filename=readdirSync(dir).find(f=>f.startsWith('academy-report-'));
+          if(!filename)throw Error('Missing Teacher report');
+          const r=JSON.parse(readFileSync(dir+'/'+filename));
+          const p=JSON.parse(readFileSync('/tmp/academy-xau-provenance.json'));
+          if(r.schema!=='ACADEMY_TEACHER_RESEARCH_V1'||r.status!=='HISTORICAL_DEVELOPMENT_ONLY'||
+             r.verifiedForwardGrades!==0||r.paperOrders!==0||r.liveOrders!==0||
+             r.automaticPromotion!==false||r.independentFinalTestEvaluated!==false||
+             p.originVerified!==false||p.brokerOrders!==0)throw Error('Research-source safety gate failed');
+          console.log('ACADEMY_RESEARCH_ONLY',JSON.stringify({bars:p.rows,first:p.first,last:p.last,
+            netDevelopmentGbp:r.development.netGbp,stressDevelopmentGbp:r.development.stressNetGbp,
+            comparedToMomentumGbp:r.comparison.momentumBaseline.netGbp,selected:r.development.selectedTrades,
+            profitGate:r.developmentProfitGatePassed,verifiedForwardGrades:r.verifiedForwardGrades}));
+          NODE
+      - name: Upload provenance and research-only examination report
+        uses: actions/upload-artifact@v4
+        with:
+          name: academy-xau-source-backed-development-unverified
+          path: |
+            /tmp/academy-xau-provenance.json
+            /tmp/academy-xau-research/academy-report-*.json
+          retention-days: 7
