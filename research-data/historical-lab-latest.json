@@ -85,12 +85,12 @@
           "family": "rsi_reversion",
           "period": 9,
           "buyBelow": 27,
-          "sellAbove": 65
+          "sellAbove": 70
         },
-        "normalNetAcrossDisjointFolds": -2.21,
-        "stressedNetAcrossDisjointFolds": -3.25,
+        "normalNetAcrossDisjointFolds": -2.03,
+        "stressedNetAcrossDisjointFolds": -3.02,
         "profitableFolds": 0,
-        "researchRankScore": -3.25,
+        "researchRankScore": -3.02,
         "note": "Disjoint development folds are historical research, not broker fills or untouched admission evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
@@ -318,13 +318,13 @@
         "parameters": {
           "family": "rsi_reversion",
           "period": 9,
-          "buyBelow": 32,
-          "sellAbove": 65
+          "buyBelow": 31,
+          "sellAbove": 75
         },
-        "normalNetAcrossDisjointFolds": -1.18,
-        "stressedNetAcrossDisjointFolds": -3.79,
+        "normalNetAcrossDisjointFolds": -0.98,
+        "stressedNetAcrossDisjointFolds": -2.64,
         "profitableFolds": 0,
-        "researchRankScore": -3.79,
+        "researchRankScore": -2.64,
         "note": "Disjoint development folds are historical research, not broker fills or untouched admission evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
