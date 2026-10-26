@@ -1,8 +1,8 @@
 {
   "schema": "SCALP_STUDENT_PROGRESS_V1",
-  "generatedAt": "2026-10-26T19:23:43.038Z",
+  "generatedAt": "2026-10-26T23:55:47.335Z",
   "academySnapshotAt": "2026-10-26T15:09:35.007Z",
-  "rlSnapshotAt": "2026-10-26T14:13:35.802026+00:00",
+  "rlSnapshotAt": "2026-10-26T20:28:51.401763+00:00",
   "markets": [
     "COMMODITIES",
     "FOREX",
@@ -640,10 +640,10 @@
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T14:13:35.802026+00:00",
-        "cumulativeGradientUpdates": 158990,
+        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
+        "cumulativeGradientUpdates": 162837,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 100,
+        "newTrainingTailCandles": 0,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -849,6 +849,24 @@
             "cumulativeGradientUpdates": 158990,
             "gradientUpdatesThisRun": 3847,
             "newTrainingTailCandles": 100,
+            "sameWindowNetVirtual": 0,
+            "sameWindowStressNetVirtual": 0,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          },
+          {
+            "observedAt": "2026-10-26T20:28:51.401763+00:00",
+            "modelSha256": "972fd8983c08b2e3f9416de93de770e7633ddf7bd16c600c33a25fed17762c85",
+            "cumulativeGradientUpdates": 162837,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 0,
             "sameWindowNetVirtual": 0,
             "sameWindowStressNetVirtual": 0,
             "sameWindowImproved": false,
@@ -1481,10 +1499,10 @@
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T14:13:35.802026+00:00",
-        "cumulativeGradientUpdates": 158990,
+        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
+        "cumulativeGradientUpdates": 162837,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 100,
+        "newTrainingTailCandles": 0,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -1695,6 +1713,24 @@
             "sameWindowNetVirtual": -0.511,
             "sameWindowStressNetVirtual": -0.8538,
             "sameWindowImproved": true,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          },
+          {
+            "observedAt": "2026-10-26T20:28:51.401763+00:00",
+            "modelSha256": "92b738846ead63a6bcaa8382a7225c16782df79c60edce140cf2cf68606b2fb4",
+            "cumulativeGradientUpdates": 162837,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 0,
+            "sameWindowNetVirtual": -0.5937,
+            "sameWindowStressNetVirtual": -0.9357,
+            "sameWindowImproved": false,
             "profitDevelopmentGatePassed": false,
             "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
             "developmentReasons": [
@@ -2324,10 +2360,10 @@
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T14:13:35.802026+00:00",
-        "cumulativeGradientUpdates": 158990,
+        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
+        "cumulativeGradientUpdates": 162837,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 100,
+        "newTrainingTailCandles": 0,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -2539,6 +2575,24 @@
             "newTrainingTailCandles": 100,
             "sameWindowNetVirtual": -0.912,
             "sameWindowStressNetVirtual": -1.4207,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          },
+          {
+            "observedAt": "2026-10-26T20:28:51.401763+00:00",
+            "modelSha256": "61b3869d49eb388f94e9f48244e900c46db8e6cb4bed5e932aaafafaf21e00e2",
+            "cumulativeGradientUpdates": 162837,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 0,
+            "sameWindowNetVirtual": -1.8476,
+            "sameWindowStressNetVirtual": -3.0048,
             "sameWindowImproved": false,
             "profitDevelopmentGatePassed": false,
             "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
@@ -3169,10 +3223,10 @@
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T14:13:35.802026+00:00",
-        "cumulativeGradientUpdates": 158990,
+        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
+        "cumulativeGradientUpdates": 162837,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 100,
+        "newTrainingTailCandles": 0,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -3382,6 +3436,24 @@
             "newTrainingTailCandles": 100,
             "sameWindowNetVirtual": -1.1051,
             "sameWindowStressNetVirtual": -2.0107,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          },
+          {
+            "observedAt": "2026-10-26T20:28:51.401763+00:00",
+            "modelSha256": "61a967cdf9757c03ee5b8d1178bc2986fa04a124ef9db66eb9132c3bed15e6b1",
+            "cumulativeGradientUpdates": 162837,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 0,
+            "sameWindowNetVirtual": -1.5206,
+            "sameWindowStressNetVirtual": -2.6012,
             "sameWindowImproved": false,
             "profitDevelopmentGatePassed": false,
             "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
@@ -4012,10 +4084,10 @@
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T14:13:35.802026+00:00",
-        "cumulativeGradientUpdates": 158990,
+        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
+        "cumulativeGradientUpdates": 162837,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 100,
+        "newTrainingTailCandles": 0,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -4235,6 +4307,24 @@
             "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
             "developmentReasons": [
               "NOT_PROFITABLE_UNDER_STRESS",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          },
+          {
+            "observedAt": "2026-10-26T20:28:51.401763+00:00",
+            "modelSha256": "74faeac18525aa98566a827c865c819759a16ea828904d41611a1823127734f3",
+            "cumulativeGradientUpdates": 162837,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 0,
+            "sameWindowNetVirtual": -0.5986,
+            "sameWindowStressNetVirtual": -1.4521,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
               "INSUFFICIENT_CLOSED_TRADES"
             ]
           }
@@ -4858,10 +4948,10 @@
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T14:13:35.802026+00:00",
-        "cumulativeGradientUpdates": 158990,
+        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
+        "cumulativeGradientUpdates": 162837,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 100,
+        "newTrainingTailCandles": 0,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -5075,6 +5165,24 @@
             "newTrainingTailCandles": 100,
             "sameWindowNetVirtual": -1.2062,
             "sameWindowStressNetVirtual": -2.7231,
+            "sameWindowImproved": true,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          },
+          {
+            "observedAt": "2026-10-26T20:28:51.401763+00:00",
+            "modelSha256": "9da91bf444975df7d05173a4330c1b8c20c32af0c0dfe8233357e47746dae832",
+            "cumulativeGradientUpdates": 162837,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 0,
+            "sameWindowNetVirtual": -1.0872,
+            "sameWindowStressNetVirtual": -1.957,
             "sameWindowImproved": true,
             "profitDevelopmentGatePassed": false,
             "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
@@ -5705,10 +5813,10 @@
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T14:13:35.802026+00:00",
-        "cumulativeGradientUpdates": 158990,
+        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
+        "cumulativeGradientUpdates": 162837,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 100,
+        "newTrainingTailCandles": 0,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -5922,6 +6030,24 @@
             "newTrainingTailCandles": 100,
             "sameWindowNetVirtual": -0.5135,
             "sameWindowStressNetVirtual": -1.896,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          },
+          {
+            "observedAt": "2026-10-26T20:28:51.401763+00:00",
+            "modelSha256": "21488ab717cc5e68a2519cb7efc855ffb06d80387a287abddca8ee7154ce0689",
+            "cumulativeGradientUpdates": 162837,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 0,
+            "sameWindowNetVirtual": -1.1077,
+            "sameWindowStressNetVirtual": -2.414,
             "sameWindowImproved": false,
             "profitDevelopmentGatePassed": false,
             "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
@@ -6552,10 +6678,10 @@
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T14:13:35.802026+00:00",
-        "cumulativeGradientUpdates": 158990,
+        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
+        "cumulativeGradientUpdates": 162837,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 100,
+        "newTrainingTailCandles": 0,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -6768,6 +6894,24 @@
             "sameWindowNetVirtual": -0.5032,
             "sameWindowStressNetVirtual": -1.6459,
             "sameWindowImproved": true,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          },
+          {
+            "observedAt": "2026-10-26T20:28:51.401763+00:00",
+            "modelSha256": "8621280dd15947fc595e87ed02db1b26ffcb4314c6066a2c0eb7d33e800e0648",
+            "cumulativeGradientUpdates": 162837,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 0,
+            "sameWindowNetVirtual": -2.1801,
+            "sameWindowStressNetVirtual": -3.2478,
+            "sameWindowImproved": false,
             "profitDevelopmentGatePassed": false,
             "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
             "developmentReasons": [
@@ -7397,10 +7541,10 @@
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T14:13:35.802026+00:00",
-        "cumulativeGradientUpdates": 158990,
+        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
+        "cumulativeGradientUpdates": 162837,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 100,
+        "newTrainingTailCandles": 0,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -7610,6 +7754,24 @@
             "newTrainingTailCandles": 100,
             "sameWindowNetVirtual": -0.0334,
             "sameWindowStressNetVirtual": -0.3812,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          },
+          {
+            "observedAt": "2026-10-26T20:28:51.401763+00:00",
+            "modelSha256": "40c0743491bf65f6d43b1f3cfb6f7c93f6eea4e9db89b7f605583e15483c15be",
+            "cumulativeGradientUpdates": 162837,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 0,
+            "sameWindowNetVirtual": -0.4669,
+            "sameWindowStressNetVirtual": -0.9818,
             "sameWindowImproved": false,
             "profitDevelopmentGatePassed": false,
             "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
@@ -8240,10 +8402,10 @@
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T14:13:35.802026+00:00",
-        "cumulativeGradientUpdates": 158990,
+        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
+        "cumulativeGradientUpdates": 162837,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 100,
+        "newTrainingTailCandles": 0,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -8453,6 +8615,24 @@
             "newTrainingTailCandles": 100,
             "sameWindowNetVirtual": -0.8659,
             "sameWindowStressNetVirtual": -2.8362,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          },
+          {
+            "observedAt": "2026-10-26T20:28:51.401763+00:00",
+            "modelSha256": "bdd6dd0c855aa5f048b969fa69b471ee3dd98e4cf357084d3fe6b455d51c7f4f",
+            "cumulativeGradientUpdates": 162837,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 0,
+            "sameWindowNetVirtual": -1.9743,
+            "sameWindowStressNetVirtual": -3.0446,
             "sameWindowImproved": false,
             "profitDevelopmentGatePassed": false,
             "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
