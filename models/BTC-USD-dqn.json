@@ -2,7 +2,7 @@
   "schema": "SCALP_DQN_DEVELOPMENT_V1",
   "symbol": "BTC/USD",
   "modelType": "DEEP_Q_NETWORK",
-  "policySha256": "d481b71f120fdd6030432ef644d36059bfe742d30146a4fd12c9c94d13e95b9a",
+  "policySha256": "972fd8983c08b2e3f9416de93de770e7633ddf7bd16c600c33a25fed17762c85",
   "trainingDataSha256": "b39a447bee10000b85cfd802430a50d97ec1cf11b227a3c4ef4bc9e5f5b2d62a",
   "seed": 7,
   "training": {
@@ -11,10 +11,10 @@
     "episodes": 3,
     "simulatedClosedTrades": 1587,
     "simulatedOpens": 1588,
-    "trainingElapsedSeconds": 6.65,
-    "decisionsPerSecond": 2323.32,
-    "virtualClosesPerSecond": 238.65,
-    "gradientUpdatesPerSecond": 578.5,
+    "trainingElapsedSeconds": 3.0549,
+    "decisionsPerSecond": 5057.4,
+    "virtualClosesPerSecond": 519.49,
+    "gradientUpdatesPerSecond": 1259.28,
     "marketTimeframe": "5Min",
     "cadenceType": "ACCELERATED_HISTORICAL_REPLAY_NOT_REALTIME_1S"
   },
@@ -27,12 +27,12 @@
     "holdoutStart": 1792501800000,
     "sealedHoldoutTouched": false
   },
-  "previousCheckpointSha256": "33ddf2158ccb8187c2eedde3e5fd564d75aa0990ec807a9ae5897d7eb9127f6e",
+  "previousCheckpointSha256": "d481b71f120fdd6030432ef644d36059bfe742d30146a4fd12c9c94d13e95b9a",
   "checkpointProgress": {
     "schema": "SCALP_CHECKPOINT_SAME_WINDOW_DEVELOPMENT_V1",
     "comparisonStatus": "SAME_DEVELOPMENT_WINDOW_NOT_FORWARD_VERIFIED",
     "validationWindowSha256": "39f349dc76c325409fbb768e932aebae3cb427d5a208543957fd7aa3bc9705b3",
-    "previousModelSha256": "33ddf2158ccb8187c2eedde3e5fd564d75aa0990ec807a9ae5897d7eb9127f6e",
+    "previousModelSha256": "d481b71f120fdd6030432ef644d36059bfe742d30146a4fd12c9c94d13e95b9a",
     "previousNetVirtual": 0.0,
     "candidateNetVirtual": 0.0,
     "deltaNetVirtual": 0.0,
