@@ -2,7 +2,7 @@
   "schema": "SCALP_NEO_STATUS_V1",
   "name": "NEO",
   "mode": "RESEARCH_PATTERN_MEMORY",
-  "generatedAt": "2026-10-27T12:30:59.019176+00:00",
+  "generatedAt": "2026-10-27T22:28:23.047864+00:00",
   "symbols": 10,
   "memorizedLabeledPatterns": 51690,
   "newPatternsThisRun": 0,
@@ -91,92 +91,92 @@
   "predictionsOnEligibleTrainingHistory": [
     {
       "symbol": "BTC/USD",
-      "observedTime": 1792066200000,
+      "observedTime": 1792086900000,
       "matched": 11,
       "analogueSignal": "FLAT",
       "status": "HISTORICAL_ANALOGUE_ONLY",
-      "estimatedNetLogReturn": -0.007298,
+      "estimatedNetLogReturn": -0.007514,
       "patternAgreement": 0.0
     },
     {
       "symbol": "ETH/USD",
-      "observedTime": 1792066200000,
+      "observedTime": 1792086900000,
       "matched": 11,
       "analogueSignal": "FLAT",
       "status": "HISTORICAL_ANALOGUE_ONLY",
-      "estimatedNetLogReturn": -0.007373,
+      "estimatedNetLogReturn": -0.006939,
       "patternAgreement": 0.0
     },
     {
       "symbol": "SOL/USD",
-      "observedTime": 1792066200000,
+      "observedTime": 1792086900000,
       "matched": 11,
       "analogueSignal": "FLAT",
       "status": "HISTORICAL_ANALOGUE_ONLY",
-      "estimatedNetLogReturn": -0.006941,
+      "estimatedNetLogReturn": -0.00663,
       "patternAgreement": 0.0
     },
     {
       "symbol": "XRP/USD",
-      "observedTime": 1792066200000,
+      "observedTime": 1792086900000,
       "matched": 11,
       "analogueSignal": "FLAT",
       "status": "HISTORICAL_ANALOGUE_ONLY",
-      "estimatedNetLogReturn": -0.008105,
+      "estimatedNetLogReturn": -0.007908,
       "patternAgreement": 0.0
     },
     {
       "symbol": "ADA/USD",
-      "observedTime": 1792066200000,
+      "observedTime": 1792086900000,
       "matched": 11,
       "analogueSignal": "FLAT",
       "status": "HISTORICAL_ANALOGUE_ONLY",
-      "estimatedNetLogReturn": -0.005697,
+      "estimatedNetLogReturn": -0.007051,
       "patternAgreement": 0.091
     },
     {
       "symbol": "AVAX/USD",
-      "observedTime": 1792066200000,
+      "observedTime": 1792086900000,
       "matched": 11,
       "analogueSignal": "FLAT",
       "status": "HISTORICAL_ANALOGUE_ONLY",
-      "estimatedNetLogReturn": -0.007088,
-      "patternAgreement": 0.0
+      "estimatedNetLogReturn": -0.005289,
+      "patternAgreement": 0.091
     },
     {
       "symbol": "LINK/USD",
-      "observedTime": 1792066200000,
+      "observedTime": 1792086900000,
       "matched": 11,
       "analogueSignal": "FLAT",
       "status": "HISTORICAL_ANALOGUE_ONLY",
-      "estimatedNetLogReturn": -0.006622,
+      "estimatedNetLogReturn": -0.007291,
       "patternAgreement": 0.0
     },
     {
       "symbol": "DOGE/USD",
-      "observedTime": 1792066200000,
+      "observedTime": 1792086900000,
       "matched": 11,
       "analogueSignal": "FLAT",
       "status": "HISTORICAL_ANALOGUE_ONLY",
-      "estimatedNetLogReturn": -0.004426,
-      "patternAgreement": 0.182
+      "estimatedNetLogReturn": -0.007506,
+      "patternAgreement": 0.0
     },
     {
       "symbol": "LTC/USD",
-      "observedTime": 1792066200000,
+      "observedTime": 1792086900000,
       "matched": 11,
       "analogueSignal": "FLAT",
       "status": "HISTORICAL_ANALOGUE_ONLY",
-      "estimatedNetLogReturn": -0.007436,
+      "estimatedNetLogReturn": -0.007329,
       "patternAgreement": 0.0
     },
     {
       "symbol": "BCH/USD",
-      "observedTime": 1792066200000,
+      "observedTime": 1792086900000,
       "matched": 11,
       "analogueSignal": "FLAT",
       "status": "HISTORICAL_ANALOGUE_ONLY",
-      "estimatedNetLogReturn": -0.006213,
+      "estimatedNetLogReturn": -0.007028,
       "patternAgreement": 0.0
     }
   ],
