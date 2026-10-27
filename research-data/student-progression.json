@@ -1,8 +1,8 @@
 {
   "schema": "SCALP_STUDENT_PROGRESS_V1",
-  "generatedAt": "2026-10-26T23:55:47.335Z",
-  "academySnapshotAt": "2026-10-26T15:09:35.007Z",
-  "rlSnapshotAt": "2026-10-26T20:28:51.401763+00:00",
+  "generatedAt": "2026-10-27T05:13:12.802Z",
+  "academySnapshotAt": "2026-10-27T04:54:41.539Z",
+  "rlSnapshotAt": "2026-10-27T00:25:42.777792+00:00",
   "markets": [
     "COMMODITIES",
     "FOREX",
@@ -38,18 +38,18 @@
       "symbol": "BTC/USD",
       "name": "BTC",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-26T15:09:35.007Z",
-      "latestHistoricalTrainingEnd": "2026-09-20T13:15:00.000Z",
+      "publishedAcademyAt": "2026-10-27T04:54:41.539Z",
+      "latestHistoricalTrainingEnd": "2026-09-20T22:45:00.000Z",
       "research": {
-        "experiments": 65,
+        "experiments": 71,
         "independentWindows": 2,
-        "configurations": 110,
+        "configurations": 126,
         "historicalTrainingGrade": 24,
         "historicalCandidateNetGbp": -1.6,
         "historicalCandidateTrades": 25,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -636,14 +636,68 @@
             "testedConfigurations": 6,
             "independent": false,
             "researchXp": 0
+          },
+          {
+            "run": 66,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 67,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 68,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 69,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 70,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 71,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
           }
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
-        "cumulativeGradientUpdates": 162837,
+        "generatedAt": "2026-10-27T00:25:42.777792+00:00",
+        "cumulativeGradientUpdates": 166684,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 0,
+        "newTrainingTailCandles": 114,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -878,6 +932,24 @@
               "NO_EDGE_VS_CASH_AND_BUY_HOLD",
               "INSUFFICIENT_CLOSED_TRADES"
             ]
+          },
+          {
+            "observedAt": "2026-10-27T00:25:42.777792+00:00",
+            "modelSha256": "382e3e6891a9a4d829eae8dad22ae46df771d8ae70d3b92cc6b5da509a88e90c",
+            "cumulativeGradientUpdates": 166684,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 114,
+            "sameWindowNetVirtual": 0,
+            "sameWindowStressNetVirtual": 0,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
           }
         ]
       },
@@ -897,18 +969,18 @@
       "symbol": "ETH/USD",
       "name": "ETH",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-26T15:09:35.007Z",
-      "latestHistoricalTrainingEnd": "2026-09-20T13:15:00.000Z",
+      "publishedAcademyAt": "2026-10-27T04:54:41.539Z",
+      "latestHistoricalTrainingEnd": "2026-09-20T22:45:00.000Z",
       "research": {
-        "experiments": 65,
+        "experiments": 71,
         "independentWindows": 2,
-        "configurations": 114,
+        "configurations": 130,
         "historicalTrainingGrade": 8.7,
         "historicalCandidateNetGbp": -8.1098,
         "historicalCandidateTrades": 46,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -1495,14 +1567,68 @@
             "testedConfigurations": 6,
             "independent": false,
             "researchXp": 0
+          },
+          {
+            "run": 66,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 67,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 68,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 69,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 70,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 71,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
           }
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
-        "cumulativeGradientUpdates": 162837,
+        "generatedAt": "2026-10-27T00:25:42.777792+00:00",
+        "cumulativeGradientUpdates": 166684,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 0,
+        "newTrainingTailCandles": 114,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -1739,6 +1865,24 @@
               "NO_EDGE_VS_CASH_AND_BUY_HOLD",
               "INSUFFICIENT_CLOSED_TRADES"
             ]
+          },
+          {
+            "observedAt": "2026-10-27T00:25:42.777792+00:00",
+            "modelSha256": "3680d31a2e102e6d250a868c83fb57bdc93b77df783b723611b9e4e2cafd36e5",
+            "cumulativeGradientUpdates": 166684,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 114,
+            "sameWindowNetVirtual": -0.7421,
+            "sameWindowStressNetVirtual": -1.4763,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
           }
         ]
       },
@@ -1758,18 +1902,18 @@
       "symbol": "SOL/USD",
       "name": "SOL",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-26T15:09:35.007Z",
-      "latestHistoricalTrainingEnd": "2026-09-20T13:15:00.000Z",
+      "publishedAcademyAt": "2026-10-27T04:54:41.539Z",
+      "latestHistoricalTrainingEnd": "2026-09-20T22:45:00.000Z",
       "research": {
-        "experiments": 65,
+        "experiments": 71,
         "independentWindows": 2,
-        "configurations": 88,
+        "configurations": 102,
         "historicalTrainingGrade": 60.87,
         "historicalCandidateNetGbp": -0.79,
         "historicalCandidateTrades": 23,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -2356,14 +2500,68 @@
             "testedConfigurations": 6,
             "independent": false,
             "researchXp": 0
+          },
+          {
+            "run": 66,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 67,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 68,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 69,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 70,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 71,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
           }
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
-        "cumulativeGradientUpdates": 162837,
+        "generatedAt": "2026-10-27T00:25:42.777792+00:00",
+        "cumulativeGradientUpdates": 166684,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 0,
+        "newTrainingTailCandles": 114,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -2602,6 +2800,24 @@
               "NO_EDGE_VS_CASH_AND_BUY_HOLD",
               "INSUFFICIENT_CLOSED_TRADES"
             ]
+          },
+          {
+            "observedAt": "2026-10-27T00:25:42.777792+00:00",
+            "modelSha256": "c5d7cd0246b3764296c728d620d6a146d61e61b39fa49550e4abce0a1525d742",
+            "cumulativeGradientUpdates": 166684,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 114,
+            "sameWindowNetVirtual": -1.6477,
+            "sameWindowStressNetVirtual": -2.3378,
+            "sameWindowImproved": true,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
           }
         ]
       },
@@ -2621,18 +2837,18 @@
       "symbol": "XRP/USD",
       "name": "XRP",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-26T15:09:35.007Z",
-      "latestHistoricalTrainingEnd": "2026-09-20T13:15:00.000Z",
+      "publishedAcademyAt": "2026-10-27T04:54:41.539Z",
+      "latestHistoricalTrainingEnd": "2026-09-20T22:45:00.000Z",
       "research": {
-        "experiments": 65,
+        "experiments": 71,
         "independentWindows": 2,
-        "configurations": 113,
+        "configurations": 128,
         "historicalTrainingGrade": 62.5,
         "historicalCandidateNetGbp": -1.32,
         "historicalCandidateTrades": 24,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -3219,14 +3435,68 @@
             "testedConfigurations": 6,
             "independent": false,
             "researchXp": 0
+          },
+          {
+            "run": 66,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 67,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 68,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 69,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 70,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 71,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
           }
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
-        "cumulativeGradientUpdates": 162837,
+        "generatedAt": "2026-10-27T00:25:42.777792+00:00",
+        "cumulativeGradientUpdates": 166684,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 0,
+        "newTrainingTailCandles": 114,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -3463,6 +3733,24 @@
               "NO_EDGE_VS_CASH_AND_BUY_HOLD",
               "INSUFFICIENT_CLOSED_TRADES"
             ]
+          },
+          {
+            "observedAt": "2026-10-27T00:25:42.777792+00:00",
+            "modelSha256": "6add6051197726aec4aefa6bafec65d50374eaf1a32df8cc777ad2a8e5bec6b9",
+            "cumulativeGradientUpdates": 166684,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 114,
+            "sameWindowNetVirtual": -0.1248,
+            "sameWindowStressNetVirtual": -1.1618,
+            "sameWindowImproved": true,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
           }
         ]
       },
@@ -3482,18 +3770,18 @@
       "symbol": "ADA/USD",
       "name": "ADA",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-26T15:09:35.007Z",
-      "latestHistoricalTrainingEnd": "2026-09-20T13:15:00.000Z",
+      "publishedAcademyAt": "2026-10-27T04:54:41.539Z",
+      "latestHistoricalTrainingEnd": "2026-09-20T22:45:00.000Z",
       "research": {
-        "experiments": 65,
+        "experiments": 71,
         "independentWindows": 2,
-        "configurations": 106,
+        "configurations": 123,
         "historicalTrainingGrade": 52,
         "historicalCandidateNetGbp": -0.53,
         "historicalCandidateTrades": 25,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -4080,14 +4368,68 @@
             "testedConfigurations": 6,
             "independent": false,
             "researchXp": 0
+          },
+          {
+            "run": 66,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 67,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 68,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 69,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 70,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 71,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
           }
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
-        "cumulativeGradientUpdates": 162837,
+        "generatedAt": "2026-10-27T00:25:42.777792+00:00",
+        "cumulativeGradientUpdates": 166684,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 0,
+        "newTrainingTailCandles": 114,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -4327,6 +4669,24 @@
               "NO_EDGE_VS_CASH_AND_BUY_HOLD",
               "INSUFFICIENT_CLOSED_TRADES"
             ]
+          },
+          {
+            "observedAt": "2026-10-27T00:25:42.777792+00:00",
+            "modelSha256": "1b312b4be8df87515ae86b69bd7474406306acd2529b9c174b815d3137d15fd9",
+            "cumulativeGradientUpdates": 166684,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 114,
+            "sameWindowNetVirtual": -0.3837,
+            "sameWindowStressNetVirtual": -1.0323,
+            "sameWindowImproved": true,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
           }
         ]
       },
@@ -4346,18 +4706,18 @@
       "symbol": "AVAX/USD",
       "name": "AVAX",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-26T15:09:35.007Z",
-      "latestHistoricalTrainingEnd": "2026-09-20T13:15:00.000Z",
+      "publishedAcademyAt": "2026-10-27T04:54:41.539Z",
+      "latestHistoricalTrainingEnd": "2026-09-20T22:45:00.000Z",
       "research": {
-        "experiments": 65,
+        "experiments": 71,
         "independentWindows": 2,
-        "configurations": 111,
+        "configurations": 134,
         "historicalTrainingGrade": 25,
         "historicalCandidateNetGbp": -3.6783,
         "historicalCandidateTrades": 20,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -4944,14 +5304,68 @@
             "testedConfigurations": 6,
             "independent": false,
             "researchXp": 0
+          },
+          {
+            "run": 66,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 67,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 68,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 69,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 70,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 71,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
           }
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
-        "cumulativeGradientUpdates": 162837,
+        "generatedAt": "2026-10-27T00:25:42.777792+00:00",
+        "cumulativeGradientUpdates": 166684,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 0,
+        "newTrainingTailCandles": 114,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -5192,6 +5606,24 @@
               "NO_EDGE_VS_CASH_AND_BUY_HOLD",
               "INSUFFICIENT_CLOSED_TRADES"
             ]
+          },
+          {
+            "observedAt": "2026-10-27T00:25:42.777792+00:00",
+            "modelSha256": "243755047c12b77b22c1772030a88563af1bf275f2b355718938a4e7fce6c645",
+            "cumulativeGradientUpdates": 166684,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 114,
+            "sameWindowNetVirtual": -1.578,
+            "sameWindowStressNetVirtual": -2.6944,
+            "sameWindowImproved": true,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
           }
         ]
       },
@@ -5211,18 +5643,18 @@
       "symbol": "LINK/USD",
       "name": "LINK",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-26T15:09:35.007Z",
-      "latestHistoricalTrainingEnd": "2026-09-20T13:15:00.000Z",
+      "publishedAcademyAt": "2026-10-27T04:54:41.539Z",
+      "latestHistoricalTrainingEnd": "2026-09-20T22:45:00.000Z",
       "research": {
-        "experiments": 65,
+        "experiments": 71,
         "independentWindows": 2,
-        "configurations": 101,
+        "configurations": 111,
         "historicalTrainingGrade": 52,
         "historicalCandidateNetGbp": -2.24,
         "historicalCandidateTrades": 25,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -5809,14 +6241,68 @@
             "testedConfigurations": 6,
             "independent": false,
             "researchXp": 0
+          },
+          {
+            "run": 66,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 67,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 68,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 69,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 70,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 71,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
           }
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
-        "cumulativeGradientUpdates": 162837,
+        "generatedAt": "2026-10-27T00:25:42.777792+00:00",
+        "cumulativeGradientUpdates": 166684,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 0,
+        "newTrainingTailCandles": 114,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -6057,6 +6543,24 @@
               "NO_EDGE_VS_CASH_AND_BUY_HOLD",
               "INSUFFICIENT_CLOSED_TRADES"
             ]
+          },
+          {
+            "observedAt": "2026-10-27T00:25:42.777792+00:00",
+            "modelSha256": "2a055e8696aa366317506b7076724e732f09dff84e2a72dbadd30da846b786ea",
+            "cumulativeGradientUpdates": 166684,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 114,
+            "sameWindowNetVirtual": -0.8812,
+            "sameWindowStressNetVirtual": -2.9154,
+            "sameWindowImproved": false,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
           }
         ]
       },
@@ -6076,18 +6580,18 @@
       "symbol": "DOGE/USD",
       "name": "DOGE",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-26T15:09:35.007Z",
-      "latestHistoricalTrainingEnd": "2026-09-20T13:15:00.000Z",
+      "publishedAcademyAt": "2026-10-27T04:54:41.539Z",
+      "latestHistoricalTrainingEnd": "2026-09-20T22:45:00.000Z",
       "research": {
-        "experiments": 65,
+        "experiments": 71,
         "independentWindows": 2,
-        "configurations": 127,
+        "configurations": 142,
         "historicalTrainingGrade": 44,
         "historicalCandidateNetGbp": -1.7,
         "historicalCandidateTrades": 25,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -6674,14 +7178,68 @@
             "testedConfigurations": 6,
             "independent": false,
             "researchXp": 0
+          },
+          {
+            "run": 66,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 67,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 68,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 69,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 70,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 71,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
           }
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
-        "cumulativeGradientUpdates": 162837,
+        "generatedAt": "2026-10-27T00:25:42.777792+00:00",
+        "cumulativeGradientUpdates": 166684,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 0,
+        "newTrainingTailCandles": 114,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -6920,6 +7478,24 @@
               "NO_EDGE_VS_CASH_AND_BUY_HOLD",
               "INSUFFICIENT_CLOSED_TRADES"
             ]
+          },
+          {
+            "observedAt": "2026-10-27T00:25:42.777792+00:00",
+            "modelSha256": "4ce288565d62e5ce314b657b33f2f059af4fafbc07d780444f01c7379d2bfbf4",
+            "cumulativeGradientUpdates": 166684,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 114,
+            "sameWindowNetVirtual": -1.193,
+            "sameWindowStressNetVirtual": -2.0024,
+            "sameWindowImproved": true,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_AFTER_COSTS",
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
           }
         ]
       },
@@ -6939,18 +7515,18 @@
       "symbol": "LTC/USD",
       "name": "LTC",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-26T15:09:35.007Z",
-      "latestHistoricalTrainingEnd": "2026-09-20T13:15:00.000Z",
+      "publishedAcademyAt": "2026-10-27T04:54:41.539Z",
+      "latestHistoricalTrainingEnd": "2026-09-20T22:45:00.000Z",
       "research": {
-        "experiments": 65,
+        "experiments": 71,
         "independentWindows": 2,
-        "configurations": 131,
+        "configurations": 146,
         "historicalTrainingGrade": 65.22,
         "historicalCandidateNetGbp": -0.48,
         "historicalCandidateTrades": 23,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -7537,14 +8113,68 @@
             "testedConfigurations": 6,
             "independent": false,
             "researchXp": 0
+          },
+          {
+            "run": 66,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 67,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 68,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 69,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 70,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 71,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
           }
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
-        "cumulativeGradientUpdates": 162837,
+        "generatedAt": "2026-10-27T00:25:42.777792+00:00",
+        "cumulativeGradientUpdates": 166684,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 0,
+        "newTrainingTailCandles": 114,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -7781,6 +8411,23 @@
               "NO_EDGE_VS_CASH_AND_BUY_HOLD",
               "INSUFFICIENT_CLOSED_TRADES"
             ]
+          },
+          {
+            "observedAt": "2026-10-27T00:25:42.777792+00:00",
+            "modelSha256": "62882df75f949949227e9a04dd7dd1c1b70db35f0c3511e2385c7ae435ad5417",
+            "cumulativeGradientUpdates": 166684,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 114,
+            "sameWindowNetVirtual": 0.0871,
+            "sameWindowStressNetVirtual": -0.7773,
+            "sameWindowImproved": true,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_UNDER_STRESS",
+              "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
           }
         ]
       },
@@ -7800,18 +8447,18 @@
       "symbol": "BCH/USD",
       "name": "BCH",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-10-26T15:09:35.007Z",
-      "latestHistoricalTrainingEnd": "2026-09-20T13:15:00.000Z",
+      "publishedAcademyAt": "2026-10-27T04:54:41.539Z",
+      "latestHistoricalTrainingEnd": "2026-09-20T22:45:00.000Z",
       "research": {
-        "experiments": 65,
+        "experiments": 71,
         "independentWindows": 2,
-        "configurations": 108,
+        "configurations": 123,
         "historicalTrainingGrade": 46.67,
         "historicalCandidateNetGbp": -4.03,
         "historicalCandidateTrades": 30,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -8398,14 +9045,68 @@
             "testedConfigurations": 6,
             "independent": false,
             "researchXp": 0
+          },
+          {
+            "run": 66,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 67,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 68,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 69,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 70,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 71,
+            "trainedThrough": "2026-09-20T22:45:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
           }
         ]
       },
       "rl": {
-        "generatedAt": "2026-10-26T20:28:51.401763+00:00",
-        "cumulativeGradientUpdates": 162837,
+        "generatedAt": "2026-10-27T00:25:42.777792+00:00",
+        "cumulativeGradientUpdates": 166684,
         "gradientUpdatesThisRun": 3847,
-        "newTrainingTailCandles": 0,
+        "newTrainingTailCandles": 114,
         "decisionsThisRun": 15450,
         "profitDevelopmentGatePassed": false,
         "checkpoints": [
@@ -8640,6 +9341,22 @@
               "NOT_PROFITABLE_AFTER_COSTS",
               "NOT_PROFITABLE_UNDER_STRESS",
               "NO_EDGE_VS_CASH_AND_BUY_HOLD",
+              "INSUFFICIENT_CLOSED_TRADES"
+            ]
+          },
+          {
+            "observedAt": "2026-10-27T00:25:42.777792+00:00",
+            "modelSha256": "0b231f81af47127a6e0af758bd7cd5876a79475d59fbeb3d97b4038ec99f3a78",
+            "cumulativeGradientUpdates": 166684,
+            "gradientUpdatesThisRun": 3847,
+            "newTrainingTailCandles": 114,
+            "sameWindowNetVirtual": 1.3555,
+            "sameWindowStressNetVirtual": -1.1545,
+            "sameWindowImproved": true,
+            "profitDevelopmentGatePassed": false,
+            "developmentStatus": "DEVELOPMENT_PROFIT_GATE_FAILED",
+            "developmentReasons": [
+              "NOT_PROFITABLE_UNDER_STRESS",
               "INSUFFICIENT_CLOSED_TRADES"
             ]
           }
