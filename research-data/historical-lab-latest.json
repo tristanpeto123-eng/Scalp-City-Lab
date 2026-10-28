@@ -316,14 +316,14 @@
       "candidatesEvaluated": 6,
       "bestResearchCandidate": {
         "parameters": {
-          "family": "ema_trend",
-          "fast": 9,
-          "slow": 34
+          "family": "channel_breakout",
+          "lookback": 15,
+          "exitLookback": 8
         },
-        "normalNetAcrossDisjointFolds": -0.14,
-        "stressedNetAcrossDisjointFolds": -2.92,
+        "normalNetAcrossDisjointFolds": 0.88,
+        "stressedNetAcrossDisjointFolds": -2.23,
         "profitableFolds": 1,
-        "researchRankScore": -2.91,
+        "researchRankScore": -2.22,
         "note": "Disjoint development folds are historical research, not broker fills or untouched admission evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
