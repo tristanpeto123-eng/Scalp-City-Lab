@@ -2,7 +2,7 @@
   "schema": "ROBOT_ACADEMY_RESEARCH_V1",
   "source": "GITHUB_PERSISTED_HISTORICAL_TRAINING",
   "sourcePolicy": "GBP50-PROFIT2000-v2",
-  "sourceDigest": "84293a8d698c122103d2e11a7d542ce90ab26183e58b4637e0274a3ecd86ef8f",
+  "sourceDigest": "68d257718ebba5165124b7b521fa3c1b581c59608f4047ceec4ef93da9b06609",
   "latestTrainingEnd": "2026-09-21T12:15:00.000Z",
   "caveat": "Training-only historical crypto research. Not a paper-forward win rate, net account P&L, validated predictive model, independent repeated evidence or live trading result.",
   "verifiedForwardGrades": 0,
@@ -14,9 +14,9 @@
       "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
       "confirmedForward": false,
       "verifiedForwardTrades": 0,
-      "experiments": 79,
+      "experiments": 81,
       "independentTrainingWindows": 2,
-      "distinctStrategiesTried": 142,
+      "distinctStrategiesTried": 153,
       "learningCredits": {
         "points": 0,
         "creditedOptions": 0,
@@ -1152,6 +1152,34 @@
           "grade": 2,
           "leaderTrainingNetGbp": -1.6,
           "leaderStrategy": "RSI 9 / 32/60"
+        },
+        {
+          "run": 80,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "320c1c601d4d3ada808998aef7e082c67e32f2536ee22786d474d4b7baf82df1",
+          "independentWindow": false,
+          "parentStrategy": "RSI 9 / 32/60",
+          "parentHistoricalNetGbp": -0.65,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 2,
+          "leaderTrainingNetGbp": -1.6,
+          "leaderStrategy": "RSI 9 / 32/60"
+        },
+        {
+          "run": 81,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "e9213ceacf1efd363b15edf8582ff989067cdb522bb3c1da48cff686bc1294a7",
+          "independentWindow": false,
+          "parentStrategy": "RSI 9 / 32/60",
+          "parentHistoricalNetGbp": -0.65,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 2,
+          "leaderTrainingNetGbp": -1.6,
+          "leaderStrategy": "RSI 9 / 32/60"
         }
       ]
     },
@@ -1161,9 +1189,9 @@
       "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
       "confirmedForward": false,
       "verifiedForwardTrades": 0,
-      "experiments": 79,
+      "experiments": 81,
       "independentTrainingWindows": 2,
-      "distinctStrategiesTried": 150,
+      "distinctStrategiesTried": 156,
       "learningCredits": {
         "points": 0,
         "creditedOptions": 0,
@@ -2298,6 +2326,34 @@
           "grade": 0,
           "leaderTrainingNetGbp": -8.1098,
           "leaderStrategy": "Channel 20/10"
+        },
+        {
+          "run": 80,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "1554414461821ac39e42be10c098b9a7f6818671507c403ec6709586c2bd6e42",
+          "independentWindow": false,
+          "parentStrategy": "RSI 7 / 37/75",
+          "parentHistoricalNetGbp": 0.56,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 0,
+          "leaderTrainingNetGbp": -8.1098,
+          "leaderStrategy": "Channel 20/10"
+        },
+        {
+          "run": 81,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "2b9c595aedf5e3ff044aa4e13bac83e5b5b7c9fc52e9c1f81bdaf6978addde7a",
+          "independentWindow": false,
+          "parentStrategy": "RSI 7 / 37/75",
+          "parentHistoricalNetGbp": 0.56,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 0,
+          "leaderTrainingNetGbp": -8.1098,
+          "leaderStrategy": "Channel 20/10"
         }
       ]
     },
@@ -2307,9 +2363,9 @@
       "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
       "confirmedForward": false,
       "verifiedForwardTrades": 0,
-      "experiments": 79,
+      "experiments": 81,
       "independentTrainingWindows": 2,
-      "distinctStrategiesTried": 114,
+      "distinctStrategiesTried": 124,
       "learningCredits": {
         "points": 0,
         "creditedOptions": 0,
@@ -3445,6 +3501,34 @@
           "grade": 6,
           "leaderTrainingNetGbp": -0.79,
           "leaderStrategy": "RSI 9 / 30/55"
+        },
+        {
+          "run": 80,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "141a952a9685fa8abfb81a2ac96c74731b39b03cf9fa3059f856cd8382b540c1",
+          "independentWindow": false,
+          "parentStrategy": "EMA 9/34 trend",
+          "parentHistoricalNetGbp": 0.36,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 6,
+          "leaderTrainingNetGbp": -0.79,
+          "leaderStrategy": "RSI 9 / 30/55"
+        },
+        {
+          "run": 81,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "e87d5e092f114543b33ee45fae922e077cf59c2dd5bc341f1dfe8805f486fa32",
+          "independentWindow": false,
+          "parentStrategy": "EMA 9/34 trend",
+          "parentHistoricalNetGbp": 0.36,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 6,
+          "leaderTrainingNetGbp": -0.79,
+          "leaderStrategy": "RSI 9 / 30/55"
         }
       ]
     },
@@ -3454,9 +3538,9 @@
       "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
       "confirmedForward": false,
       "verifiedForwardTrades": 0,
-      "experiments": 79,
+      "experiments": 81,
       "independentTrainingWindows": 2,
-      "distinctStrategiesTried": 142,
+      "distinctStrategiesTried": 150,
       "learningCredits": {
         "points": 0,
         "creditedOptions": 0,
@@ -4592,6 +4676,34 @@
           "grade": 6,
           "leaderTrainingNetGbp": -1.32,
           "leaderStrategy": "RSI 9 / 32/60"
+        },
+        {
+          "run": 80,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "1c6e05f4b3ed245df5a5e4da1696297f6d6a77a43e2ec840e4239e5baa17b4fd",
+          "independentWindow": false,
+          "parentStrategy": "RSI 11 / 32/60",
+          "parentHistoricalNetGbp": -0.41,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 6,
+          "leaderTrainingNetGbp": -1.32,
+          "leaderStrategy": "RSI 9 / 32/60"
+        },
+        {
+          "run": 81,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "e270689a594ff7820446b91dc5844aa641f7cc5cb54922d22f06044d711d0f03",
+          "independentWindow": false,
+          "parentStrategy": "RSI 11 / 32/60",
+          "parentHistoricalNetGbp": -0.41,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 6,
+          "leaderTrainingNetGbp": -1.32,
+          "leaderStrategy": "RSI 9 / 32/60"
         }
       ]
     },
@@ -4601,9 +4713,9 @@
       "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
       "confirmedForward": false,
       "verifiedForwardTrades": 0,
-      "experiments": 79,
+      "experiments": 81,
       "independentTrainingWindows": 2,
-      "distinctStrategiesTried": 138,
+      "distinctStrategiesTried": 146,
       "learningCredits": {
         "points": 0,
         "creditedOptions": 0,
@@ -5739,6 +5851,34 @@
           "grade": 5,
           "leaderTrainingNetGbp": -0.53,
           "leaderStrategy": "RSI 9 / 30/55"
+        },
+        {
+          "run": 80,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "7f1fbd22c9f46ba0689fc70d9737f400bcb458449197f24c80d8327b2da030a8",
+          "independentWindow": false,
+          "parentStrategy": "RSI 9 / 28/60",
+          "parentHistoricalNetGbp": 0.99,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 5,
+          "leaderTrainingNetGbp": -0.53,
+          "leaderStrategy": "RSI 9 / 30/55"
+        },
+        {
+          "run": 81,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "103596384f67c54f4e76931ea8be4b8eb39ee713e53715110139014de48acaf1",
+          "independentWindow": false,
+          "parentStrategy": "RSI 9 / 28/60",
+          "parentHistoricalNetGbp": 0.99,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 5,
+          "leaderTrainingNetGbp": -0.53,
+          "leaderStrategy": "RSI 9 / 30/55"
         }
       ]
     },
@@ -5748,9 +5888,9 @@
       "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
       "confirmedForward": false,
       "verifiedForwardTrades": 0,
-      "experiments": 79,
+      "experiments": 81,
       "independentTrainingWindows": 2,
-      "distinctStrategiesTried": 154,
+      "distinctStrategiesTried": 165,
       "learningCredits": {
         "points": 0,
         "creditedOptions": 0,
@@ -6886,6 +7026,34 @@
           "grade": 2,
           "leaderTrainingNetGbp": -3.6783,
           "leaderStrategy": "RSI 14 / 28/56"
+        },
+        {
+          "run": 80,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "2651f500af2d682ecebd01b1204a3e9ac3dbc84b0d29b183a81739746fa27cf4",
+          "independentWindow": false,
+          "parentStrategy": "EMA 5/30 trend",
+          "parentHistoricalNetGbp": 5.33,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 2,
+          "leaderTrainingNetGbp": -3.6783,
+          "leaderStrategy": "RSI 14 / 28/56"
+        },
+        {
+          "run": 81,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "4e5ced14130ebb9c6e82d6a258f63ae815b068ed4425667db8072086b37511da",
+          "independentWindow": false,
+          "parentStrategy": "EMA 5/30 trend",
+          "parentHistoricalNetGbp": 5.33,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 2,
+          "leaderTrainingNetGbp": -3.6783,
+          "leaderStrategy": "RSI 14 / 28/56"
         }
       ]
     },
@@ -6895,9 +7063,9 @@
       "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
       "confirmedForward": false,
       "verifiedForwardTrades": 0,
-      "experiments": 79,
+      "experiments": 81,
       "independentTrainingWindows": 2,
-      "distinctStrategiesTried": 122,
+      "distinctStrategiesTried": 133,
       "learningCredits": {
         "points": 0,
         "creditedOptions": 0,
@@ -8033,6 +8201,34 @@
           "grade": 5,
           "leaderTrainingNetGbp": -2.24,
           "leaderStrategy": "RSI 9 / 32/60"
+        },
+        {
+          "run": 80,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "e672b16ea6fd5451eda9c2fa90c7a8389eef8ee3e2e5c15e9270e2ae98b911bd",
+          "independentWindow": false,
+          "parentStrategy": "EMA 7/28 trend",
+          "parentHistoricalNetGbp": 0.16,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 5,
+          "leaderTrainingNetGbp": -2.24,
+          "leaderStrategy": "RSI 9 / 32/60"
+        },
+        {
+          "run": 81,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "84c706ebbdb836fe6619e3affacc2750405b94cfff973c4c516e3a8e9a47f4f0",
+          "independentWindow": false,
+          "parentStrategy": "EMA 7/28 trend",
+          "parentHistoricalNetGbp": 0.16,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 5,
+          "leaderTrainingNetGbp": -2.24,
+          "leaderStrategy": "RSI 9 / 32/60"
         }
       ]
     },
@@ -8042,9 +8238,9 @@
       "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
       "confirmedForward": false,
       "verifiedForwardTrades": 0,
-      "experiments": 79,
+      "experiments": 81,
       "independentTrainingWindows": 2,
-      "distinctStrategiesTried": 162,
+      "distinctStrategiesTried": 169,
       "learningCredits": {
         "points": 0,
         "creditedOptions": 0,
@@ -9180,6 +9376,34 @@
           "grade": 4,
           "leaderTrainingNetGbp": -1.7,
           "leaderStrategy": "RSI 9 / 32/60"
+        },
+        {
+          "run": 80,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "dcba8ec1e7032fe7d6391d679f51123729231b4760cddd6d33f5ccaeb8f68ad6",
+          "independentWindow": false,
+          "parentStrategy": "Channel 15/8",
+          "parentHistoricalNetGbp": -0.6,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 4,
+          "leaderTrainingNetGbp": -1.7,
+          "leaderStrategy": "RSI 9 / 32/60"
+        },
+        {
+          "run": 81,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "1a7ac8b5cff3b390d85e7b99bc8d44a05b9de3c7f4ca6a45e0afdb27af772a2b",
+          "independentWindow": false,
+          "parentStrategy": "Channel 15/8",
+          "parentHistoricalNetGbp": -0.6,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 4,
+          "leaderTrainingNetGbp": -1.7,
+          "leaderStrategy": "RSI 9 / 32/60"
         }
       ]
     },
@@ -9189,9 +9413,9 @@
       "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
       "confirmedForward": false,
       "verifiedForwardTrades": 0,
-      "experiments": 79,
+      "experiments": 81,
       "independentTrainingWindows": 2,
-      "distinctStrategiesTried": 163,
+      "distinctStrategiesTried": 171,
       "learningCredits": {
         "points": 0,
         "creditedOptions": 0,
@@ -10327,6 +10551,34 @@
           "grade": 6,
           "leaderTrainingNetGbp": -0.48,
           "leaderStrategy": "RSI 9 / 32/60"
+        },
+        {
+          "run": 80,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "661edda1b958e2134fe936766bc533d7c78914663ce047b59746513770847d02",
+          "independentWindow": false,
+          "parentStrategy": "RSI 9 / 37/65",
+          "parentHistoricalNetGbp": 0.66,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 6,
+          "leaderTrainingNetGbp": -0.48,
+          "leaderStrategy": "RSI 9 / 32/60"
+        },
+        {
+          "run": 81,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "6ec00a6dc7a5ef00baf84e49f4b0812deee7fb66a1c4e0aff3d23b75c611b700",
+          "independentWindow": false,
+          "parentStrategy": "RSI 9 / 37/65",
+          "parentHistoricalNetGbp": 0.66,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 6,
+          "leaderTrainingNetGbp": -0.48,
+          "leaderStrategy": "RSI 9 / 32/60"
         }
       ]
     },
@@ -10336,9 +10588,9 @@
       "evidenceStatus": "PROVISIONAL_TRAINING_ONLY",
       "confirmedForward": false,
       "verifiedForwardTrades": 0,
-      "experiments": 79,
+      "experiments": 81,
       "independentTrainingWindows": 2,
-      "distinctStrategiesTried": 138,
+      "distinctStrategiesTried": 146,
       "learningCredits": {
         "points": 0,
         "creditedOptions": 0,
@@ -11465,6 +11717,34 @@
           "run": 79,
           "trainingEnd": "2026-09-21T12:15:00.000Z",
           "experimentId": "2214fc975fb4299ee442848432e3178e15a4171b142f3ae7c5e8b837f5cf936e",
+          "independentWindow": false,
+          "parentStrategy": "RSI 14 / 37/55",
+          "parentHistoricalNetGbp": -0.89,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 4,
+          "leaderTrainingNetGbp": -4.03,
+          "leaderStrategy": "RSI 9 / 32/60"
+        },
+        {
+          "run": 80,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "5057dd20d9ca9be33c960e00edbce8babf4d776d778aeddc04034b46d7685ed2",
+          "independentWindow": false,
+          "parentStrategy": "RSI 14 / 37/55",
+          "parentHistoricalNetGbp": -0.89,
+          "testedConfigurations": 6,
+          "rewardCreditsAwarded": 0,
+          "rewardedConfigurations": 0,
+          "grade": 4,
+          "leaderTrainingNetGbp": -4.03,
+          "leaderStrategy": "RSI 9 / 32/60"
+        },
+        {
+          "run": 81,
+          "trainingEnd": "2026-09-21T12:15:00.000Z",
+          "experimentId": "24c528183341d6931b0f7a7cb2fa45a49838cb4f094eb3bb338f780a7f6513ca",
           "independentWindow": false,
           "parentStrategy": "RSI 14 / 37/55",
           "parentHistoricalNetGbp": -0.89,
