@@ -393,14 +393,15 @@
       "candidatesEvaluated": 6,
       "bestResearchCandidate": {
         "parameters": {
-          "family": "channel_breakout",
-          "lookback": 25,
-          "exitLookback": 8
+          "family": "rsi_reversion",
+          "period": 7,
+          "buyBelow": 40,
+          "sellAbove": 85
         },
-        "normalNetAcrossDisjointFolds": -2.85,
-        "stressedNetAcrossDisjointFolds": -4.84,
-        "profitableFolds": 0,
-        "researchRankScore": -4.84,
+        "normalNetAcrossDisjointFolds": 1.71,
+        "stressedNetAcrossDisjointFolds": -1.1,
+        "profitableFolds": 1,
+        "researchRankScore": -1.09,
         "note": "Disjoint development folds are historical research, not broker fills or untouched admission evidence"
       },
       "status": "DEVELOPMENT_RESEARCH_ONLY",
