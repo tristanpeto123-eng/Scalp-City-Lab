@@ -1,10 +1,10 @@
 {
   "schema": "TEACHER_PUBLIC_HISTORICAL_SCREEN_V1",
   "source": "INDEPENDENT_HISTORICAL_SCREEN_NO_PAPER_ORDERS",
-  "checkedAt": "2026-11-04T23:56:44.133Z",
+  "checkedAt": "2026-11-05T05:50:44.458Z",
   "lastResearchTrainingEnd": "2026-09-21T12:15:00.000Z",
-  "academySourceSha256": "1922839b78d38b539dcbac7ea0142bf288694cc3a22fd5dac3432b1ede71a55e",
-  "memorySourceSha256": "fff6a942dd34de7d2d12c56dcfeffb4a486e3fa5ce70511751564d8918ba3994",
+  "academySourceSha256": "be168a96b5fe59443f92e9ed74f400f19b1eb1c5f539db0eede8418d97e7177d",
+  "memorySourceSha256": "680dc08a793d5283c86d762b5fd80ceef5674ad4e7fddfe4d7df9851a8a8688f",
   "eligibleCount": 0,
   "screenedCount": 10,
   "slotsCap": 3,
