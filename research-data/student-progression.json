@@ -1,7 +1,7 @@
 {
   "schema": "SCALP_STUDENT_PROGRESS_V1",
-  "generatedAt": "2026-11-06T00:21:55.549Z",
-  "academySnapshotAt": "2026-11-05T20:49:01.899Z",
+  "generatedAt": "2026-11-06T07:01:42.043Z",
+  "academySnapshotAt": "2026-11-06T01:10:54.453Z",
   "rlSnapshotAt": "2026-10-29T05:42:29.730127+00:00",
   "markets": [
     "COMMODITIES",
@@ -38,18 +38,18 @@
       "symbol": "BTC/USD",
       "name": "BTC",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-11-05T20:49:01.899Z",
+      "publishedAcademyAt": "2026-11-06T01:10:54.453Z",
       "latestHistoricalTrainingEnd": "2026-09-21T12:15:00.000Z",
       "research": {
-        "experiments": 145,
+        "experiments": 148,
         "independentWindows": 2,
-        "configurations": 447,
+        "configurations": 459,
         "historicalTrainingGrade": 24,
         "historicalCandidateNetGbp": -1.6,
         "historicalCandidateTrades": 25,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -1356,6 +1356,33 @@
             "testedConfigurations": 6,
             "independent": false,
             "researchXp": 0
+          },
+          {
+            "run": 146,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 147,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 148,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -1.6,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
           }
         ]
       },
@@ -1797,18 +1824,18 @@
       "symbol": "ETH/USD",
       "name": "ETH",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-11-05T20:49:01.899Z",
+      "publishedAcademyAt": "2026-11-06T01:10:54.453Z",
       "latestHistoricalTrainingEnd": "2026-09-21T12:15:00.000Z",
       "research": {
-        "experiments": 145,
+        "experiments": 148,
         "independentWindows": 2,
-        "configurations": 482,
+        "configurations": 500,
         "historicalTrainingGrade": 8.7,
         "historicalCandidateNetGbp": -8.1098,
         "historicalCandidateTrades": 46,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -3115,6 +3142,33 @@
             "testedConfigurations": 6,
             "independent": false,
             "researchXp": 0
+          },
+          {
+            "run": 146,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 147,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 148,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 0,
+            "trainingNetGbp": -8.1098,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
           }
         ]
       },
@@ -3558,18 +3612,18 @@
       "symbol": "SOL/USD",
       "name": "SOL",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-11-05T20:49:01.899Z",
+      "publishedAcademyAt": "2026-11-06T01:10:54.453Z",
       "latestHistoricalTrainingEnd": "2026-09-21T12:15:00.000Z",
       "research": {
-        "experiments": 145,
+        "experiments": 148,
         "independentWindows": 2,
-        "configurations": 447,
+        "configurations": 462,
         "historicalTrainingGrade": 60.87,
         "historicalCandidateNetGbp": -0.79,
         "historicalCandidateTrades": 23,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -4870,6 +4924,33 @@
           },
           {
             "run": 145,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 146,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 147,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.79,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 148,
             "trainedThrough": "2026-09-21T12:15:00.000Z",
             "grade": 6,
             "trainingNetGbp": -0.79,
@@ -5321,18 +5402,18 @@
       "symbol": "XRP/USD",
       "name": "XRP",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-11-05T20:49:01.899Z",
+      "publishedAcademyAt": "2026-11-06T01:10:54.453Z",
       "latestHistoricalTrainingEnd": "2026-09-21T12:15:00.000Z",
       "research": {
-        "experiments": 145,
+        "experiments": 148,
         "independentWindows": 2,
-        "configurations": 453,
+        "configurations": 470,
         "historicalTrainingGrade": 62.5,
         "historicalCandidateNetGbp": -1.32,
         "historicalCandidateTrades": 24,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -6639,6 +6720,33 @@
             "testedConfigurations": 6,
             "independent": false,
             "researchXp": 0
+          },
+          {
+            "run": 146,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 147,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 148,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -1.32,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
           }
         ]
       },
@@ -7081,18 +7189,18 @@
       "symbol": "ADA/USD",
       "name": "ADA",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-11-05T20:49:01.899Z",
+      "publishedAcademyAt": "2026-11-06T01:10:54.453Z",
       "latestHistoricalTrainingEnd": "2026-09-21T12:15:00.000Z",
       "research": {
-        "experiments": 145,
+        "experiments": 148,
         "independentWindows": 2,
-        "configurations": 463,
+        "configurations": 478,
         "historicalTrainingGrade": 52,
         "historicalCandidateNetGbp": -0.53,
         "historicalCandidateTrades": 25,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -8393,6 +8501,33 @@
           },
           {
             "run": 145,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 146,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 147,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -0.53,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 148,
             "trainedThrough": "2026-09-21T12:15:00.000Z",
             "grade": 5,
             "trainingNetGbp": -0.53,
@@ -8845,18 +8980,18 @@
       "symbol": "AVAX/USD",
       "name": "AVAX",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-11-05T20:49:01.899Z",
+      "publishedAcademyAt": "2026-11-06T01:10:54.453Z",
       "latestHistoricalTrainingEnd": "2026-09-21T12:15:00.000Z",
       "research": {
-        "experiments": 145,
+        "experiments": 148,
         "independentWindows": 2,
-        "configurations": 486,
+        "configurations": 501,
         "historicalTrainingGrade": 25,
         "historicalCandidateNetGbp": -3.6783,
         "historicalCandidateTrades": 20,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -10157,6 +10292,33 @@
           },
           {
             "run": 145,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 146,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 147,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 2,
+            "trainingNetGbp": -3.6783,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 148,
             "trainedThrough": "2026-09-21T12:15:00.000Z",
             "grade": 2,
             "trainingNetGbp": -3.6783,
@@ -10612,18 +10774,18 @@
       "symbol": "LINK/USD",
       "name": "LINK",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-11-05T20:49:01.899Z",
+      "publishedAcademyAt": "2026-11-06T01:10:54.453Z",
       "latestHistoricalTrainingEnd": "2026-09-21T12:15:00.000Z",
       "research": {
-        "experiments": 145,
+        "experiments": 148,
         "independentWindows": 2,
-        "configurations": 476,
+        "configurations": 491,
         "historicalTrainingGrade": 52,
         "historicalCandidateNetGbp": -2.24,
         "historicalCandidateTrades": 25,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -11924,6 +12086,33 @@
           },
           {
             "run": 145,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 146,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 147,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 5,
+            "trainingNetGbp": -2.24,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 148,
             "trainedThrough": "2026-09-21T12:15:00.000Z",
             "grade": 5,
             "trainingNetGbp": -2.24,
@@ -12376,18 +12565,18 @@
       "symbol": "DOGE/USD",
       "name": "DOGE",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-11-05T20:49:01.899Z",
+      "publishedAcademyAt": "2026-11-06T01:10:54.453Z",
       "latestHistoricalTrainingEnd": "2026-09-21T12:15:00.000Z",
       "research": {
-        "experiments": 145,
+        "experiments": 148,
         "independentWindows": 2,
-        "configurations": 449,
+        "configurations": 464,
         "historicalTrainingGrade": 44,
         "historicalCandidateNetGbp": -1.7,
         "historicalCandidateTrades": 25,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -13688,6 +13877,33 @@
           },
           {
             "run": 145,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 146,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 147,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -1.7,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 148,
             "trainedThrough": "2026-09-21T12:15:00.000Z",
             "grade": 4,
             "trainingNetGbp": -1.7,
@@ -14139,18 +14355,18 @@
       "symbol": "LTC/USD",
       "name": "LTC",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-11-05T20:49:01.899Z",
+      "publishedAcademyAt": "2026-11-06T01:10:54.453Z",
       "latestHistoricalTrainingEnd": "2026-09-21T12:15:00.000Z",
       "research": {
-        "experiments": 145,
+        "experiments": 148,
         "independentWindows": 2,
-        "configurations": 446,
+        "configurations": 458,
         "historicalTrainingGrade": 65.22,
         "historicalCandidateNetGbp": -0.48,
         "historicalCandidateTrades": 23,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -15457,6 +15673,33 @@
             "testedConfigurations": 6,
             "independent": false,
             "researchXp": 0
+          },
+          {
+            "run": 146,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 147,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 148,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 6,
+            "trainingNetGbp": -0.48,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
           }
         ]
       },
@@ -15899,18 +16142,18 @@
       "symbol": "BCH/USD",
       "name": "BCH",
       "mode": "PUBLISHED_TRAINING_RESEARCH_ONLY",
-      "publishedAcademyAt": "2026-11-05T20:49:01.899Z",
+      "publishedAcademyAt": "2026-11-06T01:10:54.453Z",
       "latestHistoricalTrainingEnd": "2026-09-21T12:15:00.000Z",
       "research": {
-        "experiments": 145,
+        "experiments": 148,
         "independentWindows": 2,
-        "configurations": 442,
+        "configurations": 458,
         "historicalTrainingGrade": 46.67,
         "historicalCandidateNetGbp": -4.03,
         "historicalCandidateTrades": 30,
         "xp": 0,
         "status": "OVERLAPPING_TRAINING_WINDOW",
-        "latestBatchEvaluations": 72,
+        "latestBatchEvaluations": 108,
         "lastBatchNewTrainingCandles": 0,
         "lessons": [
           {
@@ -17211,6 +17454,33 @@
           },
           {
             "run": 145,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 146,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 147,
+            "trainedThrough": "2026-09-21T12:15:00.000Z",
+            "grade": 4,
+            "trainingNetGbp": -4.03,
+            "testedConfigurations": 6,
+            "independent": false,
+            "researchXp": 0
+          },
+          {
+            "run": 148,
             "trainedThrough": "2026-09-21T12:15:00.000Z",
             "grade": 4,
             "trainingNetGbp": -4.03,
