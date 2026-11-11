@@ -1,0 +1,14 @@
+# Existing Linux/Pi host uses RTC/NTP time. No backfill after power loss.
+# One systemd oneshot unit is started; systemd does not overlap it with itself.
+[Unit]
+Description=Scalp City five-minute broker observation, initially OFF
+
+[Timer]
+OnCalendar=*-*-* *:02,07,12,17,22,27,32,37,42,47,52,57:00
+AccuracySec=30s
+RandomizedDelaySec=0
+Persistent=false
+Unit=scalp-paper-check.service
+
+[Install]
+WantedBy=timers.target
