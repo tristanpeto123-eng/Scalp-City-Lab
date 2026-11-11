@@ -1,0 +1,65 @@
+name: Academy - Gold Silver 15Min Native Training
+on:
+  pull_request:
+    paths:
+      - 'academy/opportunity-discovery.mjs'
+      - 'academy/teacher-training.mjs'
+      - 'academy/commodity-15m-tests.mjs academy/student-skill-contract-tests.mjs'
+      - 'scripts/import-commodity-training-set.mjs'
+      - '.github/workflows/academy-metals-15m.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-metal-students:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Checker - native timeframes and gold/silver independent models
+        run: |
+          node --test academy/opportunity-discovery-tests.mjs academy/teacher-training-tests.mjs academy/commodity-15m-tests.mjs
+          node --check scripts/import-commodity-training-set.mjs
+      - name: Download public historical silver sample (no API key)
+        run: |
+          curl --fail --location --silent --show-error \
+            --retry 3 --retry-all-errors --connect-timeout 15 --max-time 120 \
+            'https://raw.githubusercontent.com/getdata-finance/xagusd-15m-ohlcv-metals-historical-data/main/XAGUSD_15m.csv' \
+            --output /tmp/XAGUSD_15m.csv
+      - name: Train XAGUSD native 15Min specialist only
+        run: |
+          node scripts/import-commodity-training-set.mjs XAGUSD /tmp/XAGUSD_15m.csv /tmp/academy-xag PUBLIC_SAMPLE_UNVERIFIED
+      - name: Checker - research-grade only, source sealed and symbol isolated
+        run: |
+          node --input-type=module <<'NODE'
+          import {readdirSync,readFileSync} from 'node:fs';
+          const dir='/tmp/academy-xag',names=readdirSync(dir);
+          const manifest=JSON.parse(readFileSync(dir+'/'+names.find(x=>x.endsWith('manifest.json'))));
+          const checkpoint=JSON.parse(readFileSync(dir+'/'+names.find(x=>x.endsWith('checkpoint.json'))));
+          const report=JSON.parse(readFileSync(dir+'/'+names.find(x=>x.endsWith('teacher-report.json'))));
+          if(manifest.symbol!=='XAGUSD'||manifest.timeframe!=='15Min'||manifest.sourceVerified!==false||
+          manifest.sourceRedistributed!==false||checkpoint.symbol!=='XAGUSD'||checkpoint.enabledForBroker!==false||
+          report.independentFinalTestEvaluated!==false||report.verifiedForwardGrades!==0||
+          report.paperOrders!==0||report.liveOrders!==0||report.automaticPromotion!==false)
+            throw Error('CHECKER_FAILED: symbol or broker boundary');
+          console.log('XAGUSD_UNVERIFIED_RESEARCH',JSON.stringify({
+            candles:manifest.candles,first:manifest.first,last:manifest.last,
+            good:manifest.discoverySummary.good,bad:manifest.discoverySummary.bad,
+            virtualDevelopmentNetGbp:report.development.netGbp,
+            virtualDevelopmentTrades:report.development.selectedTrades,
+            profitGate:report.developmentProfitGatePassed,verifiedForwardGrades:0
+          }));
+          NODE
+      - name: Save only short-lived metadata and development diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: academy-xagusd-15m-unverified-report
+          path: |
+            /tmp/academy-xag/*-manifest.json
+            /tmp/academy-xag/*-teacher-report.json
+          retention-days: 7
