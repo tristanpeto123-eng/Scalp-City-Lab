@@ -1,0 +1,81 @@
+name: Scalp v1.2 G0 Source Restore and Offline Regression
+on:
+  push:
+    branches:
+      - architecture-v1.2-g0-skill-matrix
+    paths:
+      - '.github/workflows/scalp-v12-g0.yml'
+      - 'docs/SCALP_V12_G0_BASELINE.md'
+      - 'docs/SCALP_V12_VERTICAL_SLICE_CONTRACT.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact baseline and document-only scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=70550c06b16291b860f9be84bae03b0dbe5fa790
+          test "$(git rev-parse "${BASE}^{commit}")" = "$BASE"
+          echo "BASE=$BASE"
+          echo "HEAD=$(git rev-parse HEAD)"
+          git diff --name-only "$BASE" HEAD | tee /tmp/v12-modified-paths.txt
+          if grep -Ev '^(docs/SCALP_V12_G0_BASELINE.md|docs/SCALP_V12_VERTICAL_SLICE_CONTRACT.md|.github/workflows/scalp-v12-g0.yml)$' /tmp/v12-modified-paths.txt; then
+            echo 'DENY: unexpected changed path against pinned baseline'; exit 1;
+          fi
+      - name: Recover pinned source from immutable git commit into clean scratch location
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=70550c06b16291b860f9be84bae03b0dbe5fa790
+          mkdir -p /tmp/scalp-v12-source-recovery
+          git archive --format=tar "$BASE" | tar -xf - -C /tmp/scalp-v12-source-recovery
+          for path in README.md app.js sl-core.mjs academy-common-exam.mjs; do
+            test -f "/tmp/scalp-v12-source-recovery/$path"
+            git show "$BASE:$path" | cmp - "/tmp/scalp-v12-source-recovery/$path"
+            echo "RESTORED $path $(sha256sum "/tmp/scalp-v12-source-recovery/$path" | awk '{print $1}')"
+          done
+          echo "G0 SOURCE RECOVERY CHECK PASSED — this proves git object restoration, NOT a private model backup or a separate offsite repository backup"
+  offline-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Enforce historical-only offline test scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f sl-core-tests.mjs
+          test -f sl-5m-tests.mjs
+          test -f robot-academy-tests.mjs
+          test -f academy-common-exam-tests.mjs
+          test -f paper-runtime/tests.mjs
+          test -f academy/opportunity-discovery-tests.mjs
+          test -f academy/teacher-training-tests.mjs
+      - name: Student/SL historical integrity suite
+        run: |
+          node --test sl-core-tests.mjs
+          node sl-5m-tests.mjs
+          node sl-loop-tests.mjs
+          node sl-model-vault-tests.mjs
+          node sl-chart-cache-tests.mjs
+      - name: Academy and opportunity research regression
+        run: |
+          node --test robot-academy-tests.mjs academy-common-exam-tests.mjs
+          node --test academy/opportunity-discovery-tests.mjs academy/teacher-training-tests.mjs
+          node --test scripts/build-student-progress-tests.mjs
+      - name: Paper runtime broker-MOCK safety suite, no paper credentials or orders
+        run: node paper-runtime/tests.mjs
