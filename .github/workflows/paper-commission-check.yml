@@ -1,0 +1,131 @@
+name: Scalp City — passive PAPER host commissioning Checker
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'paper_sandbox/railway_commission.py'
+      - 'paper_sandbox/test_railway_commission.py'
+      - 'paper_sandbox/Dockerfile.commission'
+      - '.github/workflows/paper-commission-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  passive-paper-commission:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: paper-sandbox-models
+          path: frozen-archive
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: rl-learning-memory
+          path: research-archive
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Independent frozen-candidate provenance and exact byte SHA
+        run: |
+          python - <<'PY'
+          import json,hashlib,pathlib
+          digest='ca1767977d37399136189bd9e0ec6c09440ca8d4098869d186898f6a8d479db1'
+          path=pathlib.Path('frozen-archive/frozen/LTC-USD-'+digest+'.pt')
+          manifest=json.loads(path.with_suffix('.json').read_text())
+          source=json.loads(pathlib.Path('research-archive/rl-rapid/latest.json').read_text())
+          pupil=next(x for x in source['pupils'] if x['symbol']=='LTC/USD')
+          if (manifest['modelSha256']!=digest or
+              hashlib.sha256(path.read_bytes()).hexdigest()!=digest or
+              pupil['modelSha256']!=digest or
+              manifest['sourceRunSha256']!=pupil['sourceTrainingFingerprint'] or
+              any(manifest[x] for x in ('graduated','signedGradeVerified',
+                                       'tradingFloorAdmitted','paperOrders','liveOrders')) or
+              source['paperOrders'] or source['liveOrders'] or source['verifiedForwardGrades']):
+              raise SystemExit('FROZEN_PAPER_CANDIDATE_PROVENANCE_FAILED')
+          print('FROZEN_LTC_UNGRADED_SOURCE_VERIFIED; NO_ORDERS')
+          PY
+      - name: No demo or LIVE brokerage mutation in commissioning process
+        run: |
+          python -m unittest paper_sandbox.test_railway_commission -v
+          python -m compileall -q paper_sandbox/railway_commission.py
+          python - <<'PY'
+          from pathlib import Path
+          file=Path('paper_sandbox/railway_commission.py').read_text()
+          docker=Path('paper_sandbox/Dockerfile.commission').read_text()
+          if ("'GET'" not in file or 'paper-api.alpaca.markets' not in file or
+              'https://api.alpaca.markets' in file or
+              'def do_POST' in file or
+              'SCALP_PAPER_PASSIVE_COMMISSIONER' not in file or
+              'python", "-m", "paper_sandbox.railway_commission' not in docker or
+              'pip install' in docker or 'torch' in docker or
+              'COPY paper_sandbox /app' in docker or
+              'shared_runtime.py' in docker or 'paper_executor.py' in docker or
+              'COPY paper_sandbox/railway_commission.py' not in docker):
+              raise SystemExit('PASSIVE PAPER COMMISSION VIOLATION')
+          print('PASSIVE_COMMISSION_PAPER_ONLY; NO_BROKER_ORDERS')
+          PY
+
+      - name: Build and smoke-test the actual Railway read-only Docker image
+        run: |
+          set -euo pipefail
+          docker build -f paper_sandbox/Dockerfile.commission \
+            -t scalp-paper-readonly-commission:test .
+          mkdir -p "$RUNNER_TEMP/scalp-paper-commission"
+          chmod 700 "$RUNNER_TEMP/scalp-paper-commission"
+          docker run -d --name scalp-paper-commission-test \
+            -e SCALP_READ_ONLY_ACCOUNT_PREFLIGHT=NO \
+            -p 127.0.0.1:18080:8080 \
+            -v "$RUNNER_TEMP/scalp-paper-commission:/data" \
+            scalp-paper-readonly-commission:test
+          trap 'docker rm -f scalp-paper-commission-test >/dev/null 2>&1 || true' EXIT
+          success=no
+          for i in $(seq 1 20); do
+            if curl --silent --fail http://127.0.0.1:18080/health -o "$RUNNER_TEMP/scalp-paper-health.json"; then
+              success=yes
+              break
+            fi
+            sleep 1
+          done
+          if [ "$success" != yes ]; then
+            docker logs scalp-paper-commission-test
+            echo "READ_ONLY_RAILWAY_IMAGE_BOOT_FAILED"
+            exit 1
+          fi
+          python - <<'PY'
+          import json,os,pathlib
+          report=json.loads(pathlib.Path(os.environ['RUNNER_TEMP'],'scalp-paper-health.json').read_text())
+          if (report.get('schema')!='SCALP_SHARED_PAPER_COMMISSION_V1' or
+              report.get('storageReady') is not True or
+              report.get('writerEnabled') is not False or
+              report.get('paperOrdersSubmitted')!=0 or
+              report.get('liveOrdersSubmitted')!=0 or
+              report.get('account',{}).get('status')!='GET_ONLY_PREFLIGHT_NOT_REQUESTED'):
+              raise SystemExit('RAILWAY_IMAGE_FAILED_COLD_START_READ_ONLY_CONTRACT')
+          print('RAILWAY_IMAGE_COLD_START_OK; ZERO_BROKER_ORDERS')
+          PY
+          # The private marker is owned by root inside the container. Inspect
+          # within the container; the unprivileged GitHub runner cannot walk
+          # the mode-0700 directory, as intended.
+          docker exec scalp-paper-commission-test python -c \
+            'from pathlib import Path; assert Path("/data/scalp-paper/read-only-host-ready").is_file()'
+          docker stop scalp-paper-commission-test >/dev/null
+          docker start scalp-paper-commission-test >/dev/null
+          success=no
+          for i in $(seq 1 20); do
+            if curl --silent --fail http://127.0.0.1:18080/health -o "$RUNNER_TEMP/scalp-paper-health-restart.json"; then
+              success=yes
+              break
+            fi
+            sleep 1
+          done
+          [ "$success" = yes ] || { echo 'READ_ONLY_IMAGE_RESTART_FAILED'; exit 1; }
+          cmp "$RUNNER_TEMP/scalp-paper-health.json" "$RUNNER_TEMP/scalp-paper-health-restart.json"
+          docker exec scalp-paper-commission-test python -c \
+            'from pathlib import Path; assert Path("/data/scalp-paper/read-only-host-ready").read_bytes().startswith(b"PAPER_READ_ONLY_HOST_V1")'
+          echo 'RAILWAY_IMAGE_RESTART_AND_VOLUME_CANARY_OK'
